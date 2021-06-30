@@ -1,0 +1,101 @@
+from argparse import Namespace
+from typing import TypeVar, Generic
+
+T = TypeVar('T')
+
+
+class InArg(Generic[T]):
+    value: T
+
+    def __init__(self, value: T) -> None:
+        self.value = value
+
+    @classmethod
+    def empty(cls):
+        return InArg(None)
+
+
+class OutArg(Generic[T]):
+    value: T
+
+    def __init__(self, value: T) -> None:
+        self.value = value
+
+    @classmethod
+    def empty(cls):
+        return OutArg(None)
+
+
+class ExecutionContext:
+    args: Namespace
+
+    def __init__(self, args: Namespace):
+        self.args = args
+
+
+class BaseComponent:
+    @classmethod
+    def set_execution_context(cls, context: ExecutionContext) -> None:
+        cls.execution_context = context
+
+    def execute(self) -> None:
+        pass
+
+    def do(self):
+        pass
+
+
+class Component(BaseComponent):
+    next: BaseComponent
+
+    def do(self) -> BaseComponent:
+        self.execute()
+        return self.next
+
+    def debug_repr(self) -> str:
+        return "<h1>Component</h1>"
+
+
+class BranchComponent(BaseComponent):
+    when_true: BaseComponent
+    when_false: BaseComponent
+
+    condition: InArg[bool]
+
+    def do(self) -> BaseComponent:
+        if self.condition.value:
+            return self.when_true
+        else:
+            return self.when_false
+
+
+class LoopComponent(Component):
+    body: Component
+
+    condition: InArg[bool]
+
+    def do(self) -> BaseComponent:
+        while self.condition.value:
+            next_body = self.body.do()
+            while next_body:
+                next_body = next_body.do()
+            return self
+        return self.next
+
+
+def execute_graph(args: Namespace, start: BaseComponent) -> None:
+    BaseComponent.set_execution_context(ExecutionContext(args))
+
+    if 'debug' in args and args['debug']:
+        import pdb
+        pdb.set_trace()
+
+        current_component = start
+        next_component = current_component.do()
+        while next_component:
+            current_component = next_component
+            next_component = current_component.do()
+    else:
+        next_component = start.do()
+        while next_component:
+            next_component = next_component.do()
