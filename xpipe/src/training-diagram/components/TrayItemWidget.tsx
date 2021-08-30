@@ -6,7 +6,6 @@ export interface TrayItemWidgetProps {
 	color?: string;
 	name: string;
 }
-
 interface TrayStyledProps {
 	color: string
 }
@@ -21,8 +20,6 @@ export const Tray = styled.div<TrayStyledProps>`
 	margin-bottom: 2px;
 	cursor: pointer;
 `;
-
-
 export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 	render() {
 		return (
@@ -31,6 +28,7 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 				draggable={true}
 				onDragStart={(event) => {
 					event.dataTransfer.setData('storm-diagram-node', JSON.stringify(this.props.model));
+					this.forceUpdate();
 				}}
 				className="tray-item">
 				{this.props.name}
