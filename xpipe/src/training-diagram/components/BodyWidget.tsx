@@ -100,15 +100,6 @@ export class BodyWidget extends React.Component<BodyWidgetProps> {
 	render() {
 		return (
 			<Body>
-				<Header>
-					<div className="title">Sample Project | Main Workflow ▽</div>
-					<span className='diagram-header-span'>
-					<button className='diagram-header-button' onClick={this.handleSaveClick} >Save</button>
-					<button className='diagram-header-button' onClick={this.handleCompileClick} >Compile</button>
-					<button className='diagram-header-button' onClick={this.handleRunClick} >Run</button>
-					<button className='diagram-header-button' onClick={this.handleDebugClick} >Debug</button>
-					</span>
-				</Header>
 				<Content>
 					<TrayWidget>
 						<TrayItemWidget model={{ type: 'in' ,name:'Read Data Set'}} name="Read Data Set" color="rgb(192,255,0)" />
