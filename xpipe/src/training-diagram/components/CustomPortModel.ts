@@ -16,7 +16,7 @@ export class CustomPortModel extends DefaultPortModel  {
             return this.canTriangleLinkToTriangle(port) || this.canParameterLinkToPort(port);
         }
 
-        return false;
+        return true;
     }
 
     /**
