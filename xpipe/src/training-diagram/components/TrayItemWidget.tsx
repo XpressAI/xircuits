@@ -6,7 +6,6 @@ export interface TrayItemWidgetProps {
 	color?: string;
 	name: string;
 }
-
 interface TrayStyledProps {
 	color: string
 }
@@ -21,8 +20,6 @@ export const Tray = styled.div<TrayStyledProps>`
 	margin-bottom: 2px;
 	cursor: pointer;
 `;
-
-
 export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 	render() {
 		return (
