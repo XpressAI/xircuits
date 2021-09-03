@@ -1,6 +1,4 @@
 import { DefaultNodeModel } from '@projectstorm/react-diagrams';
-
-import {PortModelAlignment} from '@projectstorm/react-diagrams-core';
 import { BaseModelOptions, DeserializeEvent} from '@projectstorm/react-canvas-core';
 import {CustomPortModel} from "./CustomPortModel";
 
@@ -47,8 +45,7 @@ export class CustomNodeModel extends DefaultNodeModel {
         const p = new CustomPortModel({
             in: false,
             name: name,
-            label: label,
-            alignment: PortModelAlignment.RIGHT
+            label: label
         });
 
         if (!after) {
@@ -62,8 +59,7 @@ export class CustomNodeModel extends DefaultNodeModel {
         const p = new CustomPortModel({
             in: true,
             name: name,
-            label: label,
-            alignment: PortModelAlignment.RIGHT
+            label: label
         });
 
         if (!after) {
