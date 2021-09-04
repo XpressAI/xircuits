@@ -334,7 +334,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app, projectId }) => {
 
 	return (
 		<Body>
-			<Header>
+			{/* <Header>
 				<div className="title">Sample Project | Main Workflow ▽</div>
 				<span className='diagram-header-span'>
 					<button className='diagram-header-button' onClick={handleSaveClick} >Save</button>
@@ -493,7 +493,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app, projectId }) => {
 						</div>
 					</Dialog>
 				</span>
-			</Header>
+			</Header> */}
 			<Content>
 				<Layer
 					onDrop={(event) => {

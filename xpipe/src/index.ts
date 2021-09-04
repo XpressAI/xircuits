@@ -1,7 +1,9 @@
+import { MimeDocument } from '@jupyterlab/docregistry';
 import { IRenderMime } from '@jupyterlab/rendermime-interfaces';
 import { Widget } from '@lumino/widgets';
 import * as ReactDOM from "react-dom";
 import {CreateTrainingDiagramComponent} from "./training-diagram";
+import { Toolbar } from './training-diagram/components/Toolbar';
 
 /**
  * The default mime type for the extension.
@@ -30,6 +32,16 @@ export class OutputWidget extends Widget implements IRenderMime.IRenderer {
    * Render xpipeline into this widget's node.
    */
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
+  
+    /**
+     * Add the toolbar items to widget's toolbar
+     */
+    let panel = this.parent?.parent as unknown as MimeDocument;
+    panel?.toolbar.insertItem(0, 'save', Toolbar.save());
+    panel?.toolbar.insertItem(1, 'compile', Toolbar.compile());
+    panel?.toolbar.insertItem(2, 'run', Toolbar.run());
+    panel?.toolbar.insertItem(3, 'debug', Toolbar.debug());
+
     ReactDOM.render(CreateTrainingDiagramComponent("12345"), this.node);
 
     return Promise.resolve();
