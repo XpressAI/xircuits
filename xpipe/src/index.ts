@@ -36,7 +36,7 @@ export class OutputWidget extends Widget implements IRenderMime.IRenderer {
     /**
      * Add the toolbar items to widget's toolbar
      */
-    let panel = this.parent?.parent as MimeDocument | undefined | null;
+    let panel = this.parent?.parent as unknown as MimeDocument;
     panel?.toolbar.insertItem(0, 'save', Toolbar.save());
     panel?.toolbar.insertItem(1, 'compile', Toolbar.compile());
     panel?.toolbar.insertItem(2, 'run', Toolbar.run());
