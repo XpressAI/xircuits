@@ -17,7 +17,7 @@ import { CustomNodeModel } from "./CustomNodeModel";
 
 export interface BodyWidgetProps {
 	app: Application;
-	projectId: string;
+	projectData: string;
 }
 
 
@@ -58,7 +58,7 @@ function useForceUpdate(){
 }
 
 
-export const BodyWidget: FC<BodyWidgetProps> = ({ app, projectId }) => {
+export const BodyWidget: FC<BodyWidgetProps> = ({ app, projectData }) => {
 
     const [prevState, updateState] = useState(0);
     const forceUpdate = useCallback(() => updateState(prevState => prevState + 1), []);
@@ -357,7 +357,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app, projectId }) => {
                     		        <InputText style={{ width: '10vw' }} value={ stringNodesValue[i] || '' } onChange={(e) => handleStringChange(e, i)}/>
                     		        </div>
                     		    </div>)}
-
                     		    <div className="p-col-12">
                     		        {
                     		            boolNodes.length != 0 ?

@@ -33,6 +33,7 @@ export class OutputWidget extends Widget implements IRenderMime.IRenderer {
    */
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
   
+    let data = model.data[MIME_TYPE] as string;
     /**
      * Add the toolbar items to widget's toolbar
      */
@@ -42,7 +43,7 @@ export class OutputWidget extends Widget implements IRenderMime.IRenderer {
     panel?.toolbar.insertItem(2, 'run', Toolbar.run());
     panel?.toolbar.insertItem(3, 'debug', Toolbar.debug());
 
-    ReactDOM.render(CreateTrainingDiagramComponent("12345"), this.node);
+    ReactDOM.render(CreateTrainingDiagramComponent(data), this.node);
 
     return Promise.resolve();
   }
