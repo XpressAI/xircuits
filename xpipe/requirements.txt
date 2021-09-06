@@ -27,7 +27,7 @@ jupyter-server==1.1.3
 jupyterlab==3.0.0
 jupyterlab-pygments==0.1.2
 jupyterlab-server==2.0.0
--e git+git@github.com:XpressAI/xai-jupyterlab.git@9187a865f7dad7e8b318d0f379638063b19fb6fc#egg=jupyterlab_xpressai_theme&subdirectory=jupyterlab_xpressai_theme
+-e git+https://github.com/XpressAI/xai-jupyterlab.git@9187a865f7dad7e8b318d0f379638063b19fb6fc#egg=jupyterlab_xpressai_theme&subdirectory=jupyterlab_xpressai_theme
 MarkupSafe==1.1.1
 mistune==0.8.4
 nbclassic==0.2.5
