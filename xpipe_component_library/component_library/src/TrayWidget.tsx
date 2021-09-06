@@ -3,11 +3,13 @@ import styled from '@emotion/styled';
 
 
 export const Tray = styled.div`
-	min-width: 200px;
+	min-width: 260px;
 	background: rgb(20, 20, 20);
 	flex-grow: 3;
 	flex-shrink: 0;
 	width:auto;
+	max-height: 570px;
+	overflow-y: auto;
 `;
 
 
