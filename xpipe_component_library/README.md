@@ -15,8 +15,8 @@ To install the extension, execute:
 ```bash
 # Change directory to the component_library directory
 # Install package in development mode
-pip install -ve . (not needed if requirements.txt is installed)
-pip install nodejs jupyter-packaging (not needed if requirements.txt is installed)
+pip install -ve . # (not needed if requirements.txt is installed)
+pip install nodejs jupyter-packaging # (not needed if requirements.txt is installed)
 npm install
 jupyter labextension develop . --overwrite
 
