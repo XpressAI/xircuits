@@ -1,5 +1,5 @@
 {
-  "name": "component_library",
+  "name": "xpipe_component_library",
   "version": "0.1.0",
   "description": "Create extension for xpipe",
   "keywords": [
@@ -7,9 +7,9 @@
     "jupyterlab",
     "jupyterlab-extension"
   ],
-  "homepage": "https://github.com/github_username/component_library",
+  "homepage": "https://github.com/XpressAI/xpipe_component_library",
   "bugs": {
-    "url": "https://github.com/github_username/component_library/issues"
+    "url": "https://github.com/XpressAI/xpipe_component_library/issues"
   },
   "license": "BSD-3-Clause",
   "author": {
@@ -25,7 +25,7 @@
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/github_username/component_library.git"
+    "url": "https://github.com/XpressAI/xpipe_component_library.git"
   },
   "scripts": {
     "build": "jlpm run build:lib && jlpm run build:labextension:dev",
@@ -69,7 +69,7 @@
   "styleModule": "style/index.js",
   "jupyterlab": {
     "extension": true,
-    "outputDir": "component_library/labextension"
+    "outputDir": "xpipe_component_library/labextension"
   },
   "jupyter-releaser": {
     "hooks": {
