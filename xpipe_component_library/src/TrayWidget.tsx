@@ -8,7 +8,7 @@ export const Tray = styled.div`
 	flex-grow: 3;
 	flex-shrink: 0;
 	width:auto;
-	max-height: 570px;
+	max-height: auto;
 	overflow-y: auto;
 `;
 
