@@ -1,4 +1,4 @@
-import React, { FC, useState, useCallback } from 'react';
+import React, { FC, useState, useCallback, useEffect } from 'react';
 import * as NumericInput from "react-numeric-input";
 import { Application } from '../Application';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
@@ -75,6 +75,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app, projectData }) => {
 	const [intNodesValue, setIntNodesValue] = useState<number[]>([0]);
 	const [floatNodesValue, setFloatNodesValue] = useState<number[]>([0.00]);
 	const [boolNodesValue, setBoolNodesValue] = useState<boolean[]>([false]);
+
+	const [engineLoad, setEngineLoad] = useState(app.getDiagramEngine());
+	useEffect (() => { setEngineLoad(app.loadDiagramEngine(projectData)); }, [] );
+	useEffect (() => { app.getDiagramEngine(); } )
+
 
 	const getTargetNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
 
@@ -694,7 +699,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app, projectData }) => {
 						forceUpdate();
 					}}>
 					<DemoCanvasWidget>
-						<CanvasWidget engine={app.getDiagramEngine()} />
+						<CanvasWidget engine={engineLoad} />
 					</DemoCanvasWidget>
 				</Layer>
 			</Content>

@@ -10,49 +10,13 @@ export class Application {
 	protected activeModel: SRD.DiagramModel;
 
 	protected diagramEngine: SRD.DiagramEngine;
-	protected projectData: string;
 
-	constructor(projectData:string) {
+	constructor() {
 
-		
 		this.diagramEngine = SRD.default();
 		this.activeModel = new SRD.DiagramModel();
 		this.diagramEngine.getNodeFactories().registerFactory(new CustomNodeFactory());
-		
-		this.projectData;
-
-		//if the .xipe file has correct format, generate the nodes
-		try {
-
-			let links = projectData["layers"][0]["models"];
-			let nodes = projectData["layers"][1]["models"];
-
-			for (let nodeID in nodes){
-				
-				let node =  nodes[nodeID];
-				let newNode = new CustomNodeModel({ name:node["name"], color:node["color"], extras: node["extras"] });
-				newNode.setPosition(node["x"], node["y"]);
-				
-				for (let portID in node.ports){
-					
-					let port = node.ports[portID];
-					if (port.alignment == "right") newNode.addOutPortEnhance(port.label, port.name);
-					if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name);
-					
-				} 
-
-				this.activeModel.addAll(newNode);
-				this.diagramEngine.setModel(this.activeModel);
-			}
-		}
-
-		//if incorrect, generate the default nodes.
-		catch(error){
-			console.log(error.message);
-			console.log("Generating New Diagram");
-
-			//initialize default start and finish node
-			let startNode = new CustomNodeModel({ name:'Start', color:'rgb(255,102,102)', extras:{ "type":"Start" } });
+		let startNode = new CustomNodeModel({ name:'Start', color:'rgb(255,102,102)', extras:{ "type":"Start" } });
 			startNode.addOutPortEnhance('▶', 'out-0');
 			startNode.addOutPortEnhance('  ', 'parameter-out-1');
 			startNode.setPosition(100, 100);
@@ -64,7 +28,9 @@ export class Application {
 
 			this.activeModel.addAll(startNode, finishedNode);
 			this.diagramEngine.setModel(this.activeModel);
-		}
+
+		this.diagramEngine.setModel(this.activeModel);
+		
 	}
 
 	public getActiveDiagram(): SRD.DiagramModel {
@@ -73,5 +39,22 @@ export class Application {
 
 	public getDiagramEngine(): SRD.DiagramEngine {
 		return this.diagramEngine;
+	}
+
+	public loadDiagramEngine(projectData): SRD.DiagramEngine {
+		console.log("load diagram engine! ");
+		//if a xpipe has ID 
+		if (projectData["id"]) {
+			console.log("Loading diagram! ");
+			this.activeModel.deserializeModel(projectData, this.diagramEngine);
+			this.diagramEngine.setModel(this.activeModel);
+			return this.diagramEngine;
+		}
+		
+		else {
+			//initialize default start and finish node
+			console.log("incorrect format.");
+			return this.diagramEngine;
+		}
 	}
 }
