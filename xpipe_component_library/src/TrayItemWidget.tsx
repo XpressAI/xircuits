@@ -23,16 +23,6 @@ export const Tray = styled.div<TrayStyledProps>`
 	cursor: pointer;
 `;
 
-export const Tray2 = styled.div<TrayStyledProps>`
-	font-size: 13px;
-	height: 35px;
-	width: 120px;
-	border-radius: 16px;
-	border: none;
-	box-shadow: 1px 1px 0px 2px rgba (0,0,0,0.3);
-	background: rgb(192,255,0);
-	cursor: pointer;
-`;
 export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 	render() {
 		return (

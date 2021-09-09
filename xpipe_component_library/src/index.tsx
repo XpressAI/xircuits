@@ -22,7 +22,7 @@ const xpipe_component_library: JupyterFrontEndPlugin<void> = {
     labShell: ILabShell,
     restorer: ILayoutRestorer
   ) => {
-    console.log('JupyterLab extension xpipe_component_library3 is activated!');
+    console.log('JupyterLab extension xpipe_component_library is activated!');
 
     const widget = ReactWidget.create(<Sidebar />);
     widget.id = 'xpipe-component-library';
