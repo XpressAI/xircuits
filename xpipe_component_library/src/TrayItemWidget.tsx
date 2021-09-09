@@ -6,19 +6,31 @@ export interface TrayItemWidgetProps {
 	color?: string;
 	name: string;
 }
+
 interface TrayStyledProps {
 	color: string
 }
 
 export const Tray = styled.div<TrayStyledProps>`
-	color: white;
+	color: black;
 	font-family: Helvetica, Arial;
 	padding: 5px;
-	width:auto;
+	width: auto;
 	margin: 0px 10px;
 	border: solid 1px ${(p) => p.color};
 	border-radius: 5px;
 	margin-bottom: 2px;
+	cursor: pointer;
+`;
+
+export const Tray2 = styled.div<TrayStyledProps>`
+	font-size: 13px;
+	height: 35px;
+	width: 120px;
+	border-radius: 16px;
+	border: none;
+	box-shadow: 1px 1px 0px 2px rgba (0,0,0,0.3);
+	background: rgb(192,255,0);
 	cursor: pointer;
 `;
 export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {

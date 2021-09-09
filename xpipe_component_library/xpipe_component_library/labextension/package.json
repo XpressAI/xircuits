@@ -72,7 +72,12 @@
   "styleModule": "style/index.js",
   "jupyterlab": {
     "extension": true,
-    "outputDir": "xpipe_component_library/labextension"
+    "outputDir": "xpipe_component_library/labextension",
+    "_build": {
+      "load": "static\\remoteEntry.3ce22209fdfc9abcf72c.js",
+      "extension": "./extension",
+      "style": "./style"
+    }
   },
   "jupyter-releaser": {
     "hooks": {
