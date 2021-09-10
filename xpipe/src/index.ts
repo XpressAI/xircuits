@@ -72,7 +72,8 @@ const extension: IRenderMime.IExtension = {
     {
       name: 'xpipeline',
       mimeTypes: [MIME_TYPE],
-      extensions: ['.xpipe']
+      extensions: ['.xpipe'],
+      displayName: 'Xpipe'
     }
   ],
   documentWidgetFactoryOptions: {
