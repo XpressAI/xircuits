@@ -2,7 +2,7 @@
 
 > Create a Xpipe React.js Widget in JupyterLab.
 
-The xpipe extension now uses the `ReactWidget` wrapper from `@jupyterlab/apputils` to use React in a JupyterLab extension.
+The xpipe extension now uses the `ReactWidget` wrapper from `@jupyterlab/apputils` to use React in a JupyterLab extension. You might want to nuke your old npm and lib folder before migrating to ths version.
 
 https://github.com/jupyterlab/extension-examples/tree/master/react-widget
 
