@@ -110,3 +110,5 @@ dmypy.json
 
 # OSX files
 .DS_Store
+
+xpipe_component_library/labextension/static/
