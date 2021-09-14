@@ -7,9 +7,9 @@ import { MainAreaWidget } from '@jupyterlab/apputils';
 
 import { ILauncher } from '@jupyterlab/launcher';
 
-import { reactIcon } from '@jupyterlab/ui-components';
-
 import { ReactDiagramWidget } from './diagram-widget'; 
+
+import { xpipeIcon } from './icon';
 
 /**
  * The command IDs used by the react-widget plugin.
@@ -35,9 +35,9 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     const command = CommandIDs.create;
     commands.addCommand(command, {
-      caption: 'Create a new React Widget',
-      label: 'React Widget',
-      icon: (args) => (args['isPalette'] ? null : reactIcon),
+      caption: 'Create a new Xpipe File',
+      label: 'Xpipe File',
+      icon: (args) => (args['isPalette'] ? null : xpipeIcon),
       execute: () => {
 
 
@@ -46,7 +46,7 @@ const extension: JupyterFrontEndPlugin<void> = {
         const content = new ReactDiagramWidget();
         const widget = new MainAreaWidget<ReactDiagramWidget>({ content });
         widget.title.label = 'Xpipe Widget';
-        widget.title.icon = reactIcon;
+        widget.title.icon = xpipeIcon;
         app.shell.add(widget, 'main');
       },
     });
