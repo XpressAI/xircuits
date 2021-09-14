@@ -1,87 +1,62 @@
-import { MimeDocument } from '@jupyterlab/docregistry';
-import { IRenderMime } from '@jupyterlab/rendermime-interfaces';
-import { Widget } from '@lumino/widgets';
-import * as ReactDOM from "react-dom";
-import {CreateTrainingDiagramComponent} from "./training-diagram";
-import { Toolbar } from './training-diagram/components/Toolbar';
+import {
+  JupyterFrontEnd,
+  JupyterFrontEndPlugin,
+} from '@jupyterlab/application';
+
+import { MainAreaWidget } from '@jupyterlab/apputils';
+
+import { ILauncher } from '@jupyterlab/launcher';
+
+import { reactIcon } from '@jupyterlab/ui-components';
+
+import { ReactDiagramWidget } from './diagram-widget'; 
 
 /**
- * The default mime type for the extension.
+ * The command IDs used by the react-widget plugin.
  */
-const MIME_TYPE = 'application/vnd.xpressai.xpipeline';
-
-/**
- * The class name added to the extension.
- */
-const CLASS_NAME = 'mimerenderer-xpipeline';
-
-/**
- * A widget for rendering xpipeline.
- */
-export class OutputWidget extends Widget implements IRenderMime.IRenderer {
-  /**
-   * Construct a new output widget.
-   */
-  constructor(options: IRenderMime.IRendererOptions) {
-    super();
-    //this._mimeType = options.mimeType;
-    this.addClass(CLASS_NAME);
-  }
-
-  /**
-   * Render xpipeline into this widget's node.
-   */
-  renderModel(model: IRenderMime.IMimeModel): Promise<void> {
-  
-    let data = model.data[MIME_TYPE] as string;
-    /**
-     * Add the toolbar items to widget's toolbar
-     */
-    let panel = this.parent?.parent as unknown as MimeDocument;
-    panel?.toolbar.insertItem(0, 'save', Toolbar.save());
-    panel?.toolbar.insertItem(1, 'compile', Toolbar.compile());
-    panel?.toolbar.insertItem(2, 'run', Toolbar.run());
-    panel?.toolbar.insertItem(3, 'debug', Toolbar.debug());
-
-    ReactDOM.render(CreateTrainingDiagramComponent(data), this.node);
-
-    return Promise.resolve();
-  }
-
-  //private _mimeType: string;
+namespace CommandIDs {
+  export const create = 'create-react-widget';
 }
 
 /**
- * A mime renderer factory for xpipeline data.
+ * Initialization data for the react-widget extension.
  */
-export const rendererFactory: IRenderMime.IRendererFactory = {
-  safe: true,
-  mimeTypes: [MIME_TYPE],
-  createRenderer: options => new OutputWidget(options)
-};
+const extension: JupyterFrontEndPlugin<void> = {
+  id: 'react-widget',
+  autoStart: true,
+  optional: [ILauncher],
+  activate: (app: JupyterFrontEnd, launcher: ILauncher) => {
+    
+    console.log("calling from activate")
 
-/**
- * Extension definition.
- */
-const extension: IRenderMime.IExtension = {
-  id: 'xpipe:plugin',
-  rendererFactory,
-  rank: 0,
-  dataType: 'json',
-  fileTypes: [
-    {
-      name: 'xpipeline',
-      mimeTypes: [MIME_TYPE],
-      extensions: ['.xpipe'],
-      displayName: 'Xpipe'
+    //var SRDapp = new Application();
+    
+    const { commands } = app;
+
+    const command = CommandIDs.create;
+    commands.addCommand(command, {
+      caption: 'Create a new React Widget',
+      label: 'React Widget',
+      icon: (args) => (args['isPalette'] ? null : reactIcon),
+      execute: () => {
+
+
+        //var reactDiagramApp = new Application();
+        
+        const content = new ReactDiagramWidget();
+        const widget = new MainAreaWidget<ReactDiagramWidget>({ content });
+        widget.title.label = 'Xpipe Widget';
+        widget.title.icon = reactIcon;
+        app.shell.add(widget, 'main');
+      },
+    });
+
+    if (launcher) {
+      launcher.add({
+        command,
+      });
     }
-  ],
-  documentWidgetFactoryOptions: {
-    name: 'Xpipeline Viewer',
-    primaryFileType: 'xpipeline',
-    fileTypes: ['xpipeline'],
-    defaultFor: ['xpipeline']
-  }
+  },
 };
 
 export default extension;

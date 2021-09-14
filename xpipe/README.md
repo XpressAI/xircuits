@@ -1,30 +1,31 @@
-# xpipe
+# Xpipe Widget
 
-A JupyterLab extension for rendering xpipeline files.
+> Create a Xpipe React.js Widget in JupyterLab.
 
-## Prerequisites
+The xpipe extension now uses the `ReactWidget` wrapper from `@jupyterlab/apputils` to use React in a JupyterLab extension.
 
-* JupyterLab 1.0 or later
+https://github.com/jupyterlab/extension-examples/tree/master/react-widget
 
-## Installation
+## Install
 
-```bash
-jupyter labextension install xpipe
-```
-
-## Development
-
-For a development install (requires npm version 4 or later), do the following in the repository directory:
+Unlike the previous one, this uses jlpm / yarn to compile the packages.
 
 ```bash
-npm install
-jupyter labextension link .
-```
+jlpm
+jlpm build
+jupyter labextension install .
 
-To rebuild the package and the JupyterLab app:
-
-```bash
-npm run build
+# Rebuild Typescript source after making changes
+jlpm build
+# Rebuild JupyterLab after making any changes
 jupyter lab build
 ```
 
+You can watch the source directory and run JupyterLab in watch mode to watch for changes in the extension's source and automatically rebuild the extension and application.
+
+```bash
+# Watch the source directory in another terminal tab
+jlpm watch
+# Run jupyterlab in watch mode in one terminal tab
+jupyter lab --watch
+```
