@@ -26,9 +26,10 @@ const xpipe_component_library: JupyterFrontEndPlugin<void> = {
 
     const widget = ReactWidget.create(<Sidebar />);
     widget.id = 'xpipe-component-library';
+    widget.title.iconClass = 'jp-SidebarLogo';
 
     restorer.add(widget, widget.id);
-    labShell.add(widget, "left", { rank: 1000 });
+    labShell.add(widget, "left");
   }
 };
 
