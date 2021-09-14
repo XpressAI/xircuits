@@ -43,11 +43,13 @@ By running jupyter lab, you should be able to launch the xpipe from Launcher > X
 
 ![image](https://user-images.githubusercontent.com/23378929/133190662-61e71e75-88a4-4fca-8b9c-c1f7ed1fac55.png)
 
-To install the xpipe component library sidebar, cd into /xpipe_component_library/ from the root directory and run npm install. 
+To install the xpipe component library sidebar, cd into /xpipe_component_library/ and follow the same steps.
 
 ```
-npm install
-jupyter labextension develop . --overwrite
+cd ../xpipe_component_library/
+jlpm
+jlpm build
+jupyter labextension install .
 ```
 
 The current extension looks like this.

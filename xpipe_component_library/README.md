@@ -1,42 +1,23 @@
-# xpipe_components_library
-
-Sidebar extension for xpipe
-
-## Prerequisites
-
-* JupyterLab >= 3.0
-* nodejs
-* jupyter-packaging
-
 ## Install
 
-To install the extension, execute:
+This component has been updated to use jlpm / yarn to compile the packages.
 
 ```bash
-# Change directory to the component_library directory
-# Install package in development mode
-pip install -ve .
-pip install nodejs jupyter-packaging
-npm install
-jupyter labextension develop . --overwrite
+jlpm
+jlpm build
+jupyter labextension install .
 
+# Rebuild Typescript source after making changes
+jlpm build
+# Rebuild JupyterLab after making any changes
+jupyter lab build
 ```
 
-## Development
-
-To remove the extension, execute:
+You can watch the source directory and run JupyterLab in watch mode to watch for changes in the extension's source and automatically rebuild the extension and application.
 
 ```bash
-# Rebuild extension Typescript source after making changes
-jlpm run build
-```
-
-## Common Error
-
-To add jlpm application
-```bash
-jlpm add @jupyterlab/apputils
-jlpm add @jupyterlab/application
-
-jlpm run build
+# Watch the source directory in another terminal tab
+jlpm watch
+# Run jupyterlab in watch mode in one terminal tab
+jupyter lab --watch
 ```
