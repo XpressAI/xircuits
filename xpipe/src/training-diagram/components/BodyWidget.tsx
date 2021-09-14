@@ -15,11 +15,11 @@ import styled from '@emotion/styled';
 import axios from "axios";
 import { CustomNodeModel } from "./CustomNodeModel";
 
+
 export interface BodyWidgetProps {
 	app: Application;
 	projectData: string;
 }
-
 
 export const Body = styled.div`
 		flex-grow: 1;
@@ -49,13 +49,6 @@ export const Layer = styled.div`
 		position: relative;
 		flex-grow: 1;
 	`;
-
-
-//create your forceUpdate hook
-function useForceUpdate(){
-    const [value, setValue] = useState(0); // integer state
-    return () => setValue(value => value + 1); // update the state to force render
-}
 
 
 export const BodyWidget: FC<BodyWidgetProps> = ({ app, projectData }) => {
@@ -670,26 +663,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app, projectData }) => {
 							forceUpdate();
 						}
 					}}
+
 					onDragOver={(event) => {
-						console.log("onDragOver")
 						event.preventDefault();
 						forceUpdate();
 					}}
 
-					onMouseOver={(event) => {
-						console.log("onMouseOver")
+					onWheelCapture={(event) => {
 						event.preventDefault();
 						forceUpdate();
 					}}
-
-					onMouseUp={(event) => {
-						console.log("onMouseUp")
-						event.preventDefault();
-						forceUpdate();
-					}}
-
-					onMouseDown={(event) => {
-						console.log("onMouseDown")
+					
+					onPointerMove={(event) => {
 						event.preventDefault();
 						forceUpdate();
 					}}>
