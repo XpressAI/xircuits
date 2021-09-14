@@ -11,6 +11,8 @@ import { ReactDiagramWidget } from './diagram-widget';
 
 import { xpipeIcon } from './icon';
 
+import { Toolbar } from './components/Toolbar'
+
 /**
  * The command IDs used by the react-widget plugin.
  */
@@ -48,6 +50,13 @@ const extension: JupyterFrontEndPlugin<void> = {
         widget.title.label = 'Xpipe Widget';
         widget.title.icon = xpipeIcon;
         app.shell.add(widget, 'main');
+
+        /**
+         * Add the toolbar items to widget's toolbar
+         */
+        widget.toolbar.insertItem(0, 'save', Toolbar.save());
+        widget.toolbar.insertItem(1, 'compile', Toolbar.compile());
+        widget.toolbar.insertItem(2, 'run', Toolbar.run());
       },
     });
 

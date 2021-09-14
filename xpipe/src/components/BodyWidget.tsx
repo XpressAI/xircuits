@@ -344,7 +344,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app }) => {
 
 	return (
 		<Body>
-			<Header>
+			{/* <Header>
 				<div className="title">Sample Project | Main Workflow ▽</div>
 				<span className='diagram-header-span'>
 					<button className='diagram-header-button' onClick={handleSaveClick} >Save</button>
@@ -502,29 +502,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app }) => {
 						</div>
 					</Dialog>
 				</span>
-			</Header>
+			</Header> */}
 			<Content>
-			{/* <TrayWidget>
-						<TrayItemWidget model={{ type: 'in' ,name:'Read Data Set'}} name="Read Data Set" color="rgb(192,255,0)" />
-						<TrayItemWidget model={{ type: 'out' ,name:'Augment Image Data'}} name="Argument Image Data" color="rgb(0,102,204)" />
-						<TrayItemWidget model={{ type: 'split' ,name:'Train/Test Split'}} name="Train/Test Split" color="rgb(255,153,102)" />
-						<TrayItemWidget model={{ type: 'train' ,name:'Train Face Detector'}} name="Train Face Detector" color="rgb(255,102,102)" />
-						<TrayItemWidget model={{ type: 'train' ,name:'Train Object Detector'}} name="Train Object Detector" color="rgb(15,255,255)" />
-						<TrayItemWidget model={{ type: 'eval' ,name:'Evaluate mAP'}} name="Evaluate mAP" color="rgb(255,204,204)" />
-						<TrayItemWidget model={{ type: 'runnb' ,name:'Run Notebook'}} name="Run Notebook" color="rgb(153,204,51)" />
-						<TrayItemWidget model={{ type: 'if' ,name:'If'}} name="If" color="rgb(255,153,0)" />
-						<TrayItemWidget model={{ type: 'math' ,name:'Math Operation'}} name="Math Operation" color="rgb(255,204,0)" />
-						<TrayItemWidget model={{ type: 'convert' ,name:'Convert to Aurora'}} name="Convert to Aurora" color="rgb(204,204,204)" />
-						<TrayItemWidget model={{ type: 'string'  ,name:'Get Hyper-parameter String Value' }} name="Get Hyper-parameter String Value" color="rgb(153,204,204)" />
-						<TrayItemWidget model={{ type: 'int'    ,name:'Get Hyper-parameter Int Value'}} name="Get Hyper-parameter Int Value" color="rgb(153,0,102)" />
-						<TrayItemWidget model={{ type: 'float'  ,name:'Get Hyper-parameter Float Value'}} name="Get Hyper-parameter Float Value" color="rgb(102,51,102)" />
-						<TrayItemWidget model={{ type: 'model'  ,name:'Create Object Detector Model'}} name="Create Object Detector Model" color="rgb(102,102,102)" />
-						<TrayItemWidget model={{ type: 'debug'  ,name:'Debug Image' }} name="Debug Image" color="rgb(255,102,0)" />
-						<TrayItemWidget model={{ type: 'enough' ,name:'Reached Target Accuracy' }} name="Reached Target Accuracy" color="rgb(51,51,51)" />
-						<TrayItemWidget model={{ type: 'literal' ,name:'Literal True' }} name="Literal True" color="rgb(21,21,51)" />
-						<TrayItemWidget model={{ type: 'literal' ,name:'Literal False' }} name="Literal False" color="rgb(21,21,51)" />
-				</TrayWidget> */}
-
 				<Layer
 					onDrop={(event) => {
 						debugger;

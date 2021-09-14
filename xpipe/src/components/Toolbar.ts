@@ -44,17 +44,4 @@ export namespace Toolbar{
             }
           });
     }
-    
-    /**
-     * Create a debug button toolbar item.
-     */
-    export function debug(){
-        return new ToolbarButton({
-            icon: bugIcon,
-            tooltip: 'Debug',
-            onClick: (): void => {
-              alert('Debug');
-            }
-          });
-    }
 }
