@@ -20,7 +20,8 @@ pip install -r requirements.txt
 
 The main body of the app is the xpipe and is installed using jlpm /yarn. Ensure you are in the /xpipe/ folder and run
 
-```jlpm
+```
+jlpm
 jlpm build
 jupyter labextension install .
 
