@@ -1,3 +1,4 @@
+import { ActionEventBus, ZoomCanvasAction } from '@projectstorm/react-canvas-core';
 import * as SRD from '@projectstorm/react-diagrams';
 import {CustomNodeFactory} from "./components/CustomNodeFactory";
 import { CustomNodeModel } from './components/CustomNodeModel';
@@ -15,9 +16,10 @@ export class Application {
 	constructor(projectData:string) {
 
 		
-		this.diagramEngine = SRD.default();
+		this.diagramEngine = SRD.default({registerDefaultZoomCanvasAction: false});
 		this.activeModel = new SRD.DiagramModel();
 		this.diagramEngine.getNodeFactories().registerFactory(new CustomNodeFactory());
+		this.diagramEngine.getActionEventBus().registerAction(new ZoomCanvasAction({inverseZoom:true}))
 		
 		this.projectData;
 
