@@ -53,7 +53,7 @@ export const Body = styled.div`
   flex-wrap: wrap;
   min-height: 100%;
   background-color:black;
-  height: auto;
+  height: 500px;
   overflow-y: auto;
 `;
 
