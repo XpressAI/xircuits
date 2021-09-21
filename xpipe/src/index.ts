@@ -1,70 +1,128 @@
 import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin,
+  ILayoutRestorer,
 } from '@jupyterlab/application';
 
-import { MainAreaWidget } from '@jupyterlab/apputils';
+//import { WidgetTracker, IWidgetTracker } from '@jupyterlab/apputils';
+
+import { Token } from '@lumino/coreutils';
+
+// import { ExampleWidgetFactory, ExampleDocModelFactory } from './counter-factory';
+
+// import { ExampleDocWidget } from './counter-widget';
+
+//import { ExampleWidgetFactory, ExampleDocModelFactory } from './xpipe-factory';
+
+//import { ExampleDocWidget } from './xpipe-widget';
+
+import { XpipeFactory } from './xpipeFactory';
+
+import { XpipeWidget } from './xpipeWidget';
+
+import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
+
+import { commandIDs } from './components/xpipeBodyWidget';
+
+
+import {
+  ICommandPalette,
+  IThemeManager,
+  WidgetTracker
+} from '@jupyterlab/apputils';
 
 import { ILauncher } from '@jupyterlab/launcher';
 
-import { ReactDiagramWidget } from './diagram-widget'; 
-
-import { xpipeIcon } from './icon';
-
-import { Toolbar } from './components/Toolbar'
+import { IMainMenu } from '@jupyterlab/mainmenu';
 
 /**
- * The command IDs used by the react-widget plugin.
+ * The name of the factory that creates editor widgets.
  */
-namespace CommandIDs {
-  export const create = 'create-react-widget';
-}
+const FACTORY = 'Xpipe Factory';
+import { DocumentWidget } from '@jupyterlab/docregistry';
+
+// Export a token so other extensions can require it
+// export const IExampleDocTracker = new Token<IWidgetTracker<ExampleDocWidget>>(
+//   'exampleDocTracker'
+// );
 
 /**
- * Initialization data for the react-widget extension.
+ * Initialization data for the documents extension.
  */
 const extension: JupyterFrontEndPlugin<void> = {
-  id: 'react-widget',
+  id: 'xpipe',
   autoStart: true,
-  optional: [ILauncher],
-  activate: (app: JupyterFrontEnd, launcher: ILauncher) => {
+  requires: [
+    ICommandPalette,
+    ILauncher,
+    IFileBrowserFactory,
+    ILayoutRestorer,
+    IMainMenu
+  ],
+  //provides: IExampleDocTracker,
+  activate: (
+    app: JupyterFrontEnd,
+    palette: ICommandPalette,
+    launcher: ILauncher,
+    browserFactory: IFileBrowserFactory,
+    restorer: ILayoutRestorer,
+    menu: IMainMenu,
+    themeManager?: IThemeManager
+  ) => {
+
+    console.log('Xpipe is activated!');
+
     
-    console.log("calling from activate")
-
-    //var SRDapp = new Application();
-    
-    const { commands } = app;
-
-    const command = CommandIDs.create;
-    commands.addCommand(command, {
-      caption: 'Create a new Xpipe File',
-      label: 'Xpipe File',
-      icon: (args) => (args['isPalette'] ? null : xpipeIcon),
-      execute: () => {
-
-
-        //var reactDiagramApp = new Application();
-        
-        const content = new ReactDiagramWidget();
-        const widget = new MainAreaWidget<ReactDiagramWidget>({ content });
-        widget.title.label = 'Xpipe Widget';
-        widget.title.icon = xpipeIcon;
-        app.shell.add(widget, 'main');
-
-        /**
-         * Add the toolbar items to widget's toolbar
-         */
-        widget.toolbar.insertItem(0, 'save', Toolbar.save());
-        widget.toolbar.insertItem(1, 'compile', Toolbar.compile());
-        widget.toolbar.insertItem(2, 'run', Toolbar.run());
-      },
+    // Creating the widget factory to register it so the document manager knows about
+    // our new DocumentWidget
+    const xpipeFactory = new XpipeFactory({
+      name: FACTORY,
+      fileTypes: ['xpipe'],
+      defaultFor: ['xpipe'],
+      shell: app.shell,
+      commands: app.commands,
+      browserFactory: browserFactory,
+      serviceManager: app.serviceManager
     });
 
-    if (launcher) {
-      launcher.add({
-        command,
+    // register the filetype
+    app.docRegistry.addFileType({
+      name: 'xpipe',
+      displayName: 'Xpipe',
+      extensions: ['.xpipe'],
+    });
+
+    // Registering the widget factory
+    app.docRegistry.addWidgetFactory(xpipeFactory);
+    
+    const tracker = new WidgetTracker<DocumentWidget>({
+      namespace: "Xpipe Tracker"
+    });
+
+    
+    // Add the widget to the tracker when it's created
+    xpipeFactory.widgetCreated.connect((sender, widget) => {
+      // Notify the instance tracker if restore data needs to update.
+      void tracker.add(widget);
+
+      // Notify the widget tracker if restore data needs to update
+      widget.context.pathChanged.connect(() => {
+        void tracker.save(widget);
       });
-    }
+    });
+
+
+  // Handle state restoration
+  void restorer.restore(tracker, {
+    command: commandIDs.openDocManager,
+    args: widget => ({
+      path: widget.context.path,
+      factory: FACTORY
+    }),
+    name: widget => widget.context.path
+  });
+
+
   },
 };
 
