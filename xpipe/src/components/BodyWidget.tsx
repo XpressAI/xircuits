@@ -614,24 +614,67 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app }) => {
 							node.addOutPortEnhance('converted', 'parameter-out-1');
 
 						} else if (data.type === 'string') {
-							let theResponse = window.prompt('notice', 'Enter String Name (Without Quotes):');
-							node = new CustomNodeModel({ name: "Hyperparameter (String): " + theResponse, color: 'rgb(153,204,204)', extras: { "type": data.type } });
-							node.addOutPortEnhance('▶', 'parameter-out-0');
+
+							if ((data.name).startsWith("Literal")){
+
+								let theResponse = window.prompt('Enter String Value (Without Quotes):');
+								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)',  extras: { "type": data.type } });
+								node.addOutPortEnhance(theResponse, 'out-0');
+
+							} else{
+
+								let theResponse = window.prompt('notice', 'Enter String Name (Without Quotes):');
+								node = new CustomNodeModel({ name: "Hyperparameter (String): " + theResponse, color: 'rgb(153,204,204)', extras: { "type": data.type } });
+								node.addOutPortEnhance('▶', 'parameter-out-0');
+
+							}
 
 						} else if (data.type === 'int') {
-							let theResponse = window.prompt('notice', 'Enter Int Name (Without Quotes):');
-							node = new CustomNodeModel({ name: "Hyperparameter (Int): " + theResponse, color: 'rgb(153,0,102)', extras: {"type":data.type} });
-							node.addOutPortEnhance('▶', 'parameter-out-0');
+
+							if ((data.name).startsWith("Literal")){
+								
+								let theResponse = window.prompt('Enter Int Value (Without Quotes):');
+								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)',  extras: { "type": data.type } });
+								node.addOutPortEnhance(theResponse, 'out-0');
+
+							} else{
+								
+								let theResponse = window.prompt('notice', 'Enter Int Name (Without Quotes):');
+								node = new CustomNodeModel({ name: "Hyperparameter (Int): " + theResponse, color: 'rgb(153,0,102)', extras: {"type":data.type} });
+								node.addOutPortEnhance('▶', 'parameter-out-0');
+
+							}
 
 						} else if (data.type === 'float') {
-							let theResponse = window.prompt('notice', 'Enter Float Name (Without Quotes):');
-							node = new CustomNodeModel({ name: "Hyperparameter (Float): " + theResponse, color: 'rgb(102,51,102)', extras: { "type": data.type } });
-							node.addOutPortEnhance('▶', 'parameter-out-0');
+
+							if ((data.name).startsWith("Literal")){
+								
+								let theResponse = window.prompt('Enter Float Value (Without Quotes):');
+								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)',  extras: { "type": data.type } });
+								node.addOutPortEnhance(theResponse, 'out-0');
+
+							} else{
+
+								let theResponse = window.prompt('notice', 'Enter Float Name (Without Quotes):');
+								node = new CustomNodeModel({ name: "Hyperparameter (Float): " + theResponse, color: 'rgb(102,51,102)', extras: { "type": data.type } });
+								node.addOutPortEnhance('▶', 'parameter-out-0');
+
+							}
 
 						}else if (data.type === 'boolean') {
-						    let theResponse = window.prompt('notice','Enter Boolean Name (Without Quotes):');
-                            node=new CustomNodeModel({name: "Hyperparameter (Boolean): " + theResponse,color:'rgb(153,51,204)',extras:{"type":data.type}});
-                            node.addOutPortEnhance('▶','parameter-out-0');
+
+							if ((data.name).startsWith("Literal")){
+
+								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)', extras: { "type": data.type } });
+								node.addOutPortEnhance('Value', 'out-0');
+
+							} else{
+
+								let theResponse = window.prompt('notice','Enter Boolean Name (Without Quotes):');
+								node=new CustomNodeModel({name: "Hyperparameter (Boolean): " + theResponse,color:'rgb(153,51,204)',extras:{"type":data.type}});
+								node.addOutPortEnhance('▶','parameter-out-0');
+
+							}
 
                         } else if (data.type === 'model') {
 							node = new CustomNodeModel({ name: data.name, color: 'rgb(102,102,102)', extras: { "type": data.type } });
@@ -682,24 +725,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app }) => {
 					}}
 					onDragOver={(event) => {
 						console.log("onDragOver")
-						event.preventDefault();
-						//forceUpdate();
-					}}
-
-					onMouseOver={(event) => {
-						console.log("onMouseOver")
-						event.preventDefault();
-						//forceUpdate();
-					}}
-
-					onMouseUp={(event) => {
-						console.log("onMouseUp")
-						event.preventDefault();
-						//forceUpdate();
-					}}
-
-					onMouseDown={(event) => {
-						console.log("onMouseDown")
 						event.preventDefault();
 						//forceUpdate();
 					}}>
