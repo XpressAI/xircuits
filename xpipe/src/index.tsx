@@ -2,6 +2,7 @@ import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin,
   ILayoutRestorer,
+  ILabShell,
 } from '@jupyterlab/application';
 
 //import { WidgetTracker, IWidgetTracker } from '@jupyterlab/apputils';
@@ -28,7 +29,8 @@ import { commandIDs } from './components/xpipeBodyWidget';
 import {
   ICommandPalette,
   IThemeManager,
-  WidgetTracker
+  WidgetTracker,
+  ReactWidget
 } from '@jupyterlab/apputils';
 
 import { ILauncher } from '@jupyterlab/launcher';
@@ -40,6 +42,10 @@ import { IMainMenu } from '@jupyterlab/mainmenu';
  */
 const FACTORY = 'Xpipe Factory';
 import { DocumentWidget } from '@jupyterlab/docregistry';
+
+import React from 'react';
+
+import Sidebar from './components_xpipe/Sidebar';
 
 // Export a token so other extensions can require it
 // export const IExampleDocTracker = new Token<IWidgetTracker<ExampleDocWidget>>(
@@ -71,7 +77,12 @@ const extension: JupyterFrontEndPlugin<void> = {
   ) => {
 
     console.log('Xpipe is activated!');
+    const widget = ReactWidget.create(<Sidebar />);
+    widget.id = 'xpipe-component-sidebar';
+    widget.title.iconClass = 'jp-SidebarLogo';
 
+    restorer.add(widget, widget.id);
+    app.shell.add(widget, "left");
     
     // Creating the widget factory to register it so the document manager knows about
     // our new DocumentWidget
@@ -122,6 +133,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     name: widget => widget.context.path
   });
 
+  
 
   },
 };
