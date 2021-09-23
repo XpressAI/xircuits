@@ -7,7 +7,7 @@ git clone https://github.com/XpressAI/xai-jupyterlab
 Make and activate python env. The tested python versions are 3.9.6
 
 ```
-pip -m install venv venv
+python -m install venv venv
 venv/Scripts/activate
 ```
 

@@ -1,8 +1,7 @@
 import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin,
-  ILayoutRestorer,
-  ILabShell,
+  ILayoutRestorer
 } from '@jupyterlab/application';
 
 //import { WidgetTracker, IWidgetTracker } from '@jupyterlab/apputils';
@@ -83,7 +82,7 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     restorer.add(widget, widget.id);
     app.shell.add(widget, "left");
-    
+
     // Creating the widget factory to register it so the document manager knows about
     // our new DocumentWidget
     const xpipeFactory = new XpipeFactory({
@@ -105,12 +104,12 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     // Registering the widget factory
     app.docRegistry.addWidgetFactory(xpipeFactory);
-    
+
     const tracker = new WidgetTracker<DocumentWidget>({
       namespace: "Xpipe Tracker"
     });
 
-    
+
     // Add the widget to the tracker when it's created
     xpipeFactory.widgetCreated.connect((sender, widget) => {
       // Notify the instance tracker if restore data needs to update.
@@ -123,17 +122,17 @@ const extension: JupyterFrontEndPlugin<void> = {
     });
 
 
-  // Handle state restoration
-  void restorer.restore(tracker, {
-    command: commandIDs.openDocManager,
-    args: widget => ({
-      path: widget.context.path,
-      factory: FACTORY
-    }),
-    name: widget => widget.context.path
-  });
+    // Handle state restoration
+    void restorer.restore(tracker, {
+      command: commandIDs.openDocManager,
+      args: widget => ({
+        path: widget.context.path,
+        factory: FACTORY
+      }),
+      name: widget => widget.context.path
+    });
 
-  
+
 
   },
 };
