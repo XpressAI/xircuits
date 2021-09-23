@@ -12,16 +12,15 @@ import { ISignal, Signal } from '@lumino/signaling';
 
 import * as Y from 'yjs';
 
-import * as SRD from '@projectstorm/react-diagrams';
-
 export type SharedObject = {
   x: number;
   y: number;
-  content: string;
-  diagram: any;
-  activeModel: SRD.DiagramModel;
-  diagramEngine: SRD.DiagramEngine;
-
+  id: any;
+  offsetX: number;
+  offsetY: number;
+  zoom: number;
+  gridSize: number;
+  layers: [];
 };
 
 export type Position = {
@@ -29,12 +28,21 @@ export type Position = {
   y: number;
 };
 
+export type serializedModel = {
+  id: any;
+  offsetX: number;
+  offsetY: number;
+  zoom: number;
+  gridSize: number;
+  layers: [];
+};
+
 /**
  * DocumentModel: this Model represents the content of the file
  */
-export class XPipeModel implements DocumentRegistry.IModel {
+export class XPipeDocModel implements DocumentRegistry.IModel {
   /**
-   * Construct a new ExampleDocModel.
+   * Construct a new XPipeDocModel.
    *
    * @param languagePreference Language
    * @param modelDB Document model database
@@ -115,7 +123,7 @@ export class XPipeModel implements DocumentRegistry.IModel {
    *
    * @returns The signal
    */
-  get sharedModelChanged(): ISignal<this, ExampleDocChange> {
+  get sharedModelChanged(): ISignal<this, XPipeDocChange> {
     return this._sharedModelChanged;
   }
 
@@ -147,7 +155,7 @@ export class XPipeModel implements DocumentRegistry.IModel {
    * New datastore introduced in JupyterLab v3.1 to store shared data and make notebooks
    * collaborative
    */
-  readonly sharedModel: ExampleDoc = ExampleDoc.create();
+  readonly sharedModel: XPipeDoc = XPipeDoc.create();
 
   /**
    * Dispose of the resources held by the model.
@@ -172,10 +180,12 @@ export class XPipeModel implements DocumentRegistry.IModel {
     const obj = {
       x: pos?.x || 10,
       y: pos?.y || 10,
-      content: this.sharedModel.getContent('content') || '',
-      diagram: this.sharedModel.getContent('diagram') || '',
-      activeModel: this.sharedModel.getContent('activeModel') || '',
-      diagramEngine: this.sharedModel.getContent('diagramEngine') || '',
+      id:       this.sharedModel.getContent('id')       || '',
+      offsetX:  this.sharedModel.getContent('offsetX')  || 0,
+      offsetY:  this.sharedModel.getContent('offsetY')  || 0,
+      zoom:     this.sharedModel.getContent('zoom')     || 0,
+      gridSize: this.sharedModel.getContent('gridSize') || 0,
+      layers:   this.sharedModel.getContent('layers')   || [],
 
     };
     return JSON.stringify(obj, null, 2);
@@ -192,10 +202,12 @@ export class XPipeModel implements DocumentRegistry.IModel {
     const obj = JSON.parse(data);
     this.sharedModel.transact(() => {
       this.sharedModel.setContent('position', { x: obj.x, y: obj.y });
-      this.sharedModel.setContent('content', obj.content);
-      this.sharedModel.setContent('diagram', obj.diagram);
-      this.sharedModel.setContent('activeModel', obj.activeModel);
-      this.sharedModel.setContent('diagramEngine', obj.diagramEngine);
+      this.sharedModel.setContent('id', obj.id);
+      this.sharedModel.setContent('offsetX', obj.offsetX);
+      this.sharedModel.setContent('offsetY', obj.offsetY);
+      this.sharedModel.setContent('zoom', obj.zoom);
+      this.sharedModel.setContent('gridSize', obj.gridSize);
+      this.sharedModel.setContent('layers', obj.layers);
     });
   }
 
@@ -214,10 +226,12 @@ export class XPipeModel implements DocumentRegistry.IModel {
     const obj = {
       x: pos?.x || 10,
       y: pos?.y || 10,
-      content: this.sharedModel.getContent('content') || '',
-      diagram: this.sharedModel.getContent('diagram') || '',
-      activeModel: this.sharedModel.getContent('activeModel') || '',
-      diagramEngine: this.sharedModel.getContent('diagramEngine') || '',
+      id:       this.sharedModel.getContent('id')       || '',
+      offsetX:  this.sharedModel.getContent('offsetX')  || 0,
+      offsetY:  this.sharedModel.getContent('offsetY')  || 0,
+      zoom:     this.sharedModel.getContent('zoom')     || 0,
+      gridSize: this.sharedModel.getContent('gridSize') || 0,
+      layers:   this.sharedModel.getContent('layers')   || [],
     };
     return obj;
   }
@@ -235,10 +249,12 @@ export class XPipeModel implements DocumentRegistry.IModel {
   fromJSON(data: PartialJSONObject): void {
     this.sharedModel.transact(() => {
       this.sharedModel.setContent('position', { x: data.x, y: data.y });
-      this.sharedModel.setContent('content', data.content);
-      this.sharedModel.setContent('diagram', data.diagram);
-      this.sharedModel.setContent('activeModel', data.activeModel);
-      this.sharedModel.setContent('diagramEngine', data.diagramEngine);
+      this.sharedModel.setContent('id', data.id);
+      this.sharedModel.setContent('offsetX', data.offsetX);
+      this.sharedModel.setContent('offsetY', data.offsetY);
+      this.sharedModel.setContent('zoom', data.zoom);
+      this.sharedModel.setContent('gridSize', data.gridSize);
+      this.sharedModel.setContent('layers', data.layers);
     });
   }
 
@@ -265,10 +281,12 @@ export class XPipeModel implements DocumentRegistry.IModel {
     const obj = {
       x: pos?.x || 10,
       y: pos?.y || 10,
-      content: this.sharedModel.getContent('content') || '',
-      diagram: this.sharedModel.getContent('diagram') || '',
-      activeModel: this.sharedModel.getContent('activeModel') || '',
-      diagramEngine: this.sharedModel.getContent('diagramEngine') || '',
+      id:       this.sharedModel.getContent('id')       || '',
+      offsetX:  this.sharedModel.getContent('offsetX')  || 0,
+      offsetY:  this.sharedModel.getContent('offsetY')  || 0,
+      zoom:     this.sharedModel.getContent('zoom')     || 0,
+      gridSize: this.sharedModel.getContent('gridSize') || 0,
+      layers:   this.sharedModel.getContent('layers')   || [],
       
     };
     return obj;
@@ -283,27 +301,18 @@ export class XPipeModel implements DocumentRegistry.IModel {
     this.sharedModel.setContent('position', pos);
   }
 
-  /**
-   * Sets the text inside the SharedObject
-   *
-   * @param content Text
-   */
-  setContent(content: string): void {
-    this.sharedModel.setContent('content', content);
+  setLayers(layers: []): void {
+    this.sharedModel.setContent('layers', layers);
   }
 
-  setDiagram(diagram: any): void {
-    this.sharedModel.setContent('diagram', diagram);
+  setSerializedModel(serializedmodel: serializedModel): void {
+    this.sharedModel.setContent('id', serializedmodel.id);
+    this.sharedModel.setContent('layers', serializedmodel.layers);
+    this.sharedModel.setContent('offsetX', serializedmodel.offsetX);
+    this.sharedModel.setContent('offsetY', serializedmodel.offsetY);
+    this.sharedModel.setContent('zoom', serializedmodel.zoom);
   }
-
-  setActiveModel(activeModel: any): void {
-    this.sharedModel.setContent('activeModel', activeModel);
-  }
-
-  setDiagramEngine(diagramEngine: any): void {
-    this.sharedModel.setContent('diagramEngine', diagramEngine);
-  }
-
+  
   /**
    * Sets the mouse's position of the client
    *
@@ -322,8 +331,8 @@ export class XPipeModel implements DocumentRegistry.IModel {
    * @param changes The changes on the sharedModel.
    */
   private _onSharedModelChanged = (
-    sender: ExampleDoc,
-    changes: ExampleDocChange
+    sender: XPipeDoc,
+    changes: XPipeDocChange
   ): void => {
     this._sharedModelChanged.emit(changes);
   };
@@ -344,7 +353,7 @@ export class XPipeModel implements DocumentRegistry.IModel {
   private _contentChanged = new Signal<this, void>(this);
   private _stateChanged = new Signal<this, IChangedArgs<any>>(this);
   private _clientChanged = new Signal<this, Map<number, any>>(this);
-  private _sharedModelChanged = new Signal<this, ExampleDocChange>(this);
+  private _sharedModelChanged = new Signal<this, XPipeDocChange>(this);
 }
 
 /**
@@ -359,19 +368,17 @@ export class XPipeModel implements DocumentRegistry.IModel {
  * This type represents the different changes that may happen and ready to use
  * for the widget.
  */
-export type ExampleDocChange = {
+export type XPipeDocChange = {
   contextChange?: MapChange;
   contentChange?: string;
   positionChange?: Position;
-  diagramChange?: any;
-  activeModelChange?: any;
-  diagramEngineChange?: any;
+  layersChange?: [];
 };
 
 /**
  * SharedModel, stores and shares the content between clients.
  */
-export class ExampleDoc extends YDocument<ExampleDocChange> {
+export class XPipeDoc extends YDocument<XPipeDocChange> {
   constructor() {
     super();
     console.log("calling from Example Doc Model constructor")
@@ -392,8 +399,8 @@ export class ExampleDoc extends YDocument<ExampleDocChange> {
    *
    * @returns The sharedModel instance
    */
-  public static create(): ExampleDoc {
-    return new ExampleDoc();
+  public static create(): XPipeDoc {
+    return new XPipeDoc();
   }
 
   /**
@@ -422,7 +429,7 @@ export class ExampleDoc extends YDocument<ExampleDocChange> {
    * @param event Model event
    */
   private _contentObserver = (event: Y.YMapEvent<any>): void => {
-    const changes: ExampleDocChange = {};
+    const changes: XPipeDocChange = {};
 
     // Checks which object changed and propagates them.
     if (event.keysChanged.has('position')) {
@@ -432,20 +439,11 @@ export class ExampleDoc extends YDocument<ExampleDocChange> {
     if (event.keysChanged.has('content')) {
       changes.contentChange = this._content.get('content');
     }
-
-    if (event.keysChanged.has('diagram')) {
-      changes.diagramChange = this._content.get('diagram');
-    }
-
-    if (event.keysChanged.has('activeModel')) {
-      changes.activeModelChange = this._content.get('activeModel');
-    }
-    if (event.keysChanged.has('diagramEngine')) {
-      changes.diagramEngineChange = this._content.get('diagramEngine');
-    }
-
+    
     this._changed.emit(changes);
   };
 
   private _content: Y.Map<any>;
 }
+
+// todo : set proper content observer

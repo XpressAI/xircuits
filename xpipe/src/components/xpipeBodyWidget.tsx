@@ -28,16 +28,16 @@ import {
 import styled from '@emotion/styled';
 
 import { CustomNodeModel } from "./CustomNodeModel";
-import { XpipeWidget } from '../xpipeWidget';
+import { XPipeWidget } from '../xpipeWidget';
 
 
 export interface BodyWidgetProps {
 	//app: Application;
-	context: DocumentRegistry.Context;
+	context: any;
 	browserFactory: IFileBrowserFactory;
 	shell: ILabShell;
 	commands: any;
-	addFileToXpipeSignal: Signal<XpipeWidget, any>;
+	//addFileToXpipeSignal: Signal<XpipeWidget, any>;
 	widgetId?: string;
 	activeModel: SRD.DiagramModel;
 	diagramEngine: SRD.DiagramEngine;
@@ -99,7 +99,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	browserFactory,
 	shell,
 	commands,
-	addFileToXpipeSignal,
+	//addFileToXpipeSignal,
 	widgetId,
 	activeModel,
 	diagramEngine
@@ -198,15 +198,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		debugger;
 		console.log(diagramEngine);
 		console.log(activeModel);
+		console.log(context);
+		let currentModel = diagramEngine.getModel().serialize();
+		//let currentModel = activeModel.serialize();
+		context.model.setSerializedModel(currentModel);
+		debugger;
 	}
 
 	const handleCompileClick = () => {
 	    alert("Compiled.")
 	    setCompiled(true);
-		//traverse nodes
-		//how to write a file
-		//make a new file
-		//write in it
+
+
 	}
 
     const handleUnsaved = () => {
@@ -749,6 +752,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							        setCompiled(false);
                                }
                             });
+							let currentModel = activeModel.serialize();
+							context.model.setSerializedModel(currentModel);
 							forceUpdate();
 						}
 					}}
