@@ -14,6 +14,12 @@ import { XPipeWidget, XPipePanel } from './xpipeWidget';
 
 import { XPipeDocModel } from './xpipeModel';
 
+import { fastForwardIcon, runIcon, saveIcon } from '@jupyterlab/ui-components';
+
+import { ToolbarButton } from '@jupyterlab/apputils';
+
+import { commandIDs } from './components/xpipeBodyWidget';
+
 const XPIPE_CLASS = 'xpipe-editor';
 
 export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
@@ -47,7 +53,43 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
 
     const widget = new DocumentWidget({ content, context });
     widget.addClass(XPIPE_CLASS);
-    //widget.title.icon = pipelineIcon;
+
+    /**
+     * Create a save button toolbar item.
+     */
+    let saveButton = new ToolbarButton({
+      icon: saveIcon,
+      tooltip: 'Save file',
+      onClick: (): void => {
+        this.commands.execute(commandIDs.saveDocManager);
+      }
+    });
+
+    /**
+     * Create a compile button toolbar item.
+     */
+    let compileButton = new ToolbarButton({
+      icon: fastForwardIcon,
+      tooltip: 'Compile',
+      onClick: (): void => {
+        alert('Compiled');
+      }
+    });
+
+    /**
+     * Create a run button toolbar item.
+     */
+    let runButton = new ToolbarButton({
+      icon: runIcon,
+      tooltip: 'Run',
+      onClick: (): void => {
+        alert('Run');
+      }
+    });
+  
+    widget.toolbar.insertItem(0,'xpipe-add-save', saveButton);
+    widget.toolbar.insertItem(1,'xpipe-add-compile', compileButton);
+    widget.toolbar.insertItem(2,'xpipe-add-run', runButton);
     return widget;
   }
 }
