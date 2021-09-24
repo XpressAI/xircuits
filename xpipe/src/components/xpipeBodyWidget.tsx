@@ -41,6 +41,7 @@ export interface BodyWidgetProps {
 	widgetId?: string;
 	activeModel: SRD.DiagramModel;
 	diagramEngine: SRD.DiagramEngine;
+	postConstructorFlag: boolean;
 
 
 }
@@ -102,7 +103,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	//addFileToXpipeSignal,
 	widgetId,
 	activeModel,
-	diagramEngine
+	diagramEngine,
+	postConstructorFlag
 }) => {
 
     const [prevState, updateState] = useState(0);
@@ -120,13 +122,31 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [intNodesValue, setIntNodesValue] = useState<number[]>([0]);
 	const [floatNodesValue, setFloatNodesValue] = useState<number[]>([0.00]);
 	const [boolNodesValue, setBoolNodesValue] = useState<boolean[]>([false]);
-	//const [engine, setEngine] = useState(null)
+
+	//const [model, setModel] = useState(null)
+	//const [engine, setEngine] = useState(diagramEngine)
 
 	// useEffect(() => {
-	//   const engine = engine;
-	//   /*  operations with engine */
-	//   setEngine(engine);
-	// }, [])
+	//   console.log("Use effect!")
+	//   if (postConstructorFlag){
+	// 	console.log("Updating doc context due to use effect!")
+	// 	//load doc model in case of revert event
+	// 	let model = context.model.getSharedObject();
+	// 	activeModel.deserializeModel(model, diagramEngine);
+	// 	diagramEngine.setModel(activeModel);
+
+	// 	// let currentModel = diagramEngine.getModel().serialize();
+	// 	//let currentModel = activeModel.serialize();
+	// 	// context.model.setSerializedModel(currentModel);
+	//   }
+	// })
+
+	//   setModel(activeModel);
+	// }, [model])
+
+	// 	  setEngine(diagramEngine);
+	// }, [engine])
+	
 
 
 	const getTargetNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
@@ -208,6 +228,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const handleCompileClick = () => {
 	    alert("Compiled.")
 	    setCompiled(true);
+		debugger;
+		// let currentModel = diagramEngine.getModel().serialize();
+		// //let currentModel = activeModel.serialize();
+		// context.model.setSerializedModel(currentModel);
+
+		let model = context.model.getSharedObject();
+		activeModel.deserializeModel(model, diagramEngine);
+		diagramEngine.setModel(activeModel);
 
 
 	}
@@ -752,6 +780,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							        setCompiled(false);
                                }
                             });
+							console.log("Updating doc context due to drop event!")
 							let currentModel = activeModel.serialize();
 							context.model.setSerializedModel(currentModel);
 							forceUpdate();

@@ -38,6 +38,7 @@ import { XPipeDocChange, XPipeDocModel } from './xpipeModel';
  }
 }
 export class XPipePanel extends ReactWidget {
+  
   browserFactory: IFileBrowserFactory;
   shell: ILabShell;
   commands: any;
@@ -48,6 +49,8 @@ export class XPipePanel extends ReactWidget {
 	diagramEngine: SRD.DiagramEngine;
 
   private _clients: { [id: string]: HTMLElement };
+
+  postConstructorFlag: boolean = false;
 
 
   constructor(options: any) {
@@ -74,31 +77,33 @@ export class XPipePanel extends ReactWidget {
 
       const model = this.context.model.getSharedObject();
 
-      //check if model has a node and link layer
-      if (model.layers){
-      console.log("loading deseralized model!")
-      this.activeModel.deserializeModel(model, this.diagramEngine);
-			this.diagramEngine.setModel(this.activeModel);
-     }
-     else {
-      console.log("init new model!")
-      let startNode = new CustomNodeModel({ name:'Start', color:'rgb(255,102,102)', extras:{ "type":"Start" } });
-      startNode.addOutPortEnhance('▶', 'out-0');
-      startNode.addOutPortEnhance('  ', 'parameter-out-1');
-      startNode.setPosition(100, 100);
-  
-      let finishedNode = new CustomNodeModel({ name:'Finish', color:'rgb(255,102,102)', extras:{ "type":"Finish" } });
-      finishedNode.addInPortEnhance('▶', 'in-0');
-      finishedNode.addInPortEnhance('  ', 'parameter-in-1');
-      finishedNode.setPosition(700, 100);
-  
-      this.activeModel.addAll(startNode, finishedNode);
-      this.diagramEngine.setModel(this.activeModel);
-     }
+      //check if model.id is empty / does not have an id
+      if (model.id != ''){
+        console.log("loading deseralized model!")
+        this.activeModel.deserializeModel(model, this.diagramEngine);
+        this.diagramEngine.setModel(this.activeModel);
+      }
 
-     debugger;
+      else {
+        console.log("init new model!")
+        let startNode = new CustomNodeModel({ name:'Start', color:'rgb(255,102,102)', extras:{ "type":"Start" } });
+        startNode.addOutPortEnhance('▶', 'out-0');
+        startNode.addOutPortEnhance('  ', 'parameter-out-1');
+        startNode.setPosition(100, 100);
+    
+        let finishedNode = new CustomNodeModel({ name:'Finish', color:'rgb(255,102,102)', extras:{ "type":"Finish" } });
+        finishedNode.addInPortEnhance('▶', 'in-0');
+        finishedNode.addInPortEnhance('  ', 'parameter-in-1');
+        finishedNode.setPosition(700, 100);
+    
+        this.activeModel.addAll(startNode, finishedNode);
+        this.diagramEngine.setModel(this.activeModel);
+      }
 
-      this.update();
+    debugger;
+    this.postConstructorFlag=true;
+    this.update();
+
     });
   }
 
@@ -113,7 +118,7 @@ export class XPipePanel extends ReactWidget {
         widgetId={this.parent?.id}
         activeModel={this.activeModel}
         diagramEngine={this.diagramEngine}
-
+        postConstructorFlag={this.postConstructorFlag}
       />
     );
   }
