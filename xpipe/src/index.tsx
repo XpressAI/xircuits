@@ -30,7 +30,7 @@ import { XPipeWidget } from './xpipeWidget';
 
 import Sidebar from './components_xpipe/Sidebar';
 
-const FACTORY = 'Xpipe Factory';
+const FACTORY = 'Xpipe editor';
 
 // Export a token so other extensions can require it
 // export const IExampleDocTracker = new Token<IWidgetTracker<ExampleDocWidget>>(
@@ -63,12 +63,13 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     console.log('Xpipe is activated!');
 
-    const sidebarwidget = ReactWidget.create(<Sidebar />);
-    sidebarwidget.id = 'xpipe-component-sidebar';
-    sidebarwidget.title.iconClass = 'jp-SidebarLogo';
+    // Creating the sidebar widget
+    const sidebarWidget = ReactWidget.create(<Sidebar />);
+    sidebarWidget.id = 'xpipe-component-sidebar';
+    sidebarWidget.title.iconClass = 'jp-XpipeLogo';
 
-    restorer.add(sidebarwidget, sidebarwidget.id);
-    app.shell.add(sidebarwidget, "left");
+    restorer.add(sidebarWidget, sidebarWidget.id);
+    app.shell.add(sidebarWidget, "left");
 
     // Creating the widget factory to register it so the document manager knows about
     // our new DocumentWidget
@@ -88,6 +89,7 @@ const extension: JupyterFrontEndPlugin<void> = {
       name: 'xpipe',
       displayName: 'Xpipe',
       extensions: ['.xpipe'],
+      iconClass: 'jp-XpipeLogo'
     });
 
     // Registering the widget factory
@@ -122,6 +124,36 @@ const extension: JupyterFrontEndPlugin<void> = {
       }),
       name: widget => widget.context.path
     });
+
+    // Add a command for creating a new xpipe file.
+    app.commands.addCommand('xpipe:create-new', {
+      label: 'Xpipe File',
+      iconClass: 'jp-XpipeLogo',
+      caption: 'Create a new xpipe file',
+      execute: () => {
+        app.commands
+          .execute(commandIDs.newDocManager, {
+            path: browserFactory.defaultBrowser.model.path,
+            type: 'file',
+            ext: '.xpipe'
+          })
+          .then(model =>
+            app.commands.execute(commandIDs.openDocManager, {
+              path: model.path,
+              factory: FACTORY
+            })
+          );
+      }
+    });
+
+    // Add a launcher item if the launcher is available.
+    if (launcher) {
+      launcher.add({
+        command: 'xpipe:create-new',
+        rank: 1,
+        category: 'Other'
+      });
+    }
   },
 };
 

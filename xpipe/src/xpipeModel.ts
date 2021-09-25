@@ -199,7 +199,7 @@ export class XPipeDocModel implements DocumentRegistry.IModel {
    * @param data Serialized data
    */
   fromString(data: string): void {
-    const obj = JSON.parse(data);
+    const obj = JSON.parse(data || '{}');
     this.sharedModel.transact(() => {
       this.sharedModel.setContent('position', { x: obj.x, y: obj.y });
       this.sharedModel.setContent('id', obj.id);
