@@ -82,6 +82,8 @@ export const commandIDs = {
 	openDocManager: 'docmanager:open',
 	newDocManager: 'docmanager:new-untitled',
 	saveDocManager: 'docmanager:save',
+	reloadDocManager: 'docmanager:reload',
+	revertDocManager:'docmanager:restore-checkpoint',
 	submitScript: 'script-editor:submit',
 	submitNotebook: 'notebook:submit',
 	addFileToXpipe: 'Xpipe-editor:add-node'
@@ -123,31 +125,33 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [floatNodesValue, setFloatNodesValue] = useState<number[]>([0.00]);
 	const [boolNodesValue, setBoolNodesValue] = useState<boolean[]>([false]);
 
-	//const [model, setModel] = useState(null)
-	//const [engine, setEngine] = useState(diagramEngine)
+	const customDeserializeModel = (modelContext: any, diagramEngine) => {
+		//a custom JSON deserialization method that I've been working on.
+		//currently only ""deserializes"" the node layer by creating new ones.
 
-	// useEffect(() => {
-	//   console.log("Use effect!")
-	//   if (postConstructorFlag){
-	// 	console.log("Updating doc context due to use effect!")
-	// 	//load doc model in case of revert event
-	// 	let model = context.model.getSharedObject();
-	// 	activeModel.deserializeModel(model, diagramEngine);
-	// 	diagramEngine.setModel(activeModel);
+		let tempModel = new SRD.DiagramModel();
+		let links = modelContext["layers"][0]["models"];
+		let nodes = modelContext["layers"][1]["models"];
 
-	// 	// let currentModel = diagramEngine.getModel().serialize();
-	// 	//let currentModel = activeModel.serialize();
-	// 	// context.model.setSerializedModel(currentModel);
-	//   }
-	// })
+		for (let nodeID in nodes){
+			
+			let node =  nodes[nodeID];
+			let newNode = new CustomNodeModel({ name:node["name"], color:node["color"], extras: node["extras"] });
+			newNode.setPosition(node["x"], node["y"]);
 
-	//   setModel(activeModel);
-	// }, [model])
+			for (let portID in node.ports){
 
-	// 	  setEngine(diagramEngine);
-	// }, [engine])
-	
+				let port = node.ports[portID];
+				if (port.alignment == "right") newNode.addOutPortEnhance(port.label, port.name);
+				if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name);
 
+			}
+			tempModel.addAll(newNode);
+			diagramEngine.setModel(tempModel);
+		}
+
+		return tempModel
+	}
 
 	const getTargetNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
 
@@ -215,29 +219,32 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const handleSaveClick = () => {
 	    alert("Saved.")
 	    setSaved(true);
-		debugger;
-		console.log(diagramEngine);
-		console.log(activeModel);
-		console.log(context);
 		let currentModel = diagramEngine.getModel().serialize();
-		//let currentModel = activeModel.serialize();
 		context.model.setSerializedModel(currentModel);
-		debugger;
+		commands.execute(commandIDs.saveDocManager);
+	}
+
+	const handleReloadClick = () => {
+	    alert("Reload.")
+		commands.execute(commandIDs.reloadDocManager);
+		let model = context.model.getSharedObject();
+		activeModel.deserializeModel(model, diagramEngine);
+		diagramEngine.setModel(activeModel);
+		forceUpdate();
+	}
+
+	const handleRevertClick = () => {
+		commands.execute(commandIDs.revertDocManager);
+		//todo: check behavior if user presses "cancel"
+		let model = context.model.getSharedObject();
+		activeModel.deserializeModel(model, diagramEngine);
+		diagramEngine.setModel(activeModel);
+		forceUpdate();
 	}
 
 	const handleCompileClick = () => {
 	    alert("Compiled.")
 	    setCompiled(true);
-		debugger;
-		// let currentModel = diagramEngine.getModel().serialize();
-		// //let currentModel = activeModel.serialize();
-		// context.model.setSerializedModel(currentModel);
-
-		let model = context.model.getSharedObject();
-		activeModel.deserializeModel(model, diagramEngine);
-		diagramEngine.setModel(activeModel);
-
-
 	}
 
     const handleUnsaved = () => {
@@ -430,6 +437,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				<div className="title">Sample Project | Main Workflow ▽</div>
 				<span className='diagram-header-span'>
 					<button className='diagram-header-button' onClick={handleSaveClick} >Save</button>
+					<button className='diagram-header-button' onClick={handleReloadClick} >Reload</button>
+					<button className='diagram-header-button' onClick={handleRevertClick} >Revert</button>
 					<button className='diagram-header-button' onClick={handleCompileClick} >Compile</button>
 					<Dialog header="Save & Compile?" visible={displaySavedAndCompiled} modal style={{ width: '350px' }} footer={renderFooter()} onHide={() => onHide('displaySavedAndCompiled')}>
                         <div className="p-fluid" style={{display: 'flex', alignItems: 'center'}}>
@@ -586,27 +595,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				</span>
 			</Header>
 			<Content>
-			{/* <TrayWidget>
-						<TrayItemWidget model={{ type: 'in' ,name:'Read Data Set'}} name="Read Data Set" color="rgb(192,255,0)" />
-						<TrayItemWidget model={{ type: 'out' ,name:'Augment Image Data'}} name="Argument Image Data" color="rgb(0,102,204)" />
-						<TrayItemWidget model={{ type: 'split' ,name:'Train/Test Split'}} name="Train/Test Split" color="rgb(255,153,102)" />
-						<TrayItemWidget model={{ type: 'train' ,name:'Train Face Detector'}} name="Train Face Detector" color="rgb(255,102,102)" />
-						<TrayItemWidget model={{ type: 'train' ,name:'Train Object Detector'}} name="Train Object Detector" color="rgb(15,255,255)" />
-						<TrayItemWidget model={{ type: 'eval' ,name:'Evaluate mAP'}} name="Evaluate mAP" color="rgb(255,204,204)" />
-						<TrayItemWidget model={{ type: 'runnb' ,name:'Run Notebook'}} name="Run Notebook" color="rgb(153,204,51)" />
-						<TrayItemWidget model={{ type: 'if' ,name:'If'}} name="If" color="rgb(255,153,0)" />
-						<TrayItemWidget model={{ type: 'math' ,name:'Math Operation'}} name="Math Operation" color="rgb(255,204,0)" />
-						<TrayItemWidget model={{ type: 'convert' ,name:'Convert to Aurora'}} name="Convert to Aurora" color="rgb(204,204,204)" />
-						<TrayItemWidget model={{ type: 'string'  ,name:'Get Hyper-parameter String Value' }} name="Get Hyper-parameter String Value" color="rgb(153,204,204)" />
-						<TrayItemWidget model={{ type: 'int'    ,name:'Get Hyper-parameter Int Value'}} name="Get Hyper-parameter Int Value" color="rgb(153,0,102)" />
-						<TrayItemWidget model={{ type: 'float'  ,name:'Get Hyper-parameter Float Value'}} name="Get Hyper-parameter Float Value" color="rgb(102,51,102)" />
-						<TrayItemWidget model={{ type: 'model'  ,name:'Create Object Detector Model'}} name="Create Object Detector Model" color="rgb(102,102,102)" />
-						<TrayItemWidget model={{ type: 'debug'  ,name:'Debug Image' }} name="Debug Image" color="rgb(255,102,0)" />
-						<TrayItemWidget model={{ type: 'enough' ,name:'Reached Target Accuracy' }} name="Reached Target Accuracy" color="rgb(51,51,51)" />
-						<TrayItemWidget model={{ type: 'literal' ,name:'Literal True' }} name="Literal True" color="rgb(21,21,51)" />
-						<TrayItemWidget model={{ type: 'literal' ,name:'Literal False' }} name="Literal False" color="rgb(21,21,51)" />
-				</TrayWidget> */}
-
 				<Layer
 					onDrop={(event) => {
 						debugger;

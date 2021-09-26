@@ -23,7 +23,6 @@ import { ILauncher } from '@jupyterlab/launcher';
 
 import { IMainMenu } from '@jupyterlab/mainmenu';
 
-
 import { XpipeFactory, XPipeDocModelFactory } from './xpipeFactory';
 
 import { XPipeWidget } from './xpipeWidget';

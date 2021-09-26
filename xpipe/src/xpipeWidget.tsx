@@ -123,6 +123,7 @@ export class XPipePanel extends ReactWidget {
     );
   }
 
+
   /**
    * Callback to listen for changes on the model. This callback listens
    * to changes on shared model's content.
@@ -143,9 +144,9 @@ export class XPipePanel extends ReactWidget {
     }
 
     if (change.layersChange) {
-      //this._cube.style.left = change.positionChange.x + 'px';
-      //this._cube.style.top = change.positionChange.y + 'px';
+
       // updating the widgets to re-render it
+      console.log("layer change detected from xpipeWidget!")
       this.context.model.getSharedObject
       this.update();
     }

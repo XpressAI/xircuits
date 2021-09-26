@@ -381,7 +381,6 @@ export type XPipeDocChange = {
 export class XPipeDoc extends YDocument<XPipeDocChange> {
   constructor() {
     super();
-    console.log("calling from Example Doc Model constructor")
     // Creating a new shared object and listen to its changes
     this._content = this.ydoc.getMap('content');
     this._content.observe(this._contentObserver);
