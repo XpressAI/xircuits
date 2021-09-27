@@ -47,6 +47,8 @@ export interface DemoCanvasWidgetProps {
 
 export class DemoCanvasWidget extends React.Component<DemoCanvasWidgetProps> {
 	render() {
+
+		console.log("calling render")
 		return (
 			<Container
 				background={this.props.background || 'rgb(60, 60, 60)'}

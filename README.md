@@ -1,13 +1,13 @@
 # JupyterLab Engine Plugins
 
-The current iteration of the juypterlab engine are made of seperate extensions of Jupyterlab 3.1.10. The following steps is if you're developing on a Windows. 
+The current iteration of the juypterlab engine are made of seperate extensions of Jupyterlab 3.1.10. The following steps is if you're developing on a Windows or Ubuntu 20.04. 
 ```
 git clone https://github.com/XpressAI/xai-jupyterlab
 ```
 Make and activate python env. The tested python versions are 3.9.6
 
 ```
-pip -m install venv venv
+python -m install venv venv
 venv/Scripts/activate
 ```
 
@@ -16,6 +16,8 @@ Download python packages. Currently it's located at /xpipe/
 ```
 cd xpipe
 pip install -r requirements.txt
+# For Linux
+# pip install -r requirements_linux.txt
 ```
 
 The main body of the app is the xpipe and is installed using jlpm /yarn. Ensure you are in the /xpipe/ folder and run
@@ -40,18 +42,13 @@ jlpm watch
 jupyter lab --watch
 ```
 
-By running jupyter lab, you should be able to launch the xpipe from Launcher > Xpipe File
+By running jupyter lab, you should be able to load the Xpipe Panel by selecting a .xpipe file in the file browser or launch the xpipe from Launcher > Xpipe File
 
 ![image](https://user-images.githubusercontent.com/23378929/133190662-61e71e75-88a4-4fca-8b9c-c1f7ed1fac55.png)
 
-To install the xpipe component library sidebar, cd into /xpipe_component_library/ and follow the same steps.
-
-```
-cd ../xpipe_component_library/
-jlpm
-jlpm build
-jupyter labextension install .
-```
 
 The current extension looks like this.
-![image](https://user-images.githubusercontent.com/68586800/133176174-580e03d1-7160-4dc3-b7f5-74b669af4694.png)
+![Xpipe v0 3 4](https://user-images.githubusercontent.com/68586800/134819194-c7f932e2-beb5-4e35-ba53-3a3bf24dccdc.png)
+
+
+You may view the current features implemented in our [feature spreadsheet](https://docs.google.com/spreadsheets/d/158-vQ3sFknn0Kd4M5vNVCabWzlAglk-xh8uFOE1dhHQ/edit?usp=sharing).

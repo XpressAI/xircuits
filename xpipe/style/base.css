@@ -7,3 +7,8 @@
   justify-content: center;
   text-align: center;
 }
+
+.jp-XpipeLogo {
+  background-image: url(./icons/xpress-logo.svg);
+  background-repeat: no-repeat;
+}

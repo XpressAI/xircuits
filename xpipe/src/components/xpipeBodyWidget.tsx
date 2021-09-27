@@ -1,6 +1,6 @@
 import React, { FC, useState, useCallback, useEffect } from 'react';
 import * as NumericInput from "react-numeric-input";
-import { Application } from '../Application';
+//import { Application } from '../Application';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
 import { Dialog } from 'primereact/dialog';
@@ -10,16 +10,38 @@ import { InputText } from 'primereact/inputtext';
 import { InputSwitch } from 'primereact/inputswitch';
 import { LinkModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
-import { TrayWidget } from './TrayWidget';
-import { TrayItemWidget } from './TrayItemWidget';
+import * as SRD from '@projectstorm/react-diagrams';
 
+import { ReactWidget, showDialog } from '@jupyterlab/apputils';
+import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
+import { ILabShell } from '@jupyterlab/application';
+import { Signal } from '@lumino/signaling';
+import {
+  DocumentRegistry,
+  ABCWidgetFactory,
+  DocumentWidget,
+  Context
+} from '@jupyterlab/docregistry';
 
 import styled from '@emotion/styled';
 
 import { CustomNodeModel } from "./CustomNodeModel";
+import { XPipeWidget } from '../xpipeWidget';
+
 
 export interface BodyWidgetProps {
-	app: Application;
+	//app: Application;
+	context: any;
+	browserFactory: IFileBrowserFactory;
+	shell: ILabShell;
+	commands: any;
+	//addFileToXpipeSignal: Signal<XpipeWidget, any>;
+	widgetId?: string;
+	activeModel: SRD.DiagramModel;
+	diagramEngine: SRD.DiagramEngine;
+	postConstructorFlag: boolean;
+
+
 }
 
 
@@ -52,6 +74,19 @@ export const Layer = styled.div`
 		flex-grow: 1;
 	`;
 
+export const commandIDs = {
+	openXpipeEditor: 'Xpipe-editor:open',
+	openMetadata: 'elyra-metadata:open',
+	openDocManager: 'docmanager:open',
+	newDocManager: 'docmanager:new-untitled',
+	saveDocManager: 'docmanager:save',
+	reloadDocManager: 'docmanager:reload',
+	revertDocManager:'docmanager:restore-checkpoint',
+	submitScript: 'script-editor:submit',
+	submitNotebook: 'notebook:submit',
+	addFileToXpipe: 'Xpipe-editor:add-node'
+	};
+
 
 //create your forceUpdate hook
 function useForceUpdate(){
@@ -60,7 +95,17 @@ function useForceUpdate(){
 }
 
 
-export const BodyWidget: FC<BodyWidgetProps> = ({ app }) => {
+export const BodyWidget: FC<BodyWidgetProps> = ({
+	context,
+	browserFactory,
+	shell,
+	commands,
+	//addFileToXpipeSignal,
+	widgetId,
+	activeModel,
+	diagramEngine,
+	postConstructorFlag
+}) => {
 
     const [prevState, updateState] = useState(0);
     const forceUpdate = useCallback(() => updateState(prevState => prevState + 1), []);
@@ -77,14 +122,34 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app }) => {
 	const [intNodesValue, setIntNodesValue] = useState<number[]>([0]);
 	const [floatNodesValue, setFloatNodesValue] = useState<number[]>([0.00]);
 	const [boolNodesValue, setBoolNodesValue] = useState<boolean[]>([false]);
-	const [engine, setEngine] = useState(null)
 
-	// useEffect(() => {
-	//   const engine = app.getDiagramEngine();
-	//   /*  operations with engine */
-	//   setEngine(engine);
-	// }, [])
+	const customDeserializeModel = (modelContext: any, diagramEngine) => {
+		//a custom JSON deserialization method that I've been working on.
+		//currently only ""deserializes"" the node layer by creating new ones.
 
+		let tempModel = new SRD.DiagramModel();
+		let links = modelContext["layers"][0]["models"];
+		let nodes = modelContext["layers"][1]["models"];
+
+		for (let nodeID in nodes){
+			
+			let node =  nodes[nodeID];
+			let newNode = new CustomNodeModel({ name:node["name"], color:node["color"], extras: node["extras"] });
+			newNode.setPosition(node["x"], node["y"]);
+
+			for (let portID in node.ports){
+
+				let port = node.ports[portID];
+				if (port.alignment == "right") newNode.addOutPortEnhance(port.label, port.name);
+				if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name);
+
+			}
+			tempModel.addAll(newNode);
+			diagramEngine.setModel(tempModel);
+		}
+
+		return tempModel
+	}
 
 	const getTargetNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
 
@@ -122,7 +187,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app }) => {
 
 	const getAllNodesFromStartToFinish = (): NodeModel[] | null => {
 
-		let model = app.getDiagramEngine().getModel();
+		let model = diagramEngine.getModel();
 		let nodeModels = model.getNodes();
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 
@@ -152,6 +217,27 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app }) => {
 	const handleSaveClick = () => {
 	    alert("Saved.")
 	    setSaved(true);
+		let currentModel = diagramEngine.getModel().serialize();
+		context.model.setSerializedModel(currentModel);
+		commands.execute(commandIDs.saveDocManager);
+	}
+
+	const handleReloadClick = () => {
+	    alert("Reload.")
+		commands.execute(commandIDs.reloadDocManager);
+		let model = context.model.getSharedObject();
+		activeModel.deserializeModel(model, diagramEngine);
+		diagramEngine.setModel(activeModel);
+		forceUpdate();
+	}
+
+	const handleRevertClick = () => {
+		commands.execute(commandIDs.revertDocManager);
+		//todo: check behavior if user presses "cancel"
+		let model = context.model.getSharedObject();
+		activeModel.deserializeModel(model, diagramEngine);
+		diagramEngine.setModel(activeModel);
+		forceUpdate();
 	}
 
 	const handleCompileClick = () => {
@@ -165,14 +251,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app }) => {
         handleSaveClick();
         handleCompileClick();
     }
-
+	
 	const handleRunClick = () => {
-		let nodesCount = app.getDiagramEngine().getModel().getNodes().length;
+		let nodesCount = diagramEngine.getModel().getNodes().length;
 
-		console.log(app.getDiagramEngine().getModel().getNodes());
-		console.log("node count: ", nodesCount)
+		console.log(diagramEngine.getModel().getNodes());
+		console.log("node count: ", nodesCount);
             for (let i = 0; i < nodesCount; i++) {
-                let nodeName = app.getDiagramEngine().getModel().getNodes()[i].getOptions()["name"];
+                let nodeName = diagramEngine.getModel().getNodes()[i].getOptions()["name"];
+				console.log(nodeName);
                 if (nodeName.startsWith("Hyperparameter")){
                     let regEx = /\(([^)]+)\)/;
                     let result = nodeName.match(regEx);
@@ -240,7 +327,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app }) => {
 
     const handleToggleBreakpoint = () => {
 
-        app.getDiagramEngine().getModel().getNodes().forEach((item) => {
+        diagramEngine.getModel().getNodes().forEach((item) => {
             if (item.getOptions()["selected"] == true){
                 let name = item.getOptions()["name"]
                 console.log(name)
@@ -344,10 +431,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app }) => {
 
 	return (
 		<Body>
-			{/* <Header>
+			<Header>
 				<div className="title">Sample Project | Main Workflow ▽</div>
 				<span className='diagram-header-span'>
 					<button className='diagram-header-button' onClick={handleSaveClick} >Save</button>
+					<button className='diagram-header-button' onClick={handleReloadClick} >Reload</button>
+					<button className='diagram-header-button' onClick={handleRevertClick} >Revert</button>
 					<button className='diagram-header-button' onClick={handleCompileClick} >Compile</button>
 					<Dialog header="Save & Compile?" visible={displaySavedAndCompiled} modal style={{ width: '350px' }} footer={renderFooter()} onHide={() => onHide('displaySavedAndCompiled')}>
                         <div className="p-fluid" style={{display: 'flex', alignItems: 'center'}}>
@@ -502,7 +591,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app }) => {
 						</div>
 					</Dialog>
 				</span>
-			</Header> */}
+			</Header>
 			<Content>
 				<Layer
 					onDrop={(event) => {
@@ -614,67 +703,24 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app }) => {
 							node.addOutPortEnhance('converted', 'parameter-out-1');
 
 						} else if (data.type === 'string') {
-
-							if ((data.name).startsWith("Literal")){
-
-								let theResponse = window.prompt('Enter String Value (Without Quotes):');
-								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)',  extras: { "type": data.type } });
-								node.addOutPortEnhance(theResponse, 'out-0');
-
-							} else{
-
-								let theResponse = window.prompt('notice', 'Enter String Name (Without Quotes):');
-								node = new CustomNodeModel({ name: "Hyperparameter (String): " + theResponse, color: 'rgb(153,204,204)', extras: { "type": data.type } });
-								node.addOutPortEnhance('▶', 'parameter-out-0');
-
-							}
+							let theResponse = window.prompt('notice', 'Enter String Name (Without Quotes):');
+							node = new CustomNodeModel({ name: "Hyperparameter (String): " + theResponse, color: 'rgb(153,204,204)', extras: { "type": data.type } });
+							node.addOutPortEnhance('▶', 'parameter-out-0');
 
 						} else if (data.type === 'int') {
-
-							if ((data.name).startsWith("Literal")){
-								
-								let theResponse = window.prompt('Enter Int Value (Without Quotes):');
-								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)',  extras: { "type": data.type } });
-								node.addOutPortEnhance(theResponse, 'out-0');
-
-							} else{
-								
-								let theResponse = window.prompt('notice', 'Enter Int Name (Without Quotes):');
-								node = new CustomNodeModel({ name: "Hyperparameter (Int): " + theResponse, color: 'rgb(153,0,102)', extras: {"type":data.type} });
-								node.addOutPortEnhance('▶', 'parameter-out-0');
-
-							}
+							let theResponse = window.prompt('notice', 'Enter Int Name (Without Quotes):');
+							node = new CustomNodeModel({ name: "Hyperparameter (Int): " + theResponse, color: 'rgb(153,0,102)', extras: {"type":data.type} });
+							node.addOutPortEnhance('▶', 'parameter-out-0');
 
 						} else if (data.type === 'float') {
-
-							if ((data.name).startsWith("Literal")){
-								
-								let theResponse = window.prompt('Enter Float Value (Without Quotes):');
-								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)',  extras: { "type": data.type } });
-								node.addOutPortEnhance(theResponse, 'out-0');
-
-							} else{
-
-								let theResponse = window.prompt('notice', 'Enter Float Name (Without Quotes):');
-								node = new CustomNodeModel({ name: "Hyperparameter (Float): " + theResponse, color: 'rgb(102,51,102)', extras: { "type": data.type } });
-								node.addOutPortEnhance('▶', 'parameter-out-0');
-
-							}
+							let theResponse = window.prompt('notice', 'Enter Float Name (Without Quotes):');
+							node = new CustomNodeModel({ name: "Hyperparameter (Float): " + theResponse, color: 'rgb(102,51,102)', extras: { "type": data.type } });
+							node.addOutPortEnhance('▶', 'parameter-out-0');
 
 						}else if (data.type === 'boolean') {
-
-							if ((data.name).startsWith("Literal")){
-
-								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)', extras: { "type": data.type } });
-								node.addOutPortEnhance('Value', 'out-0');
-
-							} else{
-
-								let theResponse = window.prompt('notice','Enter Boolean Name (Without Quotes):');
-								node=new CustomNodeModel({name: "Hyperparameter (Boolean): " + theResponse,color:'rgb(153,51,204)',extras:{"type":data.type}});
-								node.addOutPortEnhance('▶','parameter-out-0');
-
-							}
+						    let theResponse = window.prompt('notice','Enter Boolean Name (Without Quotes):');
+                            node=new CustomNodeModel({name: "Hyperparameter (Boolean): " + theResponse,color:'rgb(153,51,204)',extras:{"type":data.type}});
+                            node.addOutPortEnhance('▶','parameter-out-0');
 
                         } else if (data.type === 'model') {
 							node = new CustomNodeModel({ name: data.name, color: 'rgb(102,102,102)', extras: { "type": data.type } });
@@ -711,15 +757,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app }) => {
 
 
 						if (node != null) {
-							let point = app.getDiagramEngine().getRelativeMousePoint(event);
+							let point = diagramEngine.getRelativeMousePoint(event);
 							node.setPosition(point);
-							app.getDiagramEngine().getModel().addNode(node);
+							diagramEngine.getModel().addNode(node);
 							node.registerListener({
                                entityRemoved: () => {
 							        setSaved(false);
 							        setCompiled(false);
                                }
                             });
+							console.log("Updating doc context due to drop event!")
+							let currentModel = activeModel.serialize();
+							context.model.setSerializedModel(currentModel);
 							forceUpdate();
 						}
 					}}
@@ -727,9 +776,27 @@ export const BodyWidget: FC<BodyWidgetProps> = ({ app }) => {
 						console.log("onDragOver")
 						event.preventDefault();
 						//forceUpdate();
+					}}
+
+					onMouseOver={(event) => {
+						console.log("onMouseOver")
+						event.preventDefault();
+						//forceUpdate();
+					}}
+
+					onMouseUp={(event) => {
+						console.log("onMouseUp")
+						event.preventDefault();
+						//forceUpdate();
+					}}
+
+					onMouseDown={(event) => {
+						console.log("onMouseDown")
+						event.preventDefault();
+						//forceUpdate();
 					}}>
 					<DemoCanvasWidget>
-						<CanvasWidget engine={app.getDiagramEngine()} />
+						<CanvasWidget engine={diagramEngine} />
 					</DemoCanvasWidget>
 				</Layer>
 			</Content>
