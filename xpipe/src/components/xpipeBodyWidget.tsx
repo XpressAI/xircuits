@@ -10,8 +10,6 @@ import { InputText } from 'primereact/inputtext';
 import { InputSwitch } from 'primereact/inputswitch';
 import { LinkModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
-import { TrayWidget } from './TrayWidget';
-import { TrayItemWidget } from './TrayItemWidget';
 import * as SRD from '@projectstorm/react-diagrams';
 
 import { ReactWidget, showDialog } from '@jupyterlab/apputils';
