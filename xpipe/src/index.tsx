@@ -93,7 +93,7 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     // Registering the widget factory
     app.docRegistry.addWidgetFactory(widgetFactory);
-    
+
     const tracker = new WidgetTracker<XPipeWidget>({
       namespace: "Xpipe Tracker"
     });
@@ -124,8 +124,50 @@ const extension: JupyterFrontEndPlugin<void> = {
       name: widget => widget.context.path
     });
 
+    // Add command signal to save xpipe
+    app.commands.addCommand(commandIDs.saveXpipe, {
+      execute: args => {
+        widgetFactory.saveXpipeSignal.emit(args);
+      }
+    });
+
+    // Add command signal to reload xpipe
+    app.commands.addCommand(commandIDs.reloadXpipe, {
+      execute: args => {
+        widgetFactory.reloadXpipeSignal.emit(args);
+      }
+    });
+
+    // Add command signal to revert xpipe
+    app.commands.addCommand(commandIDs.revertXpipe, {
+      execute: args => {
+        widgetFactory.revertXpipeSignal.emit(args);
+      }
+    });
+
+    // Add command signal to compile xpipe
+    app.commands.addCommand(commandIDs.compileXpipe, {
+      execute: args => {
+        widgetFactory.compileXpipeSignal.emit(args);
+      }
+    });
+
+    // Add command signal to run xpipe
+    app.commands.addCommand(commandIDs.runXpipe, {
+      execute: args => {
+        widgetFactory.runXpipeSignal.emit(args);
+      }
+    });
+
+    // Add command signal to debug xpipe
+    app.commands.addCommand(commandIDs.debugXpipe, {
+      execute: args => {
+        widgetFactory.debugXpipeSignal.emit(args);
+      }
+    });
+
     // Add a command for creating a new xpipe file.
-    app.commands.addCommand('xpipe:create-new', {
+    app.commands.addCommand(commandIDs.createNewXpipe, {
       label: 'Xpipe File',
       iconClass: 'jp-XpipeLogo',
       caption: 'Create a new xpipe file',
@@ -148,7 +190,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     // Add a launcher item if the launcher is available.
     if (launcher) {
       launcher.add({
-        command: 'xpipe:create-new',
+        command: commandIDs.createNewXpipe,
         rank: 1,
         category: 'Other'
       });

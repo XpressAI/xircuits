@@ -1,6 +1,5 @@
 import React, { FC, useState, useCallback, useEffect } from 'react';
 import * as NumericInput from "react-numeric-input";
-//import { Application } from '../Application';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
 import { Dialog } from 'primereact/dialog';
@@ -26,7 +25,7 @@ import {
 import styled from '@emotion/styled';
 
 import { CustomNodeModel } from "./CustomNodeModel";
-import { XPipeWidget } from '../xpipeWidget';
+import { XPipePanel } from '../xpipeWidget';
 
 
 export interface BodyWidgetProps {
@@ -35,13 +34,16 @@ export interface BodyWidgetProps {
 	browserFactory: IFileBrowserFactory;
 	shell: ILabShell;
 	commands: any;
-	//addFileToXpipeSignal: Signal<XpipeWidget, any>;
 	widgetId?: string;
 	activeModel: SRD.DiagramModel;
 	diagramEngine: SRD.DiagramEngine;
 	postConstructorFlag: boolean;
-
-
+	saveXpipeSignal: Signal<XPipePanel, any>;
+	reloadXpipeSignal: Signal<XPipePanel, any>;
+	revertXpipeSignal: Signal<XPipePanel, any>;
+	compileXpipeSignal: Signal<XPipePanel, any>;
+	runXpipeSignal: Signal<XPipePanel, any>;
+	debugXpipeSignal: Signal<XPipePanel, any>;
 }
 
 
@@ -84,8 +86,14 @@ export const commandIDs = {
 	revertDocManager:'docmanager:restore-checkpoint',
 	submitScript: 'script-editor:submit',
 	submitNotebook: 'notebook:submit',
-	addFileToXpipe: 'Xpipe-editor:add-node'
-	};
+	createNewXpipe: 'Xpipe-editor:create-new',
+	saveXpipe: 'Xpipe-editor:save-node',
+	reloadXpipe: 'Xpipe-editor:reload-node',
+	revertXpipe: 'Xpipe-editor:revert-node',
+	compileXpipe: 'Xpipe-editor:compile-node',
+	runXpipe: 'Xpipe-editor:run-node',
+	debugXpipe: 'Xpipe-editor:debug-node'
+};
 
 
 //create your forceUpdate hook
@@ -100,11 +108,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	browserFactory,
 	shell,
 	commands,
-	//addFileToXpipeSignal,
 	widgetId,
 	activeModel,
 	diagramEngine,
-	postConstructorFlag
+	postConstructorFlag,
+	saveXpipeSignal,
+	reloadXpipeSignal,
+	revertXpipeSignal,
+	compileXpipeSignal,
+	runXpipeSignal,
+	debugXpipeSignal
 }) => {
 
     const [prevState, updateState] = useState(0);
@@ -215,7 +228,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const handleSaveClick = () => {
-	    alert("Saved.")
 	    setSaved(true);
 		let currentModel = diagramEngine.getModel().serialize();
 		context.model.setSerializedModel(currentModel);
@@ -223,7 +235,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const handleReloadClick = () => {
-	    alert("Reload.")
 		commands.execute(commandIDs.reloadDocManager);
 		let model = context.model.getSharedObject();
 		activeModel.deserializeModel(model, diagramEngine);
@@ -253,6 +264,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
     }
 	
 	const handleRunClick = () => {
+		alert("Run.")
 		let nodesCount = diagramEngine.getModel().getNodes().length;
 
 		console.log(diagramEngine.getModel().getNodes());
@@ -316,6 +328,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const handleDebugClick = () => {
+		alert("Debug.")
 
         if(compiled && saved){
 		    onClick('displayDebug');
@@ -324,6 +337,66 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		    onClick('displaySavedAndCompiled');
         }
 	}
+
+	useEffect(() => {
+		const handleSaveSignal = (): void => {
+		  handleSaveClick();
+		};
+		saveXpipeSignal.connect(handleSaveSignal);
+		return (): void => {
+			saveXpipeSignal.disconnect(handleSaveSignal);
+		};
+	  }, [saveXpipeSignal, handleSaveClick]);
+
+	useEffect(() => {
+		const handleReloadSignal = (): void => {
+		  handleReloadClick();
+		};
+		reloadXpipeSignal.connect(handleReloadSignal);
+		return (): void => {
+			reloadXpipeSignal.disconnect(handleReloadSignal);
+		};
+	  }, [reloadXpipeSignal, handleReloadClick]);
+
+	useEffect(() => {
+		const handleRevertSignal = (): void => {
+		  handleRevertClick();
+		};
+		revertXpipeSignal.connect(handleRevertSignal);
+		return (): void => {
+			revertXpipeSignal.disconnect(handleRevertSignal);
+		};
+	  }, [revertXpipeSignal, handleRevertClick]);
+
+	useEffect(() => {
+		const handleCompileSignal = (): void => {
+		  handleCompileClick();
+		};
+		compileXpipeSignal.connect(handleCompileSignal);
+		return (): void => {
+			compileXpipeSignal.disconnect(handleCompileSignal);
+		};
+	  }, [compileXpipeSignal, handleCompileClick]);
+
+	useEffect(() => {
+		const handleRunSignal = (): void => {
+		  handleRunClick();
+		};
+		runXpipeSignal.connect(handleRunSignal);
+		return (): void => {
+			runXpipeSignal.disconnect(handleRunSignal);
+		};
+	  }, [runXpipeSignal, handleRunClick]);
+
+	useEffect(() => {
+		const handleDebugSignal = (): void => {
+		  handleDebugClick();
+		};
+		debugXpipeSignal.connect(handleDebugSignal);
+		return (): void => {
+			debugXpipeSignal.disconnect(handleDebugSignal);
+		};
+	  }, [debugXpipeSignal, handleDebugClick]);
 
     const handleToggleBreakpoint = () => {
 
@@ -431,7 +504,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	return (
 		<Body>
-			<Header>
+			{/* <Header>
 				<div className="title">Sample Project | Main Workflow ▽</div>
 				<span className='diagram-header-span'>
 					<button className='diagram-header-button' onClick={handleSaveClick} >Save</button>
@@ -591,7 +664,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						</div>
 					</Dialog>
 				</span>
-			</Header>
+			</Header> */}
 			<Content>
 				<Layer
 					onDrop={(event) => {

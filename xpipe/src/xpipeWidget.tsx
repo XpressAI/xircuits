@@ -42,8 +42,13 @@ export class XPipePanel extends ReactWidget {
   browserFactory: IFileBrowserFactory;
   shell: ILabShell;
   commands: any;
-  addFileToXpipeSignal: Signal<this, any>;
   context: any;
+  saveXpipeSignal: Signal<this, any>;
+  reloadXpipeSignal: Signal<this, any>;
+  revertXpipeSignal: Signal<this, any>;
+  compileXpipeSignal: Signal<this, any>;
+  runXpipeSignal: Signal<this, any>;
+  debugXpipeSignal: Signal<this, any>;
 
   activeModel: SRD.DiagramModel;
 	diagramEngine: SRD.DiagramEngine;
@@ -58,8 +63,13 @@ export class XPipePanel extends ReactWidget {
     this.browserFactory = options.browserFactory;
     this.shell = options.shell;
     this.commands = options.commands;
-    this.addFileToXpipeSignal = options.addFileToXpipeSignal;
     this.context = options.context;
+    this.saveXpipeSignal = options.saveXpipeSignal;
+    this.reloadXpipeSignal = options.reloadXpipeSignal;
+    this.revertXpipeSignal = options.revertXpipeSignal;
+    this.compileXpipeSignal = options.compileXpipeSignal;
+    this.runXpipeSignal = options.runXpipeSignal;
+    this.debugXpipeSignal = options.debugXpipeSignal;
     
     //debugger;
     console.log(this.context);
@@ -114,11 +124,16 @@ export class XPipePanel extends ReactWidget {
         browserFactory={this.browserFactory}
         shell={this.shell}
         commands={this.commands}
-        //addFileToXpipeSignal={this.addFileToXpipeSignal}
         widgetId={this.parent?.id}
         activeModel={this.activeModel}
         diagramEngine={this.diagramEngine}
         postConstructorFlag={this.postConstructorFlag}
+        saveXpipeSignal={this.saveXpipeSignal}
+        reloadXpipeSignal={this.reloadXpipeSignal}
+        revertXpipeSignal={this.revertXpipeSignal}
+        compileXpipeSignal={this.compileXpipeSignal}
+        runXpipeSignal={this.runXpipeSignal}
+        debugXpipeSignal={this.debugXpipeSignal}
       />
     );
   }
