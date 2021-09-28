@@ -14,7 +14,7 @@ import { XPipeWidget, XPipePanel } from './xpipeWidget';
 
 import { XPipeDocModel } from './xpipeModel';
 
-import { fastForwardIcon, runIcon, saveIcon } from '@jupyterlab/ui-components';
+import { bugIcon, fastForwardIcon, refreshIcon, runIcon, saveIcon, undoIcon } from '@jupyterlab/ui-components';
 
 import { ToolbarButton } from '@jupyterlab/apputils';
 
@@ -27,16 +27,26 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
   browserFactory: IFileBrowserFactory;
   shell: ILabShell;
   commands: any;
-  addFileToXpipeSignal: Signal<this, any>;
   model: any;
+  saveXpipeSignal: Signal<this, any>;
+  reloadXpipeSignal: Signal<this, any>;
+  revertXpipeSignal: Signal<this, any>;
+  compileXpipeSignal: Signal<this, any>;
+  runXpipeSignal: Signal<this, any>;
+  debugXpipeSignal: Signal<this, any>;
 
   constructor(options: any) {
     super(options);
     this.browserFactory = options.browserFactory;
     this.shell = options.shell;
     this.commands = options.commands;
-    this.addFileToXpipeSignal = new Signal<this, any>(this);
     this.model = options.modelName;
+    this.saveXpipeSignal = new Signal<this, any>(this);
+    this.reloadXpipeSignal = new Signal<this, any>(this);
+    this.revertXpipeSignal = new Signal<this, any>(this);
+    this.compileXpipeSignal = new Signal<this, any>(this);
+    this.runXpipeSignal = new Signal<this, any>(this);
+    this.debugXpipeSignal = new Signal<this, any>(this);
   }
 
   protected createNewWidget(context: DocumentRegistry.IContext<XPipeDocModel>): XPipeWidget {
@@ -46,7 +56,12 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
       commands: this.commands,
       browserFactory: this.browserFactory,
       context: context,
-      addFileToXpipeSignal: this.addFileToXpipeSignal,
+      saveXpipeSignal: this.saveXpipeSignal,
+      reloadXpipeSignal: this.reloadXpipeSignal,
+      revertXpipeSignal: this.revertXpipeSignal,
+      compileXpipeSignal: this.compileXpipeSignal,
+      runXpipeSignal: this.runXpipeSignal,
+      debugXpipeSignal: this.debugXpipeSignal
     };
 
     const content = new XPipePanel(props);
@@ -59,9 +74,31 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
      */
     let saveButton = new ToolbarButton({
       icon: saveIcon,
-      tooltip: 'Save file',
+      tooltip: 'Save Xpipe',
       onClick: (): void => {
-        this.commands.execute(commandIDs.saveDocManager);
+        this.commands.execute(commandIDs.saveXpipe);
+      }
+    });
+
+    /**
+     * Create a reload button toolbar item.
+     */
+     let reloadButton = new ToolbarButton({
+      icon: refreshIcon,
+      tooltip: 'Reload Xpipe from Disk',
+      onClick: (): void => {
+        this.commands.execute(commandIDs.reloadXpipe);
+      }
+    });
+
+    /**
+     * Create a revert button toolbar item.
+     */
+     let revertButton = new ToolbarButton({
+      icon: undoIcon,
+      tooltip: 'Revert Xpipe to Checkpoint',
+      onClick: (): void => {
+        this.commands.execute(commandIDs.revertXpipe);
       }
     });
 
@@ -70,9 +107,9 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
      */
     let compileButton = new ToolbarButton({
       icon: fastForwardIcon,
-      tooltip: 'Compile',
+      tooltip: 'Compile Xpipe',
       onClick: (): void => {
-        alert('Compiled');
+        this.commands.execute(commandIDs.compileXpipe);
       }
     });
 
@@ -81,15 +118,29 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
      */
     let runButton = new ToolbarButton({
       icon: runIcon,
-      tooltip: 'Run',
+      tooltip: 'Run Xpipe',
       onClick: (): void => {
-        alert('Run');
+        this.commands.execute(commandIDs.runXpipe);
+      }
+    });
+
+    /**
+     * Create a debug button toolbar item.
+     */
+     let debugButton = new ToolbarButton({
+      icon:bugIcon,
+      tooltip: 'Debug Xpipe',
+      onClick: (): void => {
+        this.commands.execute(commandIDs.debugXpipe);
       }
     });
   
     widget.toolbar.insertItem(0,'xpipe-add-save', saveButton);
-    widget.toolbar.insertItem(1,'xpipe-add-compile', compileButton);
-    widget.toolbar.insertItem(2,'xpipe-add-run', runButton);
+    widget.toolbar.insertItem(1,'xpipe-add-reload', reloadButton);
+    widget.toolbar.insertItem(2,'xpipe-add-revert', revertButton);
+    widget.toolbar.insertItem(3,'xpipe-add-compile', compileButton);
+    widget.toolbar.insertItem(4,'xpipe-add-run', runButton);
+    widget.toolbar.insertItem(5,'xpipe-add-debug', debugButton);
     return widget;
   }
 }
