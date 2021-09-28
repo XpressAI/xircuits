@@ -229,6 +229,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const handleSaveClick = () => {
+		// Only save xpipe if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
 	    setSaved(true);
 		let currentModel = diagramEngine.getModel().serialize();
 		context.model.setSerializedModel(currentModel);
@@ -236,6 +242,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const handleReloadClick = () => {
+		// Only reload xpipe if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
 		commands.execute(commandIDs.reloadDocManager);
 		let model = context.model.getSharedObject();
 		activeModel.deserializeModel(model, diagramEngine);
@@ -244,6 +256,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const handleRevertClick = () => {
+		// Only revert xpipe if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
 		commands.execute(commandIDs.revertDocManager);
 		//todo: check behavior if user presses "cancel"
 		let model = context.model.getSharedObject();
@@ -253,6 +271,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const handleCompileClick = () => {
+		// Only compile xpipe if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
 	    alert("Compiled.")
 	    setCompiled(true);
 		commands.execute(commandIDs.createArbitraryFile);
@@ -266,6 +290,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
     }
 	
 	const handleRunClick = () => {
+		// Only run xpipe if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
 		alert("Run.")
 		let nodesCount = diagramEngine.getModel().getNodes().length;
 
@@ -330,6 +360,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const handleDebugClick = () => {
+		// Only debug xpipe if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
 		alert("Debug.")
 
         if(compiled && saved){
