@@ -92,7 +92,8 @@ export const commandIDs = {
 	revertXpipe: 'Xpipe-editor:revert-node',
 	compileXpipe: 'Xpipe-editor:compile-node',
 	runXpipe: 'Xpipe-editor:run-node',
-	debugXpipe: 'Xpipe-editor:debug-node'
+	debugXpipe: 'Xpipe-editor:debug-node',
+	createArbitraryFile: 'Xpipe-editor:create-arbitrary-file'
 };
 
 
@@ -254,6 +255,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const handleCompileClick = () => {
 	    alert("Compiled.")
 	    setCompiled(true);
+		commands.execute(commandIDs.createArbitraryFile);
 	}
 
     const handleUnsaved = () => {
