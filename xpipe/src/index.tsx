@@ -187,6 +187,33 @@ const extension: JupyterFrontEndPlugin<void> = {
       }
     });
 
+    // Add a command for creating arbitrary file when compile.
+    app.commands.addCommand(commandIDs.createArbitraryFile, {
+      execute: () => {
+        app.commands
+          .execute(commandIDs.newDocManager, {
+            path: browserFactory.defaultBrowser.model.path,
+            type: 'file',
+            ext: '.py'
+          })
+          .then(async model => {
+            const message = "This message will appear when the compile button is clicked";
+            const newWidget = await app.commands.execute(
+              commandIDs.openDocManager,
+              {
+                path: model.path
+              }
+            );
+            newWidget.context.ready.then(() => {
+              newWidget.context.model.fromString(message);
+              app.commands.execute(commandIDs.saveDocManager, {
+                path: model.path
+              });
+            });
+          });
+      }
+    });
+
     // Add a launcher item if the launcher is available.
     if (launcher) {
       launcher.add({
