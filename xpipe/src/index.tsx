@@ -8,6 +8,8 @@ import {
 
 import { Token } from '@lumino/coreutils';
 
+import { Widget, DockLayout } from '@lumino/widgets';
+
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 
 import { commandIDs } from './components/xpipeBodyWidget';
@@ -211,6 +213,59 @@ const extension: JupyterFrontEndPlugin<void> = {
               });
             });
           });
+      }
+    });
+    
+    let debuggerWidget: Widget | null = null;
+    interface IXpipeDebuggerOptions {
+      insertMode?: DockLayout.InsertMode;
+      ref?: string;
+    }    
+
+    const createXpipeDebuggerWidget = (options: IXpipeDebuggerOptions = {}) => {
+      
+      let debuggerWidget = new Widget();
+      debuggerWidget.id = 'xpipe-debugger';
+      debuggerWidget.title.label = 'Xpipe Debugger';
+      debuggerWidget.title.closable = true;
+
+      var main_strip = document.createElement("div");
+        main_strip.id = "bottom_main_strip";
+        var navbar = document.createElement("div");
+                var left = document.createElement("ul");
+                left.id = "bottom_navbar_left";
+                        var projects = document.createElement("li");
+                        projects.textContent = 'Not yet implemented!';
+                left.appendChild(projects);
+        navbar.appendChild(left);
+        main_strip.appendChild(navbar);
+        debuggerWidget.node.appendChild(main_strip);
+
+        debuggerWidget.disposed.connect(() => {
+          debuggerWidget = null;
+          app.commands.notifyCommandChanged();
+        });
+        app.shell.add(debuggerWidget, 'down',{
+          ref: options.ref,
+          mode: options.insertMode
+        });
+        app.shell.activateById(debuggerWidget.id);
+
+        debuggerWidget.update();
+        app.commands.notifyCommandChanged();
+    };
+
+    // Add a command for opening the xpipe debugger when debug button clicked.
+    app.commands.addCommand(commandIDs.openXpipeDebugger, {
+      execute: () => {
+        if (!debuggerWidget) {
+          createXpipeDebuggerWidget({
+            insertMode: 'split-bottom',
+            ref: app.shell.currentWidget?.id
+          });
+        } else {
+          app.shell.activateById(debuggerWidget.id);
+        }
       }
     });
 
