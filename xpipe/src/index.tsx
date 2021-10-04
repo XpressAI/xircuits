@@ -6,7 +6,7 @@ import {
   ILayoutRestorer
 } from '@jupyterlab/application';
 
-import { Token } from '@lumino/coreutils';
+import { createXpipeDebugger, IXpipeDebuggerOptions } from './components/DebuggerWidget';
 
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 
@@ -211,6 +211,13 @@ const extension: JupyterFrontEndPlugin<void> = {
               });
             });
           });
+      }
+    });
+
+    // Add a command for opening the xpipe debugger when debug button clicked.
+    app.commands.addCommand(commandIDs.openXpipeDebugger, {
+      execute: (options: IXpipeDebuggerOptions) => {
+        return createXpipeDebugger(app, options);
       }
     });
 

@@ -93,7 +93,8 @@ export const commandIDs = {
 	compileXpipe: 'Xpipe-editor:compile-node',
 	runXpipe: 'Xpipe-editor:run-node',
 	debugXpipe: 'Xpipe-editor:debug-node',
-	createArbitraryFile: 'Xpipe-editor:create-arbitrary-file'
+	createArbitraryFile: 'Xpipe-editor:create-arbitrary-file',
+	openXpipeDebugger: 'Xpipe-debugger:open'
 };
 
 
@@ -366,7 +367,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		alert("Debug.")
+		commands.execute(commandIDs.openXpipeDebugger);
 
         if(compiled && saved){
 		    onClick('displayDebug');

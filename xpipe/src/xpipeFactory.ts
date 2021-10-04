@@ -129,7 +129,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
      */
      let debugButton = new ToolbarButton({
       icon:bugIcon,
-      tooltip: 'Debug Xpipe',
+      tooltip: 'Open Xpipe Debugger',
       onClick: (): void => {
         this.commands.execute(commandIDs.debugXpipe);
       }
