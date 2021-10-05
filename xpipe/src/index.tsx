@@ -166,6 +166,13 @@ const extension: JupyterFrontEndPlugin<void> = {
       }
     });
 
+    // Add command signal to toggle breakpoint
+    app.commands.addCommand(commandIDs.breakpointXpipe, {
+      execute: args => {
+        widgetFactory.breakpointXpipeSignal.emit(args);
+      }
+    });
+
     // Add a command for creating a new xpipe file.
     app.commands.addCommand(commandIDs.createNewXpipe, {
       label: 'Xpipe File',
