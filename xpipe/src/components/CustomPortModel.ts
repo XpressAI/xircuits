@@ -10,7 +10,6 @@ export  class CustomPortModel extends DefaultPortModel  {
 
 
     canLinkToPort(port: PortModel): boolean {
-
         if (port instanceof DefaultPortModel) {
             if(this.options.in === port.getOptions().in){
                 console.log("in not connected to in");
@@ -29,6 +28,20 @@ export  class CustomPortModel extends DefaultPortModel  {
 
         if (canTriangleLinkToTriangle == false){
             console.log("triangle to triangle failed.");
+            return false;
+        }
+
+        let checkLinkDirection = this.checkLinkDirection(this, port);
+
+        if (checkLinkDirection == false){
+            console.log("Port should be created from outPort [right] to inPort [left]");
+            return false;
+        }
+
+        let checkExecutionLoop = this.checkExecutionLoop(this, port);
+
+        if (checkExecutionLoop == false){
+            //console.log("Loop detected.");
             return false;
         }
 
@@ -86,8 +99,9 @@ export  class CustomPortModel extends DefaultPortModel  {
                 return false;
             }
 
+        }else{
+            return(!(thisName.startsWith("parameter")) && !(Object.keys(port.getLinks()).length > 0));
         }
-        console.log("return true")
         return true;
     }
 
@@ -113,7 +127,11 @@ export  class CustomPortModel extends DefaultPortModel  {
             return true;
         }
 
-        return (portLabel === '▶' && thisPortLabel === '▶');
+        if (!(thisPortLabel.endsWith('▶'))){
+            return true;
+        }else{
+            return (portLabel === '▶' && thisPortLabel.endsWith('▶') && !(Object.keys(thisPort.getLinks()).length > 1));
+        }
     }
 
 
@@ -129,5 +147,101 @@ export  class CustomPortModel extends DefaultPortModel  {
             return value;
         };
     };
+
+    checkLinkDirection = (thisPort, port) => {
+        // currently only checking if it is an in or out port from its alignment
+        return ( (thisPort.getOptions()["alignment"]==="right") && 
+                 (port.getOptions()["alignment"]==="left") );
+    }
+
+    checkExecutionLoop = (thisPort, port) => {
+        let nodeIDList = [];
+        
+        let sourceNode = thisPort.getParent();
+        let targetNode =  port.getParent();
+
+        nodeIDList.push(sourceNode.getID(), targetNode.getID());
+
+        //console.log("sourceNode is:", sourceNode.getOptions()["name"], "\ntargetNode is:", targetNode.getOptions()["name"]);
+
+        while ((sourceNode != null) && sourceNode.getOptions()["name"]!="Start"){
+            //console.log("Curent sourceNode:", sourceNode.getOptions()["name"]);
+            let inPorts = sourceNode.getInPorts();
+            
+            // a node may have multiple ports. Iterate and find "▶"
+            for (let i = 0; i <= inPorts.length; i++) {
+                
+                let portLabel = inPorts[i].getOptions()["label"];
+
+                if (portLabel === "▶"){
+                    let portLink = inPorts[i].getLinks();
+                    //check if port has any links
+                    if (Object.keys(portLink).length !== 1){
+                        
+                        if (Object.keys(portLink).length > 1){
+                            console.log("zombie link detected");
+                        }
+                        //console.log("sourceNode:", sourceNode.getOptions()["name"], "has no in-links!");
+                        sourceNode = null;
+                        break;
+                    }
+                    else{
+                        let portLinkKey = Object.keys(portLink).toString();
+                        sourceNode = portLink[portLinkKey].getSourcePort().getParent();
+                        if(nodeIDList.includes(sourceNode.getID())){
+                            console.log("Loop detected at", sourceNode.getOptions()["name"]);
+                            return false;
+                        }
+
+                        nodeIDList.push(sourceNode.getID());
+                        break;
+
+                    }
+                }     
+            }
+        }
+
+        while ((targetNode != null) && targetNode.getOptions()["name"]!="Finish"){
+            //console.log("Curent targetNode:", targetNode.getOptions()["name"]);
+            let outPorts = targetNode.getOutPorts();
+            
+            // a node may have multiple ports. Iterate and find "▶"
+            for (let i = 0; i <= outPorts.length; i++) {
+                
+                let portLabel = outPorts[i].getOptions()["label"];
+
+                if (portLabel === "▶"){
+                    let portLink = outPorts[i].getLinks();
+                    //check if port has any links
+                    if (Object.keys(portLink).length !== 1){
+
+                        if (Object.keys(portLink).length > 1){
+                            console.log("zombie link detected");
+                        }
+
+                        //console.log("targetNode:", targetNode.getOptions()["name"], "has no out-links!");
+                        targetNode = null;
+                        break;
+                    }
+
+                    
+                    else{
+                        let portLinkKey = Object.keys(portLink).toString();
+                        targetNode = portLink[portLinkKey].getTargetPort().getParent();
+                        if(nodeIDList.includes(targetNode.getID())){
+                            console.log("Loop detected at", targetNode.getOptions()["name"]);
+                            return false;
+                        }
+
+                        nodeIDList.push(targetNode.getID());
+                        break;
+
+                    }
+                }     
+            }
+        }
+
+        return true;
+    }
 
 }

@@ -730,7 +730,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			<Content>
 				<Layer
 					onDrop={(event) => {
-						debugger;
+						//debugger;
 						var data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
 
 						let node = null;
@@ -751,23 +751,23 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							node = new CustomNodeModel({ name: data.name, color: 'rgb(0,102,204)', extras: { "type": data.type } });
 
 							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('Dataset Name', 'parameter-string-in-1');
+							node.addInPortEnhance('Dataset Name', 'in-1');
 							node.addInPortEnhance('Random Crop', 'parameter-boolean-in-2');
 							node.addInPortEnhance('Horizontal Flip', 'parameter-boolean-in-3');
 							node.addInPortEnhance('Vertical Flip', 'parameter-boolean-in-4');
 							node.addInPortEnhance('Add Noise', 'parameter-boolean-in-5');
 
 							node.addOutPortEnhance('▶', 'out-0');
-							node.addInPortEnhance('Resized Dataset', 'parameter-in-6');
+							node.addOutPortEnhance('Resized Dataset', 'out-1');
 
 						} else if (data.type === 'split') {
 
 							node = new CustomNodeModel({ name: data.name, color: 'rgb(255,153,102)', extras: { "type": data.type } });
 
 							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('Dataset', 'parameter-string-in-1');
-							node.addInPortEnhance('Train', 'parameter-float-in-1');
-							node.addInPortEnhance('Test', 'parameter-float-in-2');
+							node.addInPortEnhance('Dataset', 'in-1');
+							node.addInPortEnhance('Train', 'parameter-float-in-2');
+							node.addInPortEnhance('Test', 'parameter-float-in-3');
 
 							node.addOutPortEnhance('▶', 'out-0');
 
@@ -777,30 +777,30 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							node = new CustomNodeModel({ name: data.name, color: 'rgb(255,102,102)', extras: { "type": data.type } });
 
 							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('model', 'parameter-string-in-1');
-							node.addInPortEnhance('Training Data', 'parameter-string-in-2');
+							node.addInPortEnhance('model', 'in-1');
+							node.addInPortEnhance('Training Data', 'in-2');
 							node.addInPortEnhance('Training Epochs', 'parameter-int-in-3');
 
 							node.addOutPortEnhance('▶', 'out-0');
-							node.addOutPortEnhance('Trained Model', 'parameter-out-1');
+							node.addOutPortEnhance('Trained Model', 'out-1');
 
 						} else if (data.type === 'eval') {
 
 							node = new CustomNodeModel({ name: data.name, color: 'rgb(255,204,204)', extras: { "type": data.type } });
 
 							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('model', 'parameter-string-in-1');
-							node.addInPortEnhance('Eval Dataset', 'parameter-in-2');
+							node.addInPortEnhance('model', 'in-1');
+							node.addInPortEnhance('Eval Dataset', 'in-2');
 
 							node.addOutPortEnhance('▶', 'out-0');
-							node.addOutPortEnhance('Results', 'parameter-out-1');
+							node.addOutPortEnhance('Results', 'out-1');
 
 						} else if (data.type === 'runnb') {
 
 							node = new CustomNodeModel({ name: data.name, color: 'rgb(153,204,51)', extras: { "type": data.type } });
 
 							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('Input Data', 'parameter-in-1');
+							node.addInPortEnhance('Input Data', 'in-1');
 
 							node.addOutPortEnhance('▶', 'out-0');
 
@@ -835,7 +835,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							node.addInPortEnhance('model', 'parameter-string-in-1');
 
 							node.addOutPortEnhance('▶', 'out-0');
-							node.addOutPortEnhance('converted', 'parameter-out-1');
+							node.addOutPortEnhance('converted', 'out-1');
 
 						} else if (data.type === 'string') {
 							let theResponse = window.prompt('notice', 'Enter String Name (Without Quotes):');
@@ -861,11 +861,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							node = new CustomNodeModel({ name: data.name, color: 'rgb(102,102,102)', extras: { "type": data.type } });
 
 							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('Training Data', 'parameter-string-in-1');
+							node.addInPortEnhance('Training Data', 'in-1');
 							node.addInPortEnhance('Model Type', 'parameter-string-in-2');
 
 							node.addOutPortEnhance('▶', 'out-0');
-							node.addOutPortEnhance('Model', 'parameter-out-1');
+							node.addOutPortEnhance('Model', 'out-1');
 
 						} else if (data.type === 'debug') {
 							node = new CustomNodeModel({ name: data.name, color: 'rgb(255,102,0)', extras: { "type": data.type } });
@@ -883,7 +883,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							node.addInPortEnhance('Metrics', 'parameter-string-in-3');
 
 							node.addOutPortEnhance('▶', 'out-0');
-							node.addOutPortEnhance('Should Retrain', 'parameter-out-1');
+							node.addOutPortEnhance('Should Retrain', 'out-1');
 						} else if (data.type === 'literal') {
 
 							node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)', extras: { "type": data.type } });
