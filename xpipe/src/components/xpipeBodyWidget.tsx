@@ -45,6 +45,7 @@ export interface BodyWidgetProps {
 	runXpipeSignal: Signal<XPipePanel, any>;
 	debugXpipeSignal: Signal<XPipePanel, any>;
 	breakpointXpipeSignal: Signal<XPipePanel, any>;
+	nextNodeSignal: Signal<XPipePanel, any>;
 }
 
 
@@ -96,7 +97,8 @@ export const commandIDs = {
 	debugXpipe: 'Xpipe-editor:debug-node',
 	createArbitraryFile: 'Xpipe-editor:create-arbitrary-file',
 	openXpipeDebugger: 'Xpipe-debugger:open',
-	breakpointXpipe: 'Xpipe-editor:breakpoint-node'
+	breakpointXpipe: 'Xpipe-editor:breakpoint-node',
+	nextNode: 'Xpipe-editor:next-node'
 };
 
 
@@ -122,7 +124,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	compileXpipeSignal,
 	runXpipeSignal,
 	debugXpipeSignal,
-	breakpointXpipeSignal
+	breakpointXpipeSignal,
+	nextNodeSignal
 }) => {
 
     const [prevState, updateState] = useState(0);
@@ -391,6 +394,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		alert("Breakpoint.")
 	}
 
+	const handleToggleNextNode = () => {
+		// Only toggle next node if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
+		alert("Next Node")
+    }
+
 	useEffect(() => {
 		const handleSaveSignal = (): void => {
 		  handleSaveClick();
@@ -460,6 +473,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			breakpointXpipeSignal.disconnect(handleBreakpointSignal);
 		};
 	  }, [breakpointXpipeSignal, handleBreakpointClick]);
+
+	  useEffect(() => {
+		const handleNextNodeSignal = (): void => {
+		  handleToggleNextNode();
+		};
+		nextNodeSignal.connect(handleNextNodeSignal);
+		return (): void => {
+			nextNodeSignal.disconnect(handleNextNodeSignal);
+		};
+	  }, [nextNodeSignal, handleToggleNextNode]);
 
     const handleToggleBreakpoint = () => {
 

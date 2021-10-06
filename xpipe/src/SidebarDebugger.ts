@@ -1,3 +1,4 @@
+import { JupyterFrontEnd } from '@jupyterlab/application';
 import { MainAreaWidget, ToolbarButton } from '@jupyterlab/apputils';
 
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
@@ -5,23 +6,24 @@ import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 import { redoIcon } from '@jupyterlab/ui-components';
 
 import { Panel, SplitPanel, Widget, PanelLayout } from '@lumino/widgets';
+import { commandIDs } from './components/xpipeBodyWidget';
 import { CounterWidget } from './CounterWidget';
 
 
 /**
- * A debugger sidebar.
+ * A xpipe debugger sidebar.
  */
  export class XpipeDebuggerSidebar extends Panel {
     /**
-     * Instantiate a new Debugger.Sidebar
+     * Instantiate a new XpipeDebugger.Sidebar
      *
-     * @param options The instantiation options for a Debugger.Sidebar
+     * @param options The instantiation options for a XpipeDebugger.Sidebar
      */
     constructor(options: Breakpoints.IOptions) {
       super();
       const translator = options.translator || nullTranslator;
+      const app = options.app;
       this.id = 'jp-debugger-sidebar';
-      this.title.icon = 'jp-XpipeLogo';
       this.addClass('jp-DebuggerSidebar');
   
       this._body = new SplitPanel();
@@ -38,7 +40,7 @@ import { CounterWidget } from './CounterWidget';
         icon: redoIcon,
         tooltip: 'Next Node',
         onClick: (): void => {
-          alert('Next Node')
+          app.commands.execute(commandIDs.nextNode);
         }
       });
       debuggerToolbar.toolbar.insertItem(0, 'xpipe-next-node', nextNodeButton)
@@ -125,14 +127,8 @@ import { CounterWidget } from './CounterWidget';
   
       const layout = new PanelLayout();
       layout.addWidget(title);
-    //   layout.addWidget(this.toolbar);
       this.layout = layout;
     }
-  
-    /**
-     * The toolbar for the callstack header.
-     */
-    // readonly toolbar = new Toolbar();
 }
 
 /**
@@ -143,6 +139,10 @@ import { CounterWidget } from './CounterWidget';
      * Instantiation options for `Breakpoints`.
      */
     export interface IOptions extends Panel.IOptions {
+      /**
+       * The application language translator..
+       */
+       app?: JupyterFrontEnd;
       /**
        * The application language translator..
        */

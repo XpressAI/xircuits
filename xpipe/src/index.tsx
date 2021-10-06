@@ -76,7 +76,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     app.shell.add(sidebarWidget, "left");
 
     // Creating the sidebar debugger
-    const sidebarXpipe = new XpipeDebugger.Sidebar({ translator})
+    const sidebarXpipe = new XpipeDebugger.Sidebar({ app, translator})
     sidebarXpipe.id = 'xpipe-debugger-sidebar';
     sidebarXpipe.title.iconClass = 'jp-XpipeLogo';
     restorer.add(sidebarXpipe, sidebarXpipe.id);
@@ -182,6 +182,13 @@ const extension: JupyterFrontEndPlugin<void> = {
     app.commands.addCommand(commandIDs.breakpointXpipe, {
       execute: args => {
         widgetFactory.breakpointXpipeSignal.emit(args);
+      }
+    });
+
+    // Add command signal to toggle next node
+    app.commands.addCommand(commandIDs.nextNode, {
+      execute: args => {
+        widgetFactory.nextNodeSignal.emit(args);
       }
     });
 

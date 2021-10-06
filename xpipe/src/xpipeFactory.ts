@@ -35,6 +35,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
   runXpipeSignal: Signal<this, any>;
   debugXpipeSignal: Signal<this, any>;
   breakpointXpipeSignal: Signal<this, any>;
+  nextNodeSignal: Signal<this, any>;
 
   constructor(options: any) {
     super(options);
@@ -49,6 +50,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     this.runXpipeSignal = new Signal<this, any>(this);
     this.debugXpipeSignal = new Signal<this, any>(this);
     this.breakpointXpipeSignal = new Signal<this, any>(this);
+    this.nextNodeSignal = new Signal<this, any>(this);
   }
 
   protected createNewWidget(context: DocumentRegistry.IContext<XPipeDocModel>): XPipeWidget {
@@ -64,7 +66,8 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
       compileXpipeSignal: this.compileXpipeSignal,
       runXpipeSignal: this.runXpipeSignal,
       debugXpipeSignal: this.debugXpipeSignal,
-      breakpointXpipeSignal: this.breakpointXpipeSignal
+      breakpointXpipeSignal: this.breakpointXpipeSignal,
+      nextNodeSignal: this.nextNodeSignal
     };
 
     const content = new XPipePanel(props);
