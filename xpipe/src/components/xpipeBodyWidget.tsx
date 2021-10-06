@@ -384,15 +384,29 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
         }
 	}
 
-	const handleBreakpointClick = () => {
-		// Only breakpoint xpipe if it is currently in focus
+	const handleToggleBreakpoint = () => {
+		// Only toggle breakpoint if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
 
-		alert("Breakpoint.")
-	}
+		diagramEngine.getModel().getNodes().forEach((item) => {
+            if (item.getOptions()["selected"] == true){
+                let name = item.getOptions()["name"]
+                console.log(name)
+                if (name.startsWith("🔴")){
+                    item.getOptions()["name"] = name.split("🔴")[1]
+                }
+                else{
+                    item.getOptions()["name"] = "🔴" + name
+                }
+                item.setSelected(true);
+                item.setSelected(false);
+            }
+
+		});
+    }
 
 	const handleToggleNextNode = () => {
 		// Only toggle next node if it is currently in focus
@@ -466,13 +480,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	  useEffect(() => {
 		const handleBreakpointSignal = (): void => {
-		  handleBreakpointClick();
+			handleToggleBreakpoint();
 		};
 		breakpointXpipeSignal.connect(handleBreakpointSignal);
 		return (): void => {
 			breakpointXpipeSignal.disconnect(handleBreakpointSignal);
 		};
-	  }, [breakpointXpipeSignal, handleBreakpointClick]);
+	  }, [breakpointXpipeSignal, handleToggleBreakpoint]);
 
 	  useEffect(() => {
 		const handleNextNodeSignal = (): void => {
@@ -483,25 +497,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			nextNodeSignal.disconnect(handleNextNodeSignal);
 		};
 	  }, [nextNodeSignal, handleToggleNextNode]);
-
-    const handleToggleBreakpoint = () => {
-
-        diagramEngine.getModel().getNodes().forEach((item) => {
-            if (item.getOptions()["selected"] == true){
-                let name = item.getOptions()["name"]
-                console.log(name)
-                if (name.startsWith("🔴")){
-                    item.getOptions()["name"] = name.split("🔴")[1]
-                }
-                else{
-                    item.getOptions()["name"] = "🔴" + name
-                }
-                item.setSelected(true);
-                item.setSelected(false);
-            }
-
-		});
-    }
 
 	const handleStart = () => {
         let stringNode = stringNodes.map(function(x){
