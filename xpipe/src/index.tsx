@@ -6,7 +6,7 @@ import {
   ILayoutRestorer
 } from '@jupyterlab/application';
 
-import { createXpipeDebugger, IXpipeDebuggerOptions } from './components/DebuggerWidget';
+import { createXpipeAnalysisViewer, IXpipeAnalysisViewerOptions } from './components/AnalysisViewerWidget';
 
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 
@@ -29,6 +29,9 @@ import { XPipeWidget } from './xpipeWidget';
 
 import Sidebar from './components_xpipe/Sidebar';
 
+import { XpipeDebugger } from './SidebarDebugger';
+import { ITranslator } from '@jupyterlab/translation';
+
 const FACTORY = 'Xpipe editor';
 
 // Export a token so other extensions can require it
@@ -47,7 +50,8 @@ const extension: JupyterFrontEndPlugin<void> = {
     ILauncher,
     IFileBrowserFactory,
     ILayoutRestorer,
-    IMainMenu
+    IMainMenu,
+    ITranslator
   ],
 
   activate: (
@@ -57,7 +61,8 @@ const extension: JupyterFrontEndPlugin<void> = {
     browserFactory: IFileBrowserFactory,
     restorer: ILayoutRestorer,
     menu: IMainMenu,
-    themeManager?: IThemeManager
+    themeManager?: IThemeManager,
+    translator?: ITranslator
   ) => {
 
     console.log('Xpipe is activated!');
@@ -69,6 +74,13 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     restorer.add(sidebarWidget, sidebarWidget.id);
     app.shell.add(sidebarWidget, "left");
+
+    // Creating the sidebar debugger
+    const sidebarXpipe = new XpipeDebugger.Sidebar({ translator})
+    sidebarXpipe.id = 'xpipe-debugger-sidebar';
+    sidebarXpipe.title.iconClass = 'jp-XpipeLogo';
+    restorer.add(sidebarXpipe, sidebarXpipe.id);
+    app.shell.add(sidebarXpipe, 'right');
 
     // Creating the widget factory to register it so the document manager knows about
     // our new DocumentWidget
@@ -221,10 +233,10 @@ const extension: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    // Add a command for opening the xpipe debugger when debug button clicked.
+    // Add a command for opening the xpipe analysis viewer when run button clicked.
     app.commands.addCommand(commandIDs.openXpipeDebugger, {
-      execute: (options: IXpipeDebuggerOptions) => {
-        return createXpipeDebugger(app, options);
+      execute: (options: IXpipeAnalysisViewerOptions) => {
+        return createXpipeAnalysisViewer(app, options);
       }
     });
 
