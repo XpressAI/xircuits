@@ -99,8 +99,9 @@ export  class CustomPortModel extends DefaultPortModel  {
                 return false;
             }
 
+        }else{
+            return(!(thisName.startsWith("parameter")) && !(Object.keys(port.getLinks()).length > 0));
         }
-        console.log("return true")
         return true;
     }
 
@@ -126,7 +127,11 @@ export  class CustomPortModel extends DefaultPortModel  {
             return true;
         }
 
-        return (portLabel === '▶' && thisPortLabel === '▶');
+        if (!(thisPortLabel.endsWith('▶'))){
+            return true;
+        }else{
+            return (portLabel === '▶' && thisPortLabel.endsWith('▶') && !(Object.keys(thisPort.getLinks()).length > 1));
+        }
     }
 
 
