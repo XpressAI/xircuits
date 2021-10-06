@@ -730,7 +730,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			<Content>
 				<Layer
 					onDrop={(event) => {
-						debugger;
+						//debugger;
 						var data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
 
 						let node = null;
