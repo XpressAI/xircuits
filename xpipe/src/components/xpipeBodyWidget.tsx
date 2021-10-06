@@ -301,6 +301,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		alert("Run.")
+		commands.execute(commandIDs.openXpipeDebugger);
 		let nodesCount = diagramEngine.getModel().getNodes().length;
 
 		console.log(diagramEngine.getModel().getNodes());
@@ -370,7 +371,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		commands.execute(commandIDs.openXpipeDebugger);
+		alert("Debug xpipe")
 
         if(compiled && saved){
 		    onClick('displayDebug');
