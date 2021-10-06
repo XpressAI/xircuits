@@ -14,7 +14,7 @@ import { XPipeWidget, XPipePanel } from './xpipeWidget';
 
 import { XPipeDocModel } from './xpipeModel';
 
-import { bugIcon, fastForwardIcon, refreshIcon, runIcon, saveIcon, undoIcon } from '@jupyterlab/ui-components';
+import { bugIcon, circleIcon, fastForwardIcon, refreshIcon, runIcon, saveIcon, undoIcon } from '@jupyterlab/ui-components';
 
 import { ToolbarButton } from '@jupyterlab/apputils';
 
@@ -34,6 +34,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
   compileXpipeSignal: Signal<this, any>;
   runXpipeSignal: Signal<this, any>;
   debugXpipeSignal: Signal<this, any>;
+  breakpointXpipeSignal: Signal<this, any>;
 
   constructor(options: any) {
     super(options);
@@ -47,6 +48,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     this.compileXpipeSignal = new Signal<this, any>(this);
     this.runXpipeSignal = new Signal<this, any>(this);
     this.debugXpipeSignal = new Signal<this, any>(this);
+    this.breakpointXpipeSignal = new Signal<this, any>(this);
   }
 
   protected createNewWidget(context: DocumentRegistry.IContext<XPipeDocModel>): XPipeWidget {
@@ -61,7 +63,8 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
       revertXpipeSignal: this.revertXpipeSignal,
       compileXpipeSignal: this.compileXpipeSignal,
       runXpipeSignal: this.runXpipeSignal,
-      debugXpipeSignal: this.debugXpipeSignal
+      debugXpipeSignal: this.debugXpipeSignal,
+      breakpointXpipeSignal: this.breakpointXpipeSignal
     };
 
     const content = new XPipePanel(props);
@@ -134,6 +137,17 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
         this.commands.execute(commandIDs.debugXpipe);
       }
     });
+
+    /**
+     * Create a breakpoint button toolbar item.
+     */
+     let breakpointButton = new ToolbarButton({
+      icon: circleIcon,
+      tooltip: 'Toggle breakpoint',
+      onClick: (): void => {
+        this.commands.execute(commandIDs.breakpointXpipe);
+      }
+    });
   
     widget.toolbar.insertItem(0,'xpipe-add-save', saveButton);
     widget.toolbar.insertItem(1,'xpipe-add-reload', reloadButton);
@@ -141,6 +155,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     widget.toolbar.insertItem(3,'xpipe-add-compile', compileButton);
     widget.toolbar.insertItem(4,'xpipe-add-run', runButton);
     widget.toolbar.insertItem(5,'xpipe-add-debug', debugButton);
+    widget.toolbar.insertItem(6,'xpipe-add-breakpoint', breakpointButton);
     return widget;
   }
 }
