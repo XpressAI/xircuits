@@ -159,12 +159,18 @@ export  class CustomPortModel extends DefaultPortModel  {
         
         let sourceNode = thisPort.getParent();
         let targetNode =  port.getParent();
+        let nodeType = sourceNode.getOptions()["extras"]["type"];
 
         nodeIDList.push(sourceNode.getID(), targetNode.getID());
 
         //console.log("sourceNode is:", sourceNode.getOptions()["name"], "\ntargetNode is:", targetNode.getOptions()["name"]);
 
-        while ((sourceNode != null) && sourceNode.getOptions()["name"]!="Start"){
+        while ((sourceNode != null) &&
+                nodeType != 'Start' &&
+				nodeType != 'boolean' &&
+				nodeType != 'int' &&
+				nodeType != 'float' &&
+				nodeType != 'string'){
             //console.log("Curent sourceNode:", sourceNode.getOptions()["name"]);
             let inPorts = sourceNode.getInPorts();
             
