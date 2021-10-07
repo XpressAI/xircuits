@@ -115,7 +115,6 @@ export  class CustomPortModel extends DefaultPortModel  {
     }
 
     canTriangleLinkToTriangle = (thisPort, port) => {
-
         let portLabel = port.getOptions()["label"];
         let thisPortLabel = this.options["label"];
         let thisNode = this.getNode();
@@ -127,7 +126,7 @@ export  class CustomPortModel extends DefaultPortModel  {
             return true;
         }
 
-        if (!(thisPortLabel.endsWith('▶'))){
+        if (!(thisPortLabel.endsWith('▶')) && portLabel != '▶'){
             return true;
         }else{
             return (portLabel === '▶' && thisPortLabel.endsWith('▶') && !(Object.keys(thisPort.getLinks()).length > 1));
@@ -194,6 +193,7 @@ export  class CustomPortModel extends DefaultPortModel  {
                     else{
                         let portLinkKey = Object.keys(portLink).toString();
                         sourceNode = portLink[portLinkKey].getSourcePort().getParent();
+                        nodeType = sourceNode.getOptions()["extras"]["type"];
                         if(nodeIDList.includes(sourceNode.getID())){
                             console.log("Loop detected at", sourceNode.getOptions()["name"]);
                             return false;
