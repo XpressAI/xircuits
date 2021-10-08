@@ -41,13 +41,12 @@ export class CustomNodeModel extends DefaultNodeModel {
         this.extras=event.data.extras;
     }
 
-    addOutPortEnhance(label: string, name: string, after: boolean = true): CustomPortModel {
-        const p = new CustomPortModel({
-            in: false,
-            name: name,
-            label: label
-        });
-
+    addOutPortEnhance(label: string, name: string, after: boolean = true, id?: string): CustomPortModel {
+        
+        //check if portID is passed, if not SR will generate a new port ID
+        const p = (id) ? new CustomPortModel({in: false, name: name, label: label, id:id}) : 
+                         new CustomPortModel({in: false, name: name, label: label});
+        
         if (!after) {
             this.portsOut.splice(0, 0, p);
         }
@@ -55,17 +54,17 @@ export class CustomNodeModel extends DefaultNodeModel {
         return this.addPort(p);
     }
 
-    addInPortEnhance(label: string, name: string, after: boolean = true): CustomPortModel {
-        const p = new CustomPortModel({
-            in: true,
-            name: name,
-            label: label
-        });
+    addInPortEnhance(label: string, name: string, after: boolean = true, id?: string): CustomPortModel {
+        
+        //check if portID is passed, if not SR will generate a new port ID
+        const p = (id) ? new CustomPortModel({in: true, name: name, label: label, id:id}) : 
+                         new CustomPortModel({in: true, name: name, label: label});
 
         if (!after) {
-            this.portsOut.splice(0, 0, p);
+                this.portsOut.splice(0, 0, p);
         }
-
+    
         return this.addPort(p);
+        
     }
 }

@@ -13,10 +13,14 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ActionEventBus, ZoomCanvasAction } from '@projectstorm/react-canvas-core';
 import * as SRD from '@projectstorm/react-diagrams';
+import { DefaultLinkModel } from '@projectstorm/react-diagrams';
+
 import {CustomNodeFactory} from "./components/CustomNodeFactory";
 import { CustomNodeModel } from './components/CustomNodeModel';
 
 import { XPipeDocChange, XPipeDocModel } from './xpipeModel';
+
+import { commandIDs } from './components/xpipeBodyWidget';
 
 /**
  * DocumentWidget: widget that represents the view or editor for a file type.
@@ -93,12 +97,14 @@ export class XPipePanel extends ReactWidget {
 
       //check if model.id is empty / does not have an id
       if (model.id != ''){
-        console.log("loading deseralized model!")
-        this.activeModel.deserializeModel(model, this.diagramEngine);
-        this.diagramEngine.setModel(this.activeModel);
+        console.log("deserializing using custom method");
+        //this.activeModel.deserializeModel(model, this.diagramEngine);
+        let deserializedModel = this.customDeserializeModel(model, this.diagramEngine);
+        this.diagramEngine.setModel(deserializedModel);
       }
 
       else {
+        
         console.log("init new model!")
         let startNode = new CustomNodeModel({ name:'Start', color:'rgb(255,102,102)', extras:{ "type":"Start" } });
         startNode.addOutPortEnhance('▶', 'out-0');
@@ -112,6 +118,10 @@ export class XPipePanel extends ReactWidget {
     
         this.activeModel.addAll(startNode, finishedNode);
         this.diagramEngine.setModel(this.activeModel);
+
+        let currentModel = this.diagramEngine.getModel().serialize();
+        this.context.model.setSerializedModel(currentModel);
+
       }
 
     debugger;
@@ -120,6 +130,59 @@ export class XPipePanel extends ReactWidget {
 
     });
   }
+
+  customDeserializeModel = (modelContext: any, diagramEngine: SRD.DiagramEngine) => {
+
+		let tempModel = new SRD.DiagramModel();
+		let links = modelContext["layers"][0]["models"];
+		let nodes = modelContext["layers"][1]["models"];
+		
+		for (let nodeID in nodes){
+			
+			let node =  nodes[nodeID];
+			let newNode = new CustomNodeModel({ id:node.id, type:node.type, name:node.name, 
+												                  color:node.color, extras: node.extras });
+			newNode.setPosition(node.x, node.y);
+
+			for (let portID in node.ports){
+
+				let port = node.ports[portID];
+				if (port.alignment == "right") newNode.addOutPortEnhance(port.label, port.name, true, port.id);
+				if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name, true, port.id);
+
+			}
+			
+			tempModel.addAll(newNode);
+			diagramEngine.setModel(tempModel);
+
+		}
+		
+    for (let linkID in links){
+			
+			
+			let link = links[linkID];
+
+			if (link.sourcePort && link.targetPort){
+
+				let newLink = new DefaultLinkModel();
+
+				let sourcePort = tempModel.getNode(link.source).getPortFromID(link.sourcePort);
+				newLink.setSourcePort(sourcePort);
+
+				let targetPort = tempModel.getNode(link.target).getPortFromID(link.targetPort);
+				newLink.setTargetPort(targetPort);
+
+				tempModel.addAll(newLink);
+				diagramEngine.setModel(tempModel);
+				
+				}
+
+		}
+		
+		return tempModel
+	
+	}
+
 
   render(): any {
     return (
@@ -140,6 +203,7 @@ export class XPipePanel extends ReactWidget {
         debugXpipeSignal={this.debugXpipeSignal}
         breakpointXpipeSignal={this.breakpointXpipeSignal}
         nextNodeSignal={this.nextNodeSignal}
+        customDeserializeModel={this.customDeserializeModel}
       />
     );
   }
