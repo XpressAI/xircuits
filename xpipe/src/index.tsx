@@ -215,7 +215,7 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     // Add a command for creating arbitrary file when compile.
     app.commands.addCommand(commandIDs.createArbitraryFile, {
-      execute: () => {
+      execute: args => {
         app.commands
           .execute(commandIDs.newDocManager, {
             path: browserFactory.defaultBrowser.model.path,
@@ -223,7 +223,7 @@ const extension: JupyterFrontEndPlugin<void> = {
             ext: '.py'
           })
           .then(async model => {
-            const message = "This message will appear when the compile button is clicked";
+            const message = typeof args['pythonCode'] === 'undefined' ? '' : (args['pythonCode'] as string);
             const newWidget = await app.commands.execute(
               commandIDs.openDocManager,
               {
