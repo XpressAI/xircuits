@@ -45,6 +45,7 @@ export interface BodyWidgetProps {
 	runXpipeSignal: Signal<XPipePanel, any>;
 	debugXpipeSignal: Signal<XPipePanel, any>;
 	breakpointXpipeSignal: Signal<XPipePanel, any>;
+	nextNodeSignal: Signal<XPipePanel, any>;
 }
 
 
@@ -96,7 +97,8 @@ export const commandIDs = {
 	debugXpipe: 'Xpipe-editor:debug-node',
 	createArbitraryFile: 'Xpipe-editor:create-arbitrary-file',
 	openXpipeDebugger: 'Xpipe-debugger:open',
-	breakpointXpipe: 'Xpipe-editor:breakpoint-node'
+	breakpointXpipe: 'Xpipe-editor:breakpoint-node',
+	nextNode: 'Xpipe-editor:next-node'
 };
 
 
@@ -122,7 +124,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	compileXpipeSignal,
 	runXpipeSignal,
 	debugXpipeSignal,
-	breakpointXpipeSignal
+	breakpointXpipeSignal,
+	nextNodeSignal
 }) => {
 
     const [prevState, updateState] = useState(0);
@@ -301,6 +304,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		alert("Run.")
+		commands.execute(commandIDs.openXpipeDebugger);
 		let nodesCount = diagramEngine.getModel().getNodes().length;
 
 		console.log(diagramEngine.getModel().getNodes());
@@ -370,7 +374,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		commands.execute(commandIDs.openXpipeDebugger);
+		alert("Debug xpipe")
 
         if(compiled && saved){
 		    onClick('displayDebug');
@@ -380,15 +384,39 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
         }
 	}
 
-	const handleBreakpointClick = () => {
-		// Only breakpoint xpipe if it is currently in focus
+	const handleToggleBreakpoint = () => {
+		// Only toggle breakpoint if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
 
-		alert("Breakpoint.")
-	}
+		diagramEngine.getModel().getNodes().forEach((item) => {
+            if (item.getOptions()["selected"] == true){
+                let name = item.getOptions()["name"]
+                console.log(name)
+                if (name.startsWith("🔴")){
+                    item.getOptions()["name"] = name.split("🔴")[1]
+                }
+                else{
+                    item.getOptions()["name"] = "🔴" + name
+                }
+                item.setSelected(true);
+                item.setSelected(false);
+            }
+
+		});
+    }
+
+	const handleToggleNextNode = () => {
+		// Only toggle next node if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
+		alert("Next Node")
+    }
 
 	useEffect(() => {
 		const handleSaveSignal = (): void => {
@@ -452,32 +480,23 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	  useEffect(() => {
 		const handleBreakpointSignal = (): void => {
-		  handleBreakpointClick();
+			handleToggleBreakpoint();
 		};
 		breakpointXpipeSignal.connect(handleBreakpointSignal);
 		return (): void => {
 			breakpointXpipeSignal.disconnect(handleBreakpointSignal);
 		};
-	  }, [breakpointXpipeSignal, handleBreakpointClick]);
+	  }, [breakpointXpipeSignal, handleToggleBreakpoint]);
 
-    const handleToggleBreakpoint = () => {
-
-        diagramEngine.getModel().getNodes().forEach((item) => {
-            if (item.getOptions()["selected"] == true){
-                let name = item.getOptions()["name"]
-                console.log(name)
-                if (name.startsWith("🔴")){
-                    item.getOptions()["name"] = name.split("🔴")[1]
-                }
-                else{
-                    item.getOptions()["name"] = "🔴" + name
-                }
-                item.setSelected(true);
-                item.setSelected(false);
-            }
-
-		});
-    }
+	  useEffect(() => {
+		const handleNextNodeSignal = (): void => {
+		  handleToggleNextNode();
+		};
+		nextNodeSignal.connect(handleNextNodeSignal);
+		return (): void => {
+			nextNodeSignal.disconnect(handleNextNodeSignal);
+		};
+	  }, [nextNodeSignal, handleToggleNextNode]);
 
 	const handleStart = () => {
         let stringNode = stringNodes.map(function(x){

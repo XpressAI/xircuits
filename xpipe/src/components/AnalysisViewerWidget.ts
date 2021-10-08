@@ -1,22 +1,22 @@
 import { JupyterFrontEnd } from "@jupyterlab/application";
 import { Widget, DockLayout } from '@lumino/widgets';
 
-export interface IXpipeDebuggerOptions {
+export interface IXpipeAnalysisViewerOptions {
     insertMode?: DockLayout.InsertMode;
     ref?: string;
 }    
 
 /**
- * Create the xpipe debugger widget at the bottom panel
+ * Create the xpipe analysis viewer widget at the main bottom panel
  */
- export function createXpipeDebugger(
+ export function createXpipeAnalysisViewer(
     app: JupyterFrontEnd,
-    options?: IXpipeDebuggerOptions
+    options?: IXpipeAnalysisViewerOptions
   ): Promise<void> {
-    let debuggerWidget = new Widget();
-    debuggerWidget.id = 'xpipe-debugger';
-    debuggerWidget.title.label = 'Xpipe Debugger';
-    debuggerWidget.title.closable = true;
+    let analysisWidget = new Widget();
+    analysisWidget.id = 'xpipe-analysis';
+    analysisWidget.title.label = 'Xpipe Analysis Viewer';
+    analysisWidget.title.closable = true;
 
     var main_strip = document.createElement("div");
     main_strip.id = "bottom_main_strip";
@@ -28,19 +28,18 @@ export interface IXpipeDebuggerOptions {
             left.appendChild(projects);
     navbar.appendChild(left);
     main_strip.appendChild(navbar);
-    debuggerWidget.node.appendChild(main_strip);
+    analysisWidget.node.appendChild(main_strip);
 
-    debuggerWidget.disposed.connect(() => {
-    debuggerWidget = null;
+    analysisWidget.disposed.connect(() => {
+    analysisWidget = null;
     app.commands.notifyCommandChanged();
     });
-    app.shell.add(debuggerWidget, 'down',{
-    ref: options.ref,
-    mode: options.insertMode
-    });
-    app.shell.activateById(debuggerWidget.id);
+    app.shell.add(analysisWidget, 'main',{ 
+        mode: 'split-bottom',
+        activate: false} );
+    app.shell.activateById(analysisWidget.id);
 
-    debuggerWidget.update();
+    analysisWidget.update();
     app.commands.notifyCommandChanged();
     
     return Promise.resolve();
