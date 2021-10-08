@@ -7,7 +7,7 @@ import { Button } from 'primereact/button';
 import { Panel } from 'primereact/panel';
 import { InputText } from 'primereact/inputtext';
 import { InputSwitch } from 'primereact/inputswitch';
-import { LinkModel } from '@projectstorm/react-diagrams';
+import { LinkModel, DefaultLinkModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
 import * as SRD from '@projectstorm/react-diagrams';
 
@@ -45,6 +45,7 @@ export interface BodyWidgetProps {
 	runXpipeSignal: Signal<XPipePanel, any>;
 	debugXpipeSignal: Signal<XPipePanel, any>;
 	breakpointXpipeSignal: Signal<XPipePanel, any>;
+	customDeserializeModel;
 }
 
 
@@ -122,7 +123,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	compileXpipeSignal,
 	runXpipeSignal,
 	debugXpipeSignal,
-	breakpointXpipeSignal
+	breakpointXpipeSignal,
+	customDeserializeModel
 }) => {
 
     const [prevState, updateState] = useState(0);
@@ -141,33 +143,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [floatNodesValue, setFloatNodesValue] = useState<number[]>([0.00]);
 	const [boolNodesValue, setBoolNodesValue] = useState<boolean[]>([false]);
 
-	const customDeserializeModel = (modelContext: any, diagramEngine) => {
-		//a custom JSON deserialization method that I've been working on.
-		//currently only ""deserializes"" the node layer by creating new ones.
-
-		let tempModel = new SRD.DiagramModel();
-		let links = modelContext["layers"][0]["models"];
-		let nodes = modelContext["layers"][1]["models"];
-
-		for (let nodeID in nodes){
-			
-			let node =  nodes[nodeID];
-			let newNode = new CustomNodeModel({ name:node["name"], color:node["color"], extras: node["extras"] });
-			newNode.setPosition(node["x"], node["y"]);
-
-			for (let portID in node.ports){
-
-				let port = node.ports[portID];
-				if (port.alignment == "right") newNode.addOutPortEnhance(port.label, port.name);
-				if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name);
-
-			}
-			tempModel.addAll(newNode);
-			diagramEngine.setModel(tempModel);
-		}
-
-		return tempModel
-	}
+	
 
 	const getTargetNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
 
@@ -254,8 +230,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		commands.execute(commandIDs.reloadDocManager);
 		let model = context.model.getSharedObject();
-		activeModel.deserializeModel(model, diagramEngine);
-		diagramEngine.setModel(activeModel);
+		let deserializedModel = customDeserializeModel(model, diagramEngine);
+		diagramEngine.setModel(deserializedModel);
 		forceUpdate();
 	}
 
@@ -269,8 +245,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		commands.execute(commandIDs.revertDocManager);
 		//todo: check behavior if user presses "cancel"
 		let model = context.model.getSharedObject();
-		activeModel.deserializeModel(model, diagramEngine);
-		diagramEngine.setModel(activeModel);
+		let deserializedModel = customDeserializeModel(model, diagramEngine);
+		diagramEngine.setModel(deserializedModel);
 		forceUpdate();
 	}
 
