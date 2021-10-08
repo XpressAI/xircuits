@@ -97,7 +97,7 @@ export class XPipePanel extends ReactWidget {
 
       //check if model.id is empty / does not have an id
       if (model.id != ''){
-        console.log("deserializing using custom method")
+        console.log("deserializing using custom method");
         //this.activeModel.deserializeModel(model, this.diagramEngine);
         let deserializedModel = this.customDeserializeModel(model, this.diagramEngine);
         this.diagramEngine.setModel(deserializedModel);
@@ -118,6 +118,9 @@ export class XPipePanel extends ReactWidget {
     
         this.activeModel.addAll(startNode, finishedNode);
         this.diagramEngine.setModel(this.activeModel);
+
+        let currentModel = this.diagramEngine.getModel().serialize();
+        this.context.model.setSerializedModel(currentModel);
 
       }
 

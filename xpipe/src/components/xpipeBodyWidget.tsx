@@ -234,8 +234,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		commands.execute(commandIDs.reloadDocManager);
 		let model = context.model.getSharedObject();
+		if(model.id == ''){
+			console.log("No context available! Please save xpipe first.")
+		}
+		else{
 		let deserializedModel = customDeserializeModel(model, diagramEngine);
 		diagramEngine.setModel(deserializedModel);
+		}
 		forceUpdate();
 	}
 
@@ -249,8 +254,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		commands.execute(commandIDs.revertDocManager);
 		//todo: check behavior if user presses "cancel"
 		let model = context.model.getSharedObject();
+
+		if(model.id == ''){
+			console.log("No context available! Please save xpipe first.")
+		}
+		else{
 		let deserializedModel = customDeserializeModel(model, diagramEngine);
 		diagramEngine.setModel(deserializedModel);
+		}
 		forceUpdate();
 	}
 
