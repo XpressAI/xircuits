@@ -1192,7 +1192,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
                                }
                             });
 							console.log("Updating doc context due to drop event!")
-							let currentModel = activeModel.serialize();
+							let currentModel = diagramEngine.getModel().serialize();
 							context.model.setSerializedModel(currentModel);
 							forceUpdate();
 						}

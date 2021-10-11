@@ -14,7 +14,7 @@ import { XPipeWidget, XPipePanel } from './xpipeWidget';
 
 import { XPipeDocModel } from './xpipeModel';
 
-import { bugIcon, circleIcon, fastForwardIcon, refreshIcon, runIcon, saveIcon, undoIcon } from '@jupyterlab/ui-components';
+import { bugIcon, checkIcon, circleIcon, refreshIcon, runIcon, saveIcon, undoIcon } from '@jupyterlab/ui-components';
 
 import { ToolbarButton } from '@jupyterlab/apputils';
 
@@ -112,7 +112,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
      * Create a compile button toolbar item.
      */
     let compileButton = new ToolbarButton({
-      icon: fastForwardIcon,
+      icon: checkIcon,
       tooltip: 'Compile Xpipe',
       onClick: (): void => {
         this.commands.execute(commandIDs.compileXpipe);

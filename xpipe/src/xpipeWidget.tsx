@@ -101,6 +101,9 @@ export class XPipePanel extends ReactWidget {
         //this.activeModel.deserializeModel(model, this.diagramEngine);
         let deserializedModel = this.customDeserializeModel(model, this.diagramEngine);
         this.diagramEngine.setModel(deserializedModel);
+
+        let currentModel = this.diagramEngine.getModel().serialize();
+        this.context.model.setSerializedModel(currentModel);
       }
 
       else {
