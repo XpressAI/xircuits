@@ -192,6 +192,13 @@ const extension: JupyterFrontEndPlugin<void> = {
       }
     });
 
+    // Add command signal to test xpipe
+    app.commands.addCommand(commandIDs.testXpipe, {
+      execute: args => {
+        widgetFactory.testXpipeSignal.emit(args);
+      }
+    });
+
     // Add a command for creating a new xpipe file.
     app.commands.addCommand(commandIDs.createNewXpipe, {
       label: 'Xpipe File',

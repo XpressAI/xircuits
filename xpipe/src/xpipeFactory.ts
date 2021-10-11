@@ -14,7 +14,7 @@ import { XPipeWidget, XPipePanel } from './xpipeWidget';
 
 import { XPipeDocModel } from './xpipeModel';
 
-import { bugIcon, checkIcon, circleIcon, refreshIcon, runIcon, saveIcon, undoIcon } from '@jupyterlab/ui-components';
+import { bugIcon, checkIcon, circleIcon, editIcon, refreshIcon, runIcon, saveIcon, undoIcon } from '@jupyterlab/ui-components';
 
 import { ToolbarButton } from '@jupyterlab/apputils';
 
@@ -37,6 +37,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
   breakpointXpipeSignal: Signal<this, any>;
   nextNodeSignal: Signal<this, any>;
   currentNodeSignal: Signal<this, any>;
+  testXpipeSignal: Signal<this, any>;
 
   constructor(options: any) {
     super(options);
@@ -53,6 +54,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     this.breakpointXpipeSignal = new Signal<this, any>(this);
     this.nextNodeSignal = new Signal<this, any>(this);
     this.currentNodeSignal = new Signal<this, any>(this);
+    this.testXpipeSignal = new Signal<this, any>(this);
   }
 
   protected createNewWidget(context: DocumentRegistry.IContext<XPipeDocModel>): XPipeWidget {
@@ -70,7 +72,8 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
       debugXpipeSignal: this.debugXpipeSignal,
       breakpointXpipeSignal: this.breakpointXpipeSignal,
       nextNodeSignal: this.nextNodeSignal,
-      currentNodeSignal: this.currentNodeSignal
+      currentNodeSignal: this.currentNodeSignal,
+      testXpipeSignal: this.testXpipeSignal
     };
 
     const content = new XPipePanel(props);
@@ -154,6 +157,17 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
         this.commands.execute(commandIDs.breakpointXpipe);
       }
     });
+
+    /**
+     * Create a test button toolbar item.
+     */
+     let testButton = new ToolbarButton({
+      icon: editIcon,
+      tooltip: 'For testing purpose',
+      onClick: () : void => {
+        this.commands.execute(commandIDs.testXpipe)
+      }
+    });
   
     widget.toolbar.insertItem(0,'xpipe-add-save', saveButton);
     widget.toolbar.insertItem(1,'xpipe-add-reload', reloadButton);
@@ -162,6 +176,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     widget.toolbar.insertItem(4,'xpipe-add-run', runButton);
     widget.toolbar.insertItem(5,'xpipe-add-debug', debugButton);
     widget.toolbar.insertItem(6,'xpipe-add-breakpoint', breakpointButton);
+    widget.toolbar.insertItem(7,'xpipe-add-test', testButton);
     return widget;
   }
 }

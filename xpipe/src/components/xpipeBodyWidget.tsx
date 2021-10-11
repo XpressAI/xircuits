@@ -47,6 +47,7 @@ export interface BodyWidgetProps {
 	breakpointXpipeSignal: Signal<XPipePanel, any>;
     nextNodeSignal: Signal<XPipePanel, any>;
 	currentNodeSignal: Signal<XPipePanel, any>;
+	testXpipeSignal: Signal<XPipePanel, any>;
 	customDeserializeModel;
 }
 
@@ -100,7 +101,8 @@ export const commandIDs = {
 	createArbitraryFile: 'Xpipe-editor:create-arbitrary-file',
 	openXpipeDebugger: 'Xpipe-debugger:open',
 	breakpointXpipe: 'Xpipe-editor:breakpoint-node',
-	nextNode: 'Xpipe-editor:next-node'
+	nextNode: 'Xpipe-editor:next-node',
+	testXpipe: 'Xpipe-editor:test-node'
 };
 
 
@@ -129,6 +131,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	breakpointXpipeSignal,
     nextNodeSignal,
 	currentNodeSignal,
+	testXpipeSignal,
 	customDeserializeModel
 
 }) => {
@@ -616,6 +619,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		alert("Next Node")
     }
 
+	const handleTestClick = () => {
+		// Only test xpipe if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
+		alert("Testing")
+    }
+
 	useEffect(() => {
 
 		if (hyperparameterNode){
@@ -725,6 +738,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			nextNodeSignal.disconnect(handleNextNodeSignal);
 		};
 	  }, [nextNodeSignal, handleToggleNextNode]);
+
+	  useEffect(() => {
+		const handleTestSignal = (): void => {
+		  handleTestClick();
+		};
+		testXpipeSignal.connect(handleTestSignal);
+		return (): void => {
+			testXpipeSignal.disconnect(handleTestSignal);
+		};
+	  }, [testXpipeSignal, handleTestClick]);
 
 	const handleStart = () => {
         let stringNode = stringNodes.map(function(x){
