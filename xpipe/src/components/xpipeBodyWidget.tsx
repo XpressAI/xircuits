@@ -45,7 +45,7 @@ export interface BodyWidgetProps {
 	runXpipeSignal: Signal<XPipePanel, any>;
 	debugXpipeSignal: Signal<XPipePanel, any>;
 	breakpointXpipeSignal: Signal<XPipePanel, any>;
-  nextNodeSignal: Signal<XPipePanel, any>;
+    nextNodeSignal: Signal<XPipePanel, any>;
 	customDeserializeModel;
 }
 
@@ -126,7 +126,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	runXpipeSignal,
 	debugXpipeSignal,
 	breakpointXpipeSignal,
-  nextNodeSignal,
+    nextNodeSignal,
 	customDeserializeModel
 
 }) => {
@@ -135,6 +135,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
     const forceUpdate = useCallback(() => updateState(prevState => prevState + 1), []);
     const [saved, setSaved] = useState(false);
     const [compiled, setCompiled] = useState(false);
+    const [hyperparameterNode, setHyperparameterNode] = useState(false);
 	const [displaySavedAndCompiled, setDisplaySavedAndCompiled] = useState(false);
 	const [displayDebug, setDisplayDebug] = useState(false);
 	const [displayHyperparameter, setDisplayHyperparameter] = useState(false);
@@ -147,14 +148,24 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [floatNodesValue, setFloatNodesValue] = useState<number[]>([0.00]);
 	const [boolNodesValue, setBoolNodesValue] = useState<boolean[]>([false]);
 
-	
+
+	const getBindingIndexById = (nodeModels: any[], id: string): number | null => {
+		for (let i = 0; i < nodeModels.length; i++) {
+			let nodeModel = nodeModels[i];
+
+			if (nodeModel.getID() === id) {
+				return i;
+			}
+		}
+		return null;
+	}
 
 	const getTargetNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
 
 		for (let i = 0; i < linkModels.length; i++) {
 			let linkModel = linkModels[i];
 
-			if (linkModel.getSourcePort().getNode().getID() === sourceId) {
+			if (linkModel.getSourcePort().getNode().getID() === sourceId && linkModel.getTargetPort().getOptions()["label"] == '▶') {
 				return linkModel.getTargetPort().getNode().getID();
 			}
 		}
@@ -191,7 +202,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		if (startNodeModel) {
 			let sourceNodeModelId = startNodeModel.getID();
-			let retNodeModels: NodeModel[] = new Array();
+			let retNodeModels: NodeModel[] = [];
 			retNodeModels.push(startNodeModel);
 
 			while (getTargetNodeModelId(model.getLinks(), sourceNodeModelId) != null) {
@@ -201,6 +212,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					let nodeModel = getNodeModelById(nodeModels, getTargetNode);
 
 					if (nodeModel) {
+						sourceNodeModelId = nodeModel.getID();
 						retNodeModels.push(nodeModel)
 					}
 				}
@@ -212,6 +224,195 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return null;
 	}
 
+	const getPythonCompiler = (): string => {
+
+		let model = diagramEngine.getModel();
+		let nodeModels = model.getNodes();
+		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
+		let pythonCode = '';
+		let uniqueComponents = {};
+		
+		let allNodes = getAllNodesFromStartToFinish();
+		console.log(allNodes);
+		
+		for (let node in allNodes){
+			console.log(node);
+			let nodeType = allNodes[node]["extras"]["type"];
+			let componentName = allNodes[node]["name"];
+			componentName = componentName.replace(/\s+/g,"");
+			if (nodeType == 'Start' || 
+				nodeType == 'Finish' ||
+				nodeType === 'boolean' ||
+				nodeType === 'int' ||
+				nodeType === 'float' ||
+				nodeType === 'string'){}
+			else{
+				uniqueComponents[componentName] = componentName;
+			}
+		}
+
+		for (let componentName in uniqueComponents){
+
+			pythonCode += "from components import " + componentName + "\n";
+			
+		}
+
+		pythonCode += "\ndef main(args):\n";
+
+		for (let i = 0; i < allNodes.length; i++){
+
+			let nodeType = allNodes[i]["extras"]["type"];
+
+			if (nodeType == 'Start' || 
+				nodeType == 'Finish' ||
+				nodeType === 'boolean' ||
+				nodeType === 'int' ||
+				nodeType === 'float' ||
+				nodeType === 'string'){
+			}else{
+				let bindingName = 'c_' + i;
+				let componentName = allNodes[i]["name"];
+				componentName = componentName.replace(/\s+/g,"");
+				pythonCode += '    ' + bindingName + ' = ' + componentName + '()\n';
+			}
+			
+		}
+
+		pythonCode += '\n';
+
+		if (startNodeModel) {
+			let sourceNodeModelId = startNodeModel.getID();
+			let j = 0;
+
+			while (getTargetNodeModelId(model.getLinks(), sourceNodeModelId) != null) {
+				let targetNodeId = getTargetNodeModelId(model.getLinks(), sourceNodeModelId)
+
+				if (targetNodeId) {
+					
+					let bindingName = 'c_' + ++j;
+					let currentNodeModel = getNodeModelById(nodeModels, targetNodeId);
+					debugger;
+					let allPort = currentNodeModel.getPorts();
+					for (let port in allPort){
+
+						let portIn = allPort[port].getOptions().alignment == 'left';
+
+						if (portIn){
+							let label = allPort[port].getOptions()["label"];
+							label = label.replace(/\s+/g,"_");
+							label = label.toLowerCase();
+							
+							if (label == '▶'){
+							}else{
+								let portLinks = allPort[port].getLinks();
+
+								for (let portLink in portLinks){
+									let sourceNodeName = portLinks[portLink].getSourcePort().getNode()["name"];
+									let sourceNodeId = portLinks[portLink].getSourcePort().getNode().getOptions()["id"];
+									let sourcePortLabel = portLinks[portLink].getSourcePort().getOptions()["label"];
+									sourcePortLabel = sourcePortLabel.replace(/\s+/g,"_");
+									sourcePortLabel = sourcePortLabel.toLowerCase();
+									let k = getBindingIndexById(allNodes, sourceNodeId);
+									let preBindingName = 'c_' + k;
+									
+									if (port.startsWith("parameter")){
+
+										if (sourceNodeName.startsWith("Literal")){
+											pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "'" + sourcePortLabel + "'\n";
+										}else{
+											sourceNodeName = sourceNodeName.split(": ");
+											let paramName = sourceNodeName[sourceNodeName.length - 1];
+											paramName = paramName.replace(/\s+/g,"_");
+											paramName = paramName.toLowerCase();
+											pythonCode += '    ' + bindingName + '.' + label + '.value = args.' + paramName + '\n';
+										}
+
+									}else{
+										pythonCode += '    ' + bindingName + '.' + label + ' = ' + preBindingName + '.' + sourcePortLabel + '\n';
+									}
+								}
+							}
+						}else{
+						}
+
+					}
+
+					if (currentNodeModel) {
+						sourceNodeModelId = currentNodeModel.getID();
+					}
+				}
+
+			}
+		}
+
+		pythonCode += '\n';
+
+		for (let i = 0; i < allNodes.length; i++){
+
+			let nodeType = allNodes[i]["extras"]["type"];
+			let bindingName = 'c_' + i;
+			let nextBindingName = 'c_' + (i + 1);
+
+			if (nodeType == 'Start' || nodeType == 'Finish'){
+			}else if(i == (allNodes.length - 2)){
+				pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
+			}else{
+				pythonCode += '    ' + bindingName + '.next = ' + nextBindingName +'\n';
+			}
+			
+		}
+		
+		if (allNodes.length > 2){
+			pythonCode += '\n';
+			pythonCode += '    ' + 'next_component = c_1.do()\n';
+			pythonCode += '    ' + 'while next_component:\n';
+			pythonCode += '        ' + 'next_component = next_component.do()\n';
+			pythonCode += '\n';
+			pythonCode += "if __name__ == '__main__':\n";
+			pythonCode += '    ' + 'parser = ArgumentParser()\n';
+
+			if (stringNodes){
+				
+				for (let i = 0; i < stringNodes.length; i++){
+					let stringParam = stringNodes[i].replace(/\s+/g,"_");
+					stringParam = stringParam.toLowerCase();
+					pythonCode += '    ' + "parser.add_argument('--" + stringParam + "', default='test', type=str)\n";
+				}
+			}
+
+			if (intNodes){
+				
+				for (let i = 0; i < intNodes.length; i++){
+					let intParam = intNodes[i].replace(/\s+/g,"_");
+					intParam = intParam.toLowerCase();
+					pythonCode += '    ' + "parser.add_argument('--" + intParam + "', default='1', type=int)\n";
+				}
+			}
+
+			if (floatNodes){
+				
+				for (let i = 0; i < floatNodes.length; i++){
+					let floatParam = floatNodes[i].replace(/\s+/g,"_");
+					floatParam = floatParam.toLowerCase();
+					pythonCode += '    ' + "parser.add_argument('--" + floatParam + "', default='1.0', type=float)\n";
+				}
+			}
+
+			if (boolNodes){
+				
+				for (let i = 0; i < boolNodes.length; i++){
+					let boolParam = boolNodes[i].replace(/\s+/g,"_");
+					boolParam = boolParam.toLowerCase();
+					pythonCode += '    ' + "parser.add_argument('--" + boolParam + "', default=True, type=bool)\n";
+				}
+			}
+
+			pythonCode += '    ' + 'main(parser.parse_args())';
+		}
+
+		return pythonCode;
+	}
+
 	const handleSaveClick = () => {
 		// Only save xpipe if it is currently in focus
 		// This must be first to avoid unnecessary complication
@@ -219,6 +420,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
+		setHyperparameterNode(true);
 	    setSaved(true);
 		let currentModel = diagramEngine.getModel().serialize();
 		context.model.setSerializedModel(currentModel);
@@ -271,10 +473,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-
-	    alert("Compiled.")
-	    setCompiled(true);
-		commands.execute(commandIDs.createArbitraryFile);
+		
+		if (saved){
+			let pythonCode = getPythonCompiler();
+			alert("Compiled.")
+			setCompiled(true);
+			commands.execute(commandIDs.createArbitraryFile, {pythonCode});
+		}else{
+			alert("Please save before compiling.");
+		}
 	}
 
     const handleUnsaved = () => {
@@ -405,6 +612,36 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		alert("Next Node")
     }
+
+	useEffect(() => {
+
+		if (hyperparameterNode){
+			let nodesCount = diagramEngine.getModel().getNodes().length
+
+			for (let i = 0; i < nodesCount; i++) {
+				let nodeName = diagramEngine.getModel().getNodes()[i].getOptions()["name"];
+				if (nodeName.startsWith("Hyperparameter")){
+					let regEx = /\(([^)]+)\)/;
+					let result = nodeName.match(regEx);
+					let nodeText = nodeName.split(": ");
+					if(result[1] == 'String'){
+						setStringNodes(stringNodes => ([...stringNodes, nodeText[nodeText.length - 1]].sort()));
+					}else if(result[1] == 'Int'){
+						setIntNodes(intNodes => ([...intNodes, nodeText[nodeText.length - 1]].sort()));
+					}else if(result[1] == 'Float'){
+						setFloatNodes(floatNodes => ([...floatNodes, nodeText[nodeText.length - 1]].sort()));
+					}else if(result[1] == 'Boolean'){
+						setBoolNodes(boolNodes => ([...boolNodes, nodeText[nodeText.length - 1]].sort()));
+					}
+				}
+			}
+		}else{
+		    setStringNodes(["name"]);
+		    setIntNodes([]);
+		    setFloatNodes([]);
+		    setBoolNodes([]);
+		}
+	  }, [hyperparameterNode]);
 
 	useEffect(() => {
 		const handleSaveSignal = (): void => {
@@ -845,24 +1082,70 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							node.addOutPortEnhance('converted', 'out-1');
 
 						} else if (data.type === 'string') {
-							let theResponse = window.prompt('notice', 'Enter String Name (Without Quotes):');
-							node = new CustomNodeModel({ name: "Hyperparameter (String): " + theResponse, color: 'rgb(153,204,204)', extras: { "type": data.type } });
-							node.addOutPortEnhance('▶', 'parameter-out-0');
+
+							if ((data.name).startsWith("Literal")){
+
+								let theResponse = window.prompt('Enter String Value (Without Quotes):');
+								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)',  extras: { "type": data.type } });
+								node.addOutPortEnhance(theResponse, 'out-0');
+
+							} else{
+
+								let theResponse = window.prompt('notice', 'Enter String Name (Without Quotes):');
+								node = new CustomNodeModel({ name: "Hyperparameter (String): " + theResponse, color: 'rgb(153,204,204)', extras: { "type": data.type } });
+								node.addOutPortEnhance('▶', 'parameter-out-0');
+
+							}
 
 						} else if (data.type === 'int') {
-							let theResponse = window.prompt('notice', 'Enter Int Name (Without Quotes):');
-							node = new CustomNodeModel({ name: "Hyperparameter (Int): " + theResponse, color: 'rgb(153,0,102)', extras: {"type":data.type} });
-							node.addOutPortEnhance('▶', 'parameter-out-0');
+
+							if ((data.name).startsWith("Literal")){
+								
+								let theResponse = window.prompt('Enter Int Value (Without Quotes):');
+								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)',  extras: { "type": data.type } });
+								node.addOutPortEnhance(theResponse, 'out-0');
+
+							} else{
+								
+								let theResponse = window.prompt('notice', 'Enter Int Name (Without Quotes):');
+								node = new CustomNodeModel({ name: "Hyperparameter (Int): " + theResponse, color: 'rgb(153,0,102)', extras: {"type":data.type} });
+								node.addOutPortEnhance('▶', 'parameter-out-0');
+
+							}
 
 						} else if (data.type === 'float') {
-							let theResponse = window.prompt('notice', 'Enter Float Name (Without Quotes):');
-							node = new CustomNodeModel({ name: "Hyperparameter (Float): " + theResponse, color: 'rgb(102,51,102)', extras: { "type": data.type } });
-							node.addOutPortEnhance('▶', 'parameter-out-0');
+
+							if ((data.name).startsWith("Literal")){
+								
+								let theResponse = window.prompt('Enter Float Value (Without Quotes):');
+								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)',  extras: { "type": data.type } });
+								node.addOutPortEnhance(theResponse, 'out-0');
+
+							} else{
+
+								let theResponse = window.prompt('notice', 'Enter Float Name (Without Quotes):');
+								node = new CustomNodeModel({ name: "Hyperparameter (Float): " + theResponse, color: 'rgb(102,51,102)', extras: { "type": data.type } });
+								node.addOutPortEnhance('▶', 'parameter-out-0');
+
+							}
 
 						}else if (data.type === 'boolean') {
-						    let theResponse = window.prompt('notice','Enter Boolean Name (Without Quotes):');
-                            node=new CustomNodeModel({name: "Hyperparameter (Boolean): " + theResponse,color:'rgb(153,51,204)',extras:{"type":data.type}});
-                            node.addOutPortEnhance('▶','parameter-out-0');
+
+							if ((data.name).startsWith("Literal")){
+
+								let portLabel = data.name.split(' ');
+								portLabel = portLabel[portLabel.length - 1];
+
+								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)', extras: { "type": data.type } });
+								node.addOutPortEnhance(portLabel, 'out-0');
+
+							} else{
+
+								let theResponse = window.prompt('notice','Enter Boolean Name (Without Quotes):');
+								node=new CustomNodeModel({name: "Hyperparameter (Boolean): " + theResponse,color:'rgb(153,51,204)',extras:{"type":data.type}});
+								node.addOutPortEnhance('▶','parameter-out-0');
+
+							}
 
                         } else if (data.type === 'model') {
 							node = new CustomNodeModel({ name: data.name, color: 'rgb(102,102,102)', extras: { "type": data.type } });
