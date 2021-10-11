@@ -24,7 +24,7 @@ export interface IXpipeAnalysisViewerOptions {
             var left = document.createElement("ul");
             left.id = "bottom_navbar_left";
                     var projects = document.createElement("li");
-                    projects.textContent = 'Not yet implemented!';
+                    projects.textContent = 'The xpipe analysis viewer will be displayed here';
             left.appendChild(projects);
     navbar.appendChild(left);
     main_strip.appendChild(navbar);

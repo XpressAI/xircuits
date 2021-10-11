@@ -46,6 +46,7 @@ export interface BodyWidgetProps {
 	debugXpipeSignal: Signal<XPipePanel, any>;
 	breakpointXpipeSignal: Signal<XPipePanel, any>;
     nextNodeSignal: Signal<XPipePanel, any>;
+	currentNodeSignal: Signal<XPipePanel, any>;
 	customDeserializeModel;
 }
 
@@ -127,6 +128,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	debugXpipeSignal,
 	breakpointXpipeSignal,
     nextNodeSignal,
+	currentNodeSignal,
 	customDeserializeModel
 
 }) => {
@@ -590,6 +592,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
             if (item.getOptions()["selected"] == true){
                 let name = item.getOptions()["name"]
                 console.log(name)
+				currentNodeSignal.emit({name});
                 if (name.startsWith("🔴")){
                     item.getOptions()["name"] = name.split("🔴")[1]
                 }

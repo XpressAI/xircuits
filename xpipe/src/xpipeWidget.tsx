@@ -55,6 +55,7 @@ export class XPipePanel extends ReactWidget {
   debugXpipeSignal: Signal<this, any>;
   breakpointXpipeSignal: Signal<this, any>;
   nextNodeSignal: Signal<this, any>;
+  currentNodeSignal: Signal<this, any>;
 
   activeModel: SRD.DiagramModel;
 	diagramEngine: SRD.DiagramEngine;
@@ -78,6 +79,7 @@ export class XPipePanel extends ReactWidget {
     this.debugXpipeSignal = options.debugXpipeSignal;
     this.breakpointXpipeSignal = options.breakpointXpipeSignal;
     this.nextNodeSignal = options.nextNodeSignal;
+    this.currentNodeSignal = options.currentNodeSignal;
     
     //debugger;
     console.log(this.context);
@@ -206,6 +208,7 @@ export class XPipePanel extends ReactWidget {
         debugXpipeSignal={this.debugXpipeSignal}
         breakpointXpipeSignal={this.breakpointXpipeSignal}
         nextNodeSignal={this.nextNodeSignal}
+        currentNodeSignal={this.currentNodeSignal}
         customDeserializeModel={this.customDeserializeModel}
       />
     );

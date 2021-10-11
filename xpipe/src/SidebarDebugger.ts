@@ -7,7 +7,8 @@ import { redoIcon } from '@jupyterlab/ui-components';
 
 import { Panel, SplitPanel, Widget, PanelLayout } from '@lumino/widgets';
 import { commandIDs } from './components/xpipeBodyWidget';
-import { CounterWidget } from './CounterWidget';
+import { BreakpointWidget } from './BreakpointWidget';
+import { XpipeFactory } from './xpipeFactory';
 
 
 /**
@@ -23,6 +24,7 @@ import { CounterWidget } from './CounterWidget';
       super();
       const translator = options.translator || nullTranslator;
       const app = options.app;
+      const xpipeFactory = options.widgetFactory;
       this.id = 'jp-debugger-sidebar';
       this.addClass('jp-DebuggerSidebar');
   
@@ -30,8 +32,8 @@ import { CounterWidget } from './CounterWidget';
       this._body.orientation = 'vertical';
     //   this._body.addClass('jp-DebuggerSidebar-body');
       this.addWidget(this._body);
-      const content = new CounterWidget();
-      const debuggerToolbar = new MainAreaWidget<CounterWidget>({ content });
+      const content = new BreakpointWidget( xpipeFactory );
+      const debuggerToolbar = new MainAreaWidget<BreakpointWidget>({ content });
 
       /**
          * Create a next node button toolbar item.
@@ -140,13 +142,17 @@ import { CounterWidget } from './CounterWidget';
      */
     export interface IOptions extends Panel.IOptions {
       /**
-       * The application language translator..
+       * The front-end application ..
        */
        app?: JupyterFrontEnd;
       /**
        * The application language translator..
        */
       translator?: ITranslator;
+      /**
+       * The xpipe factory..
+       */
+       widgetFactory?: XpipeFactory;
     }
   }
 /**
