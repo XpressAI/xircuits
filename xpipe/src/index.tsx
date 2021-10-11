@@ -68,7 +68,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     console.log('Xpipe is activated!');
 
     // Creating the sidebar widget
-    const sidebarWidget = ReactWidget.create(<Sidebar />);
+    const sidebarWidget = ReactWidget.create(<Sidebar lab = {app} basePath = ""/>);
     sidebarWidget.id = 'xpipe-component-sidebar';
     sidebarWidget.title.iconClass = 'jp-XpipeLogo';
 
