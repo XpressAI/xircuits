@@ -136,10 +136,6 @@ export default function Sidebar(props: SidebarProps) {
         fetchComponentList();
     }, []);
 
-
-    // ComponentList(props.lab, props.basePath).then((e) => {
-    //     componentList = [...e];
-    // });
     return (
         <Body>
             <Content>
@@ -197,7 +193,6 @@ export default function Sidebar(props: SidebarProps) {
 
                             {
                                 componentList.filter((val) => {
-                                    debugger;
                                     if (searchTerm == "") {
                                         return val
                                     } else if (val.task.toLowerCase().includes(searchTerm.toLowerCase())) {
@@ -249,7 +244,6 @@ export default function Sidebar(props: SidebarProps) {
 
                             {
                                 componentList.filter((val) => {
-                                    debugger;
                                     if (searchTerm == "") {
                                         return val
                                     } else if (val.task.toLowerCase().includes(searchTerm.toLowerCase())) {
