@@ -125,7 +125,7 @@ import { XpipeFactory } from '../xpipeFactory';
       const trans = translator.load('jupyterlab');
   
       const title = new Widget({ node: document.createElement('h2') });
-      title.node.textContent = trans.__('Breakpoint');
+      title.node.textContent = trans.__('Debugger');
   
       const layout = new PanelLayout();
       layout.addWidget(title);
