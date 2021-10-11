@@ -29,7 +29,7 @@ import { XPipeWidget } from './xpipeWidget';
 
 import Sidebar from './components_xpipe/Sidebar';
 
-import { XpipeDebugger } from './SidebarDebugger';
+import { XpipeDebugger } from './debugger/SidebarDebugger';
 import { ITranslator } from '@jupyterlab/translation';
 
 const FACTORY = 'Xpipe editor';

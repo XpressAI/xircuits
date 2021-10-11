@@ -6,9 +6,9 @@ import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 import { redoIcon } from '@jupyterlab/ui-components';
 
 import { Panel, SplitPanel, Widget, PanelLayout } from '@lumino/widgets';
-import { commandIDs } from './components/xpipeBodyWidget';
+import { commandIDs } from '../components/xpipeBodyWidget';
 import { BreakpointWidget } from './BreakpointWidget';
-import { XpipeFactory } from './xpipeFactory';
+import { XpipeFactory } from '../xpipeFactory';
 
 
 /**

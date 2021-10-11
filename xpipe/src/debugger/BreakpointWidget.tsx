@@ -1,7 +1,7 @@
 import { ReactWidget } from '@jupyterlab/apputils';
 
 import React, { useState } from 'react';
-import { XpipeFactory } from './xpipeFactory';
+import { XpipeFactory } from '../xpipeFactory';
 
 /**
  * React component for a breakpoint debugger.
