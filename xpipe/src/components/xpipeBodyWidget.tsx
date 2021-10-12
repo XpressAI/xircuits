@@ -595,7 +595,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
             if (item.getOptions()["selected"] == true){
                 let name = item.getOptions()["name"]
                 console.log(name)
-				currentNodeSignal.emit({name});
+				currentNodeSignal.emit({
+					item
+				});
                 if (name.startsWith("🔴")){
                     item.getOptions()["name"] = name.split("🔴")[1]
                 }
