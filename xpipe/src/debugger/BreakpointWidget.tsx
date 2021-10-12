@@ -15,25 +15,47 @@ import { XpipeFactory } from '../xpipeFactory';
 }): JSX.Element => {
 
   const [names, setNames] = useState("");
+  const [ids, setIds] = useState("");
+  const [types, setTypes] = useState("");
+  const [pInLabels, setPInLabel] = useState("");
+  const [pOutLabels, setPOutLabel] = useState("");
+
   xpipeFactory.currentNodeSignal.connect((_, args) => {
-    let name = typeof args['name'] === 'undefined' ? '' : (args['name'] as string);
+    let item = typeof args['item'] === 'undefined' ? '' : (args['item'] as any);
+
+    let name = item.getOptions()["name"]
+    let id = item.getOptions()["id"]
+		let type = item.getOptions()["extras"]["type"]
+    let pInLabel = item["portsIn"][1].getOptions()["label"]
+		let pOutLabel = item["portsOut"][1].getOptions()["label"]
+
     if (name.startsWith("🔴")){
       name = name.split("🔴")[1]
       if (names === name){
-        name = "";
-        handleNames(name)
+        [name, id, type,  pInLabel, pOutLabel] = "";
+        handleChanges(name, id, type, pInLabel, pOutLabel)
         return
       }
     }
-    handleNames(name);
+    handleChanges(name, id, type, pInLabel, pOutLabel);
   });
-  function handleNames(e) {
-    setNames(e);
+
+  function handleChanges(name, id, type, pInLabel, pOutLabel) {
+    setNames(name);
+    setIds(id);
+    setTypes(type);
+    setPInLabel(pInLabel);
+    setPOutLabel(pOutLabel);
   }
 
   return (
     <div>
-      <p>{names}</p>
+      <p>Selected Node</p>
+      <p>Name: {names}</p>
+      <p>Id: {ids}</p>
+      <p>Type: {types}</p>
+      <p>PortInLabel: {pInLabels}</p>
+      <p>PortOutLabel: {pOutLabels}</p>
     </div>
   );
 };
@@ -48,7 +70,7 @@ export class BreakpointWidget extends ReactWidget {
   constructor(xpipeFactory: XpipeFactory) {
     super();
     this._xpipeFactory = xpipeFactory;
-    this.addClass('jp-ReactWidget');
+    this.addClass('jp-DebuggerWidget');
   }
 
   render(): JSX.Element {

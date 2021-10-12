@@ -664,18 +664,21 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		diagramEngine.getModel().getNodes().forEach((item) => {
-			if (item.getOptions()["selected"] == true) {
-				let name = item.getOptions()["name"]
-				currentNodeSignal.emit({ name });
-				if (name.startsWith("🔴")) {
-					item.getOptions()["name"] = name.split("🔴")[1]
-				}
-				else {
-					item.getOptions()["name"] = "🔴" + name
-				}
-				item.setSelected(true);
-				item.setSelected(false);
-			}
+            if (item.getOptions()["selected"] == true){
+                let name = item.getOptions()["name"]
+                console.log(name)
+				currentNodeSignal.emit({
+					item
+				});
+                if (name.startsWith("🔴")){
+                    item.getOptions()["name"] = name.split("🔴")[1]
+                }
+                else{
+                    item.getOptions()["name"] = "🔴" + name
+                }
+                item.setSelected(true);
+                item.setSelected(false);
+            }
 
 		});
 	}
