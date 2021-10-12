@@ -46,6 +46,8 @@ export interface BodyWidgetProps {
 	debugXpipeSignal: Signal<XPipePanel, any>;
 	breakpointXpipeSignal: Signal<XPipePanel, any>;
     nextNodeSignal: Signal<XPipePanel, any>;
+	currentNodeSignal: Signal<XPipePanel, any>;
+	testXpipeSignal: Signal<XPipePanel, any>;
 	customDeserializeModel;
 }
 
@@ -99,7 +101,8 @@ export const commandIDs = {
 	createArbitraryFile: 'Xpipe-editor:create-arbitrary-file',
 	openXpipeDebugger: 'Xpipe-debugger:open',
 	breakpointXpipe: 'Xpipe-editor:breakpoint-node',
-	nextNode: 'Xpipe-editor:next-node'
+	nextNode: 'Xpipe-editor:next-node',
+	testXpipe: 'Xpipe-editor:test-node'
 };
 
 
@@ -127,6 +130,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	debugXpipeSignal,
 	breakpointXpipeSignal,
     nextNodeSignal,
+	currentNodeSignal,
+	testXpipeSignal,
 	customDeserializeModel
 
 }) => {
@@ -590,6 +595,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
             if (item.getOptions()["selected"] == true){
                 let name = item.getOptions()["name"]
                 console.log(name)
+				currentNodeSignal.emit({name});
                 if (name.startsWith("🔴")){
                     item.getOptions()["name"] = name.split("🔴")[1]
                 }
@@ -611,6 +617,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		alert("Next Node")
+    }
+
+	const handleTestClick = () => {
+		// Only test xpipe if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
+		alert("Testing")
     }
 
 	useEffect(() => {
@@ -722,6 +738,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			nextNodeSignal.disconnect(handleNextNodeSignal);
 		};
 	  }, [nextNodeSignal, handleToggleNextNode]);
+
+	  useEffect(() => {
+		const handleTestSignal = (): void => {
+		  handleTestClick();
+		};
+		testXpipeSignal.connect(handleTestSignal);
+		return (): void => {
+			testXpipeSignal.disconnect(handleTestSignal);
+		};
+	  }, [testXpipeSignal, handleTestClick]);
 
 	const handleStart = () => {
         let stringNode = stringNodes.map(function(x){

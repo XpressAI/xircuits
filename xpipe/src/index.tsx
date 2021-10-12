@@ -29,7 +29,7 @@ import { XPipeWidget } from './xpipeWidget';
 
 import Sidebar from './components_xpipe/Sidebar';
 
-import { XpipeDebugger } from './SidebarDebugger';
+import { XpipeDebugger } from './debugger/SidebarDebugger';
 import { ITranslator } from '@jupyterlab/translation';
 
 const FACTORY = 'Xpipe editor';
@@ -66,21 +66,6 @@ const extension: JupyterFrontEndPlugin<void> = {
   ) => {
 
     console.log('Xpipe is activated!');
-
-    // Creating the sidebar widget
-    const sidebarWidget = ReactWidget.create(<Sidebar />);
-    sidebarWidget.id = 'xpipe-component-sidebar';
-    sidebarWidget.title.iconClass = 'jp-XpipeLogo';
-
-    restorer.add(sidebarWidget, sidebarWidget.id);
-    app.shell.add(sidebarWidget, "left");
-
-    // Creating the sidebar debugger
-    const sidebarXpipe = new XpipeDebugger.Sidebar({ app, translator})
-    sidebarXpipe.id = 'xpipe-debugger-sidebar';
-    sidebarXpipe.title.iconClass = 'jp-XpipeLogo';
-    restorer.add(sidebarXpipe, sidebarXpipe.id);
-    app.shell.add(sidebarXpipe, 'right');
 
     // Creating the widget factory to register it so the document manager knows about
     // our new DocumentWidget
@@ -136,6 +121,21 @@ const extension: JupyterFrontEndPlugin<void> = {
       name: widget => widget.context.path
     });
 
+    // Creating the sidebar widget
+    const sidebarWidget = ReactWidget.create(<Sidebar />);
+    sidebarWidget.id = 'xpipe-component-sidebar';
+    sidebarWidget.title.iconClass = 'jp-XpipeLogo';
+
+    restorer.add(sidebarWidget, sidebarWidget.id);
+    app.shell.add(sidebarWidget, "left");
+
+    // Creating the sidebar debugger
+    const sidebarXpipe = new XpipeDebugger.Sidebar({ app, translator, widgetFactory})
+    sidebarXpipe.id = 'xpipe-debugger-sidebar';
+    sidebarXpipe.title.iconClass = 'jp-XpipeLogo';
+    restorer.add(sidebarXpipe, sidebarXpipe.id);
+    app.shell.add(sidebarXpipe, 'right');
+
     // Add command signal to save xpipe
     app.commands.addCommand(commandIDs.saveXpipe, {
       execute: args => {
@@ -189,6 +189,13 @@ const extension: JupyterFrontEndPlugin<void> = {
     app.commands.addCommand(commandIDs.nextNode, {
       execute: args => {
         widgetFactory.nextNodeSignal.emit(args);
+      }
+    });
+
+    // Add command signal to test xpipe
+    app.commands.addCommand(commandIDs.testXpipe, {
+      execute: args => {
+        widgetFactory.testXpipeSignal.emit(args);
       }
     });
 
