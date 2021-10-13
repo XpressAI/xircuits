@@ -99,7 +99,8 @@ export const commandIDs = {
 	runXpipe: 'Xpipe-editor:run-node',
 	debugXpipe: 'Xpipe-editor:debug-node',
 	createArbitraryFile: 'Xpipe-editor:create-arbitrary-file',
-	openXpipeDebugger: 'Xpipe-debugger:open',
+	openAnalysisViewer: 'Xpipe-analysis-viewer:open',
+	openCloseDebugger: 'Xpipe-debugger:open/close',
 	breakpointXpipe: 'Xpipe-editor:breakpoint-node',
 	nextNode: 'Xpipe-editor:next-node',
 	testXpipe: 'Xpipe-editor:test-node'
@@ -504,7 +505,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		alert("Run.")
-		commands.execute(commandIDs.openXpipeDebugger);
+		commands.execute(commandIDs.openAnalysisViewer);
 		let nodesCount = diagramEngine.getModel().getNodes().length;
 
 		console.log(diagramEngine.getModel().getNodes());
@@ -574,7 +575,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		alert("Debug xpipe")
+		commands.execute(commandIDs.openCloseDebugger);
 
         if(compiled && saved){
 		    onClick('displayDebug');
