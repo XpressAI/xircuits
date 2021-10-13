@@ -14,11 +14,12 @@ import { XPipeWidget, XPipePanel } from './xpipeWidget';
 
 import { XPipeDocModel } from './xpipeModel';
 
-import { bugIcon, checkIcon, circleIcon, editIcon, refreshIcon, runIcon, saveIcon, undoIcon } from '@jupyterlab/ui-components';
+import { bugIcon, checkIcon, circleIcon, editIcon, listIcon, refreshIcon, runIcon, saveIcon, undoIcon } from '@jupyterlab/ui-components';
 
 import { ToolbarButton } from '@jupyterlab/apputils';
 
 import { commandIDs } from './components/xpipeBodyWidget';
+import { CommandIDs } from './log/LogPlugin';
 
 const XPIPE_CLASS = 'xpipe-editor';
 
@@ -159,6 +160,17 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     });
 
     /**
+     * Create a log button toolbar item.
+     */
+     let logButton = new ToolbarButton({
+      icon: listIcon,
+      tooltip: 'Open log',
+      onClick: (): void => {
+        this.commands.execute(CommandIDs.openLog);
+      }
+    });
+
+    /**
      * Create a test button toolbar item.
      */
      let testButton = new ToolbarButton({
@@ -176,7 +188,8 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     widget.toolbar.insertItem(4,'xpipe-add-run', runButton);
     widget.toolbar.insertItem(5,'xpipe-add-debug', debugButton);
     widget.toolbar.insertItem(6,'xpipe-add-breakpoint', breakpointButton);
-    widget.toolbar.insertItem(7,'xpipe-add-test', testButton);
+    widget.toolbar.insertItem(7,'xpipe-add-log', logButton);
+    widget.toolbar.insertItem(8,'xpipe-add-test', testButton);
     return widget;
   }
 }

@@ -26,7 +26,7 @@ import { commandIDs } from '../components/xpipeBodyWidget';
 /**
  * The command IDs used by the log plugin.
  */
-namespace CommandIDs {
+export namespace CommandIDs {
   export const addCheckpoint = 'Xpipe-log:add-checkpoint';
   export const clear = 'Xpipe-log:clear';
   export const openLog = 'Xpipe-log:open';
