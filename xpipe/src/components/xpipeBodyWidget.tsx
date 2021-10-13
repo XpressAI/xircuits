@@ -103,7 +103,8 @@ export const commandIDs = {
 	openCloseDebugger: 'Xpipe-debugger:open/close',
 	breakpointXpipe: 'Xpipe-editor:breakpoint-node',
 	nextNode: 'Xpipe-editor:next-node',
-	testXpipe: 'Xpipe-editor:test-node'
+	testXpipe: 'Xpipe-editor:test-node',
+	outputMsg: 'Xpipe-log:logOutputMessage'
 };
 
 
@@ -505,14 +506,20 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		alert("Run.")
-		commands.execute(commandIDs.openAnalysisViewer);
 		let nodesCount = diagramEngine.getModel().getNodes().length;
 
 		console.log(diagramEngine.getModel().getNodes());
 		console.log("node count: ", nodesCount);
+		const nodeCount = "Node count: " + nodesCount
+		commands.execute(commandIDs.outputMsg,{
+			outputMsg: nodeCount
+		});
             for (let i = 0; i < nodesCount; i++) {
                 let nodeName = diagramEngine.getModel().getNodes()[i].getOptions()["name"];
 				console.log(nodeName);
+				commands.execute(commandIDs.outputMsg,{
+					outputMsg: nodeName
+				});
                 if (nodeName.startsWith("Hyperparameter")){
                     let regEx = /\(([^)]+)\)/;
                     let result = nodeName.match(regEx);
