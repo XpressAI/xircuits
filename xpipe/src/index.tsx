@@ -75,6 +75,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
       modelName: 'xpipe-model',
       fileTypes: ['xpipe'],
       defaultFor: ['xpipe'],
+      app: app,
       shell: app.shell,
       commands: app.commands,
       browserFactory: browserFactory,

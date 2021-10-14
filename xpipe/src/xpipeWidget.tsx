@@ -1,6 +1,6 @@
 import { Dialog, ReactWidget, showDialog } from '@jupyterlab/apputils';
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
-import { ILabShell } from '@jupyterlab/application';
+import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
 import {
   DocumentRegistry,
@@ -44,6 +44,7 @@ import { commandIDs } from './components/xpipeBodyWidget';
 export class XPipePanel extends ReactWidget {
   
   browserFactory: IFileBrowserFactory;
+  app: JupyterFrontEnd;
   shell: ILabShell;
   commands: any;
   context: any;
@@ -69,6 +70,7 @@ export class XPipePanel extends ReactWidget {
   constructor(options: any) {
     super(options);
     this.browserFactory = options.browserFactory;
+    this.app = options.app;
     this.shell = options.shell;
     this.commands = options.commands;
     this.context = options.context;
@@ -196,6 +198,7 @@ export class XPipePanel extends ReactWidget {
       <BodyWidget
         context={this.context}
         browserFactory={this.browserFactory}
+        app={this.app}
         shell={this.shell}
         commands={this.commands}
         widgetId={this.parent?.id}

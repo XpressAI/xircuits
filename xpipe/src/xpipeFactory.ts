@@ -2,7 +2,7 @@ import { ABCWidgetFactory, DocumentRegistry, DocumentWidget } from '@jupyterlab/
 
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 
-import { ILabShell } from '@jupyterlab/application';
+import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 
 import { Signal } from '@lumino/signaling';
 
@@ -26,6 +26,7 @@ const XPIPE_CLASS = 'xpipe-editor';
 export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
   
   browserFactory: IFileBrowserFactory;
+  app: JupyterFrontEnd;
   shell: ILabShell;
   commands: any;
   model: any;
@@ -43,6 +44,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
   constructor(options: any) {
     super(options);
     this.browserFactory = options.browserFactory;
+    this.app = options.app;
     this.shell = options.shell;
     this.commands = options.commands;
     this.model = options.modelName;
@@ -61,6 +63,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
   protected createNewWidget(context: DocumentRegistry.IContext<XPipeDocModel>): XPipeWidget {
     // Creates a blank widget with a DocumentWidget wrapper
     const props = {
+      app: this.app,
       shell: this.shell,
       commands: this.commands,
       browserFactory: this.browserFactory,

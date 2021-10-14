@@ -34,7 +34,7 @@ export namespace CommandIDs {
 }
 
 /**
- * Initialization data for the documents extension.
+ * Initialization data for the log plugin.
  */
 export const logPlugin: JupyterFrontEndPlugin<void> = {
   id: 'xpipe-log',
@@ -190,6 +190,7 @@ export const logPlugin: JupyterFrontEndPlugin<void> = {
       caption: 'Output xpipe log message.',
       execute: args => {
         const outputMsg = typeof args['outputMsg'] === 'undefined' ? '' : (args['outputMsg'] as string);
+        const setLevel = args['level'] as any;
         const data: nbformat.IOutput = {
           output_type: 'display_data',
           data: {
@@ -199,7 +200,7 @@ export const logPlugin: JupyterFrontEndPlugin<void> = {
 
         const msg: IOutputLog = {
           type: 'output',
-          level: 'warning',
+          level: setLevel,
           data,
         };
 
@@ -210,3 +211,85 @@ export const logPlugin: JupyterFrontEndPlugin<void> = {
     createLogConsoleWidget();
   },
 };
+
+/**
+ * Interface for log severity level
+ */
+export interface LogInterface {
+
+  /**
+   * Set log severity level to debug
+   */
+  debug(primaryMessage: string, ...supportingData: any[]) : void;
+
+  /**
+   * Set log severity level to info
+   */
+  info(primaryMessage: string, ...supportingData: any[]) : void;
+
+  /**
+   * Set log severity level to warning
+   */
+  warn(primaryMessage: string, ...supportingData: any[]) : void;
+
+  /**
+   * Set log severity level to error
+   */
+  error(primaryMessage: string, ...supportingData: any[]) : void;
+
+  /**
+   * Set log severity level to critical
+   */
+  critical(primaryMessage: string, ...supportingData: any[]) : void;
+}
+
+/**
+ * Emit output message to xpipe log based on severity level
+ */
+export class Log implements LogInterface {
+  private app: JupyterFrontEnd;
+
+  constructor(app: JupyterFrontEnd){
+     this.app = app;
+  }
+
+  public debug(msg: string, ...supportingDetailes: any[]): void {
+    this.emitLogMessage("debug", msg, supportingDetailes);
+  }
+
+  public info(msg: string, ...supportingDetailes: any[]): void {
+    this.emitLogMessage("info", msg, supportingDetailes);
+  }
+
+  public warn(msg: string, ...supportingDetailes: any[]): void {
+    this.emitLogMessage("warning", msg, supportingDetailes);
+  }
+
+  public error(msg: string, ...supportingDetailes: any[]): void {
+    this.emitLogMessage("error", msg, supportingDetailes);
+  }
+
+  public critical(msg: string, ...supportingDetailes: any[]): void {
+    this.emitLogMessage("critical", msg, supportingDetailes);
+  }
+
+  private emitLogMessage(
+    msgType: "debug" | "info" | "warning" | "error" | "critical", 
+    msg: string, 
+    supportingDetailes: any[]
+  ){
+    
+    if (supportingDetailes.length > 0) {
+      const logMsg = msg + supportingDetailes;
+      this.app.commands.execute(commandIDs.outputMsg,{
+        outputMsg: logMsg,
+        level: msgType
+      });
+    } else {
+      this.app.commands.execute(commandIDs.outputMsg,{
+        outputMsg: msg,
+        level: msgType
+      });
+    }
+  }
+}
