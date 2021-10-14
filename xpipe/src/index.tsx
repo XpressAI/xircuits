@@ -130,11 +130,22 @@ const extension: JupyterFrontEndPlugin<void> = {
     app.shell.add(sidebarWidget, "left");
 
     // Creating the sidebar debugger
-    const sidebarXpipe = new XpipeDebugger.Sidebar({ app, translator, widgetFactory})
-    sidebarXpipe.id = 'xpipe-debugger-sidebar';
-    sidebarXpipe.title.iconClass = 'jp-XpipeLogo';
-    restorer.add(sidebarXpipe, sidebarXpipe.id);
-    app.shell.add(sidebarXpipe, 'right');
+    const sidebarDebugger = new XpipeDebugger.Sidebar({ app, translator, widgetFactory})
+    sidebarDebugger.id = 'xpipe-debugger-sidebar';
+    sidebarDebugger.title.iconClass = 'jp-XpipeLogo';
+    restorer.add(sidebarDebugger, sidebarDebugger.id);
+    app.shell.add(sidebarDebugger, 'right', { rank: 1001 });
+    
+    // Add a command to open/close xpipe sidebar debugger
+    app.commands.addCommand(commandIDs.openCloseDebugger, {
+      execute: () => {
+        if (sidebarDebugger.isHidden) {
+          app.shell.activateById(sidebarDebugger.id);
+        }else{
+          app.commands.execute('application:toggle-right-area');
+        }
+      },
+    });
 
     // Add command signal to save xpipe
     app.commands.addCommand(commandIDs.saveXpipe, {
@@ -248,7 +259,7 @@ const extension: JupyterFrontEndPlugin<void> = {
     });
 
     // Add a command for opening the xpipe analysis viewer when run button clicked.
-    app.commands.addCommand(commandIDs.openXpipeDebugger, {
+    app.commands.addCommand(commandIDs.openAnalysisViewer, {
       execute: (options: IXpipeAnalysisViewerOptions) => {
         return createXpipeAnalysisViewer(app, options);
       }

@@ -145,8 +145,8 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
      * Create a debug button toolbar item.
      */
     let debugButton = new ToolbarButton({
-      icon: bugIcon,
-      tooltip: 'Open Xpipe Debugger',
+      icon:bugIcon,
+      tooltip: 'Open/Close Xpipe Debugger',
       onClick: (): void => {
         this.commands.execute(commandIDs.debugXpipe);
       }
