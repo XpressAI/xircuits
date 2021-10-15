@@ -208,7 +208,6 @@ export const logPlugin: JupyterFrontEndPlugin<void> = {
       },
     });
   
-    createLogConsoleWidget();
   },
 };
 
