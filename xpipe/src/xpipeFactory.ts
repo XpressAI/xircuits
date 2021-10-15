@@ -20,14 +20,17 @@ import { ToolbarButton } from '@jupyterlab/apputils';
 
 import { commandIDs } from './components/xpipeBodyWidget';
 
+import { ServiceManager } from '@jupyterlab/services';
+
 const XPIPE_CLASS = 'xpipe-editor';
 
 export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
-  
+
   browserFactory: IFileBrowserFactory;
   shell: ILabShell;
   commands: any;
   model: any;
+  serviceManager: ServiceManager;
   saveXpipeSignal: Signal<this, any>;
   reloadXpipeSignal: Signal<this, any>;
   revertXpipeSignal: Signal<this, any>;
@@ -45,6 +48,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     this.shell = options.shell;
     this.commands = options.commands;
     this.model = options.modelName;
+    this.serviceManager = options.serviceManager;
     this.saveXpipeSignal = new Signal<this, any>(this);
     this.reloadXpipeSignal = new Signal<this, any>(this);
     this.revertXpipeSignal = new Signal<this, any>(this);
@@ -64,6 +68,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
       commands: this.commands,
       browserFactory: this.browserFactory,
       context: context,
+      serviceManager: this.serviceManager,
       saveXpipeSignal: this.saveXpipeSignal,
       reloadXpipeSignal: this.reloadXpipeSignal,
       revertXpipeSignal: this.revertXpipeSignal,
@@ -95,7 +100,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     /**
      * Create a reload button toolbar item.
      */
-     let reloadButton = new ToolbarButton({
+    let reloadButton = new ToolbarButton({
       icon: refreshIcon,
       tooltip: 'Reload Xpipe from Disk',
       onClick: (): void => {
@@ -106,7 +111,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     /**
      * Create a revert button toolbar item.
      */
-     let revertButton = new ToolbarButton({
+    let revertButton = new ToolbarButton({
       icon: undoIcon,
       tooltip: 'Revert Xpipe to Checkpoint',
       onClick: (): void => {
@@ -139,7 +144,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     /**
      * Create a debug button toolbar item.
      */
-     let debugButton = new ToolbarButton({
+    let debugButton = new ToolbarButton({
       icon:bugIcon,
       tooltip: 'Open/Close Xpipe Debugger',
       onClick: (): void => {
@@ -150,7 +155,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     /**
      * Create a breakpoint button toolbar item.
      */
-     let breakpointButton = new ToolbarButton({
+    let breakpointButton = new ToolbarButton({
       icon: circleIcon,
       tooltip: 'Toggle breakpoint',
       onClick: (): void => {
@@ -161,22 +166,22 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     /**
      * Create a test button toolbar item.
      */
-     let testButton = new ToolbarButton({
+    let testButton = new ToolbarButton({
       icon: editIcon,
       tooltip: 'For testing purpose',
-      onClick: () : void => {
+      onClick: (): void => {
         this.commands.execute(commandIDs.testXpipe)
       }
     });
-  
-    widget.toolbar.insertItem(0,'xpipe-add-save', saveButton);
-    widget.toolbar.insertItem(1,'xpipe-add-reload', reloadButton);
-    widget.toolbar.insertItem(2,'xpipe-add-revert', revertButton);
-    widget.toolbar.insertItem(3,'xpipe-add-compile', compileButton);
-    widget.toolbar.insertItem(4,'xpipe-add-run', runButton);
-    widget.toolbar.insertItem(5,'xpipe-add-debug', debugButton);
-    widget.toolbar.insertItem(6,'xpipe-add-breakpoint', breakpointButton);
-    widget.toolbar.insertItem(7,'xpipe-add-test', testButton);
+
+    widget.toolbar.insertItem(0, 'xpipe-add-save', saveButton);
+    widget.toolbar.insertItem(1, 'xpipe-add-reload', reloadButton);
+    widget.toolbar.insertItem(2, 'xpipe-add-revert', revertButton);
+    widget.toolbar.insertItem(3, 'xpipe-add-compile', compileButton);
+    widget.toolbar.insertItem(4, 'xpipe-add-run', runButton);
+    widget.toolbar.insertItem(5, 'xpipe-add-debug', debugButton);
+    widget.toolbar.insertItem(6, 'xpipe-add-breakpoint', breakpointButton);
+    widget.toolbar.insertItem(7, 'xpipe-add-test', testButton);
     return widget;
   }
 }

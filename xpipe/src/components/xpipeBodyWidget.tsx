@@ -16,16 +16,18 @@ import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { ILabShell } from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
 import {
-  DocumentRegistry,
-  ABCWidgetFactory,
-  DocumentWidget,
-  Context
+	DocumentRegistry,
+	ABCWidgetFactory,
+	DocumentWidget,
+	Context
 } from '@jupyterlab/docregistry';
 
 import styled from '@emotion/styled';
 
 import { CustomNodeModel } from "./CustomNodeModel";
 import { XPipePanel } from '../xpipeWidget';
+import { ServiceManager } from '@jupyterlab/services';
+import ComponentList from '../components_xpipe/Component';
 
 
 export interface BodyWidgetProps {
@@ -37,6 +39,7 @@ export interface BodyWidgetProps {
 	widgetId?: string;
 	activeModel: SRD.DiagramModel;
 	diagramEngine: SRD.DiagramEngine;
+	serviceManager: ServiceManager;
 	postConstructorFlag: boolean;
 	saveXpipeSignal: Signal<XPipePanel, any>;
 	reloadXpipeSignal: Signal<XPipePanel, any>;
@@ -45,7 +48,7 @@ export interface BodyWidgetProps {
 	runXpipeSignal: Signal<XPipePanel, any>;
 	debugXpipeSignal: Signal<XPipePanel, any>;
 	breakpointXpipeSignal: Signal<XPipePanel, any>;
-    nextNodeSignal: Signal<XPipePanel, any>;
+	nextNodeSignal: Signal<XPipePanel, any>;
 	currentNodeSignal: Signal<XPipePanel, any>;
 	testXpipeSignal: Signal<XPipePanel, any>;
 	customDeserializeModel;
@@ -88,7 +91,7 @@ export const commandIDs = {
 	newDocManager: 'docmanager:new-untitled',
 	saveDocManager: 'docmanager:save',
 	reloadDocManager: 'docmanager:reload',
-	revertDocManager:'docmanager:restore-checkpoint',
+	revertDocManager: 'docmanager:restore-checkpoint',
 	submitScript: 'script-editor:submit',
 	submitNotebook: 'notebook:submit',
 	createNewXpipe: 'Xpipe-editor:create-new',
@@ -108,9 +111,9 @@ export const commandIDs = {
 
 
 //create your forceUpdate hook
-function useForceUpdate(){
-    const [value, setValue] = useState(0); // integer state
-    return () => setValue(value => value + 1); // update the state to force render
+function useForceUpdate() {
+	const [value, setValue] = useState(0); // integer state
+	return () => setValue(value => value + 1); // update the state to force render
 }
 
 
@@ -122,6 +125,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	widgetId,
 	activeModel,
 	diagramEngine,
+	serviceManager,
 	postConstructorFlag,
 	saveXpipeSignal,
 	reloadXpipeSignal,
@@ -130,18 +134,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	runXpipeSignal,
 	debugXpipeSignal,
 	breakpointXpipeSignal,
-    nextNodeSignal,
+	nextNodeSignal,
 	currentNodeSignal,
 	testXpipeSignal,
 	customDeserializeModel
 
 }) => {
 
-    const [prevState, updateState] = useState(0);
-    const forceUpdate = useCallback(() => updateState(prevState => prevState + 1), []);
-    const [saved, setSaved] = useState(false);
-    const [compiled, setCompiled] = useState(false);
-    const [hyperparameterNode, setHyperparameterNode] = useState(false);
+	const [prevState, updateState] = useState(0);
+	const forceUpdate = useCallback(() => updateState(prevState => prevState + 1), []);
+	const [saved, setSaved] = useState(false);
+	const [compiled, setCompiled] = useState(false);
+	const [hyperparameterNode, setHyperparameterNode] = useState(false);
 	const [displaySavedAndCompiled, setDisplaySavedAndCompiled] = useState(false);
 	const [displayDebug, setDisplayDebug] = useState(false);
 	const [displayHyperparameter, setDisplayHyperparameter] = useState(false);
@@ -153,6 +157,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [intNodesValue, setIntNodesValue] = useState<number[]>([0]);
 	const [floatNodesValue, setFloatNodesValue] = useState<number[]>([0.00]);
 	const [boolNodesValue, setBoolNodesValue] = useState<boolean[]>([false]);
+	const [componentList, setComponentList] = React.useState([]);
 
 
 	const getBindingIndexById = (nodeModels: any[], id: string): number | null => {
@@ -231,57 +236,69 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const getPythonCompiler = (): string => {
-
+		let component_task = componentList.map(x => x["task"]);
 		let model = diagramEngine.getModel();
 		let nodeModels = model.getNodes();
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 		let pythonCode = '';
 		let uniqueComponents = {};
-		
+
 		let allNodes = getAllNodesFromStartToFinish();
 		console.log(allNodes);
-		
-		for (let node in allNodes){
+
+		for (let node in allNodes) {
 			console.log(node);
 			let nodeType = allNodes[node]["extras"]["type"];
 			let componentName = allNodes[node]["name"];
-			componentName = componentName.replace(/\s+/g,"");
-			if (nodeType == 'Start' || 
+			componentName = componentName.replace(/\s+/g, "");
+			if (nodeType == 'Start' ||
 				nodeType == 'Finish' ||
 				nodeType === 'boolean' ||
 				nodeType === 'int' ||
 				nodeType === 'float' ||
-				nodeType === 'string'){}
-			else{
+				nodeType === 'string') { }
+			else {
 				uniqueComponents[componentName] = componentName;
 			}
 		}
 
-		for (let componentName in uniqueComponents){
+		for (let componentName in uniqueComponents) {
+			let component_exist = component_task.indexOf(componentName);
+			let current_node: any;
+			let package_name: string = "components";
 
-			pythonCode += "from components import " + componentName + "\n";
-			
+			if (component_exist != -1) {
+				current_node = componentList[component_exist];
+				if (current_node["path"] != "") {
+					if (current_node["path"].indexOf("/") != -1) {
+						package_name = current_node["path"].substring(0, current_node["path"].length - 3).replace("/", ".");
+					} else {
+						package_name = "." + current_node["path"].substring(0, current_node["path"].length - 3);
+					}
+				}
+			}
+			pythonCode += "from " + package_name + " import " + componentName + "\n";
 		}
 
 		pythonCode += "\ndef main(args):\n";
 
-		for (let i = 0; i < allNodes.length; i++){
+		for (let i = 0; i < allNodes.length; i++) {
 
 			let nodeType = allNodes[i]["extras"]["type"];
 
-			if (nodeType == 'Start' || 
+			if (nodeType == 'Start' ||
 				nodeType == 'Finish' ||
 				nodeType === 'boolean' ||
 				nodeType === 'int' ||
 				nodeType === 'float' ||
-				nodeType === 'string'){
-			}else{
+				nodeType === 'string') {
+			} else {
 				let bindingName = 'c_' + i;
 				let componentName = allNodes[i]["name"];
-				componentName = componentName.replace(/\s+/g,"");
+				componentName = componentName.replace(/\s+/g, "");
 				pythonCode += '    ' + bindingName + ' = ' + componentName + '()\n';
 			}
-			
+
 		}
 
 		pythonCode += '\n';
@@ -294,51 +311,51 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				let targetNodeId = getTargetNodeModelId(model.getLinks(), sourceNodeModelId)
 
 				if (targetNodeId) {
-					
+
 					let bindingName = 'c_' + ++j;
 					let currentNodeModel = getNodeModelById(nodeModels, targetNodeId);
 					debugger;
 					let allPort = currentNodeModel.getPorts();
-					for (let port in allPort){
+					for (let port in allPort) {
 
 						let portIn = allPort[port].getOptions().alignment == 'left';
 
-						if (portIn){
+						if (portIn) {
 							let label = allPort[port].getOptions()["label"];
-							label = label.replace(/\s+/g,"_");
+							label = label.replace(/\s+/g, "_");
 							label = label.toLowerCase();
-							
-							if (label == '▶'){
-							}else{
+
+							if (label == '▶') {
+							} else {
 								let portLinks = allPort[port].getLinks();
 
-								for (let portLink in portLinks){
+								for (let portLink in portLinks) {
 									let sourceNodeName = portLinks[portLink].getSourcePort().getNode()["name"];
 									let sourceNodeId = portLinks[portLink].getSourcePort().getNode().getOptions()["id"];
 									let sourcePortLabel = portLinks[portLink].getSourcePort().getOptions()["label"];
-									sourcePortLabel = sourcePortLabel.replace(/\s+/g,"_");
+									sourcePortLabel = sourcePortLabel.replace(/\s+/g, "_");
 									sourcePortLabel = sourcePortLabel.toLowerCase();
 									let k = getBindingIndexById(allNodes, sourceNodeId);
 									let preBindingName = 'c_' + k;
-									
-									if (port.startsWith("parameter")){
 
-										if (sourceNodeName.startsWith("Literal")){
+									if (port.startsWith("parameter")) {
+
+										if (sourceNodeName.startsWith("Literal")) {
 											pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "'" + sourcePortLabel + "'\n";
-										}else{
+										} else {
 											sourceNodeName = sourceNodeName.split(": ");
 											let paramName = sourceNodeName[sourceNodeName.length - 1];
-											paramName = paramName.replace(/\s+/g,"_");
+											paramName = paramName.replace(/\s+/g, "_");
 											paramName = paramName.toLowerCase();
 											pythonCode += '    ' + bindingName + '.' + label + '.value = args.' + paramName + '\n';
 										}
 
-									}else{
+									} else {
 										pythonCode += '    ' + bindingName + '.' + label + ' = ' + preBindingName + '.' + sourcePortLabel + '\n';
 									}
 								}
 							}
-						}else{
+						} else {
 						}
 
 					}
@@ -353,22 +370,22 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		pythonCode += '\n';
 
-		for (let i = 0; i < allNodes.length; i++){
+		for (let i = 0; i < allNodes.length; i++) {
 
 			let nodeType = allNodes[i]["extras"]["type"];
 			let bindingName = 'c_' + i;
 			let nextBindingName = 'c_' + (i + 1);
 
-			if (nodeType == 'Start' || nodeType == 'Finish'){
-			}else if(i == (allNodes.length - 2)){
+			if (nodeType == 'Start' || nodeType == 'Finish') {
+			} else if (i == (allNodes.length - 2)) {
 				pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
-			}else{
-				pythonCode += '    ' + bindingName + '.next = ' + nextBindingName +'\n';
+			} else {
+				pythonCode += '    ' + bindingName + '.next = ' + nextBindingName + '\n';
 			}
-			
+
 		}
-		
-		if (allNodes.length > 2){
+
+		if (allNodes.length > 2) {
 			pythonCode += '\n';
 			pythonCode += '    ' + 'next_component = c_1.do()\n';
 			pythonCode += '    ' + 'while next_component:\n';
@@ -377,37 +394,37 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			pythonCode += "if __name__ == '__main__':\n";
 			pythonCode += '    ' + 'parser = ArgumentParser()\n';
 
-			if (stringNodes){
-				
-				for (let i = 0; i < stringNodes.length; i++){
-					let stringParam = stringNodes[i].replace(/\s+/g,"_");
+			if (stringNodes) {
+
+				for (let i = 0; i < stringNodes.length; i++) {
+					let stringParam = stringNodes[i].replace(/\s+/g, "_");
 					stringParam = stringParam.toLowerCase();
 					pythonCode += '    ' + "parser.add_argument('--" + stringParam + "', default='test', type=str)\n";
 				}
 			}
 
-			if (intNodes){
-				
-				for (let i = 0; i < intNodes.length; i++){
-					let intParam = intNodes[i].replace(/\s+/g,"_");
+			if (intNodes) {
+
+				for (let i = 0; i < intNodes.length; i++) {
+					let intParam = intNodes[i].replace(/\s+/g, "_");
 					intParam = intParam.toLowerCase();
 					pythonCode += '    ' + "parser.add_argument('--" + intParam + "', default='1', type=int)\n";
 				}
 			}
 
-			if (floatNodes){
-				
-				for (let i = 0; i < floatNodes.length; i++){
-					let floatParam = floatNodes[i].replace(/\s+/g,"_");
+			if (floatNodes) {
+
+				for (let i = 0; i < floatNodes.length; i++) {
+					let floatParam = floatNodes[i].replace(/\s+/g, "_");
 					floatParam = floatParam.toLowerCase();
 					pythonCode += '    ' + "parser.add_argument('--" + floatParam + "', default='1.0', type=float)\n";
 				}
 			}
 
-			if (boolNodes){
-				
-				for (let i = 0; i < boolNodes.length; i++){
-					let boolParam = boolNodes[i].replace(/\s+/g,"_");
+			if (boolNodes) {
+
+				for (let i = 0; i < boolNodes.length; i++) {
+					let boolParam = boolNodes[i].replace(/\s+/g, "_");
 					boolParam = boolParam.toLowerCase();
 					pythonCode += '    ' + "parser.add_argument('--" + boolParam + "', default=True, type=bool)\n";
 				}
@@ -427,7 +444,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		setHyperparameterNode(true);
-	    setSaved(true);
+		setSaved(true);
 		let currentModel = diagramEngine.getModel().serialize();
 		context.model.setSerializedModel(currentModel);
 		commands.execute(commandIDs.saveDocManager);
@@ -442,12 +459,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		commands.execute(commandIDs.reloadDocManager);
 		let model = context.model.getSharedObject();
-		if(model.id == ''){
+		if (model.id == '') {
 			console.log("No context available! Please save xpipe first.")
 		}
-		else{
-		let deserializedModel = customDeserializeModel(model, diagramEngine);
-		diagramEngine.setModel(deserializedModel);
+		else {
+			let deserializedModel = customDeserializeModel(model, diagramEngine);
+			diagramEngine.setModel(deserializedModel);
 		}
 		forceUpdate();
 	}
@@ -463,12 +480,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		//todo: check behavior if user presses "cancel"
 		let model = context.model.getSharedObject();
 
-		if(model.id == ''){
+		if (model.id == '') {
 			console.log("No context available! Please save xpipe first.")
 		}
-		else{
-		let deserializedModel = customDeserializeModel(model, diagramEngine);
-		diagramEngine.setModel(deserializedModel);
+		else {
+			let deserializedModel = customDeserializeModel(model, diagramEngine);
+			diagramEngine.setModel(deserializedModel);
 		}
 		forceUpdate();
 	}
@@ -479,24 +496,24 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		
-		if (saved){
+
+		if (saved) {
 			let pythonCode = getPythonCompiler();
 			alert("Compiled.")
 			setCompiled(true);
-			commands.execute(commandIDs.createArbitraryFile, {pythonCode});
-		}else{
+			commands.execute(commandIDs.createArbitraryFile, { pythonCode });
+		} else {
 			alert("Please save before compiling.");
 		}
 	}
 
-    const handleUnsaved = () => {
+	const handleUnsaved = () => {
 
-        onHide('displaySavedAndCompiled');
-        handleSaveClick();
-        handleCompileClick();
-    }
-	
+		onHide('displaySavedAndCompiled');
+		handleSaveClick();
+		handleCompileClick();
+	}
+
 	const handleRunClick = () => {
 		// Only run xpipe if it is currently in focus
 		// This must be first to avoid unnecessary complication
@@ -510,62 +527,62 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		console.log(diagramEngine.getModel().getNodes());
 		console.log("node count: ", nodesCount);
-            for (let i = 0; i < nodesCount; i++) {
-                let nodeName = diagramEngine.getModel().getNodes()[i].getOptions()["name"];
-				console.log(nodeName);
-                if (nodeName.startsWith("Hyperparameter")){
-                    let regEx = /\(([^)]+)\)/;
-                    let result = nodeName.match(regEx);
-                    let nodeText = nodeName.split(": ");
-                    if(result[1] == 'String'){
-                        setStringNodes(stringNodes => ([...stringNodes, nodeText[nodeText.length - 1]].sort()));
-                    }
-                    else if(result[1] == 'Int'){
-                        setIntNodes(intNodes => ([...intNodes, nodeText[nodeText.length - 1]].sort()));
-                    }
-                    else if(result[1] == 'Float'){
-                        setFloatNodes(floatNodes => ([...floatNodes, nodeText[nodeText.length - 1]].sort()));
-                    }
-                    else if(result[1] == 'Boolean'){
-                        setBoolNodes(boolNodes => ([...boolNodes, nodeText[nodeText.length - 1]].sort()));
-                    }
-                }
-            }
+		for (let i = 0; i < nodesCount; i++) {
+			let nodeName = diagramEngine.getModel().getNodes()[i].getOptions()["name"];
+			console.log(nodeName);
+			if (nodeName.startsWith("Hyperparameter")) {
+				let regEx = /\(([^)]+)\)/;
+				let result = nodeName.match(regEx);
+				let nodeText = nodeName.split(": ");
+				if (result[1] == 'String') {
+					setStringNodes(stringNodes => ([...stringNodes, nodeText[nodeText.length - 1]].sort()));
+				}
+				else if (result[1] == 'Int') {
+					setIntNodes(intNodes => ([...intNodes, nodeText[nodeText.length - 1]].sort()));
+				}
+				else if (result[1] == 'Float') {
+					setFloatNodes(floatNodes => ([...floatNodes, nodeText[nodeText.length - 1]].sort()));
+				}
+				else if (result[1] == 'Boolean') {
+					setBoolNodes(boolNodes => ([...boolNodes, nodeText[nodeText.length - 1]].sort()));
+				}
+			}
+		}
 
-        if(compiled && saved){
-		    onClick('displayHyperparameter');
-        }
-        else{
-		    onClick('displaySavedAndCompiled');
-        }
+		if (compiled && saved) {
+			onClick('displayHyperparameter');
+		}
+		else {
+			onClick('displaySavedAndCompiled');
+		}
 	}
 
 	const handleStringChange = (e, i) => {
-	    let newStringNodeValue = [...stringNodesValue];
-	    newStringNodeValue[i] = e.target.value;
-	    setStringNodesValue(newStringNodeValue);
-	    console.log("String change: ", stringNodesValue)
+		let newStringNodeValue = [...stringNodesValue];
+		newStringNodeValue[i] = e.target.value;
+		setStringNodesValue(newStringNodeValue);
+		console.log("String change: ", stringNodesValue)
 	}
 
 	const handleBoolChange = (e, i) => {
-	    let newBoolNodeValue = [...boolNodesValue];
-	    newBoolNodeValue[i] = e.target.value;
-	    setBoolNodesValue(newBoolNodeValue);
-	    console.log("Boolean change: ", boolNodesValue)
+		let newBoolNodeValue = [...boolNodesValue];
+		newBoolNodeValue[i] = e.target.value;
+		setBoolNodesValue(newBoolNodeValue);
+		console.log("Boolean change: ", boolNodesValue)
 	}
 
 	const handleIntSpinnerChange = (e, i) => {
-	    let newIntNodeValue = [...intNodesValue];
-	    newIntNodeValue[i] = e;
-	    setIntNodesValue(newIntNodeValue);
-	    console.log("Integer change: ", intNodesValue)
+		let newIntNodeValue = [...intNodesValue];
+		newIntNodeValue[i] = e;
+		setIntNodesValue(newIntNodeValue);
+		console.log("Integer change: ", intNodesValue)
 	}
 
 	const handleFloatSpinnerChange = (e, i) => {
-	    let newFloatNodeValue = [...floatNodesValue];
-	    newFloatNodeValue[i] = e;
-	    setFloatNodesValue(newFloatNodeValue);
-	    console.log("Float change: ", floatNodesValue)
+		let newFloatNodeValue = [...floatNodesValue];
+		newFloatNodeValue[i] = e;
+		setFloatNodesValue(newFloatNodeValue);
+		console.log("Float change: ", floatNodesValue)
 	}
 
 	const handleDebugClick = () => {
@@ -577,12 +594,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		commands.execute(commandIDs.openCloseDebugger);
 
-        if(compiled && saved){
-		    onClick('displayDebug');
-        }
-        else{
-		    onClick('displaySavedAndCompiled');
-        }
+		if (compiled && saved) {
+			onClick('displayDebug');
+		}
+		else {
+			onClick('displaySavedAndCompiled');
+		}
 	}
 
 	const handleToggleBreakpoint = () => {
@@ -593,22 +610,22 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		diagramEngine.getModel().getNodes().forEach((item) => {
-            if (item.getOptions()["selected"] == true){
-                let name = item.getOptions()["name"]
-                console.log(name)
-				currentNodeSignal.emit({name});
-                if (name.startsWith("🔴")){
-                    item.getOptions()["name"] = name.split("🔴")[1]
-                }
-                else{
-                    item.getOptions()["name"] = "🔴" + name
-                }
-                item.setSelected(true);
-                item.setSelected(false);
-            }
+			if (item.getOptions()["selected"] == true) {
+				let name = item.getOptions()["name"]
+				console.log(name)
+				currentNodeSignal.emit({ name });
+				if (name.startsWith("🔴")) {
+					item.getOptions()["name"] = name.split("🔴")[1]
+				}
+				else {
+					item.getOptions()["name"] = "🔴" + name
+				}
+				item.setSelected(true);
+				item.setSelected(false);
+			}
 
 		});
-    }
+	}
 
 	const handleToggleNextNode = () => {
 		// Only toggle next node if it is currently in focus
@@ -618,7 +635,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		alert("Next Node")
-    }
+	}
 
 	const handleTestClick = () => {
 		// Only test xpipe if it is currently in focus
@@ -628,99 +645,108 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		alert("Testing")
-    }
+	}
+
+	const fetchComponentList = async () => {
+		setComponentList([]);
+		const response = await ComponentList(serviceManager, "");
+		if (response.length > 0) {
+			setComponentList([]);
+		}
+		setComponentList(response);
+	}
 
 	useEffect(() => {
 
-		if (hyperparameterNode){
+		if (hyperparameterNode) {
 			let nodesCount = diagramEngine.getModel().getNodes().length
 
 			for (let i = 0; i < nodesCount; i++) {
 				let nodeName = diagramEngine.getModel().getNodes()[i].getOptions()["name"];
-				if (nodeName.startsWith("Hyperparameter")){
+				if (nodeName.startsWith("Hyperparameter")) {
 					let regEx = /\(([^)]+)\)/;
 					let result = nodeName.match(regEx);
 					let nodeText = nodeName.split(": ");
-					if(result[1] == 'String'){
+					if (result[1] == 'String') {
 						setStringNodes(stringNodes => ([...stringNodes, nodeText[nodeText.length - 1]].sort()));
-					}else if(result[1] == 'Int'){
+					} else if (result[1] == 'Int') {
 						setIntNodes(intNodes => ([...intNodes, nodeText[nodeText.length - 1]].sort()));
-					}else if(result[1] == 'Float'){
+					} else if (result[1] == 'Float') {
 						setFloatNodes(floatNodes => ([...floatNodes, nodeText[nodeText.length - 1]].sort()));
-					}else if(result[1] == 'Boolean'){
+					} else if (result[1] == 'Boolean') {
 						setBoolNodes(boolNodes => ([...boolNodes, nodeText[nodeText.length - 1]].sort()));
 					}
 				}
 			}
-		}else{
-		    setStringNodes(["name"]);
-		    setIntNodes([]);
-		    setFloatNodes([]);
-		    setBoolNodes([]);
+		} else {
+			setStringNodes(["name"]);
+			setIntNodes([]);
+			setFloatNodes([]);
+			setBoolNodes([]);
 		}
-	  }, [hyperparameterNode]);
+	}, [hyperparameterNode]);
 
 	useEffect(() => {
 		const handleSaveSignal = (): void => {
-		  handleSaveClick();
+			handleSaveClick();
 		};
 		saveXpipeSignal.connect(handleSaveSignal);
 		return (): void => {
 			saveXpipeSignal.disconnect(handleSaveSignal);
 		};
-	  }, [saveXpipeSignal, handleSaveClick]);
+	}, [saveXpipeSignal, handleSaveClick]);
 
 	useEffect(() => {
 		const handleReloadSignal = (): void => {
-		  handleReloadClick();
+			handleReloadClick();
 		};
 		reloadXpipeSignal.connect(handleReloadSignal);
 		return (): void => {
 			reloadXpipeSignal.disconnect(handleReloadSignal);
 		};
-	  }, [reloadXpipeSignal, handleReloadClick]);
+	}, [reloadXpipeSignal, handleReloadClick]);
 
 	useEffect(() => {
 		const handleRevertSignal = (): void => {
-		  handleRevertClick();
+			handleRevertClick();
 		};
 		revertXpipeSignal.connect(handleRevertSignal);
 		return (): void => {
 			revertXpipeSignal.disconnect(handleRevertSignal);
 		};
-	  }, [revertXpipeSignal, handleRevertClick]);
+	}, [revertXpipeSignal, handleRevertClick]);
 
 	useEffect(() => {
 		const handleCompileSignal = (): void => {
-		  handleCompileClick();
+			handleCompileClick();
 		};
 		compileXpipeSignal.connect(handleCompileSignal);
 		return (): void => {
 			compileXpipeSignal.disconnect(handleCompileSignal);
 		};
-	  }, [compileXpipeSignal, handleCompileClick]);
+	}, [compileXpipeSignal, handleCompileClick]);
 
 	useEffect(() => {
 		const handleRunSignal = (): void => {
-		  handleRunClick();
+			handleRunClick();
 		};
 		runXpipeSignal.connect(handleRunSignal);
 		return (): void => {
 			runXpipeSignal.disconnect(handleRunSignal);
 		};
-	  }, [runXpipeSignal, handleRunClick]);
+	}, [runXpipeSignal, handleRunClick]);
 
 	useEffect(() => {
 		const handleDebugSignal = (): void => {
-		  handleDebugClick();
+			handleDebugClick();
 		};
 		debugXpipeSignal.connect(handleDebugSignal);
 		return (): void => {
 			debugXpipeSignal.disconnect(handleDebugSignal);
 		};
-	  }, [debugXpipeSignal, handleDebugClick]);
+	}, [debugXpipeSignal, handleDebugClick]);
 
-	  useEffect(() => {
+	useEffect(() => {
 		const handleBreakpointSignal = (): void => {
 			handleToggleBreakpoint();
 		};
@@ -728,57 +754,61 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return (): void => {
 			breakpointXpipeSignal.disconnect(handleBreakpointSignal);
 		};
-	  }, [breakpointXpipeSignal, handleToggleBreakpoint]);
+	}, [breakpointXpipeSignal, handleToggleBreakpoint]);
 
-	  useEffect(() => {
+	useEffect(() => {
 		const handleNextNodeSignal = (): void => {
-		  handleToggleNextNode();
+			handleToggleNextNode();
 		};
 		nextNodeSignal.connect(handleNextNodeSignal);
 		return (): void => {
 			nextNodeSignal.disconnect(handleNextNodeSignal);
 		};
-	  }, [nextNodeSignal, handleToggleNextNode]);
+	}, [nextNodeSignal, handleToggleNextNode]);
 
-	  useEffect(() => {
+	useEffect(() => {
 		const handleTestSignal = (): void => {
-		  handleTestClick();
+			handleTestClick();
 		};
 		testXpipeSignal.connect(handleTestSignal);
 		return (): void => {
 			testXpipeSignal.disconnect(handleTestSignal);
 		};
-	  }, [testXpipeSignal, handleTestClick]);
+	}, [testXpipeSignal, handleTestClick]);
+
+	useEffect(() => {
+		fetchComponentList();
+	}, []);
 
 	const handleStart = () => {
-        let stringNode = stringNodes.map(function(x){
-            x = x.replace(" ","_");
-            return x.toLowerCase();
-        });
-	    let stringValue = stringNodesValue;
-        let floatNode = floatNodes.map(function(x){
-            x = x.replace(" ","_");
-            return x.toLowerCase();
-        });
-	    let floatNodeValue = floatNodesValue;
-        let intNode = intNodes.map(function(x){
-            x = x.replace(" ","_");
-            return x.toLowerCase();
-        });
-	    let intNodeValue = intNodesValue;
-        let boolNode = boolNodes.map(function(x){
-            x = x.replace(" ","_");
-            return x.toLowerCase();
-        });
-	    let boolNodeValue = boolNodesValue;
+		let stringNode = stringNodes.map(function (x) {
+			x = x.replace(" ", "_");
+			return x.toLowerCase();
+		});
+		let stringValue = stringNodesValue;
+		let floatNode = floatNodes.map(function (x) {
+			x = x.replace(" ", "_");
+			return x.toLowerCase();
+		});
+		let floatNodeValue = floatNodesValue;
+		let intNode = intNodes.map(function (x) {
+			x = x.replace(" ", "_");
+			return x.toLowerCase();
+		});
+		let intNodeValue = intNodesValue;
+		let boolNode = boolNodes.map(function (x) {
+			x = x.replace(" ", "_");
+			return x.toLowerCase();
+		});
+		let boolNodeValue = boolNodesValue;
 
-        var result = {};
-        stringNode.forEach((key, i) => result[key] = stringValue[i]);
-        floatNode.forEach((key, i) => result[key] = floatNodeValue[i]);
-        intNode.forEach((key, i) => result[key] = intNodeValue[i]);
-        boolNode.forEach((key, i) => result[key] = boolNodeValue[i]);
+		var result = {};
+		stringNode.forEach((key, i) => result[key] = stringValue[i]);
+		floatNode.forEach((key, i) => result[key] = floatNodeValue[i]);
+		intNode.forEach((key, i) => result[key] = intNodeValue[i]);
+		boolNode.forEach((key, i) => result[key] = boolNodeValue[i]);
 
-	    let commandStr = JSON.stringify(result);
+		let commandStr = JSON.stringify(result);
 		console.log(stringNodes);
 		console.log(commandStr);
 
@@ -787,7 +817,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setFloatNodesValue([]);
 		setBoolNodesValue([]);
 		onHide('displayHyperparameter');
-    }
+	}
 
 	const dialogFuncMap = {
 		'displayDebug': setDisplayDebug,
@@ -801,20 +831,20 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	const onHide = (name: string) => {
 		dialogFuncMap[`${name}`](false);
-		if (name == "displayHyperparameter"){
-		    setStringNodes(["name"]);
-		    setIntNodes([]);
-		    setFloatNodes([]);
-		    setBoolNodes([]);
+		if (name == "displayHyperparameter") {
+			setStringNodes(["name"]);
+			setIntNodes([]);
+			setFloatNodes([]);
+			setBoolNodes([]);
 		}
 	}
 
 	const renderFooter = () => {
 		return (
 			<div>
-			    <Button label="Saving & Compiling" icon="pi pi-check" onClick={handleUnsaved} />
-                <Button label="Cancel" icon="pi pi-times" onClick={() => onHide('displaySavedAndCompiled')} />
-            </div>
+				<Button label="Saving & Compiling" icon="pi pi-check" onClick={handleUnsaved} />
+				<Button label="Cancel" icon="pi pi-times" onClick={() => onHide('displaySavedAndCompiled')} />
+			</div>
 		);
 	}
 
@@ -829,9 +859,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	const renderDebugFooter = () => {
 		return (
-    	    <div>
-                <Button label="Quit Debugging" icon="pi pi-times" onClick={() => onHide('displayDebug')} />
-            </div>
+			<div>
+				<Button label="Quit Debugging" icon="pi pi-times" onClick={() => onHide('displayDebug')} />
+			</div>
 		);
 	}
 
@@ -1001,252 +1031,253 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			<Content>
 				<Layer
 					onDrop={(event) => {
-						//debugger;
 						var data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
 
+						let component_task = componentList.map(x => x["task"]);
+						let drop_node = component_task.indexOf(data.name);
+						let current_node: any;
 						let node = null;
-						// note:  can not use the same port name in the same node,or the same name port can not link to other ports
-						// you can use shift + click and then use delete to delete link
-						if (data.type === 'in') {
 
-							node = new CustomNodeModel({ name: data.name, color: 'rgb(192,255,0)', extras: { "type": data.type } });
-
-							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('Dataset Name', 'parameter-string-in-1');
-
-							node.addOutPortEnhance('▶', 'out-0');
-							node.addOutPortEnhance('Dataset', 'parameter-out-1');
-
-						} else if (data.type === 'out') {
-
-							node = new CustomNodeModel({ name: data.name, color: 'rgb(0,102,204)', extras: { "type": data.type } });
-
-							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('Dataset Name', 'in-1');
-							node.addInPortEnhance('Random Crop', 'parameter-boolean-in-2');
-							node.addInPortEnhance('Horizontal Flip', 'parameter-boolean-in-3');
-							node.addInPortEnhance('Vertical Flip', 'parameter-boolean-in-4');
-							node.addInPortEnhance('Add Noise', 'parameter-boolean-in-5');
-
-							node.addOutPortEnhance('▶', 'out-0');
-							node.addOutPortEnhance('Resized Dataset', 'out-1');
-
-						} else if (data.type === 'split') {
-
-							node = new CustomNodeModel({ name: data.name, color: 'rgb(255,153,102)', extras: { "type": data.type } });
-
-							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('Dataset', 'in-1');
-							node.addInPortEnhance('Train', 'parameter-float-in-2');
-							node.addInPortEnhance('Test', 'parameter-float-in-3');
-
-							node.addOutPortEnhance('▶', 'out-0');
-
-
-						} else if (data.type === 'train') {
-
-							node = new CustomNodeModel({ name: data.name, color: 'rgb(255,102,102)', extras: { "type": data.type } });
-
-							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('model', 'in-1');
-							node.addInPortEnhance('Training Data', 'in-2');
-							node.addInPortEnhance('Training Epochs', 'parameter-int-in-3');
-
-							node.addOutPortEnhance('▶', 'out-0');
-							node.addOutPortEnhance('Trained Model', 'out-1');
-
-						} else if (data.type === 'eval') {
-
-							node = new CustomNodeModel({ name: data.name, color: 'rgb(255,204,204)', extras: { "type": data.type } });
-
-							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('model', 'in-1');
-							node.addInPortEnhance('Eval Dataset', 'in-2');
-
-							node.addOutPortEnhance('▶', 'out-0');
-							node.addOutPortEnhance('Results', 'out-1');
-
-						} else if (data.type === 'runnb') {
-
-							node = new CustomNodeModel({ name: data.name, color: 'rgb(153,204,51)', extras: { "type": data.type } });
-
-							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('Input Data', 'in-1');
-
-							node.addOutPortEnhance('▶', 'out-0');
-
-						} else if (data.type === 'if') {
-
-							node = new CustomNodeModel({ name: data.name, color: 'rgb(255,153,0)', extras: { "type": data.type } });
-
-							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('Test', 'in-1');
-
-							node.addOutPortEnhance('If True  ▶', 'out-0');
-							node.addOutPortEnhance('If False ▶', 'out-1');
-							node.addOutPortEnhance('Finished ▶', 'out-2');
-
-						} else if (data.type === 'math') {
-
-							node = new CustomNodeModel({ name: data.name, color: 'rgb(255,204,0)', extras: { "type": data.type } });
-
-							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('A', 'in-1');
-							node.addInPortEnhance('B', 'in-2');
-
-							node.addOutPortEnhance('▶', 'out-0');
-							node.addOutPortEnhance('value', 'out-1');
-
-
-						} else if (data.type === 'convert') {
-
-							node = new CustomNodeModel({ name: data.name, color: 'rgb(204,204,204)', extras: { "type": data.type } });
-
-							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('model', 'parameter-string-in-1');
-
-							node.addOutPortEnhance('▶', 'out-0');
-							node.addOutPortEnhance('converted', 'out-1');
-
-						} else if (data.type === 'string') {
-
-							if ((data.name).startsWith("Literal")){
-
-								let theResponse = window.prompt('Enter String Value (Without Quotes):');
-								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)',  extras: { "type": data.type } });
-								node.addOutPortEnhance(theResponse, 'out-0');
-
-							} else{
-
-								let theResponse = window.prompt('notice', 'Enter String Name (Without Quotes):');
-								node = new CustomNodeModel({ name: "Hyperparameter (String): " + theResponse, color: 'rgb(153,204,204)', extras: { "type": data.type } });
-								node.addOutPortEnhance('▶', 'parameter-out-0');
-
-							}
-
-						} else if (data.type === 'int') {
-
-							if ((data.name).startsWith("Literal")){
-								
-								let theResponse = window.prompt('Enter Int Value (Without Quotes):');
-								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)',  extras: { "type": data.type } });
-								node.addOutPortEnhance(theResponse, 'out-0');
-
-							} else{
-								
-								let theResponse = window.prompt('notice', 'Enter Int Name (Without Quotes):');
-								node = new CustomNodeModel({ name: "Hyperparameter (Int): " + theResponse, color: 'rgb(153,0,102)', extras: {"type":data.type} });
-								node.addOutPortEnhance('▶', 'parameter-out-0');
-
-							}
-
-						} else if (data.type === 'float') {
-
-							if ((data.name).startsWith("Literal")){
-								
-								let theResponse = window.prompt('Enter Float Value (Without Quotes):');
-								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)',  extras: { "type": data.type } });
-								node.addOutPortEnhance(theResponse, 'out-0');
-
-							} else{
-
-								let theResponse = window.prompt('notice', 'Enter Float Name (Without Quotes):');
-								node = new CustomNodeModel({ name: "Hyperparameter (Float): " + theResponse, color: 'rgb(102,51,102)', extras: { "type": data.type } });
-								node.addOutPortEnhance('▶', 'parameter-out-0');
-
-							}
-
-						}else if (data.type === 'boolean') {
-
-							if ((data.name).startsWith("Literal")){
-
-								let portLabel = data.name.split(' ');
-								portLabel = portLabel[portLabel.length - 1];
-
-								node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)', extras: { "type": data.type } });
-								node.addOutPortEnhance(portLabel, 'out-0');
-
-							} else{
-
-								let theResponse = window.prompt('notice','Enter Boolean Name (Without Quotes):');
-								node=new CustomNodeModel({name: "Hyperparameter (Boolean): " + theResponse,color:'rgb(153,51,204)',extras:{"type":data.type}});
-								node.addOutPortEnhance('▶','parameter-out-0');
-
-							}
-
-                        } else if (data.type === 'model') {
-							node = new CustomNodeModel({ name: data.name, color: 'rgb(102,102,102)', extras: { "type": data.type } });
-
-							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('Training Data', 'in-1');
-							node.addInPortEnhance('Model Type', 'parameter-string-in-2');
-
-							node.addOutPortEnhance('▶', 'out-0');
-							node.addOutPortEnhance('Model', 'out-1');
-
-						} else if (data.type === 'debug') {
-							node = new CustomNodeModel({ name: data.name, color: 'rgb(255,102,0)', extras: { "type": data.type } });
-							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('Data Set', 'parameter-in-1');
-							node.addOutPortEnhance('▶', 'out-0');
-
-						} else if (data.type === 'enough') {
-
-							node = new CustomNodeModel({ name: data.name, color: 'rgb(51,51,51)', extras: { "type": data.type } });
-
-							node.addInPortEnhance('▶', 'in-0');
-							node.addInPortEnhance('Target Accuracy', 'parameter-float-in-1');
-							node.addInPortEnhance('Max Retries', 'parameter-int-in-2');
-							node.addInPortEnhance('Metrics', 'parameter-string-in-3');
-
-							node.addOutPortEnhance('▶', 'out-0');
-							node.addOutPortEnhance('Should Retrain', 'out-1');
-						} else if (data.type === 'literal') {
-
-							node = new CustomNodeModel({ name: data.name, color: 'rgb(21,21,51)', extras: { "type": data.type } });
-							node.addOutPortEnhance('Value', 'out-0');
+						if (drop_node != -1) {
+							current_node = componentList[drop_node];
 						}
 
+						if (current_node != undefined) {
+							if (current_node.header == "GENERAL") {
+								if (data.type === 'math') {
 
+									node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
+
+									node.addInPortEnhance('▶', 'in-0');
+									node.addInPortEnhance('A', 'in-1');
+									node.addInPortEnhance('B', 'in-2');
+
+									node.addOutPortEnhance('▶', 'out-0');
+									node.addOutPortEnhance('value', 'out-1');
+
+								} else if (data.type === 'convert') {
+
+									node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
+
+									node.addInPortEnhance('▶', 'in-0');
+									node.addInPortEnhance('model', 'parameter-string-in-1');
+
+									node.addOutPortEnhance('▶', 'out-0');
+									node.addOutPortEnhance('converted', 'out-1');
+
+								} else if (data.type === 'string') {
+
+									if ((data.name).startsWith("Literal")) {
+
+										let theResponse = window.prompt('Enter String Value (Without Quotes):');
+										node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
+										node.addOutPortEnhance(theResponse, 'out-0');
+
+									} else {
+
+										let theResponse = window.prompt('notice', 'Enter String Name (Without Quotes):');
+										node = new CustomNodeModel({ name: "Hyperparameter (String): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
+										node.addOutPortEnhance('▶', 'parameter-out-0');
+
+									}
+
+								} else if (data.type === 'int') {
+
+									if ((data.name).startsWith("Literal")) {
+
+										let theResponse = window.prompt('Enter Int Value (Without Quotes):');
+										node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
+										node.addOutPortEnhance(theResponse, 'out-0');
+
+									} else {
+
+										let theResponse = window.prompt('notice', 'Enter Int Name (Without Quotes):');
+										node = new CustomNodeModel({ name: "Hyperparameter (Int): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
+										node.addOutPortEnhance('▶', 'parameter-out-0');
+
+									}
+
+								} else if (data.type === 'float') {
+
+									if ((data.name).startsWith("Literal")) {
+
+										let theResponse = window.prompt('Enter Float Value (Without Quotes):');
+										node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
+										node.addOutPortEnhance(theResponse, 'out-0');
+
+									} else {
+
+										let theResponse = window.prompt('notice', 'Enter Float Name (Without Quotes):');
+										node = new CustomNodeModel({ name: "Hyperparameter (Float): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
+										node.addOutPortEnhance('▶', 'parameter-out-0');
+
+									}
+
+								} else if (data.type === 'boolean') {
+
+									if ((data.name).startsWith("Literal")) {
+
+										let portLabel = data.name.split(' ');
+										portLabel = portLabel[portLabel.length - 1];
+
+										node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
+										node.addOutPortEnhance(portLabel, 'out-0');
+
+									} else {
+
+										let theResponse = window.prompt('notice', 'Enter Boolean Name (Without Quotes):');
+										node = new CustomNodeModel({ name: "Hyperparameter (Boolean): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
+										node.addOutPortEnhance('▶', 'parameter-out-0');
+
+									}
+
+								} else if (data.type === 'debug') {
+									node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
+									node.addInPortEnhance('▶', 'in-0');
+									node.addInPortEnhance('Data Set', 'parameter-in-1');
+									node.addOutPortEnhance('▶', 'out-0');
+
+								} else if (data.type === 'enough') {
+
+									node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
+
+									node.addInPortEnhance('▶', 'in-0');
+									node.addInPortEnhance('Target Accuracy', 'parameter-float-in-1');
+									node.addInPortEnhance('Max Retries', 'parameter-int-in-2');
+									node.addInPortEnhance('Metrics', 'parameter-string-in-3');
+
+									node.addOutPortEnhance('▶', 'out-0');
+									node.addOutPortEnhance('Should Retrain', 'out-1');
+
+								} else if (data.type === 'literal') {
+
+									node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
+									node.addOutPortEnhance('Value', 'out-0');
+								}
+							} else if (current_node.header == "ADVANCED") {
+								node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
+
+								node.addInPortEnhance('▶', 'in-0');
+								let in_count = 1;
+								let in_str = "";
+								if (current_node["variable"].split(" - ").length > 1) {
+									for (let node_index = 0; node_index < current_node["variable"].split(" - ").length; node_index++) {
+										if (current_node["variable"].split(" - ")[node_index].includes('InArg')) {
+											for (let variable_index = 0; variable_index < current_node["variable"].split(" - ")[node_index].split(" , ").length; variable_index++) {
+												if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[str]")) {
+													in_str = "parameter-string-in-" + in_count;
+													in_count += 1;
+												} else if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[int]")) {
+													in_str = "parameter-int-in-" + in_count;
+													in_count += 1;
+												} else if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[bool]")) {
+													in_str = "parameter-boolean-in-" + in_count;
+													in_count += 1;
+												} else if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[float]")) {
+													in_str = "parameter-float-in-" + in_count;
+													in_count += 1;
+												} else {
+													in_str = "in-" + in_count;
+													in_count += 1;
+												}
+												node.addInPortEnhance(current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().split(":")[0], in_str);
+											}
+										}
+									}
+								} else if (current_node["variable"].includes('InArg')) {
+									if (current_node["variable"].split(" , ").length > 0) {
+										for (let variable_index = 0; variable_index < current_node["variable"].split(" , ").length; variable_index++) {
+											if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[str]")) {
+												in_str = "parameter-string-in-" + in_count;
+												in_count += 1;
+											} else if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[int]")) {
+												in_str = "parameter-int-in-" + in_count;
+												in_count += 1;
+											} else if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[bool]")) {
+												in_str = "parameter-boolean-in-" + in_count;
+												in_count += 1;
+											} else if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[float]")) {
+												in_str = "parameter-float-in-" + in_count;
+												in_count += 1;
+											} else {
+												in_str = "in-" + in_count;
+												in_count += 1;
+											}
+											node.addInPortEnhance(current_node["variable"].split(" , ")[variable_index].trim().split(":")[0], in_str);
+										}
+									}
+								}
+
+								node.addOutPortEnhance('▶', 'out-0');
+								let count = 1;
+								let out_str = "";
+								if (current_node["variable"].split(" - ").length > 1) {
+									for (let node_index = 0; node_index < current_node["variable"].split(" - ").length; node_index++) {
+										if (current_node["variable"].split(" - ")[node_index].includes('OutArg')) {
+											for (let variable_index = 0; variable_index < current_node["variable"].split(" - ")[node_index].split(" , ").length; variable_index++) {
+												if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("Dataset")) {
+													out_str = "parameter-out-" + count;
+													count += 1;
+												} else {
+													out_str = "out-" + count;
+													count += 1;
+												}
+												node.addOutPortEnhance(current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().split(":")[0], out_str);
+											}
+										}
+									}
+								} else if (current_node["variable"].includes('OutArg')) {
+									if (current_node["variable"].split(" , ").length > 0) {
+										for (let variable_index = 0; variable_index < current_node["variable"].split(" , ").length; variable_index++) {
+											if (current_node["variable"].split(" , ")[variable_index].trim().includes("Dataset")) {
+												out_str = "parameter-out-" + count;
+												count += 1;
+											} else {
+												out_str = "out-" + count;
+												count += 1;
+											}
+											node.addInPortEnhance(current_node["variable"].split(" , ")[variable_index].trim().split(":")[0], out_str);
+										}
+									}
+								}
+							}
+						}
+
+						// note:  can not use the same port name in the same node,or the same name port can not link to other ports
+						// you can use shift + click and then use delete to delete link
 						if (node != null) {
 							let point = diagramEngine.getRelativeMousePoint(event);
 							node.setPosition(point);
 							diagramEngine.getModel().addNode(node);
 							node.registerListener({
-                               entityRemoved: () => {
-							        setSaved(false);
-							        setCompiled(false);
-                               }
-                            });
+								entityRemoved: () => {
+									setSaved(false);
+									setCompiled(false);
+								}
+							});
 							console.log("Updating doc context due to drop event!")
 							let currentModel = diagramEngine.getModel().serialize();
 							context.model.setSerializedModel(currentModel);
 							forceUpdate();
 						}
 					}}
+
 					onDragOver={(event) => {
-						console.log("onDragOver")
 						event.preventDefault();
-						//forceUpdate();
 					}}
 
 					onMouseOver={(event) => {
-						console.log("onMouseOver")
 						event.preventDefault();
-						//forceUpdate();
 					}}
 
 					onMouseUp={(event) => {
-						console.log("onMouseUp")
 						event.preventDefault();
-						//forceUpdate();
 					}}
 
 					onMouseDown={(event) => {
-						console.log("onMouseDown")
 						event.preventDefault();
-						//forceUpdate();
 					}}>
+
 					<DemoCanvasWidget>
 						<CanvasWidget engine={diagramEngine} />
 					</DemoCanvasWidget>
