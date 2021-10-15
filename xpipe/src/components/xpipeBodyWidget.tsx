@@ -13,7 +13,7 @@ import * as SRD from '@projectstorm/react-diagrams';
 
 import { ReactWidget, showDialog } from '@jupyterlab/apputils';
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
-import { ILabShell } from '@jupyterlab/application';
+import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
 import {
 	DocumentRegistry,
@@ -26,14 +26,17 @@ import styled from '@emotion/styled';
 
 import { CustomNodeModel } from "./CustomNodeModel";
 import { XPipePanel } from '../xpipeWidget';
+import { Log } from '../log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
 import ComponentList from '../components_xpipe/Component';
+
 
 
 export interface BodyWidgetProps {
 	//app: Application;
 	context: any;
 	browserFactory: IFileBrowserFactory;
+	app: JupyterFrontEnd;
 	shell: ILabShell;
 	commands: any;
 	widgetId?: string;
@@ -106,7 +109,8 @@ export const commandIDs = {
 	openCloseDebugger: 'Xpipe-debugger:open/close',
 	breakpointXpipe: 'Xpipe-editor:breakpoint-node',
 	nextNode: 'Xpipe-editor:next-node',
-	testXpipe: 'Xpipe-editor:test-node'
+	testXpipe: 'Xpipe-editor:test-node',
+	outputMsg: 'Xpipe-log:logOutputMessage'
 };
 
 
@@ -120,6 +124,7 @@ function useForceUpdate() {
 export const BodyWidget: FC<BodyWidgetProps> = ({
 	context,
 	browserFactory,
+	app,
 	shell,
 	commands,
 	widgetId,
@@ -138,7 +143,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	currentNodeSignal,
 	testXpipeSignal,
 	customDeserializeModel
-
 }) => {
 
 	const [prevState, updateState] = useState(0);
@@ -158,6 +162,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [floatNodesValue, setFloatNodesValue] = useState<number[]>([0.00]);
 	const [boolNodesValue, setBoolNodesValue] = useState<boolean[]>([false]);
 	const [componentList, setComponentList] = React.useState([]);
+  const xpipeLogger = new Log(app);
+
 
 
 	const getBindingIndexById = (nodeModels: any[], id: string): number | null => {
@@ -522,14 +528,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		alert("Run.")
-		commands.execute(commandIDs.openAnalysisViewer);
 		let nodesCount = diagramEngine.getModel().getNodes().length;
 
 		console.log(diagramEngine.getModel().getNodes());
 		console.log("node count: ", nodesCount);
+    xpipeLogger.debug("Node Count: ", nodesCount);
 		for (let i = 0; i < nodesCount; i++) {
 			let nodeName = diagramEngine.getModel().getNodes()[i].getOptions()["name"];
 			console.log(nodeName);
+      xpipeLogger.info(nodeName);
 			if (nodeName.startsWith("Hyperparameter")) {
 				let regEx = /\(([^)]+)\)/;
 				let result = nodeName.match(regEx);

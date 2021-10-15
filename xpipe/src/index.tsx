@@ -31,6 +31,7 @@ import Sidebar from './components_xpipe/Sidebar';
 
 import { XpipeDebugger } from './debugger/SidebarDebugger';
 import { ITranslator } from '@jupyterlab/translation';
+import { logPlugin } from './log/LogPlugin';
 
 const FACTORY = 'Xpipe editor';
 
@@ -42,7 +43,7 @@ const FACTORY = 'Xpipe editor';
 /**
  * Initialization data for the documents extension.
  */
-const extension: JupyterFrontEndPlugin<void> = {
+const xpipe: JupyterFrontEndPlugin<void> = {
   id: 'xpipe',
   autoStart: true,
   requires: [
@@ -74,6 +75,7 @@ const extension: JupyterFrontEndPlugin<void> = {
       modelName: 'xpipe-model',
       fileTypes: ['xpipe'],
       defaultFor: ['xpipe'],
+      app: app,
       shell: app.shell,
       commands: app.commands,
       browserFactory: browserFactory,
@@ -276,4 +278,12 @@ const extension: JupyterFrontEndPlugin<void> = {
   },
 };
 
-export default extension;
+/**
+ * Export the plugins as default.
+ */
+ const plugins: JupyterFrontEndPlugin<any>[] = [
+  xpipe,
+  logPlugin
+];
+
+export default plugins;
