@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from '@emotion/styled';
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import { Tooltip } from '@material-ui/core';
+import ReactTooltip from 'react-tooltip';
 
 export interface TrayItemWidgetProps {
 	model: any;
@@ -18,9 +18,9 @@ interface TrayStyledProps {
 export const Tray = styled.div<TrayStyledProps>`
 	color: black;
 	font-family: Helvetica, Arial;
-	padding: 5px;
+	padding: 7px;
 	width: auto;
-	margin: 0px 10px;
+	margin: 7px;
 	border: solid 1px ${(p) => p.color};
 	border-radius: 5px;
 	margin-bottom: 2px;
@@ -30,7 +30,8 @@ export const Tray = styled.div<TrayStyledProps>`
 export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 	render() {
 		return (
-			<Tooltip title={this.props.name}>
+			<p data-tip={this.props.name}>
+				<ReactTooltip place="bottom" type="dark" effect="float" />
 				<Tray
 					color={this.props.color || "white"}
 					draggable={true}
@@ -61,7 +62,7 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 					className="tray-item">
 					{this.props.name}
 				</Tray>
-			</Tooltip>
+			</p>
 		);
 	}
 }

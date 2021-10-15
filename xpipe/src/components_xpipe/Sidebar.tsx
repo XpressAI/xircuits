@@ -1,58 +1,24 @@
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import ComponentList from './Component';
-import Divider from '@material-ui/core/Divider';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import React, { useEffect, useState } from 'react';
-import TextField from '@material-ui/core/TextField';
 import styled from '@emotion/styled';
-import { Accordion, AccordionSummary, makeStyles, Typography } from '@material-ui/core';
 import { TrayItemWidget } from './TrayItemWidget';
 import { TrayWidget } from './TrayWidget';
 import { JupyterFrontEnd } from '@jupyterlab/application';
+import {
+    Accordion,
+    AccordionItem,
+    AccordionItemHeading,
+    AccordionItemButton,
+    AccordionItemPanel
+} from "react-accessible-accordion";
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        width: '100%',
-        height: 5,
-        color: "rgb(255,255,255)"
-    },
-    heading: {
-        fontSize: theme.typography.pxToRem(14)
-    },
-    secondaryHeading: {
-        fontSize: theme.typography.pxToRem(14),
-        color: theme.palette.text.secondary
-    },
-    icon: {
-        verticalAlign: 'bottom',
-        height: 5,
-        width: 5
-    },
-    details: {
-        alignItems: 'center'
-    },
-    column: {
-        flexBasis: '40%'
-    },
-    helper: {
-        borderLeft: `1px solid ${theme.palette.divider}`,
-        padding: theme.spacing(0, 1)
-    },
-    link: {
-        color: theme.palette.primary.main,
-        textDecoration: 'none',
-        '&:hover': {
-            textDecoration: 'underline'
-        }
-    }
-}));
 
 export const Body = styled.div`
   flex-grow: 1;
   display: flex;
   flex-wrap: wrap;
   min-height: 100%;
-  background-color:black;
+  background-color: black;
   height: 100%;
   overflow-y: auto;
 `;
@@ -103,6 +69,8 @@ export interface SidebarProps {
     basePath: string;
 }
 
+
+
 function exportTrayWidget(val: any) {
     let color: any = colorList_adv[0]["task"];
 
@@ -121,7 +89,7 @@ function exportTrayWidget(val: any) {
 
 export default function Sidebar(props: SidebarProps) {
     const [componentList, setComponentList] = React.useState([]);
-    const classes = useStyles();
+
     const [searchTerm, setSearchTerm] = useState('');
 
     const fetchComponentList = async () => {
@@ -132,6 +100,16 @@ export default function Sidebar(props: SidebarProps) {
         setComponentList(response);
     }
 
+    let handleOnChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+        setSearchTerm("");
+        setSearchTerm(event.target.value);
+    }
+
+    function handleOnClick() {
+        setSearchTerm("");
+        setSearchTerm(searchTerm);
+    }
+
     useEffect(() => {
         fetchComponentList();
     }, []);
@@ -140,131 +118,107 @@ export default function Sidebar(props: SidebarProps) {
         <Body>
             <Content>
                 <TrayWidget>
-                    <div style={{}} className="test2">
-                        <Autocomplete
-                            id="xpipe_search_bar"
-                            freeSolo
-                            options={componentList.map((option) => option.task)}
-                            onInputChange={(event, newInputValue) => {
-                                setSearchTerm(newInputValue);
-                            }}
-                            renderInput={
-                                params => (
-                                    <TextField
-                                        {...params}
-                                        label="Search.."
-                                        margin="normal"
-                                        variant="outlined"
-                                        onChange={event => {
-                                            if (searchTerm != event.target.value) {
-                                                setSearchTerm(event.target.value);
-                                            }
-                                        }}
-                                    />
-                                )}
-                        />
-                    </div>
                     <div>
-                        <Accordion>
+                        <div className="search">
+                            <input type="text" name="" value={searchTerm} placeholder="SEARCH" className="text" style={{ width: "80%" }} onChange={handleOnChange} />
+                            <a onClick={handleOnClick} className="btn"><i className="fa fa-search "></i></a>
+                        </div>
+                        <Accordion allowZeroExpanded>
                             {
                                 headerList.filter((val) => {
                                     if (searchTerm == "") {
                                         return val
-                                    } else if (val.task.toLowerCase().includes(searchTerm.toLowerCase())) {
-                                        return val
                                     }
                                 }).map((val, i) => {
                                     return (
-                                        <AccordionSummary
-                                            expandIcon={<ExpandMoreIcon />}
-                                            aria-controls="panel1c-content"
-                                            id="panel-xpipe-1"
-                                            key={headerList[0]["task"].toString()}
-                                        >
-                                            <div className={classes.column} key={`index-${i}`}>
-                                                <Typography className={classes.secondaryHeading}>
-                                                    {val.task}
-                                                </Typography>
-                                            </div>
-                                        </AccordionSummary>
+                                        <AccordionItem key={headerList[0]["task"].toString()}>
+                                            <AccordionItemHeading>
+                                                <AccordionItemButton>{val.task}</AccordionItemButton>
+                                            </AccordionItemHeading>
+                                            <AccordionItemPanel>
+                                                {
+                                                    componentList.filter((val) => {
+                                                        if (searchTerm == "") {
+                                                            return val
+                                                        }
+                                                    }).map((val, i) => {
+                                                        if (val.header == "GENERAL") {
+                                                            return (
+                                                                <div key={`index-1-${i}`}>
+                                                                    <TrayItemWidget
+                                                                        model={{ type: val.type, name: val.task }}
+                                                                        name={val.task}
+                                                                        color={val.color}
+                                                                        app={props.lab}
+                                                                        path={val.path} />
+                                                                </div>
+                                                            );
+                                                        }
+                                                    })
+                                                }
+                                            </AccordionItemPanel>
+                                        </AccordionItem>
                                     );
                                 })
                             }
 
-                            {
-                                componentList.filter((val) => {
-                                    if (searchTerm == "") {
-                                        return val
-                                    } else if (val.task.toLowerCase().includes(searchTerm.toLowerCase())) {
-                                        return val
-                                    }
-                                }).map((val, i) => {
-                                    if (val.header == "GENERAL") {
-                                        return (
-                                            <div key={val.id}>
-                                                <TrayItemWidget
-                                                    model={{ type: val.type, name: val.task }}
-                                                    name={val.task}
-                                                    color={val.color}
-                                                    app={props.lab}
-                                                    path={val.path} />
-                                            </div>
-                                        );
-                                    }
-                                })
-                            }
-                            <Divider />
-                        </Accordion>
-                        <Accordion>
                             {
                                 advancedList.filter((val) => {
                                     if (searchTerm == "") {
                                         return val
-                                    } else if (val.task.toLowerCase().includes(searchTerm.toLowerCase())) {
-                                        return val
                                     }
                                 }).map((val, i) => {
                                     return (
-                                        <AccordionSummary
-                                            expandIcon={<ExpandMoreIcon />}
-                                            aria-controls="panel1c-content"
-                                            id="panel-xpipe-1"
-                                            key={headerList[0]["task"].toString()}
-                                        >
-                                            <div className={classes.column} key={`index-${i}`}>
-                                                <Typography className={classes.secondaryHeading}>
-                                                    {val.task}
-                                                </Typography>
-                                            </div>
-                                        </AccordionSummary>
+                                        <AccordionItem key={advancedList[0]["task"].toString()}>
+                                            <AccordionItemHeading>
+                                                <AccordionItemButton>{val.task}</AccordionItemButton>
+                                            </AccordionItemHeading>
+                                            <AccordionItemPanel>
+                                                {
+                                                    componentList.filter((val) => {
+                                                        if (searchTerm == "") {
+                                                            return val
+                                                        }
+                                                    }).map((val, i) => {
+                                                        if (val.header == "ADVANCED") {
+                                                            return (
+                                                                <div key={`index-2-${i}`}>
+                                                                    <TrayItemWidget
+                                                                        model={{ type: val.type, name: val.task }}
+                                                                        name={val.task}
+                                                                        color={val.color}
+                                                                        app={props.lab}
+                                                                        path={val.path} />
+                                                                </div>
+                                                            );
+                                                        }
+                                                    })
+                                                }
+                                            </AccordionItemPanel>
+                                        </AccordionItem>
                                     );
                                 })
                             }
 
-                            {
-                                componentList.filter((val) => {
-                                    if (searchTerm == "") {
-                                        return val
-                                    } else if (val.task.toLowerCase().includes(searchTerm.toLowerCase())) {
-                                        return val
-                                    }
-                                }).map((val, i) => {
-                                    if (val.header == "ADVANCED") {
-                                        return (
-                                            <div key={val.id}>
-                                                <TrayItemWidget
-                                                    model={{ type: val.type, name: val.task }}
-                                                    name={val.task}
-                                                    color={val.color}
-                                                    app={props.lab}
-                                                    path={val.path} />
-                                            </div>
-                                        );
-                                    }
-                                })
-                            }
-                            <Divider />
                         </Accordion>
+                        {
+                            componentList.filter((val) => {
+                                if (searchTerm != "" && val.task.toLowerCase().includes(searchTerm.toLowerCase())) {
+                                    return val
+                                }
+                            }).map((val, i) => {
+                                return (
+                                    <div key={`index-3-${i}`}>
+                                        <TrayItemWidget
+                                            model={{ type: val.type, name: val.task }}
+                                            name={val.task}
+                                            color={val.color}
+                                            app={props.lab}
+                                            path={val.path} />
+                                    </div>
+                                );
+                            })
+                        }
                     </div>
                 </TrayWidget>
             </Content>
