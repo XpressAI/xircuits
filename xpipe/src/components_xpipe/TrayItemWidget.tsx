@@ -1,10 +1,14 @@
 import * as React from 'react';
 import styled from '@emotion/styled';
+import { JupyterFrontEnd } from '@jupyterlab/application';
+import { Tooltip } from '@material-ui/core';
 
 export interface TrayItemWidgetProps {
 	model: any;
-	color?: string;
+	color: any;
 	name: string;
+	path: string;
+	app: JupyterFrontEnd;
 }
 
 interface TrayStyledProps {
@@ -26,16 +30,38 @@ export const Tray = styled.div<TrayStyledProps>`
 export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 	render() {
 		return (
-			<Tray
-				color={this.props.color || "white"}
-				draggable={true}
-				onDragStart={(event) => {
-					event.dataTransfer.setData('storm-diagram-node', JSON.stringify(this.props.model));
-					this.forceUpdate();
-				}}
-				className="tray-item">
-				{this.props.name}
-			</Tray>
+			<Tooltip title={this.props.name}>
+				<Tray
+					color={this.props.color || "white"}
+					draggable={true}
+					onDragStart={(event) => {
+						event.dataTransfer.setData('storm-diagram-node', JSON.stringify(this.props.model));
+						this.forceUpdate();
+					}}
+					onClick={(event) => {
+						if (event.ctrlKey || event.metaKey) {
+							const { commands } = this.props.app;
+							const openComponentFile = commands.execute('docmanager:open', {
+								path: this.props.path,
+								factory: 'Editor',
+							});
+						}
+						this.forceUpdate();
+					}}
+					onDoubleClick={(event) => {
+						if (this.props.path != "") {
+							const { commands } = this.props.app;
+							const openComponentFile = commands.execute('docmanager:open', {
+								path: this.props.path,
+								factory: 'Editor',
+							});
+						}
+						this.forceUpdate();
+					}}
+					className="tray-item">
+					{this.props.name}
+				</Tray>
+			</Tooltip>
 		);
 	}
 }

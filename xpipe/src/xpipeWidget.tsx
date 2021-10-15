@@ -15,39 +15,42 @@ import { ActionEventBus, ZoomCanvasAction } from '@projectstorm/react-canvas-cor
 import * as SRD from '@projectstorm/react-diagrams';
 import { DefaultLinkModel } from '@projectstorm/react-diagrams';
 
-import {CustomNodeFactory} from "./components/CustomNodeFactory";
+import { CustomNodeFactory } from "./components/CustomNodeFactory";
 import { CustomNodeModel } from './components/CustomNodeModel';
 
 import { XPipeDocChange, XPipeDocModel } from './xpipeModel';
+
+import { ServiceManager } from '@jupyterlab/services';
 
 import { commandIDs } from './components/xpipeBodyWidget';
 
 /**
  * DocumentWidget: widget that represents the view or editor for a file type.
  */
- export class XPipeWidget extends DocumentWidget<
- XPipePanel,
- XPipeDocModel
+export class XPipeWidget extends DocumentWidget<
+  XPipePanel,
+  XPipeDocModel
 > {
- constructor(options: DocumentWidget.IOptions<XPipePanel, XPipeDocModel>) {
-   super(options);
- }
+  constructor(options: DocumentWidget.IOptions<XPipePanel, XPipeDocModel>) {
+    super(options);
+  }
 
- /**
-  * Dispose of the resources held by the widget.
-  */
- dispose(): void {
-   this.content.dispose();
-   super.dispose();
- }
+  /**
+   * Dispose of the resources held by the widget.
+   */
+  dispose(): void {
+    this.content.dispose();
+    super.dispose();
+  }
 }
 export class XPipePanel extends ReactWidget {
-  
+
   browserFactory: IFileBrowserFactory;
   app: JupyterFrontEnd;
   shell: ILabShell;
   commands: any;
   context: any;
+  serviceManager: ServiceManager;
   saveXpipeSignal: Signal<this, any>;
   reloadXpipeSignal: Signal<this, any>;
   revertXpipeSignal: Signal<this, any>;
@@ -60,7 +63,7 @@ export class XPipePanel extends ReactWidget {
   testXpipeSignal: Signal<this, any>;
 
   activeModel: SRD.DiagramModel;
-	diagramEngine: SRD.DiagramEngine;
+  diagramEngine: SRD.DiagramEngine;
 
   private _clients: { [id: string]: HTMLElement };
 
@@ -74,6 +77,7 @@ export class XPipePanel extends ReactWidget {
     this.shell = options.shell;
     this.commands = options.commands;
     this.context = options.context;
+    this.serviceManager = options.serviceManager;
     this.saveXpipeSignal = options.saveXpipeSignal;
     this.reloadXpipeSignal = options.reloadXpipeSignal;
     this.revertXpipeSignal = options.revertXpipeSignal;
@@ -84,16 +88,16 @@ export class XPipePanel extends ReactWidget {
     this.nextNodeSignal = options.nextNodeSignal;
     this.currentNodeSignal = options.currentNodeSignal;
     this.testXpipeSignal = options.testXpipeSignal;
-    
+
     //debugger;
     console.log(this.context);
 
-    this.diagramEngine = SRD.default({registerDefaultZoomCanvasAction: false});
-		this.activeModel = new SRD.DiagramModel();
-		this.diagramEngine.getNodeFactories().registerFactory(new CustomNodeFactory());
-		this.diagramEngine.getActionEventBus().registerAction(new ZoomCanvasAction({inverseZoom:true}))
+    this.diagramEngine = SRD.default({ registerDefaultZoomCanvasAction: false });
+    this.activeModel = new SRD.DiagramModel();
+    this.diagramEngine.getNodeFactories().registerFactory(new CustomNodeFactory());
+    this.diagramEngine.getActionEventBus().registerAction(new ZoomCanvasAction({ inverseZoom: true }))
     this.diagramEngine.setModel(this.activeModel);
-    
+
     this.context.ready.then((value) => {
 
       this.context.model.sharedModelChanged.connect(this._onContentChanged);
@@ -102,7 +106,7 @@ export class XPipePanel extends ReactWidget {
       const model = this.context.model.getSharedObject();
 
       //check if model.id is empty / does not have an id
-      if (model.id != ''){
+      if (model.id != '') {
         console.log("deserializing using custom method");
         //this.activeModel.deserializeModel(model, this.diagramEngine);
         let deserializedModel = this.customDeserializeModel(model, this.diagramEngine);
@@ -113,18 +117,18 @@ export class XPipePanel extends ReactWidget {
       }
 
       else {
-        
+
         console.log("init new model!")
-        let startNode = new CustomNodeModel({ name:'Start', color:'rgb(255,102,102)', extras:{ "type":"Start" } });
+        let startNode = new CustomNodeModel({ name: 'Start', color: 'rgb(255,102,102)', extras: { "type": "Start" } });
         startNode.addOutPortEnhance('▶', 'out-0');
         startNode.addOutPortEnhance('  ', 'parameter-out-1');
         startNode.setPosition(100, 100);
-    
-        let finishedNode = new CustomNodeModel({ name:'Finish', color:'rgb(255,102,102)', extras:{ "type":"Finish" } });
+
+        let finishedNode = new CustomNodeModel({ name: 'Finish', color: 'rgb(255,102,102)', extras: { "type": "Finish" } });
         finishedNode.addInPortEnhance('▶', 'in-0');
         finishedNode.addInPortEnhance('  ', 'parameter-in-1');
         finishedNode.setPosition(700, 100);
-    
+
         this.activeModel.addAll(startNode, finishedNode);
         this.diagramEngine.setModel(this.activeModel);
 
@@ -133,64 +137,65 @@ export class XPipePanel extends ReactWidget {
 
       }
 
-    debugger;
-    this.postConstructorFlag=true;
-    this.update();
+      this.postConstructorFlag = true;
+      this.update();
 
     });
   }
 
   customDeserializeModel = (modelContext: any, diagramEngine: SRD.DiagramEngine) => {
 
-		let tempModel = new SRD.DiagramModel();
-		let links = modelContext["layers"][0]["models"];
-		let nodes = modelContext["layers"][1]["models"];
-		
-		for (let nodeID in nodes){
-			
-			let node =  nodes[nodeID];
-			let newNode = new CustomNodeModel({ id:node.id, type:node.type, name:node.name, 
-												                  color:node.color, extras: node.extras });
-			newNode.setPosition(node.x, node.y);
+    let tempModel = new SRD.DiagramModel();
+    let links = modelContext["layers"][0]["models"];
+    let nodes = modelContext["layers"][1]["models"];
 
-			for (let portID in node.ports){
+    for (let nodeID in nodes) {
 
-				let port = node.ports[portID];
-				if (port.alignment == "right") newNode.addOutPortEnhance(port.label, port.name, true, port.id);
-				if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name, true, port.id);
+      let node = nodes[nodeID];
+      let newNode = new CustomNodeModel({
+        id: node.id, type: node.type, name: node.name,
+        color: node.color, extras: node.extras
+      });
+      newNode.setPosition(node.x, node.y);
 
-			}
-			
-			tempModel.addAll(newNode);
-			diagramEngine.setModel(tempModel);
+      for (let portID in node.ports) {
 
-		}
-		
-    for (let linkID in links){
-			
-			
-			let link = links[linkID];
+        let port = node.ports[portID];
+        if (port.alignment == "right") newNode.addOutPortEnhance(port.label, port.name, true, port.id);
+        if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name, true, port.id);
 
-			if (link.sourcePort && link.targetPort){
+      }
 
-				let newLink = new DefaultLinkModel();
+      tempModel.addAll(newNode);
+      diagramEngine.setModel(tempModel);
 
-				let sourcePort = tempModel.getNode(link.source).getPortFromID(link.sourcePort);
-				newLink.setSourcePort(sourcePort);
+    }
 
-				let targetPort = tempModel.getNode(link.target).getPortFromID(link.targetPort);
-				newLink.setTargetPort(targetPort);
+    for (let linkID in links) {
 
-				tempModel.addAll(newLink);
-				diagramEngine.setModel(tempModel);
-				
-				}
 
-		}
-		
-		return tempModel
-	
-	}
+      let link = links[linkID];
+
+      if (link.sourcePort && link.targetPort) {
+
+        let newLink = new DefaultLinkModel();
+
+        let sourcePort = tempModel.getNode(link.source).getPortFromID(link.sourcePort);
+        newLink.setSourcePort(sourcePort);
+
+        let targetPort = tempModel.getNode(link.target).getPortFromID(link.targetPort);
+        newLink.setTargetPort(targetPort);
+
+        tempModel.addAll(newLink);
+        diagramEngine.setModel(tempModel);
+
+      }
+
+    }
+
+    return tempModel
+
+  }
 
 
   render(): any {
@@ -204,6 +209,7 @@ export class XPipePanel extends ReactWidget {
         widgetId={this.parent?.id}
         activeModel={this.activeModel}
         diagramEngine={this.diagramEngine}
+        serviceManager={this.serviceManager}
         postConstructorFlag={this.postConstructorFlag}
         saveXpipeSignal={this.saveXpipeSignal}
         reloadXpipeSignal={this.reloadXpipeSignal}
@@ -228,7 +234,7 @@ export class XPipePanel extends ReactWidget {
    * @param sender The DocumentModel that triggers the changes.
    * @param change The changes on the model
    */
-   private _onContentChanged = (
+  private _onContentChanged = (
     sender: XPipeDocModel,
     change: XPipeDocChange
   ): void => {
