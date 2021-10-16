@@ -12,7 +12,6 @@ import {
     AccordionItemPanel
 } from "react-accessible-accordion";
 
-
 export const Body = styled.div`
   flex-grow: 1;
   display: flex;
@@ -119,9 +118,9 @@ export default function Sidebar(props: SidebarProps) {
             <Content>
                 <TrayWidget>
                     <div>
-                        <div className="search">
-                            <input type="text" name="" value={searchTerm} placeholder="SEARCH" className="text" style={{ width: "80%" }} onChange={handleOnChange} />
-                            <a onClick={handleOnClick} className="btn"><i className="fa fa-search "></i></a>
+                        <div className="search-input">
+                            <input type="text" name="" value={searchTerm} placeholder="SEARCH" className="search-input__text-input" style={{ width: "80%" }} onChange={handleOnChange} />
+                            <a onClick={handleOnClick} className="search-input__button"><i className="fa fa-search "></i></a>
                         </div>
                         <Accordion allowZeroExpanded>
                             {

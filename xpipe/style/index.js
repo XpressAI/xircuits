@@ -1,2 +1,2 @@
 import './base.css';
-import './accordion-view.css';
+import './Sidebar.css';

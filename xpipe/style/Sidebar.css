@@ -3,7 +3,7 @@
   /* ---------------- Accordion ---------------------- */
   /* -------------------------------------------------- */
 
-.accordion {
+  .accordion {
     border: 0px solid rgba(0, 0, 0, 0.1);
     /* border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 3px; */
@@ -74,7 +74,7 @@
   a {
     text-decoration: none;
   }
-  .search {
+  .search-input {
     top: 50%;
     left: 50%;
     height: 20px;
@@ -83,7 +83,7 @@
     background: #e5eaf1;
     margin: 10px 10px 30px;
   }
-  .btn {
+  .search-input__button {
     border-radius: 7px;
     background: #e5eaf1;
     color: rgb(30, 69, 131);
@@ -93,7 +93,7 @@
     justify-content: center;
     align-items: center;
   }
-  .text {
+  .search-input__text-input {
     border: none;
     background: none;
     outline: none;
@@ -108,17 +108,17 @@
     padding-left: 15px;
     color: #000000;
   }
-  .search > .text {
+  .search-input > .search-input__text-input {
     width: 150px;
   }
   
-  .text {
+  .search-input__text-input {
     line-height: 20px;
   }
-  .search {
+  .search-input {
     height: 20px;
   }
-  .btn {
+  .search-input__button {
     width: 20px;
     height: 20px;
   }
