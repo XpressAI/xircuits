@@ -1,7 +1,6 @@
 import * as React from 'react';
 import styled from '@emotion/styled';
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import ReactTooltip from 'react-tooltip';
 
 export interface TrayItemWidgetProps {
 	model: any;
@@ -30,39 +29,36 @@ export const Tray = styled.div<TrayStyledProps>`
 export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 	render() {
 		return (
-			<p data-tip={this.props.name}>
-				<ReactTooltip place="bottom" type="dark" effect="float" />
-				<Tray
-					color={this.props.color || "white"}
-					draggable={true}
-					onDragStart={(event) => {
-						event.dataTransfer.setData('storm-diagram-node', JSON.stringify(this.props.model));
-						this.forceUpdate();
-					}}
-					onClick={(event) => {
-						if (event.ctrlKey || event.metaKey) {
-							const { commands } = this.props.app;
-							const openComponentFile = commands.execute('docmanager:open', {
-								path: this.props.path,
-								factory: 'Editor',
-							});
-						}
-						this.forceUpdate();
-					}}
-					onDoubleClick={(event) => {
-						if (this.props.path != "") {
-							const { commands } = this.props.app;
-							const openComponentFile = commands.execute('docmanager:open', {
-								path: this.props.path,
-								factory: 'Editor',
-							});
-						}
-						this.forceUpdate();
-					}}
-					className="tray-item">
-					{this.props.name}
-				</Tray>
-			</p>
+			<Tray
+				color={this.props.color || "white"}
+				draggable={true}
+				onDragStart={(event) => {
+					event.dataTransfer.setData('storm-diagram-node', JSON.stringify(this.props.model));
+					this.forceUpdate();
+				}}
+				onClick={(event) => {
+					if (event.ctrlKey || event.metaKey) {
+						const { commands } = this.props.app;
+						const openComponentFile = commands.execute('docmanager:open', {
+							path: this.props.path,
+							factory: 'Editor',
+						});
+					}
+					this.forceUpdate();
+				}}
+				onDoubleClick={(event) => {
+					if (this.props.path != "") {
+						const { commands } = this.props.app;
+						const openComponentFile = commands.execute('docmanager:open', {
+							path: this.props.path,
+							factory: 'Editor',
+						});
+					}
+					this.forceUpdate();
+				}}
+				className="tray-item">
+				{this.props.name}
+			</Tray>
 		);
 	}
 }

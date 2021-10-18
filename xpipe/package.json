@@ -68,8 +68,7 @@
     "paths-js": "^0.4.11",
     "primereact": "^6.5.1",
     "react-numeric-input": "^2.2.3",
-    "react-accessible-accordion": "^4.0.0",
-    "react-tooltip": "^4.2.21"
+    "react-accessible-accordion": "^4.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",

@@ -161,8 +161,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [intNodesValue, setIntNodesValue] = useState<number[]>([0]);
 	const [floatNodesValue, setFloatNodesValue] = useState<number[]>([0.00]);
 	const [boolNodesValue, setBoolNodesValue] = useState<boolean[]>([false]);
-	const [componentList, setComponentList] = React.useState([]);
-  const xpipeLogger = new Log(app);
+	const [componentList, setComponentList] = useState([]);
+    const [runOnce, setRunOnce] = useState(false);
+	const xpipeLogger = new Log(app);
 
 
 
@@ -532,11 +533,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		console.log(diagramEngine.getModel().getNodes());
 		console.log("node count: ", nodesCount);
-    xpipeLogger.debug("Node Count: ", nodesCount);
+		xpipeLogger.debug("Node Count: ", nodesCount);
 		for (let i = 0; i < nodesCount; i++) {
 			let nodeName = diagramEngine.getModel().getNodes()[i].getOptions()["name"];
 			console.log(nodeName);
-      xpipeLogger.info(nodeName);
+			xpipeLogger.info(nodeName);
 			if (nodeName.startsWith("Hyperparameter")) {
 				let regEx = /\(([^)]+)\)/;
 				let result = nodeName.match(regEx);
@@ -652,15 +653,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		alert("Testing")
-	}
-
-	const fetchComponentList = async () => {
-		setComponentList([]);
-		const response = await ComponentList(serviceManager, "");
-		if (response.length > 0) {
-			setComponentList([]);
-		}
-		setComponentList(response);
 	}
 
 	useEffect(() => {
@@ -783,9 +775,26 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		};
 	}, [testXpipeSignal, handleTestClick]);
 
-	useEffect(() => {
-		fetchComponentList();
-	}, []);
+	const fetchComponentList = async () => {
+        const response = await ComponentList(serviceManager, "");
+        if (response.length > 0) {
+            setComponentList([]);
+        }
+        setComponentList(response);
+    }
+
+    useEffect(() => {
+        if (!runOnce) {
+            fetchComponentList();
+        }
+    }, []);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            fetchComponentList();
+        }, 15000);
+        return () => clearInterval(intervalId);
+    }, [componentList]);
 
 	const handleStart = () => {
 		let stringNode = stringNodes.map(function (x) {

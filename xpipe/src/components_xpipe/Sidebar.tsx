@@ -68,36 +68,10 @@ export interface SidebarProps {
     basePath: string;
 }
 
-
-
-function exportTrayWidget(val: any) {
-    let color: any = colorList_adv[0]["task"];
-
-    if (val.task != "" && val.task.toLowerCase().includes("literal")) {
-        color = colorList_general[0]["task"];
-
-    } else if (val.id < colorList_adv.length) {
-        color = colorList_adv[val.id]["task"];
-    } else {
-        let index = val.id % colorList_adv.length;
-        color = colorList_adv[index]["task"]
-    }
-
-    return color;
-}
-
 export default function Sidebar(props: SidebarProps) {
     const [componentList, setComponentList] = React.useState([]);
-
     const [searchTerm, setSearchTerm] = useState('');
-
-    const fetchComponentList = async () => {
-        const response = await ComponentList(props.lab.serviceManager, props.basePath);
-        if (response.length > 0) {
-            setComponentList([]);
-        }
-        setComponentList(response);
-    }
+    const [runOnce, setRunOnce] = useState(false);
 
     let handleOnChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setSearchTerm("");
@@ -109,9 +83,28 @@ export default function Sidebar(props: SidebarProps) {
         setSearchTerm(searchTerm);
     }
 
+    const fetchComponentList = async () => {
+        const response = await ComponentList(props.lab.serviceManager, props.basePath);
+        if (response.length > 0) {
+            setComponentList([]);
+        }
+        setComponentList(response);
+    }
+
     useEffect(() => {
-        fetchComponentList();
+        if (!runOnce) {
+            fetchComponentList();
+        }
     }, []);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            fetchComponentList();
+        }, 15000);
+        return () => clearInterval(intervalId);
+    }, [componentList]);
+
+    
 
     return (
         <Body>
