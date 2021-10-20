@@ -10,10 +10,13 @@ import {
 } from '@jupyterlab/docregistry';
 import { BodyWidget } from './components/xpipeBodyWidget';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-
-import { ActionEventBus, ZoomCanvasAction } from '@projectstorm/react-canvas-core';
 import * as SRD from '@projectstorm/react-diagrams';
+import { ActionEventBus, ZoomCanvasAction, CanvasWidget, Action, ActionEvent, InputType } from '@projectstorm/react-canvas-core';
+
 import { DefaultLinkModel } from '@projectstorm/react-diagrams';
+
+import * as _ from 'lodash';
+
 
 import { CustomNodeFactory } from "./components/CustomNodeFactory";
 import { CustomNodeModel } from './components/CustomNodeModel';
@@ -43,6 +46,46 @@ export class XPipeWidget extends DocumentWidget<
     super.dispose();
   }
 }
+
+interface CustomDeleteItemsActionOptions {
+	keyCodes?: number[];
+}
+
+class CustomDeleteItemsAction extends Action {
+	constructor(options: CustomDeleteItemsActionOptions = {}) {
+		options = {
+			keyCodes: [46, 8],
+			...options
+		};
+		super({
+			type: InputType.KEY_DOWN,
+			fire: (event: ActionEvent<React.KeyboardEvent>) => {
+				if (options.keyCodes.indexOf(event.event.keyCode) !== -1) {
+					const selectedEntities = this.engine.getModel().getSelectedEntities();
+
+          _.forEach(selectedEntities, (model) => {
+
+            if (model.getOptions()["name"] !== "undefined"){
+              let modelName = model.getOptions()["name"];
+              if (modelName !== 'Start' && modelName !== 'Finish') {
+                model.remove();
+              }
+              else{
+                alert("Start and Finish node cannot be deleted!");
+              }
+          }
+          });
+          this.engine.repaintCanvas();
+						
+					
+				}
+			}
+		});
+	}
+}
+
+
+
 export class XPipePanel extends ReactWidget {
 
   browserFactory: IFileBrowserFactory;
@@ -92,10 +135,12 @@ export class XPipePanel extends ReactWidget {
     //debugger;
     console.log(this.context);
 
-    this.diagramEngine = SRD.default({ registerDefaultZoomCanvasAction: false });
+    this.diagramEngine = SRD.default({ registerDefaultZoomCanvasAction: false, registerDefaultDeleteItemsAction: false });
     this.activeModel = new SRD.DiagramModel();
     this.diagramEngine.getNodeFactories().registerFactory(new CustomNodeFactory());
     this.diagramEngine.getActionEventBus().registerAction(new ZoomCanvasAction({ inverseZoom: true }))
+    this.diagramEngine.getActionEventBus().registerAction(new CustomDeleteItemsAction());
+
     this.diagramEngine.setModel(this.activeModel);
 
     this.context.ready.then((value) => {
