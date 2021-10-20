@@ -32,6 +32,7 @@ import Sidebar from './components_xpipe/Sidebar';
 import { XpipeDebugger } from './debugger/SidebarDebugger';
 import { ITranslator } from '@jupyterlab/translation';
 import { logPlugin } from './log/LogPlugin';
+import { visualizerPlugin } from './visualizer/TableVisualizer'
 
 const FACTORY = 'Xpipe editor';
 
@@ -283,7 +284,8 @@ const xpipe: JupyterFrontEndPlugin<void> = {
  */
  const plugins: JupyterFrontEndPlugin<any>[] = [
   xpipe,
-  logPlugin
+  logPlugin,
+  visualizerPlugin
 ];
 
 export default plugins;
