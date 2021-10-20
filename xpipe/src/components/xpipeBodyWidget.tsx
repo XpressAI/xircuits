@@ -149,7 +149,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const forceUpdate = useCallback(() => updateState(prevState => prevState + 1), []);
 	const [saved, setSaved] = useState(false);
 	const [compiled, setCompiled] = useState(false);
-	const [hyperparameterNode, setHyperparameterNode] = useState(false);
+	const [initialize, setInitialize] = useState(false);
+    const [nodesColor, setNodesColor] = useState([]);
 	const [displaySavedAndCompiled, setDisplaySavedAndCompiled] = useState(false);
 	const [displayDebug, setDisplayDebug] = useState(false);
 	const [displayHyperparameter, setDisplayHyperparameter] = useState(false);
@@ -162,7 +163,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [floatNodesValue, setFloatNodesValue] = useState<number[]>([0.00]);
 	const [boolNodesValue, setBoolNodesValue] = useState<boolean[]>([false]);
 	const [componentList, setComponentList] = React.useState([]);
-  const xpipeLogger = new Log(app);
+    const xpipeLogger = new Log(app);
 
 
 
@@ -250,10 +251,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let uniqueComponents = {};
 
 		let allNodes = getAllNodesFromStartToFinish();
-		console.log(allNodes);
 
 		for (let node in allNodes) {
-			console.log(node);
 			let nodeType = allNodes[node]["extras"]["type"];
 			let componentName = allNodes[node]["name"];
 			componentName = componentName.replace(/\s+/g, "");
@@ -320,7 +319,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 					let bindingName = 'c_' + ++j;
 					let currentNodeModel = getNodeModelById(nodeModels, targetNodeId);
-					debugger;
 					let allPort = currentNodeModel.getPorts();
 					for (let port in allPort) {
 
@@ -441,6 +439,28 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		return pythonCode;
 	}
+	
+	const checkAllNodesConnected = (): boolean | null => {
+
+		let nodeModels = diagramEngine.getModel().getNodes();
+
+		for (let i = 0; i < nodeModels.length; i++){
+
+			let inPorts = nodeModels[i]["portsIn"];
+			let j = 0;
+			
+			if (inPorts != 0){
+
+				if (inPorts[j].getOptions()["label"] == '▶' && Object.keys(inPorts[0].getLinks()).length != 0){
+					continue
+				}else{
+					return false;
+				}
+
+			}
+		}
+		return true;
+	}
 
 	const handleSaveClick = () => {
 		// Only save xpipe if it is currently in focus
@@ -449,7 +469,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		setHyperparameterNode(true);
+		setInitialize(true);
 		setSaved(true);
 		let currentModel = diagramEngine.getModel().serialize();
 		context.model.setSerializedModel(currentModel);
@@ -502,13 +522,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-
-		if (saved) {
+		let allNodesConnected = checkAllNodesConnected();
+		
+		if (saved && allNodesConnected){
 			let pythonCode = getPythonCompiler();
 			alert("Compiled.")
 			setCompiled(true);
-			commands.execute(commandIDs.createArbitraryFile, { pythonCode });
-		} else {
+			commands.execute(commandIDs.createArbitraryFile, {pythonCode});
+		}else if (!allNodesConnected){
+			alert("Please connect all the nodes before compiling.");
+		}else{
 			alert("Please save before compiling.");
 		}
 	}
@@ -530,12 +553,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		alert("Run.")
 		let nodesCount = diagramEngine.getModel().getNodes().length;
 
-		console.log(diagramEngine.getModel().getNodes());
-		console.log("node count: ", nodesCount);
     xpipeLogger.debug("Node Count: ", nodesCount);
 		for (let i = 0; i < nodesCount; i++) {
 			let nodeName = diagramEngine.getModel().getNodes()[i].getOptions()["name"];
-			console.log(nodeName);
       xpipeLogger.info(nodeName);
 			if (nodeName.startsWith("Hyperparameter")) {
 				let regEx = /\(([^)]+)\)/;
@@ -598,15 +618,39 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
+		
+		if (saved && compiled){
 
-		commands.execute(commandIDs.openCloseDebugger);
+			let allNodes = getAllNodesFromStartToFinish();
+			let isNodeSelected = false;
 
-		if (compiled && saved) {
-			onClick('displayDebug');
+			for (let i = 0; i < allNodes.length; i++){
+
+				if (allNodes[i].getOptions()["name"].startsWith("🔴")){
+					allNodes[i].setSelected(true);
+					isNodeSelected = true;
+					break;
+				}else{
+					allNodes[i].setSelected(false);
+				}
+			}
+
+			if (!isNodeSelected){
+				let startNodeModel = getNodeModelByName(allNodes, 'Start');
+				startNodeModel.setSelected(true);
+			}
+			alert("Debug xpipe");
+			commands.execute(commandIDs.openCloseDebugger);
+		}else{
+			alert("Please save and compile before debugging.")
 		}
-		else {
-			onClick('displaySavedAndCompiled');
-		}
+
+		// if (compiled && saved) {
+		// 	onClick('displayDebug');
+		// }
+		// else {
+		// 	onClick('displaySavedAndCompiled');
+		// }
 	}
 
 	const handleToggleBreakpoint = () => {
@@ -619,7 +663,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		diagramEngine.getModel().getNodes().forEach((item) => {
 			if (item.getOptions()["selected"] == true) {
 				let name = item.getOptions()["name"]
-				console.log(name)
 				currentNodeSignal.emit({ name });
 				if (name.startsWith("🔴")) {
 					item.getOptions()["name"] = name.split("🔴")[1]
@@ -640,8 +683,44 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
+		let allNodes = getAllNodesFromStartToFinish();
+		let isFinished = false;
+		let currentNode: NodeModel;
+		let nextNode: NodeModel;
 
-		alert("Next Node")
+		for (let i = 0; i < allNodes.length; i++){
+
+			if (allNodes[i].getOptions()["selected"] == true){
+				currentNode = allNodes[i];
+                nextNode = allNodes[i + 1];
+				currentNode.setSelected(false);
+				currentNode.getOptions()["color"] = "rgb(150,150,150)";
+
+				if(nextNode){
+					nextNode.setSelected(true);
+				}else{
+					diagramEngine.getModel().getNodes().forEach((node) => {
+						let nodeType = node.getOptions()["extras"]["type"];
+
+						nodesColor.forEach((typeOfNode) => {
+							if (nodeType == typeOfNode.type){
+								node.getOptions()["color"] = typeOfNode.color;
+							}
+						})
+					});
+					isFinished = true;
+				}
+				break;
+            }
+		}
+
+		if(isFinished){
+			allNodes.forEach((node) => {
+				node.setSelected(true);
+			});
+			alert("Finish Execution.");
+		}
+
 	}
 
 	const handleTestClick = () => {
@@ -665,11 +744,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	useEffect(() => {
 
-		if (hyperparameterNode) {
-			let nodesCount = diagramEngine.getModel().getNodes().length
+		if (initialize) {
+			let allNodes = diagramEngine.getModel().getNodes();
+			let nodesCount = allNodes.length;
+			let nodeProperty = [];
 
 			for (let i = 0; i < nodesCount; i++) {
-				let nodeName = diagramEngine.getModel().getNodes()[i].getOptions()["name"];
+				let nodeName = allNodes[i].getOptions()["name"];
 				if (nodeName.startsWith("Hyperparameter")) {
 					let regEx = /\(([^)]+)\)/;
 					let result = nodeName.match(regEx);
@@ -684,14 +765,25 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						setBoolNodes(boolNodes => ([...boolNodes, nodeText[nodeText.length - 1]].sort()));
 					}
 				}
+				
+				let nodeType, nodeColor, nodeObject;
+				nodeType = allNodes[i].getOptions()["extras"]["type"];
+				nodeColor = allNodes[i].getOptions()["color"];
+				nodeObject = {
+					type: nodeType,
+					color: nodeColor
+				}
+				nodeProperty.push(nodeObject)
 			}
+			setNodesColor(nodeProperty);
+
 		} else {
 			setStringNodes(["name"]);
 			setIntNodes([]);
 			setFloatNodes([]);
 			setBoolNodes([]);
 		}
-	}, [hyperparameterNode]);
+	}, [initialize]);
 
 	useEffect(() => {
 		const handleSaveSignal = (): void => {
