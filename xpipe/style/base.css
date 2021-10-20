@@ -1,11 +1,11 @@
-.jp-ReactWidget {
+.jp-DebuggerWidget {
   color: var(--jp-ui-font-color1);
   background: var(--jp-layout-color1);
-  font-size: 18px;
+  font-size: 14px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
+  justify-content: left;
+  text-align: left;
 }
 
 .jp-XpipeLogo {
