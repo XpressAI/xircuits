@@ -150,7 +150,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [saved, setSaved] = useState(false);
 	const [compiled, setCompiled] = useState(false);
 	const [initialize, setInitialize] = useState(false);
-    const [nodesColor, setNodesColor] = useState([]);
+	const [nodesColor, setNodesColor] = useState([]);
 	const [displaySavedAndCompiled, setDisplaySavedAndCompiled] = useState(false);
 	const [displayDebug, setDisplayDebug] = useState(false);
 	const [displayHyperparameter, setDisplayHyperparameter] = useState(false);
@@ -163,7 +163,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [floatNodesValue, setFloatNodesValue] = useState<number[]>([0.00]);
 	const [boolNodesValue, setBoolNodesValue] = useState<boolean[]>([false]);
 	const [componentList, setComponentList] = useState([]);
-    const [runOnce, setRunOnce] = useState(false);
+	const [runOnce, setRunOnce] = useState(false);
 	const xpipeLogger = new Log(app);
 
 
@@ -439,21 +439,21 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		return pythonCode;
 	}
-	
+
 	const checkAllNodesConnected = (): boolean | null => {
 
 		let nodeModels = diagramEngine.getModel().getNodes();
 
-		for (let i = 0; i < nodeModels.length; i++){
+		for (let i = 0; i < nodeModels.length; i++) {
 
 			let inPorts = nodeModels[i]["portsIn"];
 			let j = 0;
-			
-			if (inPorts != 0){
 
-				if (inPorts[j].getOptions()["label"] == '▶' && Object.keys(inPorts[0].getLinks()).length != 0){
+			if (inPorts != 0) {
+
+				if (inPorts[j].getOptions()["label"] == '▶' && Object.keys(inPorts[0].getLinks()).length != 0) {
 					continue
-				}else{
+				} else {
 					return false;
 				}
 
@@ -523,15 +523,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 		let allNodesConnected = checkAllNodesConnected();
-		
-		if (saved && allNodesConnected){
+
+		if (saved && allNodesConnected) {
 			let pythonCode = getPythonCompiler();
 			alert("Compiled.")
 			setCompiled(true);
-			commands.execute(commandIDs.createArbitraryFile, {pythonCode});
-		}else if (!allNodesConnected){
+			commands.execute(commandIDs.createArbitraryFile, { pythonCode });
+		} else if (!allNodesConnected) {
 			alert("Please connect all the nodes before compiling.");
-		}else{
+		} else {
 			alert("Please save before compiling.");
 		}
 	}
@@ -621,30 +621,30 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		
-		if (saved && compiled){
+
+		if (saved && compiled) {
 
 			let allNodes = getAllNodesFromStartToFinish();
 			let isNodeSelected = false;
 
-			for (let i = 0; i < allNodes.length; i++){
+			for (let i = 0; i < allNodes.length; i++) {
 
-				if (allNodes[i].getOptions()["name"].startsWith("🔴")){
+				if (allNodes[i].getOptions()["name"].startsWith("🔴")) {
 					allNodes[i].setSelected(true);
 					isNodeSelected = true;
 					break;
-				}else{
+				} else {
 					allNodes[i].setSelected(false);
 				}
 			}
 
-			if (!isNodeSelected){
+			if (!isNodeSelected) {
 				let startNodeModel = getNodeModelByName(allNodes, 'Start');
 				startNodeModel.setSelected(true);
 			}
 			alert("Debug xpipe");
 			commands.execute(commandIDs.openCloseDebugger);
-		}else{
+		} else {
 			alert("Please save and compile before debugging.")
 		}
 
@@ -691,22 +691,22 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let currentNode: NodeModel;
 		let nextNode: NodeModel;
 
-		for (let i = 0; i < allNodes.length; i++){
+		for (let i = 0; i < allNodes.length; i++) {
 
-			if (allNodes[i].getOptions()["selected"] == true){
+			if (allNodes[i].getOptions()["selected"] == true) {
 				currentNode = allNodes[i];
-                nextNode = allNodes[i + 1];
+				nextNode = allNodes[i + 1];
 				currentNode.setSelected(false);
 				currentNode.getOptions()["color"] = "rgb(150,150,150)";
 
-				if(nextNode){
+				if (nextNode) {
 					nextNode.setSelected(true);
-				}else{
+				} else {
 					diagramEngine.getModel().getNodes().forEach((node) => {
 						let nodeType = node.getOptions()["extras"]["type"];
 
 						nodesColor.forEach((typeOfNode) => {
-							if (nodeType == typeOfNode.type){
+							if (nodeType == typeOfNode.type) {
 								node.getOptions()["color"] = typeOfNode.color;
 							}
 						})
@@ -714,10 +714,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					isFinished = true;
 				}
 				break;
-            }
+			}
 		}
 
-		if(isFinished){
+		if (isFinished) {
 			allNodes.forEach((node) => {
 				node.setSelected(true);
 			});
@@ -759,7 +759,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						setBoolNodes(boolNodes => ([...boolNodes, nodeText[nodeText.length - 1]].sort()));
 					}
 				}
-				
+
 				let nodeType, nodeColor, nodeObject;
 				nodeType = allNodes[i].getOptions()["extras"]["type"];
 				nodeColor = allNodes[i].getOptions()["color"];
@@ -870,25 +870,25 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}, [testXpipeSignal, handleTestClick]);
 
 	const fetchComponentList = async () => {
-        const response = await ComponentList(serviceManager, "");
-        if (response.length > 0) {
-            setComponentList([]);
-        }
-        setComponentList(response);
-    }
+		const response = await ComponentList(serviceManager, "");
+		if (response.length > 0) {
+			setComponentList([]);
+		}
+		setComponentList(response);
+	}
 
-    useEffect(() => {
-        if (!runOnce) {
-            fetchComponentList();
-        }
-    }, []);
+	useEffect(() => {
+		if (!runOnce) {
+			fetchComponentList();
+		}
+	}, []);
 
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            fetchComponentList();
-        }, 15000);
-        return () => clearInterval(intervalId);
-    }, [componentList]);
+	useEffect(() => {
+		const intervalId = setInterval(() => {
+			fetchComponentList();
+		}, 15000);
+		return () => clearInterval(intervalId);
+	}, [componentList]);
 
 	const handleStart = () => {
 		let stringNode = stringNodes.map(function (x) {
