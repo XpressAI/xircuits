@@ -5,7 +5,7 @@ import {
 } from '@jupyterlab/application';
 import { addIcon, clearIcon, listIcon } from '@jupyterlab/ui-components';
 import * as nbformat from '@jupyterlab/nbformat';
-import LogLevelSwitcher from './logLevelSwitcher';
+import LogLevelSwitcher from './LogLevelSwitcher';
 import {
   ICommandPalette,
   WidgetTracker} from '@jupyterlab/apputils';
