@@ -107,6 +107,7 @@ export const commandIDs = {
 	createArbitraryFile: 'Xpipe-editor:create-arbitrary-file',
 	openAnalysisViewer: 'Xpipe-analysis-viewer:open',
 	openCloseDebugger: 'Xpipe-debugger:open/close',
+	openTableVisualizer: 'Xpipe-visualizer:open',
 	breakpointXpipe: 'Xpipe-editor:breakpoint-node',
 	nextNode: 'Xpipe-editor:next-node',
 	testXpipe: 'Xpipe-editor:test-node',

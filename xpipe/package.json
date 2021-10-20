@@ -59,6 +59,7 @@
     "@jupyterlab/rendermime": "^3.1.11",
     "@jupyterlab/mainmenu": "^3.1.11",
     "@jupyterlab/ui-components": "^3.1.0",
+    "@lumino/datagrid": "^0.14.1",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
