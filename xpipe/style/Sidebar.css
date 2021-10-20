@@ -1,0 +1,125 @@
+
+ /* -------------------------------------------------- */
+  /* ---------------- Accordion ---------------------- */
+  /* -------------------------------------------------- */
+
+  .accordion {
+    border: 0px solid rgba(0, 0, 0, 0.1);
+    /* border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 3px; */
+  }
+  
+  .accordion__item + .accordion__item {
+    border-top: 7px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .accordion__button {
+    background-color: rgb(30, 69, 131);
+    color: #fff;
+    cursor: pointer;
+    padding: 10px;
+    width: auto;
+    text-align: left;
+    margin: 0px 10px 0px;
+    border-radius: 7px;
+  }
+  
+  .accordion__button:hover {
+    background-color: rgb(36, 64, 110);
+  }
+  
+  .accordion__button:before {
+    display: inline-block;
+    content: "";
+    height: 5px;
+    width: 5px;
+    margin-right: 12px;
+    border-bottom: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    transform: rotate(-45deg);
+  }
+  
+  .accordion__button[aria-expanded="true"]::before,
+  .accordion__button[aria-selected="true"]::before {
+    transform: rotate(45deg);
+  }
+  
+  [hidden] {
+    display: none;
+  }
+  
+  .accordion__panel {
+    padding: 15px;
+    animation: fadein 0.45s ease-in;
+  }
+  
+  /* -------------------------------------------------- */
+  /* ---------------- Animation part ------------------ */
+  /* -------------------------------------------------- */
+  
+  @keyframes fadein {
+    0% {
+      opacity: 0;
+    }
+  
+    100% {
+      opacity: 1;
+    }
+  }
+  
+ /* -------------------------------------------------- */
+  /* ----------------Input text ---------------------- */
+  /* -------------------------------------------------- */
+
+  a {
+    text-decoration: none;
+  }
+  .search-input {
+    top: 50%;
+    left: 50%;
+    height: 20px;
+    border-radius: 7px;
+    padding: 10px;
+    background: #e5eaf1;
+    margin: 10px 10px 30px;
+  }
+  .search-input__button {
+    border-radius: 7px;
+    background: #e5eaf1;
+    color: rgb(30, 69, 131);
+    float: right;
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+  }
+  .search-input__text-input {
+    border: none;
+    background: none;
+    outline: none;
+    float: left;
+    padding: 0;
+    color: #000000;
+    font-size: 14px;
+    line-height: 40px;
+    width: 0px;
+  }
+  ::placeholder {
+    padding-left: 15px;
+    color: #000000;
+  }
+  .search-input > .search-input__text-input {
+    width: 150px;
+  }
+  
+  .search-input__text-input {
+    line-height: 20px;
+  }
+  .search-input {
+    height: 20px;
+  }
+  .search-input__button {
+    width: 20px;
+    height: 20px;
+  }
+  

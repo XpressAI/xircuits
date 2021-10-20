@@ -301,7 +301,7 @@ async function get_all_components_method(serviceManager: ServiceManager, basePat
         } else if (res_1.content[i].type == "directory") {
             let res_3 = await serviceManager.contents.get(res_1.content[i].path);
             for (let i = 0; i < res_3.content.length; i++) {
-                if (res_3.content[i].type == "file" && res_3.content[i].mimetype == "text/x-python") {
+                if (res_3.content[i].name != "lib" && res_3.content[i].type == "file" && res_3.content[i].mimetype == "text/x-python") {
                     let res_4 = await serviceManager.contents.get(res_3.content[i].path);
                     if (res_4.content != "") {
                         var j2 = filbert_loose.parse_dammit(res_4.content);
@@ -370,6 +370,16 @@ async function get_all_components_method(serviceManager: ServiceManager, basePat
             colorCode = colorList_adv[index]["task"]
         }
 
+        let path: string = "";
+        let rootFile: string = "ADVANCED";
+        path = tempArr[i].split(" - ")[tempArr[i].split(" - ").length - 1];
+        if (path.indexOf("/") != -1) {
+            rootFile = path.split("/")[0].toUpperCase();
+            if (rootFile.indexOf("_") != -1) {
+                rootFile = rootFile.split("_").slice(1).join("");
+            }
+        }
+
         displayArr.push({
             task: tempArr[i].split(" - ")[0],
             id: i + 1,
@@ -377,7 +387,8 @@ async function get_all_components_method(serviceManager: ServiceManager, basePat
             path: tempArr[i].split(" - ")[tempArr[i].split(" - ").length - 1],
             variable: tempArr[i].split(" - ").slice(1, tempArr[i].split(" - ").length - 1).join(" - "),
             type: getComponentType(tempArr[i].split(" - ")[0].toLowerCase(), HEAD_TYPE_ADV),
-            color: colorCode
+            color: colorCode,
+            rootFile: rootFile
         });
     }
 
@@ -399,7 +410,8 @@ async function get_all_components_method(serviceManager: ServiceManager, basePat
                 path: "",
                 variable: "",
                 type: getComponentType(componentList[i]["task"].toLowerCase(), HEAD_TYPE_GENERAL),
-                color: colorCode
+                color: colorCode,
+                rootFile: "GENERAL"
             });
         }
     }
