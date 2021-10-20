@@ -32,11 +32,11 @@ export const Content = styled.div`
 
 
 const headerList = [
-    { task: 'General', id: 1 }
+    { task: 'GENERAL', id: 1 }
 ];
 
 const advancedList = [
-    { task: 'Advanced', id: 1 }
+    { task: 'ADVANCED', id: 1 }
 ];
 
 const colorList_adv = [
@@ -68,8 +68,39 @@ export interface SidebarProps {
     basePath: string;
 }
 
+async function fetcComponent(componentList: string[]) {
+    let component_root = componentList.map(x => x["rootFile"]);
+
+    let headers = Array.from(new Set(component_root));
+    let headerList: any[] = [];
+    let headerList2: any[] = [];
+    let displayHeaderList: any[] = [];
+
+    for (let headerIndex = 0; headerIndex < headers.length; headerIndex++) {
+        if (headers[headerIndex] == 'ADVANCED' || headers[headerIndex] == 'GENERAL') {
+            headerList.push(headers[headerIndex]);
+        } else {
+            headerList2.push(headers[headerIndex]);
+        }
+    }
+
+    if (headerList.length != 0) {
+        headerList = headerList.sort((a, b) => a < b ? 1 : a > b ? -1 : 0);
+        headers = [...headerList, ...headerList2];
+        for (let headerIndex2 = 0; headerIndex2 < headers.length; headerIndex2++) {
+            displayHeaderList.push({
+                "task": headers[headerIndex2],
+                "id": headerIndex2 + 1
+            });
+        }
+    }
+
+    return displayHeaderList;
+}
+
 export default function Sidebar(props: SidebarProps) {
     const [componentList, setComponentList] = React.useState([]);
+    const [rootFile, setRootFile] = React.useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [runOnce, setRunOnce] = useState(false);
 
@@ -84,27 +115,32 @@ export default function Sidebar(props: SidebarProps) {
     }
 
     const fetchComponentList = async () => {
-        const response = await ComponentList(props.lab.serviceManager, props.basePath);
-        if (response.length > 0) {
+        const response_1 = await ComponentList(props.lab.serviceManager, props.basePath);
+        const response_2 = await fetcComponent(response_1);
+
+        if (response_1.length > 0) {
             setComponentList([]);
+            setRootFile([]);
         }
-        setComponentList(response);
+
+        setComponentList(response_1);
+        setRootFile(response_2);
     }
 
     useEffect(() => {
         if (!runOnce) {
             fetchComponentList();
+            setRunOnce(true);
         }
-    }, []);
+
+    }, [rootFile, componentList]);
 
     useEffect(() => {
         const intervalId = setInterval(() => {
             fetchComponentList();
         }, 15000);
         return () => clearInterval(intervalId);
-    }, [componentList]);
-
-    
+    }, [rootFile, componentList]);
 
     return (
         <Body>
@@ -115,72 +151,38 @@ export default function Sidebar(props: SidebarProps) {
                             <input type="text" name="" value={searchTerm} placeholder="SEARCH" className="search-input__text-input" style={{ width: "80%" }} onChange={handleOnChange} />
                             <a onClick={handleOnClick} className="search-input__button"><i className="fa fa-search "></i></a>
                         </div>
+
                         <Accordion allowZeroExpanded>
                             {
-                                headerList.filter((val) => {
+                                rootFile.filter((val) => {
                                     if (searchTerm == "") {
-                                        return val
+                                        return val;
                                     }
                                 }).map((val, i) => {
                                     return (
-                                        <AccordionItem key={headerList[0]["task"].toString()}>
+                                        <AccordionItem key={`index-1-${val["task"].toString()}`}>
                                             <AccordionItemHeading>
-                                                <AccordionItemButton>{val.task}</AccordionItemButton>
+                                                <AccordionItemButton>{val["task"]}</AccordionItemButton>
                                             </AccordionItemHeading>
                                             <AccordionItemPanel>
                                                 {
-                                                    componentList.filter((val) => {
+                                                    componentList.filter((componentVal) => {
                                                         if (searchTerm == "") {
-                                                            return val
+                                                            return componentVal;
                                                         }
-                                                    }).map((val, i) => {
-                                                        if (val.header == "GENERAL") {
+                                                    }).map((componentVal, i2) => {
+                                                        if (componentVal["rootFile"].toString().toUpperCase() == val["task"].toString()) {
                                                             return (
-                                                                <div key={`index-1-${i}`}>
+                                                                <div key={`index-1-${i2}`}>
                                                                     <TrayItemWidget
-                                                                        model={{ type: val.type, name: val.task }}
-                                                                        name={val.task}
-                                                                        color={val.color}
+                                                                        model={{
+                                                                            type: componentVal.type,
+                                                                            name: componentVal.task
+                                                                        }}
+                                                                        name={componentVal.task}
+                                                                        color={componentVal.color}
                                                                         app={props.lab}
-                                                                        path={val.path} />
-                                                                </div>
-                                                            );
-                                                        }
-                                                    })
-                                                }
-                                            </AccordionItemPanel>
-                                        </AccordionItem>
-                                    );
-                                })
-                            }
-
-                            {
-                                advancedList.filter((val) => {
-                                    if (searchTerm == "") {
-                                        return val
-                                    }
-                                }).map((val, i) => {
-                                    return (
-                                        <AccordionItem key={advancedList[0]["task"].toString()}>
-                                            <AccordionItemHeading>
-                                                <AccordionItemButton>{val.task}</AccordionItemButton>
-                                            </AccordionItemHeading>
-                                            <AccordionItemPanel>
-                                                {
-                                                    componentList.filter((val) => {
-                                                        if (searchTerm == "") {
-                                                            return val
-                                                        }
-                                                    }).map((val, i) => {
-                                                        if (val.header == "ADVANCED") {
-                                                            return (
-                                                                <div key={`index-2-${i}`}>
-                                                                    <TrayItemWidget
-                                                                        model={{ type: val.type, name: val.task }}
-                                                                        name={val.task}
-                                                                        color={val.color}
-                                                                        app={props.lab}
-                                                                        path={val.path} />
+                                                                        path={componentVal.path} />
                                                                 </div>
                                                             );
                                                         }
@@ -193,6 +195,7 @@ export default function Sidebar(props: SidebarProps) {
                             }
 
                         </Accordion>
+
                         {
                             componentList.filter((val) => {
                                 if (searchTerm != "" && val.task.toLowerCase().includes(searchTerm.toLowerCase())) {
