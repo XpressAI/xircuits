@@ -555,10 +555,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		console.log(diagramEngine.getModel().getNodes());
 		console.log("node count: ", nodesCount);
-    xpipeLogger.debug("Node Count: ", nodesCount);
+    		xpipeLogger.debug("Node Count: ", nodesCount);
 		for (let i = 0; i < nodesCount; i++) {
 			let nodeName = diagramEngine.getModel().getNodes()[i].getOptions()["name"];
-      xpipeLogger.info(nodeName);
+      			xpipeLogger.info(nodeName);
   
 			if (nodeName.startsWith("Hyperparameter")) {
 				let regEx = /\(([^)]+)\)/;
