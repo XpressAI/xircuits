@@ -16,7 +16,8 @@ import {
   ICommandPalette,
   IThemeManager,
   WidgetTracker,
-  ReactWidget
+  ReactWidget,
+  IFrame
 } from '@jupyterlab/apputils';
 
 import { ILauncher } from '@jupyterlab/launcher';
@@ -32,6 +33,8 @@ import Sidebar from './components_xpipe/Sidebar';
 import { XpipeDebugger } from './debugger/SidebarDebugger';
 import { ITranslator } from '@jupyterlab/translation';
 import { logPlugin } from './log/LogPlugin';
+import { requestAPI } from './server/handler';
+import { PageConfig } from '@jupyterlab/coreutils';
 
 const FACTORY = 'Xpipe editor';
 
@@ -55,7 +58,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     ITranslator
   ],
 
-  activate: (
+  activate: async (
     app: JupyterFrontEnd,
     palette: ICommandPalette,
     launcher: ILauncher,
@@ -137,6 +140,40 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     sidebarDebugger.title.iconClass = 'jp-XpipeLogo';
     restorer.add(sidebarDebugger, sidebarDebugger.id);
     app.shell.add(sidebarDebugger, 'right', { rank: 1001 });
+
+    // GET request
+    try {
+      const data = await requestAPI<any>('hello');
+      console.log(data);
+    } catch (reason) {
+      console.error(`Error on GET /xpipe/hello.\n${reason}`);
+    }
+
+    // POST request
+    const dataToSend = { name: 'Xpress AI' };
+    try {
+      const reply = await requestAPI<any>('hello', {
+        body: JSON.stringify(dataToSend),
+        method: 'POST',
+      });
+      console.log(reply);
+    } catch (reason) {
+      console.error(
+        `Error on POST /xpipe/hello ${dataToSend}.\n${reason}`
+      );
+    }
+
+    /**
+     * Add a command to open IFrame that will display static content fetched from the server extension.
+     */
+    app.commands.addCommand('server:get-file', {
+      label: 'Get Server Content in a IFrame Widget',
+      caption: 'Get Server Content in a IFrame Widget',
+      execute: () => {
+        const fwidget = new IFrameWidget();
+        app.shell.add(fwidget, 'main');
+      },
+    });
     
     // Add a command to open/close xpipe sidebar debugger
     app.commands.addCommand(commandIDs.openCloseDebugger, {
@@ -277,6 +314,21 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     }
   },
 };
+
+/**
+ * IFrame that will display static content fetched from the server extension.
+ */
+class IFrameWidget extends IFrame {
+  constructor() {
+    super();
+    const baseUrl = PageConfig.getBaseUrl();
+    this.url = baseUrl + 'xpipe/public/index.html';
+    this.id = 'doc-example';
+    this.title.label = 'Server Doc';
+    this.title.closable = true;
+    this.node.style.overflowY = 'auto';
+  }
+}
 
 /**
  * Export the plugins as default.

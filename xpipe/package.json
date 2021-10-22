@@ -1,20 +1,20 @@
 {
   "name": "xpipe",
   "version": "0.1.0",
-  "description": "Example of using a React Widget in a Jupyterlab extension",
+  "description": "A JupyterLab extension for rendering xpipeline files.",
   "keywords": [
     "jupyter",
     "jupyterlab",
     "jupyterlab-extension"
   ],
-  "homepage": "https://github.com/jupyterlab/extension-examples",
+  "homepage": "https://github.com/XpressAI/xai-jupyterlab",
   "bugs": {
-    "url": "https://github.com/jupyterlab/extension-examples/issues"
+    "url": "https://github.com/XpressAI/xai-jupyterlab/issues"
   },
   "license": "BSD-3-Clause",
   "author": {
-    "name": "Project Jupyter Contributors",
-    "email": ""
+    "name": "Xpress AI",
+    "email": "eduardo@xpress.ai"
   },
   "files": [
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
@@ -26,7 +26,7 @@
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jupyterlab/extension-examples.git"
+    "url": "https://github.com/XpressAI/xai-jupyterlab.git"
   },
   "scripts": {
     "build": "jlpm run build:lib && jlpm run build:labextension:dev",
@@ -95,8 +95,18 @@
     "style/index.js"
   ],
   "jupyterlab": {
+    "discovery": {
+      "server": {
+        "managers": [
+          "pip"
+        ],
+        "base": {
+          "name": "xpipe"
+        }
+      }
+    },
     "extension": true,
-    "outputDir": "jupyterlab_xpipe/labextension"
+    "outputDir": "xpipe/labextension"
   },
   "styleModule": "style/index.js"
 }
