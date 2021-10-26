@@ -745,6 +745,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		alert("Testing")
+		commands.execute('server:get-file');
 	}
 
 	useEffect(() => {
