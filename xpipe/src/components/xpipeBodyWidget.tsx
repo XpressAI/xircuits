@@ -247,7 +247,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let model = diagramEngine.getModel();
 		let nodeModels = model.getNodes();
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
-		let pythonCode = '';
+		let pythonCode = 'from argparse import ArgumentParser\n';
 		let uniqueComponents = {};
 
 		let allNodes = getAllNodesFromStartToFinish();
@@ -256,6 +256,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			let nodeType = allNodes[node]["extras"]["type"];
 			let componentName = allNodes[node]["name"];
 			componentName = componentName.replace(/\s+/g, "");
+
 			if (nodeType == 'Start' ||
 				nodeType == 'Finish' ||
 				nodeType === 'boolean' ||
@@ -335,6 +336,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 								for (let portLink in portLinks) {
 									let sourceNodeName = portLinks[portLink].getSourcePort().getNode()["name"];
+									let sourceNodeType = portLinks[portLink].getSourcePort().getNode().getOptions()["extras"]["type"];
 									let sourceNodeId = portLinks[portLink].getSourcePort().getNode().getOptions()["id"];
 									let sourcePortLabel = portLinks[portLink].getSourcePort().getOptions()["label"];
 									sourcePortLabel = sourcePortLabel.replace(/\s+/g, "_");
@@ -345,7 +347,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 									if (port.startsWith("parameter")) {
 
 										if (sourceNodeName.startsWith("Literal")) {
-											pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "'" + sourcePortLabel + "'\n";
+
+											if (sourceNodeType == 'string'){
+												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "'" + sourcePortLabel + "'\n";
+											}else {
+												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + sourcePortLabel + "\n";
+											}
+
 										} else {
 											sourceNodeName = sourceNodeName.split(": ");
 											let paramName = sourceNodeName[sourceNodeName.length - 1];
