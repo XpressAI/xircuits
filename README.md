@@ -20,12 +20,15 @@ pip install -r requirements.txt
 # pip install -r requirements_linux.txt
 ```
 
-The main body of the app is the xpipe and is installed using jlpm /yarn. Ensure you are in the /xpipe/ folder and run
+The main body of the app is the xpipe. It also have a server extension. Ensure you are in the /xpipe/ folder and run
 
 ```
-jlpm
-jlpm build
-jupyter labextension install .
+# Install package in development mode
+pip install -e .
+# Link your development version of the extension with JupyterLab
+jupyter labextension develop . --overwrite
+# Enable the server extension
+jupyter server extension enable xpipe
 
 # Rebuild Typescript source after making changes
 jlpm build
