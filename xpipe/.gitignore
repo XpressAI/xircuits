@@ -4,3 +4,4 @@ node_modules/
 *.egg-info/
 
 jupyterlab_xpipe/labextension/static/
+xpipe/labextension/
