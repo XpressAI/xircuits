@@ -285,7 +285,6 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     app.commands.addCommand(commandIDs.createArbitraryFile, {
       execute: async args => {
         const current_path = tracker.currentWidget.context.path;
-        console.log(current_path.split(".xpipe")[0]);
         const path = current_path;
         const request = await requestToGenerateArbitraryFile(path);// send this file and create new file
         if (request["message"] == "completed") {
