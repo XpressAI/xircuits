@@ -2,7 +2,6 @@ import React, { FC, useState, useCallback, useEffect } from 'react';
 import * as NumericInput from "react-numeric-input";
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
-import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { Panel } from 'primereact/panel';
 import { InputText } from 'primereact/inputtext';
@@ -11,7 +10,7 @@ import { LinkModel, DefaultLinkModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
 import * as SRD from '@projectstorm/react-diagrams';
 
-import { ReactWidget, showDialog } from '@jupyterlab/apputils';
+import { Dialog } from '@jupyterlab/apputils';
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
@@ -29,6 +28,9 @@ import { XPipePanel } from '../xpipeWidget';
 import { Log } from '../log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
 import ComponentList from '../components_xpipe/Component';
+import { formDialogWidget } from '../dialog/formDialogwidget';
+import { showFormDialog } from '../dialog/FormDialog';
+import { RunDialog } from '../dialog/RunDialog';
 
 
 
@@ -572,6 +574,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			alert("Please save before running.");
 		}
 
+		alert("Run.")
+		handleRunDialog();
 		let nodesCount = diagramEngine.getModel().getNodes().length;
 
 		console.log(diagramEngine.getModel().getNodes());
@@ -803,6 +807,33 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			setBoolNodes([]);
 		}
 	}, [initialize]);
+
+	const handleRunDialog = async () => {
+		
+		let title = 'Run';
+		const dialogOptions: Partial<Dialog.IOptions<any>> = {
+			title,
+			body: formDialogWidget(
+				<RunDialog/>
+			),
+			buttons: [Dialog.cancelButton(), Dialog.okButton()],
+			defaultButton: 1,
+			focusNodeSelector: '#name'
+			};
+			const dialogResult = await showFormDialog(dialogOptions);
+		
+			if (dialogResult.value == null) {
+			// When Cancel is clicked on the dialog, just return
+			return;
+			}
+			
+			const name = dialogResult.value.name;
+			const dataset = dialogResult.value.dataset;
+			const hyperparameter = dialogResult.value.hyperparameter;
+			console.log(name)
+			console.log(dataset)
+			console.log(hyperparameter)
+	};
 
 	useEffect(() => {
 		const handleSaveSignal = (): void => {
