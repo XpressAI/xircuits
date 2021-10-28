@@ -105,6 +105,7 @@ export const commandIDs = {
 	runXpipe: 'Xpipe-editor:run-node',
 	debugXpipe: 'Xpipe-editor:debug-node',
 	createArbitraryFile: 'Xpipe-editor:create-arbitrary-file',
+	executeArbitraryFile: 'Xpipe-editor:execute-arbitrary-file',
 	openAnalysisViewer: 'Xpipe-analysis-viewer:open',
 	openCloseDebugger: 'Xpipe-debugger:open/close',
 	breakpointXpipe: 'Xpipe-editor:breakpoint-node',
@@ -557,8 +558,19 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
+		let allNodesConnected = checkAllNodesConnected();
 
-		alert("Run.")
+		if (saved && allNodesConnected) {
+			let pythonCode = getPythonCompiler();
+			alert("Run.")
+			setCompiled(true);
+			commands.execute(commandIDs.executeArbitraryFile, { pythonCode });
+		} else if (!allNodesConnected) {
+			alert("Please connect all the nodes before running.");
+		} else {
+			alert("Please save before running.");
+		}
+
 		let nodesCount = diagramEngine.getModel().getNodes().length;
 
 		console.log(diagramEngine.getModel().getNodes());

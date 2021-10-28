@@ -141,28 +141,6 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     restorer.add(sidebarDebugger, sidebarDebugger.id);
     app.shell.add(sidebarDebugger, 'right', { rank: 1001 });
 
-    // GET request
-    try {
-      const data = await requestAPI<any>('hello');
-      console.log(data);
-    } catch (reason) {
-      console.error(`Error on GET /xpipe/hello.\n${reason}`);
-    }
-
-    // POST request
-    const dataToSend = { name: 'Xpress AI' };
-    try {
-      const reply = await requestAPI<any>('hello', {
-        body: JSON.stringify(dataToSend),
-        method: 'POST',
-      });
-      console.log(reply);
-    } catch (reason) {
-      console.error(
-        `Error on POST /xpipe/hello ${dataToSend}.\n${reason}`
-      );
-    }
-
     /**
      * Add a command to open IFrame that will display static content fetched from the server extension.
      */
@@ -270,30 +248,76 @@ const xpipe: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    // Add a command for creating arbitrary file when compile.
+    async function requestToExecuteArbitraryFile(text: any, path: string) {
+      const dataToSend = { "message": text, "currentPath": path.split(".xpipe")[0] + ".py" };
+
+      try {
+        const server_reply = await requestAPI<any>('file/execute', {
+          body: JSON.stringify(dataToSend),
+          method: 'POST',
+        });
+
+        return server_reply;
+      } catch (reason) {
+        console.error(
+          `Error on POST /jlab-ext-example/file/execute' ${dataToSend}.\n${reason}`
+        );
+      }
+    };
+
+    async function requestToGenerateArbitraryFile(path: string) {
+      const dataToSend = { "currentPath": path.split(".xpipe")[0] + ".py" };
+
+      try {
+        const server_reply = await requestAPI<any>('file/generate', {
+          body: JSON.stringify(dataToSend),
+          method: 'POST',
+        });
+
+        return server_reply;
+      } catch (reason) {
+        console.error(
+          `Error on POST /jlab-ext-example/file/generate ${dataToSend}.\n${reason}`
+        );
+      }
+    };
+
     app.commands.addCommand(commandIDs.createArbitraryFile, {
-      execute: args => {
-        app.commands
-          .execute(commandIDs.newDocManager, {
-            path: browserFactory.defaultBrowser.model.path,
-            type: 'file',
-            ext: '.py'
-          })
-          .then(async model => {
-            const message = typeof args['pythonCode'] === 'undefined' ? '' : (args['pythonCode'] as string);
-            const newWidget = await app.commands.execute(
-              commandIDs.openDocManager,
-              {
-                path: model.path
-              }
-            );
-            newWidget.context.ready.then(() => {
-              newWidget.context.model.fromString(message);
-              app.commands.execute(commandIDs.saveDocManager, {
-                path: model.path
-              });
+      execute: async args => {
+        const current_path = tracker.currentWidget.context.path;
+        const path = current_path;
+        const request = await requestToGenerateArbitraryFile(path);// send this file and create new file
+        if (request["message"] == "completed") {
+          const model_path = current_path.split(".xpipe")[0] + ".py";
+          const message = typeof args['pythonCode'] === 'undefined' ? '' : (args['pythonCode'] as string);
+          const newWidget = await app.commands.execute(
+            commandIDs.openDocManager,
+            {
+              path: model_path
+            }
+          );
+          newWidget.context.ready.then(() => {
+            newWidget.context.model.fromString(message);
+            app.commands.execute(commandIDs.saveDocManager, {
+              path: model_path
             });
           });
+        } else {
+          alert("Failed to generate arbitrary file!");
+        }
+      }
+    });
+
+    // Add a command to execute arbitrary file when run.
+    app.commands.addCommand(commandIDs.executeArbitraryFile, {
+      execute: async args => {
+        const message = typeof args['pythonCode'] === 'undefined' ? '' : (args['pythonCode'] as string);
+        const path = tracker.currentWidget.context.path;
+        const request = await requestToExecuteArbitraryFile(message, path);
+
+        if (request["output"] == "") {
+          alert("File does not exist! Please compile first");
+        }
       }
     });
 
