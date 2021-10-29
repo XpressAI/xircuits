@@ -30,11 +30,7 @@ class ExecuteFileRouteHandler(APIHandler):
                 path_list = f.readlines()
             validate_file = True
 
-            # f = open(input_data["currentPath"], "w")
-            # f.write(input_data["message"])
-            # f.close()
-
-            subprocess.Popen(['python', current_path])
+            subprocess.Popen(['../../venv/Scripts/python', current_path])
             data = {"output": "{}".format(input_data["message"])}
         except:
             validate_file = False
