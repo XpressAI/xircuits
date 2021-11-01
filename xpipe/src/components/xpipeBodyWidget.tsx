@@ -340,8 +340,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 									let sourceNodeType = portLinks[portLink].getSourcePort().getNode().getOptions()["extras"]["type"];
 									let sourceNodeId = portLinks[portLink].getSourcePort().getNode().getOptions()["id"];
 									let sourcePortLabel = portLinks[portLink].getSourcePort().getOptions()["label"];
-									sourcePortLabel = sourcePortLabel.replace(/\s+/g, "_");
-									sourcePortLabel = sourcePortLabel.toLowerCase();
 									let k = getBindingIndexById(allNodes, sourceNodeId);
 									let preBindingName = 'c_' + k;
 
@@ -356,6 +354,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 											}
 
 										} else {
+											sourcePortLabel = sourcePortLabel.replace(/\s+/g, "_");
+											sourcePortLabel = sourcePortLabel.toLowerCase();
 											sourceNodeName = sourceNodeName.split(": ");
 											let paramName = sourceNodeName[sourceNodeName.length - 1];
 											paramName = paramName.replace(/\s+/g, "_");
