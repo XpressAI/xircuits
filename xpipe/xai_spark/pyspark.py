@@ -52,8 +52,8 @@ class SparkReadPandas(Component):
 
         spark = self.in_sparksession.value
         df = self.pandas_dataframe.value
-        spark_df = spark.createDataFrame(pandas_df)
-        df.show()
+        spark_df = spark.createDataFrame(df)
+        spark_df.show()
 
         self.out_sparksession.value = spark
         self.out_dataframe.value = spark_df
