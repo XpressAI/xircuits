@@ -26,7 +26,7 @@ def getPythonOutput(current_path):
             bool_error = 'Error' in result_message.decode('utf-8')
 
     except OSError as e:
-        result_message = "OSERROR [",e.errno + "] " + e.strerror + " >> " + e.filename
+        result_message = "OSERROR [" + str(e.errno) + "] " + str(e.strerror) + " >> " + str(e.filename)
         bool_error = True
 
     except:
