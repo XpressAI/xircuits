@@ -309,48 +309,6 @@ class ResNet152(Component):
         self.model.value = model
 
 
-class ResNet152(Component):
-
-    include_top: InArg[bool]
-    weights:InArg[str] 
-    input_tensor: InArg[any]
-    input_shape: InArg[any]
-    pooling: InArg[any]
-    classes: InArg[int]
-    args: InArg[int]
-    model: OutArg[any]
-
-    def __init__(self):
-
-        self.include_top = InArg(None)
-        self.weights = InArg(None)
-        self.input_tensor = InArg(None)
-        self.pooling = InArg(None)
-        self.classes = InArg(None)
-        self.kwargs = InArg(None)
-        self.model = OutArg(None)
-
-
-    def execute(self) -> None:
-
-        model_config = resnet_model_config()
-
-        #dynamically sync model config with node inputs
-        for port in self.__dict__.keys():
-            try:
-                portValue = getattr(self, port).value
-                if portValue != None:
-                    for config in model_config.__dict__.keys():
-                        if config == port:
-                            setattr(model_config, config, portValue)
-
-            except Exception as e:
-                print(e)
-
-        model = applications.ResNet152(model_config)
-        self.model.value = model
-
-
 class vgg_model_config:
     include_top: bool #true
     weights:str #"imagenet",
