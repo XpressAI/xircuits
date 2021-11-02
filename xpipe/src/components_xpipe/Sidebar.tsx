@@ -109,7 +109,7 @@ export default function Sidebar(props: SidebarProps) {
         setSearchTerm(event.target.value);
     }
 
-    function handleOnClick() {
+    function handleSearchOnClick() {
         setSearchTerm("");
         setSearchTerm(searchTerm);
     }
@@ -135,10 +135,14 @@ export default function Sidebar(props: SidebarProps) {
 
     }, [rootFile, componentList]);
 
+    function handleRefreshOnClick() {
+        fetchComponentList();
+    }
+
     useEffect(() => {
         const intervalId = setInterval(() => {
             fetchComponentList();
-        }, 15000);
+        }, 60000);
         return () => clearInterval(intervalId);
     }, [rootFile, componentList]);
 
@@ -149,7 +153,8 @@ export default function Sidebar(props: SidebarProps) {
                     <div>
                         <div className="search-input">
                             <input type="text" name="" value={searchTerm} placeholder="SEARCH" className="search-input__text-input" style={{ width: "80%" }} onChange={handleOnChange} />
-                            <a onClick={handleOnClick} className="search-input__button"><i className="fa fa-search "></i></a>
+                            <a onClick={handleSearchOnClick} className="search-input__button"><i className="fa fa-search "></i></a>
+                            <a onClick={handleRefreshOnClick} className="search-input__button"><i className="fa fa-refresh "></i></a>
                         </div>
 
                         <Accordion allowZeroExpanded>

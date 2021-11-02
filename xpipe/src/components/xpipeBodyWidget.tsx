@@ -573,13 +573,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		let nodesCount = diagramEngine.getModel().getNodes().length;
 
-		console.log(diagramEngine.getModel().getNodes());
-		console.log("node count: ", nodesCount);
-		xpipeLogger.debug("Node Count: ", nodesCount);
+		// console.log(diagramEngine.getModel().getNodes());
+		// console.log("node count: ", nodesCount);
+		// xpipeLogger.debug("Node Count: ", nodesCount);
 		for (let i = 0; i < nodesCount; i++) {
 			let nodeName = diagramEngine.getModel().getNodes()[i].getOptions()["name"];
-			console.log(nodeName);
-			xpipeLogger.info(nodeName);
+			// console.log(nodeName);
+			// xpipeLogger.info(nodeName);
 			if (nodeName.startsWith("Hyperparameter")) {
 				let regEx = /\(([^)]+)\)/;
 				let result = nodeName.match(regEx);
@@ -910,7 +910,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	useEffect(() => {
 		const intervalId = setInterval(() => {
 			fetchComponentList();
-		}, 15000);
+		}, 5000);
 		return () => clearInterval(intervalId);
 	}, [componentList]);
 
