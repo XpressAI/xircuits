@@ -142,7 +142,7 @@ export default function Sidebar(props: SidebarProps) {
     useEffect(() => {
         const intervalId = setInterval(() => {
             fetchComponentList();
-        }, 60000);
+        }, 600000); // 10 minutes
         return () => clearInterval(intervalId);
     }, [rootFile, componentList]);
 
