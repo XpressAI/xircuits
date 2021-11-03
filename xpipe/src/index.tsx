@@ -32,7 +32,7 @@ import Sidebar from './components_xpipe/Sidebar';
 
 import { XpipeDebugger } from './debugger/SidebarDebugger';
 import { ITranslator } from '@jupyterlab/translation';
-import { logPlugin } from './log/LogPlugin';
+import { Log, logPlugin } from './log/LogPlugin';
 import { requestAPI } from './server/handler';
 import { PageConfig } from '@jupyterlab/coreutils';
 import { OutputPanel } from './kernel/panel';
@@ -252,23 +252,6 @@ const xpipe: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    async function requestToExecuteArbitraryFile(text: any, path: string) {
-      const dataToSend = { "message": text, "currentPath": path.split(".xpipe")[0] + ".py" };
-
-      try {
-        const server_reply = await requestAPI<any>('file/execute', {
-          body: JSON.stringify(dataToSend),
-          method: 'POST',
-        });
-
-        return server_reply;
-      } catch (reason) {
-        console.error(
-          `Error on POST /jlab-ext-example/file/execute' ${dataToSend}.\n${reason}`
-        );
-      }
-    };
-
     async function requestToGenerateArbitraryFile(path: string) {
       const dataToSend = { "currentPath": path.split(".xpipe")[0] + ".py" };
 
@@ -281,7 +264,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
         return server_reply;
       } catch (reason) {
         console.error(
-          `Error on POST /jlab-ext-example/file/generate ${dataToSend}.\n${reason}`
+          `Error on POST /xpipe/file/generate ${dataToSend}.\n${reason}`
         );
       }
     };
@@ -312,19 +295,6 @@ const xpipe: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    // Add a command to execute arbitrary file when run.
-    app.commands.addCommand(commandIDs.executeArbitraryFile, {
-      execute: async args => {
-        const message = typeof args['pythonCode'] === 'undefined' ? '' : (args['pythonCode'] as string);
-        const path = tracker.currentWidget.context.path;
-        const request = await requestToExecuteArbitraryFile(message, path);
-
-        if (request["output"] == "") {
-          alert("File does not exist! Please compile first");
-        }
-      }
-    });
-
     // Add a command for opening the xpipe analysis viewer when run button clicked.
     app.commands.addCommand(commandIDs.openAnalysisViewer, {
       execute: (options: IXpipeAnalysisViewerOptions) => {
@@ -348,8 +318,8 @@ const xpipe: JupyterFrontEndPlugin<void> = {
 
     // Execute xpipe python script and display at output panel
     app.commands.addCommand(commandIDs.executeToOutputPanel, {
-      execute: async args => {
-        
+    execute: async args => {
+        const xpipeLogger = new Log(app);
         const message = typeof args['runCommand'] === 'undefined' ? '' : (args['runCommand'] as string);
         // Create the panel if it does not exist
         if (!outputPanel || outputPanel.isDisposed) {
@@ -360,7 +330,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
           const current_path = tracker.currentWidget.context.path;
           const model_path = current_path.split(".xpipe")[0] + ".py";
           const code = "%run " + model_path + message;
-          outputPanel.execute(code);
+          outputPanel.execute(code, xpipeLogger);
         });
       },
     });

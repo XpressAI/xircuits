@@ -102,7 +102,6 @@ export const commandIDs = {
 	runXpipe: 'Xpipe-editor:run-node',
 	debugXpipe: 'Xpipe-editor:debug-node',
 	createArbitraryFile: 'Xpipe-editor:create-arbitrary-file',
-	executeArbitraryFile: 'Xpipe-editor:execute-arbitrary-file',
 	openAnalysisViewer: 'Xpipe-analysis-viewer:open',
 	openCloseDebugger: 'Xpipe-debugger:open/close',
 	breakpointXpipe: 'Xpipe-editor:breakpoint-node',
@@ -912,7 +911,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	useEffect(() => {
 		const intervalId = setInterval(() => {
 			fetchComponentList();
-		}, 15000);
+		}, 5000);
 		return () => clearInterval(intervalId);
 	}, [componentList]);
 
