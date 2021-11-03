@@ -1,11 +1,6 @@
 import React, { FC, useState, useCallback, useEffect } from 'react';
-import * as NumericInput from "react-numeric-input";
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
-import { Button } from 'primereact/button';
-import { Panel } from 'primereact/panel';
-import { InputText } from 'primereact/inputtext';
-import { InputSwitch } from 'primereact/inputswitch';
 import { LinkModel, DefaultLinkModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
 import * as SRD from '@projectstorm/react-diagrams';
@@ -555,91 +550,24 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		handleCompileClick();
 	}
 
-	const handleRunClick = () => {
+	const handleRunClick = async () => {
 		// Only run xpipe if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		let allNodesConnected = checkAllNodesConnected();
 
-		if (saved && allNodesConnected) {
-			let pythonCode = getPythonCompiler();
-			setCompiled(true);
-			commands.execute(commandIDs.executeArbitraryFile, { pythonCode });
-			commands.execute(commandIDs.executeToOutputPanel);
-		} else if (!allNodesConnected) {
-			alert("Please connect all the nodes before running.");
-		} else {
-			alert("Please save before running.");
-		}
-
-		alert("Run.")
-		handleRunDialog();
-		let nodesCount = diagramEngine.getModel().getNodes().length;
-
-		console.log(diagramEngine.getModel().getNodes());
-		console.log("node count: ", nodesCount);
-		xpipeLogger.debug("Node Count: ", nodesCount);
-		for (let i = 0; i < nodesCount; i++) {
-			let nodeName = diagramEngine.getModel().getNodes()[i].getOptions()["name"];
-			console.log(nodeName);
-			xpipeLogger.info(nodeName);
-			if (nodeName.startsWith("Hyperparameter")) {
-				let regEx = /\(([^)]+)\)/;
-				let result = nodeName.match(regEx);
-				let nodeText = nodeName.split(": ");
-				if (result[1] == 'String') {
-					setStringNodes(stringNodes => ([...stringNodes, nodeText[nodeText.length - 1]].sort()));
-				}
-				else if (result[1] == 'Int') {
-					setIntNodes(intNodes => ([...intNodes, nodeText[nodeText.length - 1]].sort()));
-				}
-				else if (result[1] == 'Float') {
-					setFloatNodes(floatNodes => ([...floatNodes, nodeText[nodeText.length - 1]].sort()));
-				}
-				else if (result[1] == 'Boolean') {
-					setBoolNodes(boolNodes => ([...boolNodes, nodeText[nodeText.length - 1]].sort()));
-				}
+		if (compiled) {
+			const runCommand = await handleRunDialog();
+			if (runCommand){
+				// commands.execute(commandIDs.executeArbitraryFile, { pythonCode });
+				commands.execute(commandIDs.executeToOutputPanel, { runCommand });
 			}
-		}
-
-		if (compiled && saved) {
-			onClick('displayHyperparameter');
-		}
-		else {
-			onClick('displaySavedAndCompiled');
+		}else {
+			alert("Please compile before running.");
 		}
 	}
-
-	const handleStringChange = (e, i) => {
-		let newStringNodeValue = [...stringNodesValue];
-		newStringNodeValue[i] = e.target.value;
-		setStringNodesValue(newStringNodeValue);
-		console.log("String change: ", stringNodesValue)
-	}
-
-	const handleBoolChange = (e, i) => {
-		let newBoolNodeValue = [...boolNodesValue];
-		newBoolNodeValue[i] = e.target.value;
-		setBoolNodesValue(newBoolNodeValue);
-		console.log("Boolean change: ", boolNodesValue)
-	}
-
-	const handleIntSpinnerChange = (e, i) => {
-		let newIntNodeValue = [...intNodesValue];
-		newIntNodeValue[i] = e;
-		setIntNodesValue(newIntNodeValue);
-		console.log("Integer change: ", intNodesValue)
-	}
-
-	const handleFloatSpinnerChange = (e, i) => {
-		let newFloatNodeValue = [...floatNodesValue];
-		newFloatNodeValue[i] = e;
-		setFloatNodesValue(newFloatNodeValue);
-		console.log("Float change: ", floatNodesValue)
-	}
-
+	
 	const handleDebugClick = () => {
 		// Only debug xpipe if it is currently in focus
 		// This must be first to avoid unnecessary complication
@@ -691,7 +619,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		diagramEngine.getModel().getNodes().forEach((item) => {
             if (item.getOptions()["selected"] == true){
                 let name = item.getOptions()["name"]
-                console.log(name)
 				currentNodeSignal.emit({
 					item
 				});
@@ -809,30 +736,73 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}, [initialize]);
 
 	const handleRunDialog = async () => {
-		
 		let title = 'Run';
 		const dialogOptions: Partial<Dialog.IOptions<any>> = {
 			title,
 			body: formDialogWidget(
-				<RunDialog/>
+				<RunDialog
+					childStringNodes={stringNodes}
+					childBoolNodes={boolNodes}
+					childIntNodes={intNodes}
+					childFloatNodes={floatNodes}
+				/>
 			),
-			buttons: [Dialog.cancelButton(), Dialog.okButton()],
+			buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Start') })],
 			defaultButton: 1,
 			focusNodeSelector: '#name'
 			};
 			const dialogResult = await showFormDialog(dialogOptions);
 		
-			if (dialogResult.value == null) {
+			if (dialogResult["button"]["label"] == 'Cancel') {
 			// When Cancel is clicked on the dialog, just return
-			return;
+				return false;
 			}
-			
-			const name = dialogResult.value.name;
-			const dataset = dialogResult.value.dataset;
-			const hyperparameter = dialogResult.value.hyperparameter;
-			console.log(name)
-			console.log(dataset)
-			console.log(hyperparameter)
+
+			let commandStr = ' ';
+
+			stringNodes.forEach((param) => {
+				xpipeLogger.info(param + ": " + dialogResult["value"][param]);
+				if(dialogResult["value"][param]){
+					let filteredParam = param.replace(/\s+/g, "_");
+					filteredParam = filteredParam.toLowerCase();
+					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] +' ';
+				}
+			});
+
+			if (boolNodes){
+				boolNodes.forEach((param) => {
+					xpipeLogger.info(param + ": " + dialogResult["value"][param]);
+					if(dialogResult["value"][param]){
+						let filteredParam = param.replace(/\s+/g, "_");
+						filteredParam = filteredParam.toLowerCase();
+						commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] +' ';
+					}
+				});
+			}
+
+			if (intNodes){
+				intNodes.forEach((param) => {
+					xpipeLogger.info(param + ": " + dialogResult["value"][param]);
+					if(dialogResult["value"][param]){
+						let filteredParam = param.replace(/\s+/g, "_");
+						filteredParam = filteredParam.toLowerCase();
+						commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] +' ';
+					}
+				});
+			}
+
+			if (floatNodes){
+				floatNodes.forEach((param) => {
+					xpipeLogger.info(param + ": " + dialogResult["value"][param]);
+					if(dialogResult["value"][param]){
+						let filteredParam = param.replace(/\s+/g, "_");
+						filteredParam = filteredParam.toLowerCase();
+						commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] +' ';
+					}
+				});
+			}
+
+			return commandStr;
 	};
 
 	useEffect(() => {
@@ -946,45 +916,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return () => clearInterval(intervalId);
 	}, [componentList]);
 
-	const handleStart = () => {
-		let stringNode = stringNodes.map(function (x) {
-			x = x.replace(" ", "_");
-			return x.toLowerCase();
-		});
-		let stringValue = stringNodesValue;
-		let floatNode = floatNodes.map(function (x) {
-			x = x.replace(" ", "_");
-			return x.toLowerCase();
-		});
-		let floatNodeValue = floatNodesValue;
-		let intNode = intNodes.map(function (x) {
-			x = x.replace(" ", "_");
-			return x.toLowerCase();
-		});
-		let intNodeValue = intNodesValue;
-		let boolNode = boolNodes.map(function (x) {
-			x = x.replace(" ", "_");
-			return x.toLowerCase();
-		});
-		let boolNodeValue = boolNodesValue;
-
-		var result = {};
-		stringNode.forEach((key, i) => result[key] = stringValue[i]);
-		floatNode.forEach((key, i) => result[key] = floatNodeValue[i]);
-		intNode.forEach((key, i) => result[key] = intNodeValue[i]);
-		boolNode.forEach((key, i) => result[key] = boolNodeValue[i]);
-
-		let commandStr = JSON.stringify(result);
-		console.log(stringNodes);
-		console.log(commandStr);
-
-		setStringNodesValue([]);
-		setIntNodesValue([]);
-		setFloatNodesValue([]);
-		setBoolNodesValue([]);
-		onHide('displayHyperparameter');
-	}
-
 	const dialogFuncMap = {
 		'displayDebug': setDisplayDebug,
 		'displayHyperparameter': setDisplayHyperparameter,
@@ -1004,196 +935,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			setBoolNodes([]);
 		}
 	}
-
-	const renderFooter = () => {
-		return (
-			<div>
-				<Button label="Saving & Compiling" icon="pi pi-check" onClick={handleUnsaved} />
-				<Button label="Cancel" icon="pi pi-times" onClick={() => onHide('displaySavedAndCompiled')} />
-			</div>
-		);
-	}
-
-	const renderHyperparameterFooter = () => {
-		return (
-			<div>
-				<Button label="Start" icon="pi pi-check" onClick={handleStart} className="p-button-text" />
-				<Button label="Cancel" icon="pi pi-times" onClick={() => onHide('displayHyperparameter')} autoFocus />
-			</div>
-		);
-	}
-
-	const renderDebugFooter = () => {
-		return (
-			<div>
-				<Button label="Quit Debugging" icon="pi pi-times" onClick={() => onHide('displayDebug')} />
-			</div>
-		);
-	}
-
+	
 	return (
 		<Body>
-			{/* <Header>
-				<div className="title">Sample Project | Main Workflow ▽</div>
-				<span className='diagram-header-span'>
-					<button className='diagram-header-button' onClick={handleSaveClick} >Save</button>
-					<button className='diagram-header-button' onClick={handleReloadClick} >Reload</button>
-					<button className='diagram-header-button' onClick={handleRevertClick} >Revert</button>
-					<button className='diagram-header-button' onClick={handleCompileClick} >Compile</button>
-					<Dialog header="Save & Compile?" visible={displaySavedAndCompiled} modal style={{ width: '350px' }} footer={renderFooter()} onHide={() => onHide('displaySavedAndCompiled')}>
-                        <div className="p-fluid" style={{display: 'flex', alignItems: 'center'}}>
-                            <i className="pi pi-exclamation-triangle" style={{ fontSize: '2rem', marginRight:'1rem' }} />
-                            <span>You must Save & Compile before running and debugging.</span>
-                        </div>
-                    </Dialog>
-					<button className='diagram-header-button' onClick={handleRunClick} >Run</button>
-					<Dialog header="Run" visible={displayHyperparameter} maximizable modal style={{ width: '50vw' }} footer={renderHyperparameterFooter()} onHide={() => onHide('displayHyperparameter')}>
-						<div>
-							<div className="p-grid p-fluid">
-                    		    <h3 style={{marginTop: 0, marginLeft: '8px', marginBottom: 0}}>Hyperparameter:</h3>
-                    		    <div className="p-col-12" ><h4 style={{marginTop: 0, marginBottom: 0}}>String</h4></div>
-                    		    {stringNodes.map((stringNode, i) =>
-                    		    <div className="p-col-12" key={`index-${i}`}>{stringNode}
-                    		        <div>
-                    		        <InputText style={{ width: '10vw' }} value={ stringNodesValue[i] || '' } onChange={(e) => handleStringChange(e, i)}/>
-                    		        </div>
-                    		    </div>)}
-                    		    <div className="p-col-12">
-                    		        {
-                    		            boolNodes.length != 0 ?
-                                        <h4 style={{marginTop: 0, marginBottom: 0}}>Boolean</h4> : null
-                    		        }
-                    		    </div>
-                    		    {boolNodes.map((boolNode, i) =>
-                                <div className="p-col-4 p-fluid" key={`index-${i}`}>{boolNode}
-                                    <div>
-                                    <InputSwitch checked={boolNodesValue[i] || false} onChange={(e) => handleBoolChange(e, i)} />
-                                    </div>
-                                </div>)}
-                                <div className="p-col-12">
-                                    {
-                                        intNodes.length != 0 ?
-                                        <h4 style={{marginTop: 0, marginBottom: 0}}>Integer</h4> : null
-                                    }
-                    		    </div>
-                    		    {intNodes.map((intNode, i) =>
-                                <div className="p-col-12" key={`index-${i}`}>{intNode}
-                                    <div>
-                                    <NumericInput
-                                        className="form-control"
-                                        min={0}
-                                        step={1}
-                                        precision={0}
-                                        mobile={true}
-                                        value={intNodesValue[i] || 0 }
-                                        onChange={(e) => handleIntSpinnerChange(e, i)}
-                                        style={{
-                                            wrap: {
-                                                boxShadow: '0 0 1px 1px #fff inset, 1px 1px 5px -1px #000',
-                                                padding: '2px 2.26ex 2px 2px',
-                                                borderRadius: '6px 3px 3px 6px',
-                                                fontSize: 20,
-                                                width: '20vw'
-                                            },
-                                            input: {
-                                                borderRadius: '6px 3px 3px 6px',
-                                                padding: '0.1ex 1ex',
-                                                border: '#ccc',
-                                                marginRight: 4,
-                                                display: 'block',
-                                                fontWeight: 100,
-                                                width: '20vw'
-                                            },
-                                            plus: {
-                                                background: 'rgba(255, 255, 255, 100)'
-                                            },
-                                            minus: {
-                                                background: 'rgba(255, 255, 255, 100)'
-                                            },
-                                            btnDown: {
-                                                background: 'rgba(211, 47, 47, 100)'
-                                            },
-                                            btnUp: {
-                                                background: 'rgba(83, 127, 45, 100)'
-                                            }
-                                        }}
-                                    />
-                                    </div>
-                                </div>)}
-                                <div className="p-col-12">
-                                    {
-                                        floatNodes.length != 0 ?
-                                        <h4 style={{marginTop: 0, marginBottom: 0}}>Float</h4> : null
-                                    }
-                    		    </div>
-                    		    {floatNodes.map((floatNode, i) =>
-                                <div className="p-col-12" key={`index-${i}`}>{floatNode}
-                                    <div>
-                                    <NumericInput
-                                        className="form-control"
-                                        min={0}
-                                        step={0.1}
-                                        precision={2}
-                                        mobile={true}
-                                        value={floatNodesValue[i] || '0.00'}
-                                        onChange={(e) => handleFloatSpinnerChange(e, i)}
-                                        style={{
-                                            wrap: {
-                                                boxShadow: '0 0 1px 1px #fff inset, 1px 1px 5px -1px #000',
-                                                padding: '2px 2.26ex 2px 2px',
-                                                borderRadius: '6px 3px 3px 6px',
-                                                fontSize: 20,
-                                                width: '20vw'
-                                            },
-                                            input: {
-                                                borderRadius: '6px 3px 3px 6px',
-                                                padding: '0.1ex 1ex',
-                                                border: '#ccc',
-                                                marginRight: 4,
-                                                display: 'block',
-                                                fontWeight: 100,
-                                                width: '20vw'
-                                            },
-                                            plus: {
-                                                background: 'rgba(255, 255, 255, 100)'
-                                            },
-                                            minus: {
-                                                background: 'rgba(255, 255, 255, 100)'
-                                            },
-                                            btnDown: {
-                                                background: 'rgba(211, 47, 47, 100)'
-                                            },
-                                            btnUp: {
-                                                background: 'rgba(83, 127, 45, 100)'
-                                            }
-                                        }}
-                                    />
-                                    </div>
-                                </div>)}
-							</div>
-						</div>
-					</Dialog>
-					<button className='diagram-header-button' onClick={handleDebugClick} >Debug</button>
-					<Dialog header="Debug" visible={displayDebug} modal={false} style={{ width: '35vw', top: '65%' }} footer={renderDebugFooter()} onHide={() => onHide('displayDebug')}>
-						<div className="p-grid">
-							<div className="p-col-12 p-md-6 p-lg-4">
-								<Button label="Toggle breakpoint on Component" onClick={handleToggleBreakpoint} />
-							</div>
-							<div className="p-col-12 p-md-6 p-lg-4">
-								<Button label="Step to next Component" onClick={() => alert('Next component')} />
-							</div>
-							<div className="p-col-12 p-md-6 p-lg-4">
-								<Button label="Continue execute until finish" onClick={() => alert('Continue')} />
-							</div>
-							<div className="p-col-12">
-								<Panel header="Component">
-									<p>Content.</p>
-								</Panel>
-							</div>
-						</div>
-					</Dialog>
-				</span>
-			</Header> */}
 			<Content>
 				<Layer
 					onDrop={(event) => {
