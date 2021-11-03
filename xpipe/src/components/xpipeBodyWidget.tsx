@@ -246,6 +246,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let nodeModels = model.getNodes();
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 		let pythonCode = 'from argparse import ArgumentParser\n';
+		pythonCode += 'from datetime import datetime\n';
 		let uniqueComponents = {};
 
 		let allNodes = getAllNodesFromStartToFinish();
@@ -409,7 +410,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				for (let i = 0; i < stringNodes.length; i++) {
 					let stringParam = stringNodes[i].replace(/\s+/g, "_");
 					stringParam = stringParam.toLowerCase();
-					pythonCode += '    ' + "parser.add_argument('--" + stringParam + "', default='test', type=str)\n";
+					let dateTimeStr = "\"\%Y-\%m-\%d \%H:\%M:\%S\""
+					pythonCode += '    ' + "parser.add_argument('--" + stringParam + "', default=datetime.now().strftime("+ dateTimeStr+ "), type=str)\n";
 				}
 			}
 
