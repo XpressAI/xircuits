@@ -318,8 +318,9 @@ const xpipe: JupyterFrontEndPlugin<void> = {
 
     // Execute xpipe python script and display at output panel
     app.commands.addCommand(commandIDs.executeToOutputPanel, {
-      execute: async () => {
+    execute: async args => {
         const xpipeLogger = new Log(app);
+        const message = typeof args['runCommand'] === 'undefined' ? '' : (args['runCommand'] as string);
         // Create the panel if it does not exist
         if (!outputPanel || outputPanel.isDisposed) {
           await createPanel();
@@ -328,8 +329,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
         outputPanel.session.ready.then(() => {
           const current_path = tracker.currentWidget.context.path;
           const model_path = current_path.split(".xpipe")[0] + ".py";
-          const code = "%run " + model_path;
-          
+          const code = "%run " + model_path + message;
           outputPanel.execute(code, xpipeLogger);
         });
       },

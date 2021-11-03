@@ -56,8 +56,8 @@
     "@jupyterlab/filebrowser": "^3.1.11",
     "@jupyterlab/launcher": "^3.1.0",
     "@jupyterlab/logconsole": "^3.1.11",
-    "@jupyterlab/rendermime": "^3.1.11",
     "@jupyterlab/mainmenu": "^3.1.11",
+    "@jupyterlab/rendermime": "^3.1.11",
     "@jupyterlab/ui-components": "^3.1.0",
     "@projectstorm/react-canvas-core": "^6.6.1",
     "@projectstorm/react-diagrams": "^6.6.1",
@@ -67,9 +67,9 @@
     "node": "^16.9.1",
     "pathfinding": "^0.4.18",
     "paths-js": "^0.4.11",
-    "primereact": "^6.5.1",
+    "react-accessible-accordion": "^4.0.0",
     "react-numeric-input": "^2.2.3",
-    "react-accessible-accordion": "^4.0.0"
+    "react-switch": "^6.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
