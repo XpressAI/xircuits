@@ -35,6 +35,8 @@ import { ITranslator } from '@jupyterlab/translation';
 import { Log, logPlugin } from './log/LogPlugin';
 import { requestAPI } from './server/handler';
 import { PageConfig } from '@jupyterlab/coreutils';
+import { OutputPanel } from './kernel/panel';
+import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
 const FACTORY = 'Xpipe editor';
 
@@ -55,6 +57,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     IFileBrowserFactory,
     ILayoutRestorer,
     IMainMenu,
+    IRenderMimeRegistry,
     ITranslator
   ],
 
@@ -65,6 +68,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     browserFactory: IFileBrowserFactory,
     restorer: ILayoutRestorer,
     menu: IMainMenu,
+    rendermime: IRenderMimeRegistry,
     themeManager?: IThemeManager,
     translator?: ITranslator
   ) => {
@@ -397,6 +401,37 @@ const xpipe: JupyterFrontEndPlugin<void> = {
       execute: (options: IXpipeAnalysisViewerOptions) => {
         return createXpipeAnalysisViewer(app, options);
       }
+    });
+
+    let outputPanel: OutputPanel;
+    /**
+      * Creates a output panel.
+      *
+      * @returns The panel
+      */
+    async function createPanel(): Promise<OutputPanel> {
+      outputPanel = new OutputPanel(app.serviceManager, rendermime, translator);
+      app.shell.add(outputPanel, 'main',{ 
+        mode: 'split-bottom'
+      } );
+      return outputPanel;
+    }
+
+    // Execute xpipe python script and display at output panel
+    app.commands.addCommand(commandIDs.executeToOutputPanel, {
+      execute: async () => {
+        // Create the panel if it does not exist
+        if (!outputPanel || outputPanel.isDisposed) {
+          await createPanel();
+        }
+
+        outputPanel.session.ready.then(() => {
+          const current_path = tracker.currentWidget.context.path;
+          const model_path = current_path.split(".xpipe")[0] + ".py";
+          const code = "%run " + model_path;
+          outputPanel.execute(code);
+        });
+      },
     });
 
     // Add a launcher item if the launcher is available.
