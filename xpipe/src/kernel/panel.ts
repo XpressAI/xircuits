@@ -19,6 +19,7 @@ import {
 import { Message } from '@lumino/messaging';
 
 import { StackedPanel } from '@lumino/widgets';
+import { Log } from '../log/LogPlugin';
 
 /**
  * The class name added to the output panel.
@@ -81,10 +82,42 @@ export class OutputPanel extends StackedPanel {
         super.dispose();
     }
 
-    execute(code: string): void {
+    execute(code: string, xpipeLogger: Log): void {
         SimplifiedOutputArea.execute(code, this._outputarea, this._sessionContext)
             .then((msg: KernelMessage.IExecuteReplyMsg) => {
-                console.log(msg);
+                if (this._outputarea.model.toJSON().length > 0) {
+                    for (let index = 0; index < this._outputarea.model.toJSON().length; index++) {
+                        let is_error = this._outputarea.model.toJSON()[index].output_type == "error";
+
+                        if (is_error) {
+                            let ename = this._outputarea.model.toJSON()[index]["ename"] as string;
+                            let evalue = this._outputarea.model.toJSON()[index]["evalue"] as string;
+                            let traceback = this._outputarea.model.toJSON()[index]["traceback"] as string[];
+
+                            if (evalue.includes("File") && evalue.includes("not found")) {
+                                alert(ename + ": " + evalue + " Please compile first!");
+                                xpipeLogger.error(ename + ": " + evalue);
+                                console.log(evalue + " Please compile first!");
+                                return;
+                            }
+
+                            for (let data of traceback) {
+                                xpipeLogger.error(data);
+                                console.log(data);
+                            }
+
+                            return;
+                        }
+
+                        let text = this._outputarea.model.toJSON()[index]["text"] as string;
+                        for (let text_index = 0; text_index < text.split("\n").length; text_index++) {
+                            if (text.split("\n")[text_index].trim() != "") {
+                                xpipeLogger.info(text.split("\n")[text_index]);
+                                console.log(text.split("\n")[text_index]);
+                            }
+                        }
+                    }
+                }
             })
             .catch((reason) => console.error(reason));
     }

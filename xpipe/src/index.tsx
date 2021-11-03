@@ -252,84 +252,6 @@ const xpipe: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    async function requestToExecuteArbitraryFile(text: any, path: string) {
-      const xpipeLogger = new Log(app);
-      const dataToSend = { "message": text, "currentPath": path.split(".xpipe")[0] + ".py" };
-
-      try {
-        requestAPI<any>('file/execute', {
-          body: JSON.stringify(dataToSend),
-          method: 'POST',
-        });
-
-        let count = 0;
-        let boolTest = false;
-
-        while (!boolTest) {
-          let data = await requestAPI<any>('file/execute');
-          let value = data["data2"][count];
-          
-          if (value.trim() != '' && value.trim() != 'end123') {
-            xpipeLogger.info(value);
-            console.log(value);
-          }
-
-          boolTest = value.includes("end123");
-          count = count + 1;
-        }
-
-      } catch (reason) {
-        console.error(
-          `Error on POST /xpipe/file/execute' ${dataToSend}.\n${reason}`
-        );
-      }
-    };
-
-    async function requestToGetImport(path: string) {
-      const xpipeLogger = new Log(app);
-      const dataToSend = { "currentPath": path.split(".xpipe")[0] + ".py" };
-      let output_message = "";
-      let hasError = false;
-
-      try {
-        const request = await requestAPI<any>('file/import', {
-          body: JSON.stringify(dataToSend),
-          method: 'POST',
-        });
-
-        let bool_error = request["bool_error"];
-        output_message = request["output_message"];
-        
-        if (bool_error) {
-          for (let lineNumber = 0; lineNumber < output_message.split("\n").length; lineNumber++) {
-            if (output_message.split("\n")[lineNumber].trim() != '') {
-              xpipeLogger.error(output_message.split("\n")[lineNumber]);
-              console.log(output_message.split("\n")[lineNumber]);
-            }
-
-            if (output_message.split("\n")[lineNumber].trim().includes("No such file or directory")) {
-              alert("Error occured. No such file or directory for " + path.split(".xpipe")[0] + ".py");
-              hasError = true;
-            }
-          }
-        } else {
-          for (let lineNumber = 0; lineNumber < output_message.split("\n").length; lineNumber++) {
-            if (output_message.split("\n")[lineNumber].trim() != '' &&
-                  output_message.split("\n")[lineNumber].trim() != '\n' && 
-                  output_message.split("\n")[lineNumber].trim() != 'end123') {
-              xpipeLogger.info(output_message.split("\n")[lineNumber]);
-              console.log(output_message.split("\n")[lineNumber]);
-            }
-          }
-        }
-      } catch (reason) {
-        console.error(
-          `Error on POST /xpipe/file/import' ${dataToSend}.\n${reason}`
-        );
-      }
-      return hasError;
-    };
-
     async function requestToGenerateArbitraryFile(path: string) {
       const dataToSend = { "currentPath": path.split(".xpipe")[0] + ".py" };
 
@@ -373,29 +295,6 @@ const xpipe: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    // Add a command to execute arbitrary file when run.
-    app.commands.addCommand(commandIDs.executeArbitraryFile, {
-      execute: async args => {
-        const xpipeLogger = new Log(app);
-        const message = typeof args['pythonCode'] === 'undefined' ? '' : (args['pythonCode'] as string);
-        const path = tracker.currentWidget.context.path;
-
-        xpipeLogger.info("LOGGER - START");
-        console.log("LOGGER - START");
-        
-        // get import message
-        const output_message = await requestToGetImport(path);
-
-        // get response
-        if (!output_message) {
-          await requestToExecuteArbitraryFile(message, path);
-        }
-        
-        xpipeLogger.info("LOGGER - END");
-        console.log("LOGGER - END");
-      }
-    });
-
     // Add a command for opening the xpipe analysis viewer when run button clicked.
     app.commands.addCommand(commandIDs.openAnalysisViewer, {
       execute: (options: IXpipeAnalysisViewerOptions) => {
@@ -420,6 +319,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     // Execute xpipe python script and display at output panel
     app.commands.addCommand(commandIDs.executeToOutputPanel, {
       execute: async () => {
+        const xpipeLogger = new Log(app);
         // Create the panel if it does not exist
         if (!outputPanel || outputPanel.isDisposed) {
           await createPanel();
@@ -429,7 +329,8 @@ const xpipe: JupyterFrontEndPlugin<void> = {
           const current_path = tracker.currentWidget.context.path;
           const model_path = current_path.split(".xpipe")[0] + ".py";
           const code = "%run " + model_path;
-          outputPanel.execute(code);
+          
+          outputPanel.execute(code, xpipeLogger);
         });
       },
     });
