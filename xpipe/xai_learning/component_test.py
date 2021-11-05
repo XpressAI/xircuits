@@ -8,4 +8,4 @@ class HelloHyperparameter(Component):
 
     def execute(self) -> None:
         input_str = self.input_str.value
-        print("Hello" + input_str)
+        print("Hello " + input_str)

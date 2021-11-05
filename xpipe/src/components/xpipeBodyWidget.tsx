@@ -152,7 +152,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [displaySavedAndCompiled, setDisplaySavedAndCompiled] = useState(false);
 	const [displayDebug, setDisplayDebug] = useState(false);
 	const [displayHyperparameter, setDisplayHyperparameter] = useState(false);
-	const [stringNodes, setStringNodes] = useState<string[]>(["name"]);
+	const [stringNodes, setStringNodes] = useState<string[]>(["experiment name"]);
 	const [intNodes, setIntNodes] = useState<string[]>([]);
 	const [floatNodes, setFloatNodes] = useState<string[]>([]);
 	const [boolNodes, setBoolNodes] = useState<string[]>([]);
@@ -410,8 +410,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				for (let i = 0; i < stringNodes.length; i++) {
 					let stringParam = stringNodes[i].replace(/\s+/g, "_");
 					stringParam = stringParam.toLowerCase();
-					let dateTimeStr = "\"\%Y-\%m-\%d \%H:\%M:\%S\""
-					pythonCode += '    ' + "parser.add_argument('--" + stringParam + "', default=datetime.now().strftime("+ dateTimeStr+ "), type=str)\n";
+
+					if (stringParam == 'experiment_name'){
+						let dateTimeStr = "\"\%Y-\%m-\%d \%H:\%M:\%S\""
+						pythonCode += '    ' + "parser.add_argument('--" + stringParam + "', default=datetime.now().strftime("+ dateTimeStr+ "), type=str)\n";
+					}else{
+						pythonCode += '    ' + "parser.add_argument('--" + stringParam + "', default='test', type=str)\n";
+					}
 				}
 			}
 
@@ -729,7 +734,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			setNodesColor(nodeProperty);
 
 		} else {
-			setStringNodes(["name"]);
+			setStringNodes(["experiment name"]);
 			setIntNodes([]);
 			setFloatNodes([]);
 			setBoolNodes([]);
@@ -762,13 +767,28 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			let commandStr = ' ';
 
 			stringNodes.forEach((param) => {
-				xpipeLogger.info(param + ": " + dialogResult["value"][param]);
-				if(dialogResult["value"][param]){
-					let filteredParam = param.replace(/\s+/g, "_");
-					filteredParam = filteredParam.toLowerCase();
-					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] +' ';
-				}
-			});
+                if (param == 'experiment name'){
+					var dt = new Date();
+
+					let dateTime = `${
+						dt.getFullYear().toString().padStart(4, '0')}-${(
+						dt.getMonth()+1).toString().padStart(2, '0')}-${
+    					dt.getDate().toString().padStart(2, '0')} ${
+    					dt.getHours().toString().padStart(2, '0')}:${
+    					dt.getMinutes().toString().padStart(2, '0')}:${
+    					dt.getSeconds().toString().padStart(2, '0')}`
+                    
+                    xpipeLogger.info(param + ": " + dateTime);
+                }
+                else{
+                    if(dialogResult["value"][param]){
+						xpipeLogger.info(param + ": " + dialogResult["value"][param]);
+                        let filteredParam = param.replace(/\s+/g, "_");
+                        filteredParam = filteredParam.toLowerCase();
+                        commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] +' ';
+                    }
+                }
+            });
 
 			if (boolNodes){
 				boolNodes.forEach((param) => {
