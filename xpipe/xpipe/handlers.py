@@ -100,8 +100,14 @@ class CompileFileRouteHandler(APIHandler):
     @tornado.web.authenticated
     def post(self):
         input_data = self.get_json_body()
+
+        try:
+            python_script = input_data["compilePythonScript"]
+        except:
+            python_script = ""
+
         f = open(input_data["currentPath"], "w")
-        f.write('')
+        f.write(python_script)
         f.close()
         data = {"message": "completed"}
 

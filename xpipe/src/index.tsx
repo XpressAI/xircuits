@@ -252,8 +252,8 @@ const xpipe: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    async function requestToGenerateArbitraryFile(path: string) {
-      const dataToSend = { "currentPath": path.split(".xpipe")[0] + ".py" };
+    async function requestToGenerateArbitraryFile(path: string, pythonScript: string) {
+      const dataToSend = { "currentPath": path.split(".xpipe")[0] + ".py", "compilePythonScript": pythonScript};
 
       try {
         const server_reply = await requestAPI<any>('file/generate', {
@@ -273,22 +273,17 @@ const xpipe: JupyterFrontEndPlugin<void> = {
       execute: async args => {
         const current_path = tracker.currentWidget.context.path;
         const path = current_path;
-        const request = await requestToGenerateArbitraryFile(path);// send this file and create new file
+        const message = typeof args['pythonCode'] === 'undefined' ? '' : (args['pythonCode'] as string);
+        const request = await requestToGenerateArbitraryFile(path, message); // send this file and create new file
+        
         if (request["message"] == "completed") {
           const model_path = current_path.split(".xpipe")[0] + ".py";
-          const message = typeof args['pythonCode'] === 'undefined' ? '' : (args['pythonCode'] as string);
-          const newWidget = await app.commands.execute(
+          await app.commands.execute(
             commandIDs.openDocManager,
             {
               path: model_path
             }
           );
-          newWidget.context.ready.then(() => {
-            newWidget.context.model.fromString(message);
-            app.commands.execute(commandIDs.saveDocManager, {
-              path: model_path
-            });
-          });
         } else {
           alert("Failed to generate arbitrary file!");
         }
