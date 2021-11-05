@@ -475,14 +475,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return true;
 	}
 
-	const handleSaveClick = () => {
+	const handleSaveClick = async () => {
 		// Only save xpipe if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
 
-		setInitialize(true);
+		await setInitialize(true);
 		setSaved(true);
 		let currentModel = diagramEngine.getModel().serialize();
 		context.model.setSerializedModel(currentModel);
@@ -570,7 +570,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				commands.execute(commandIDs.executeToOutputPanel, { runCommand });
 			}
 		}else {
-			alert("Please compile before running.");
+			alert("Please save and compile before running.");
 		}
 	}
 	
@@ -1182,6 +1182,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							diagramEngine.getModel().addNode(node);
 							node.registerListener({
 								entityRemoved: () => {
+									setInitialize(false);
 									setSaved(false);
 									setCompiled(false);
 								}
@@ -1189,6 +1190,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							console.log("Updating doc context due to drop event!")
 							let currentModel = diagramEngine.getModel().serialize();
 							context.model.setSerializedModel(currentModel);
+							setInitialize(false);
+							setSaved(false);
+							setCompiled(false);
 							forceUpdate();
 						}
 					}}
