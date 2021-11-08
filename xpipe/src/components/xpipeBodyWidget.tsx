@@ -693,9 +693,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
+		debugger;
+		let allNodes = diagramEngine.getModel().getNodes();
+		allNodes[1].getOptions().extras["borderColor"]="red";
+		allNodes[1].getOptions().extras["tip"]="error happen";
 
-		alert("Testing")
-		commands.execute('server:get-file');
+		alert("Testing");
+		//commands.execute('server:get-file');
 	}
 
 	useEffect(() => {

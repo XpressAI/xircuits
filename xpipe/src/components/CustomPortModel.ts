@@ -12,7 +12,11 @@ export  class CustomPortModel extends DefaultPortModel  {
     canLinkToPort(port: PortModel): boolean {
         if (port instanceof DefaultPortModel) {
             if(this.options.in === port.getOptions().in){
+                port.getNode().getOptions().extras["borderColor"]="red";
+                port.getNode().getOptions().extras["tip"]="in not connected to in";
+                port.getNode().setSelected(true);
                 console.log("in not connected to in");
+                // tested
                 return false;
             }
         }
@@ -27,13 +31,20 @@ export  class CustomPortModel extends DefaultPortModel  {
         let canTriangleLinkToTriangle = this.canTriangleLinkToTriangle(this, port);
 
         if (canTriangleLinkToTriangle == false){
+            port.getNode().getOptions().extras["borderColor"]="red";
+            port.getNode().getOptions().extras["tip"]="Triangle must be linked to triangle";
+            port.getNode().setSelected(true);
             console.log("triangle to triangle failed.");
+            //tested
             return false;
         }
 
         let checkLinkDirection = this.checkLinkDirection(this, port);
 
         if (checkLinkDirection == false){
+            port.getNode().getOptions().extras["borderColor"]="red";
+            port.getNode().getOptions().extras["tip"]="Port should be created from outPort [right] to inPort [left]";
+            port.getNode().setSelected(true);
             console.log("Port should be created from outPort [right] to inPort [left]");
             return false;
         }
@@ -44,7 +55,9 @@ export  class CustomPortModel extends DefaultPortModel  {
             //console.log("Loop detected.");
             return false;
         }
-
+        debugger;
+        port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
+        delete port.getNode().getOptions().extras["tip"];
         return true;
     }
 
@@ -66,14 +79,18 @@ export  class CustomPortModel extends DefaultPortModel  {
             console.log("port name: ", thisName);
             console.log("parameter port: ", port.getNode().getInPorts());
             if (Object.keys(port.getLinks()).length > 0){
-                console.log("port has other link.");
-               return false;
+                debugger;
+		        port.getNode().getOptions().extras["borderColor"]="red";
+		        port.getNode().getOptions().extras["tip"]="Port has other link";
+                port.getNode().setSelected(true);
+                return false;
             }
 
-            console.log("Is correct node Model Type");
 
             if (!thisName.startsWith("parameter")){
-                console.log("port linked not parameter.");
+		        port.getNode().getOptions().extras["borderColor"]="red";
+		        port.getNode().getOptions().extras["tip"]="Port linked is not parameter, please link a non parameter node to it";
+                port.getNode().setSelected(true);
                 return false;
             }
 
@@ -89,19 +106,30 @@ export  class CustomPortModel extends DefaultPortModel  {
             let regEx = /\-([^-]+)\-/;
             let result = thisLinkedName.match(regEx);
 
-            console.log("thisLinkedName ", thisLinkedName)
-            console.log("result ", result)
-
             if(thisNodeModelType != result[1]){
-                console.log("thisNodeModelType ", thisNodeModelType)
-                console.log("result[1] ",result[1])
-                console.log("port linked not correct type.");
+		        port.getNode().getOptions().extras["borderColor"]="red";
+		        port.getNode().getOptions().extras["tip"]="Port linked not correct data type (" + result[1] +")";
+                port.getNode().setSelected(true);
+                //tested - add stuff
                 return false;
             }
 
         }else{
-            return(!(thisName.startsWith("parameter")) && !(Object.keys(port.getLinks()).length > 0));
+            if (thisName.startsWith("parameter")){
+		        port.getNode().getOptions().extras["borderColor"]="red";
+		        port.getNode().getOptions().extras["tip"]= "Node link to this port must be a hyperparameter/literal";
+                port.getNode().setSelected(true);
+                return false;
+            }else if(Object.keys(port.getLinks()).length > 0){
+		        port.getNode().getOptions().extras["borderColor"]="red";
+		        port.getNode().getOptions().extras["tip"]= "Port has link, please delete the current link to proceed";
+                port.getNode().setSelected(true);
+                return false;
+            }
+            //return(!(thisName.startsWith("parameter")) && !(Object.keys(port.getLinks()).length > 0));
         }
+        port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
+        delete port.getNode().getOptions().extras["tip"];
         return true;
     }
 
@@ -123,10 +151,14 @@ export  class CustomPortModel extends DefaultPortModel  {
         let thisNodeModelType = thisNode.getOptions()["extras"]["type"];
 
         if (this.isParameterNode(thisNodeModelType)){
+            port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
+            delete port.getNode().getOptions().extras["tip"];
             return true;
         }
 
         if (!(thisPortLabel.endsWith('▶')) && portLabel != '▶'){
+            port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
+            delete port.getNode().getOptions().extras["tip"];
             return true;
         }else{
             return (portLabel === '▶' && thisPortLabel.endsWith('▶') && !(Object.keys(thisPort.getLinks()).length > 1));
