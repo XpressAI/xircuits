@@ -4,7 +4,11 @@ import { DiagramEngine } from '@projectstorm/react-diagrams-core';
 
 import { DefaultNodeModel ,DefaultPortLabel} from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
-import ToolTip from 'react-portal-tooltip'
+import "react-image-gallery/styles/css/image-gallery.css";
+import ImageGallery from 'react-image-gallery';
+import ToolTip from 'react-portal-tooltip';
+import { Pagination } from "krc-pagination";
+import 'krc-pagination/styles.css';
 
 var S;
 (function (S) {
@@ -74,6 +78,20 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
 
         isTooltipActive: false,
 
+        imageGalleryItems:[
+        {
+            original: 'https://picsum.photos/id/1018/1000/600/',
+            thumbnail: 'https://picsum.photos/id/1018/250/150/'
+        },
+        {
+            original: 'https://picsum.photos/id/1015/1000/600/',
+            thumbnail: 'https://picsum.photos/id/1015/250/150/'
+        },
+        {
+            original: 'https://picsum.photos/id/1019/1000/600/',
+            thumbnail: 'https://picsum.photos/id/1019/250/150/'
+        },
+       ]
     };
 
     showTooltip() {
@@ -83,21 +101,18 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         this.setState({isTooltipActive: false})
     }
 
+    /**
+     * load more data from server when page changed
+     * @param e
+     */
+    onPageChanged = e => {
+        console.log(e.currentPage);
 
+        let imageGalleryItems = this.props.node.getOptions().extras["imageGalleryItems"];
+
+        //update imageGalleryItems after data loaded from server
+    };
     render() {
-
-        let style = {
-            style: {
-                background: 'rgba(255,255,255,.8)',
-                padding: 20,
-                boxShadow: '5px 5px 3px rgba(0,0,0,.5)'
-            },
-            arrowStyle: {
-                position: 'absolute',
-                color: 'rgba(255,255,255,.8)',
-                borderColor: false
-            }
-        }
 
         if(this.props.node.getOptions().extras["tip"]!=undefined&&this.props.node.getOptions().extras["tip"]!=""){
             return (
@@ -109,7 +124,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                     data-default-node-name={this.props.node.getOptions().name}
                     selected={this.props.node.isSelected()}
                     background={this.props.node.getOptions().color}>
-                    <ToolTip active={this.state.isTooltipActive} position="top" arrow="center" parent={this.element} style={style}>
+                    <ToolTip active={this.state.isTooltipActive} position="top" arrow="center" parent={this.element}>
                         <p>{this.props.node.getOptions().extras["tip"]}</p>
                     </ToolTip>
                     <S.Title>
@@ -122,7 +137,40 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                 </S.Node>
             );
         }
-
+        else if(this.props.node.getOptions().extras["imageGalleryItems"] != undefined){
+            return (
+                <S.Node
+                    onMouseEnter={this.showTooltip.bind(this)}
+                    onMouseLeave={this.hideTooltip.bind(this)}
+                    ref={(element) => { this.element = element }}
+                    borderColor={this.props.node.getOptions().extras["borderColor"]}
+                    data-default-node-name={this.props.node.getOptions().name}
+                    selected={this.props.node.isSelected()}
+                    background={this.props.node.getOptions().color}>
+                    <ToolTip active={this.state.isTooltipActive} position="top" arrow="center" parent={this.element}>
+                        <ImageGallery items={this.state.imageGalleryItems} />
+                        {/* Get the current image from the node when getting response from API endpoint
+                        <S.ImageGalleryContainer>
+                        <ImageGallery items={this.props.node.getOptions().extras["imageGalleryItems"] || null?}  />
+                        </S.ImageGalleryContainer> 
+                       */}
+                        <Pagination
+                            totalRecords={100}
+                            pageLimit={5}
+                            pageNeighbours={1}
+                            onPageChanged={this.onPageChanged}
+                        />
+                    </ToolTip>
+                    <S.Title>
+                        <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
+                    </S.Title>
+                    <S.Ports>
+                        <S.PortsContainer>{_.map(this.props.node.getInPorts(), this.generatePort)}</S.PortsContainer>
+                        <S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
+                    </S.Ports>
+                </S.Node>
+            );
+        }
         return (
             <S.Node
                 borderColor={this.props.node.getOptions().extras["borderColor"]}
@@ -137,6 +185,6 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
               <S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
             </S.Ports>
             </S.Node>
-    );
+        );
     }
 }
