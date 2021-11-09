@@ -351,7 +351,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 											if (sourceNodeType == 'string'){
 												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "'" + sourcePortLabel + "'\n";
-											}else {
+											}
+											
+											else if (sourceNodeType == 'list'){
+												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "[" + sourcePortLabel + "]" +"\n";
+											}
+											
+											else if (sourceNodeType == 'tuple'){
+												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "(" + sourcePortLabel + ")" + "\n";
+											}
+
+											else {
 												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + sourcePortLabel + "\n";
 											}
 
@@ -1103,6 +1113,37 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 									}
 
+								} else if (data.type === 'tuple') {
+
+									if ((data.name).startsWith("Literal")) {
+
+										let theResponse = window.prompt('Enter Tuple Values (Without () Brackets):');
+										node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
+										node.addOutPortEnhance(theResponse, 'out-0');
+
+									} else {
+
+										let theResponse = window.prompt('notice', 'Enter Tuple Name (Without Quotes):');
+										node = new CustomNodeModel({ name: "Hyperparameter (Tuple): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
+										node.addOutPortEnhance('▶', 'parameter-out-0');
+									}
+
+								} else if (data.type === 'list') {
+
+									if ((data.name).startsWith("Literal")) {
+
+										let theResponse = window.prompt('Enter List Values (Without [] Brackets):');
+										node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
+										node.addOutPortEnhance(theResponse, 'out-0');
+
+									} else {
+
+										let theResponse = window.prompt('notice', 'Enter List Name (Without Quotes):');
+										node = new CustomNodeModel({ name: "Hyperparameter (List): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
+										node.addOutPortEnhance('▶', 'parameter-out-0');
+
+									}
+
 								} else if (data.type === 'debug') {
 									node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
 									node.addInPortEnhance('▶', 'in-0');
@@ -1148,6 +1189,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 												} else if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[float]")) {
 													in_str = "parameter-float-in-" + in_count;
 													in_count += 1;
+												} else if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[list]")) {
+													in_str = "parameter-list-in-" + in_count;
+													in_count += 1;
+												} else if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[tuple]")) {
+													in_str = "parameter-tuple-in-" + in_count;
+													in_count += 1;
 												} else {
 													in_str = "in-" + in_count;
 													in_count += 1;
@@ -1171,6 +1218,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 											} else if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[float]")) {
 												in_str = "parameter-float-in-" + in_count;
 												in_count += 1;
+											} else if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[list]")) {
+												in_str = "parameter-list-in-" + in_count;
+												in_count += 1;
+											} else if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[tuple]")) {
+												in_str = "parameter-tuple-in-" + in_count;
+												in_count += 1;											
 											} else {
 												in_str = "in-" + in_count;
 												in_count += 1;

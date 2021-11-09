@@ -142,7 +142,9 @@ export  class CustomPortModel extends DefaultPortModel  {
             nodeModelType === 'boolean' ||
             nodeModelType === 'int' ||
             nodeModelType === 'float' ||
-            nodeModelType === 'string'
+            nodeModelType === 'string' ||
+            nodeModelType === 'list' ||
+            nodeModelType === 'tuple'
         );
     }
 
@@ -206,10 +208,12 @@ export  class CustomPortModel extends DefaultPortModel  {
 
         while ((sourceNode != null) &&
                 nodeType != 'Start' &&
-				nodeType != 'boolean' &&
-				nodeType != 'int' &&
-				nodeType != 'float' &&
-				nodeType != 'string'){
+                nodeType != 'boolean' &&
+                nodeType != 'int' &&
+                nodeType != 'float' &&
+                nodeType != 'string' &&
+                nodeType != 'list' &&
+                nodeType != 'tuple'){
             //console.log("Curent sourceNode:", sourceNode.getOptions()["name"]);
             let inPorts = sourceNode.getInPorts();
             
