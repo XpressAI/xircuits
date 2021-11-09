@@ -58,6 +58,8 @@ export  class CustomPortModel extends DefaultPortModel  {
         debugger;
         port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
         delete port.getNode().getOptions().extras["tip"];
+        this.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
+        delete this.getNode().getOptions().extras["tip"];
         return true;
     }
 
@@ -130,6 +132,8 @@ export  class CustomPortModel extends DefaultPortModel  {
         }
         port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
         delete port.getNode().getOptions().extras["tip"];
+        thisPort.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
+        delete thisPort.getNode().getOptions().extras["tip"];
         return true;
     }
 
@@ -153,12 +157,16 @@ export  class CustomPortModel extends DefaultPortModel  {
         if (this.isParameterNode(thisNodeModelType)){
             port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
             delete port.getNode().getOptions().extras["tip"];
+            thisPort.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
+            delete thisPort.getNode().getOptions().extras["tip"];
             return true;
         }
 
         if (!(thisPortLabel.endsWith('▶')) && portLabel != '▶'){
             port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
             delete port.getNode().getOptions().extras["tip"];
+            thisPort.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
+            delete thisPort.getNode().getOptions().extras["tip"];
             return true;
         }else{
             return (portLabel === '▶' && thisPortLabel.endsWith('▶') && !(Object.keys(thisPort.getLinks()).length > 1));
