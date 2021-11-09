@@ -64,11 +64,17 @@
     "@projectstorm/react-diagrams-defaults": "^6.6.1",
     "@projectstorm/react-diagrams-routing": "^6.6.1",
     "dagre": "^0.8.5",
+    "krc-pagination": "^1.0.1",
     "node": "^16.9.1",
     "pathfinding": "^0.4.18",
     "paths-js": "^0.4.11",
+    "rc-dialog": "^8.6.0",
     "react-accessible-accordion": "^4.0.0",
+    "react-draggable": "^4.4.4",
+    "react-image-gallery": "^1.2.7",
     "react-numeric-input": "^2.2.3",
+    "react-portal-tooltip": "^2.4.7",
+    "react-sanity-pagination": "^2.0.2",
     "react-switch": "^6.0.0"
   },
   "devDependencies": {

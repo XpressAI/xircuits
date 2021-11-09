@@ -26,7 +26,9 @@ import ComponentList from '../components_xpipe/Component';
 import { formDialogWidget } from '../dialog/formDialogwidget';
 import { showFormDialog } from '../dialog/FormDialog';
 import { RunDialog } from '../dialog/RunDialog';
-
+import 'rc-dialog/assets/bootstrap.css';
+import Draggable from 'react-draggable';
+import RcDialog from 'rc-dialog';
 
 
 export interface BodyWidgetProps {
@@ -162,6 +164,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [boolNodesValue, setBoolNodesValue] = useState<boolean[]>([false]);
 	const [componentList, setComponentList] = useState([]);
 	const [runOnce, setRunOnce] = useState(false);
+	const [displayRcDialog, setDisplayRcDialog] = useState(false);
+	const [disableRcDialog, setDisableRcDialog] = useState(false);
 	const xpipeLogger = new Log(app);
 
 
@@ -693,9 +697,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
+		debugger;
+		let allNodes = diagramEngine.getModel().getNodes();
+		allNodes[1].getOptions().extras["imageGalleryItems"] = "xxx";
 
-		alert("Testing")
-		commands.execute('server:get-file');
+		//allNodes[i].getOptions().extras["imageGalleryItems"] = response;
+		alert("Testing");
+		//commands.execute('server:get-file');
+	}
+	
+	const hideRcDialog = () => {
+		setDisplayRcDialog(false);
 	}
 
 	useEffect(() => {
@@ -959,6 +971,35 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	
 	return (
 		<Body>
+			<Header>
+				<RcDialog
+					visible={displayRcDialog}
+					animation="slide-fade"
+					maskAnimation="fade"
+					onClose={hideRcDialog}
+					style={{ width: 600 }}
+					title={(
+						<div
+							style={{
+								width: '100%',
+								cursor: 'pointer',
+							}}
+							onMouseOver={() => {
+								if (disableRcDialog){
+									setDisableRcDialog(false)
+								}
+							}}
+							onMouseOut={() => {
+								setDisableRcDialog(true)
+							}}
+							onFocus={ () => {} }
+							onBlur={ () => {}}
+							// end
+						>Image Viewer</div>
+					)}
+					modalRender={modal => <Draggable disabled={disableRcDialog}>{modal}</Draggable>}>
+				</RcDialog>
+			</Header>
 			<Content>
 				<Layer
 					onDrop={(event) => {

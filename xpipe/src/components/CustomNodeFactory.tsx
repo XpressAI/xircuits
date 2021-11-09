@@ -3,7 +3,7 @@ import { CustomNodeModel } from './CustomNodeModel';
 
 import {AbstractReactFactory, GenerateModelEvent, GenerateWidgetEvent} from '@projectstorm/react-canvas-core';
 import { DiagramEngine } from '@projectstorm/react-diagrams-core';
-import { DefaultNodeWidget } from '@projectstorm/react-diagrams';
+import {CustomNodeWidget} from "./CustomNodeWidget";
 
 export class CustomNodeFactory extends AbstractReactFactory<CustomNodeModel, DiagramEngine> {
 	constructor() {
@@ -15,6 +15,6 @@ export class CustomNodeFactory extends AbstractReactFactory<CustomNodeModel, Dia
 	}
 
 	generateReactWidget(event: GenerateWidgetEvent<any>): JSX.Element {
-		return <DefaultNodeWidget engine={this.engine as DiagramEngine} node={event.model} />;
+		return <CustomNodeWidget engine={this.engine as DiagramEngine} node={event.model} />;
 	}
 }
