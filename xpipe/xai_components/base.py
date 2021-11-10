@@ -49,6 +49,7 @@ class Component(BaseComponent):
     next: BaseComponent
 
     def do(self) -> BaseComponent:
+        print(f"Executing: {self.__class__.__name__}")
         self.execute()
         return self.next
 
