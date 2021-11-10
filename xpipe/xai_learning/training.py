@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Tuple, Dict
+import tensorflow as tf
 from tensorflow import keras
+from tensorflow.keras import datasets, layers, models
 import numpy as np
 from xai_components.base import InArg, OutArg, Component
 from sklearn.model_selection import train_test_split
@@ -17,6 +19,7 @@ class ReadDataSet(Component):
         self.dataset = OutArg.empty()
 
     def execute(self) -> None:
+
         if self.dataset_name.value == 'mnist':
             (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
 
@@ -31,8 +34,49 @@ class ReadDataSet(Component):
             new_y = np.concatenate((y_train, y_test), axis=None)
             self.dataset.value = (new_x, new_y)
 
+        elif self.dataset_name.value == 'fashion_mnist':
+            (x_train, y_train), (x_test, y_test) = keras.datasets.fashion_mnist.load_data()
 
-class ResizeImageData(Component):
+            # Scale images to the [0, 1] range
+            x_train = x_train.astype("float32") / 255
+            x_test = x_test.astype("float32") / 255
+            # Make sure images have shape (28, 28, 1)
+            x_train = np.expand_dims(x_train, -1)
+            x_test = np.expand_dims(x_test, -1)
+
+            new_x = np.vstack((x_train, x_test))
+            new_y = np.concatenate((y_train, y_test), axis=None)
+            self.dataset.value = (new_x, new_y)
+
+        elif self.dataset_name.value == 'cifar10':
+            (x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
+
+            # Normalize pixel values to be between 0 and 1
+            x_train, x_test = x_train / 255.0, x_test / 255.0
+
+            new_x = np.vstack((x_train, x_test))
+            new_y = np.concatenate((y_train, y_test), axis=None)
+
+            self.dataset.value = (new_x, new_y)
+
+        elif self.dataset_name.value == 'cifar100':
+            (x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
+
+            # Normalize pixel values to be between 0 and 1
+            x_train, x_test = x_train / 255.0, x_test / 255.0
+
+            new_x = np.vstack((x_train, x_test))
+            new_y = np.concatenate((y_train, y_test), axis=None)
+
+            self.dataset.value = (new_x, new_y)
+
+        else:
+            print("Keras dataset was not found!")
+
+
+
+class FlattenImageData(Component):
+
     dataset: InArg[Tuple[np.array, np.array]]
     resized_dataset: OutArg[Tuple[np.array, np.array]]
 
@@ -41,25 +85,37 @@ class ResizeImageData(Component):
         self.resized_dataset = OutArg.empty()
 
     def execute(self) -> None:
+
         x = self.dataset.value[0]
-        x = x.reshape(x.shape[0], x.shape[1] * x.shape[2])
+        x = x.reshape(x.shape[0], -1)
 
         self.resized_dataset.value = (x, self.dataset.value[1])
 
 
 class TrainTestSplit(Component):
     dataset: InArg[Tuple[np.array, np.array]]
-
+    train_split: InArg[float]
+    random_state: InArg[int]
+    shuffle: InArg[bool]
     train: OutArg[Tuple[np.array, np.array]]
     test: OutArg[Tuple[np.array, np.array]]
 
     def __init__(self):
         self.dataset = InArg.empty()
+        self.train_split = InArg.empty()
+        self.random_state = InArg.empty()
+        self.shuffle = InArg.empty()
         self.train = OutArg.empty()
         self.test = OutArg.empty()
 
     def execute(self) -> None:
-        splits = train_test_split(self.dataset.value[0], self.dataset.value[1])
+
+        train_split = self.train_split.value if self.train_split.value else 0.75
+        shuffle = self.shuffle.value if self.shuffle.value else True
+        random_state = self.random_state.value if self.random_state.value else None
+        print(f"Split Parameters:\nTrain Split {train_split} \nShuffle: {shuffle} \nRandom State: {random_state}")
+        splits = train_test_split(self.dataset.value[0], self.dataset.value[1], test_size=train_split, shuffle=shuffle, random_state=random_state)
+        
         train_x = splits[0]
         test_x = splits[1]
         train_y = splits[2]
@@ -71,8 +127,7 @@ class TrainTestSplit(Component):
         self.train.value = train
         self.test.value = test
 
-
-class CreateModel(Component):
+class Create1DInputModel(Component):
     training_data: InArg[Tuple[np.array, np.array]]
 
     model: OutArg[keras.Sequential]
@@ -82,6 +137,7 @@ class CreateModel(Component):
         self.model = OutArg.empty()
 
     def execute(self) -> None:
+
         x_shape = self.training_data.value[0].shape
         y_shape = self.training_data.value[1].shape
 
@@ -90,6 +146,42 @@ class CreateModel(Component):
             keras.layers.Dropout(rate=0.5),
             keras.layers.Dense(y_shape[1], activation='softmax')
         ])
+
+        model.compile(
+            loss='categorical_crossentropy',
+            optimizer='adam',
+            metrics=['accuracy']
+        )
+
+        self.model.value = model
+
+class Create2DInputModel(Component):
+    training_data: InArg[Tuple[np.array, np.array]]
+
+    model: OutArg[keras.Sequential]
+
+    def __init__(self):
+        self.training_data = InArg.empty()
+        self.model = OutArg.empty()
+
+    def execute(self) -> None:
+
+        x_shape = self.training_data.value[0].shape[1:]
+        y_shape = self.training_data.value[1].shape[1]
+
+
+        model = keras.Sequential(
+            [
+                keras.Input(shape=x_shape),
+                layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
+                layers.MaxPooling2D(pool_size=(2, 2)),
+                layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
+                layers.MaxPooling2D(pool_size=(2, 2)),
+                layers.Flatten(),
+                layers.Dropout(0.5),
+                layers.Dense(y_shape, activation="softmax"),
+            ]
+        )
 
         model.compile(
             loss='categorical_crossentropy',
@@ -114,6 +206,7 @@ class TrainImageClassifier(Component):
         self.trained_model = OutArg.empty()
 
     def execute(self) -> None:
+
         self.model.value.fit(
             self.training_data.value[0],
             self.training_data.value[1],
@@ -141,6 +234,7 @@ class EvaluateAccuracy(Component):
             'loss': str(loss),
             'accuracy': str(acc)
         }
+        print(metrics)
 
         self.metrics.value = metrics
 
