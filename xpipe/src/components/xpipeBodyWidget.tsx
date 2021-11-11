@@ -361,6 +361,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "(" + sourcePortLabel + ")" + "\n";
 											}
 
+											else if (sourceNodeType == 'dict'){
+												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "{" + sourcePortLabel + "}" + "\n";
+											}
+
 											else {
 												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + sourcePortLabel + "\n";
 											}
@@ -1112,6 +1116,22 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 										node.addOutPortEnhance('▶', 'parameter-out-0');
 
 									}
+									
+								} else if (data.type === 'list') {
+
+									if ((data.name).startsWith("Literal")) {
+
+										let theResponse = window.prompt('Enter List Values (Without [] Brackets):');
+										node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
+										node.addOutPortEnhance(theResponse, 'out-0');
+
+									} else {
+
+										let theResponse = window.prompt('notice', 'Enter List Name (Without Quotes):');
+										node = new CustomNodeModel({ name: "Hyperparameter (List): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
+										node.addOutPortEnhance('▶', 'parameter-out-0');
+
+									}
 
 								} else if (data.type === 'tuple') {
 
@@ -1128,18 +1148,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 										node.addOutPortEnhance('▶', 'parameter-out-0');
 									}
 
-								} else if (data.type === 'list') {
+								} else if (data.type === 'dict') {
 
 									if ((data.name).startsWith("Literal")) {
 
-										let theResponse = window.prompt('Enter List Values (Without [] Brackets):');
+										let theResponse = window.prompt('Enter Dict Values (Without {} Brackets):');
 										node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
 										node.addOutPortEnhance(theResponse, 'out-0');
 
 									} else {
 
-										let theResponse = window.prompt('notice', 'Enter List Name (Without Quotes):');
-										node = new CustomNodeModel({ name: "Hyperparameter (List): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
+										let theResponse = window.prompt('notice', 'Enter Dict Name (Without Quotes):');
+										node = new CustomNodeModel({ name: "Hyperparameter (Dict): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
 										node.addOutPortEnhance('▶', 'parameter-out-0');
 
 									}
@@ -1195,6 +1215,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 												} else if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[tuple]")) {
 													in_str = "parameter-tuple-in-" + in_count;
 													in_count += 1;
+												} else if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[dict]")) {
+													in_str = "parameter-dict-in-" + in_count;
+													in_count += 1;
 												} else {
 													in_str = "in-" + in_count;
 													in_count += 1;
@@ -1223,6 +1246,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 												in_count += 1;
 											} else if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[tuple]")) {
 												in_str = "parameter-tuple-in-" + in_count;
+												in_count += 1;
+											} else if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[dict]")) {
+												in_str = "parameter-dict-in-" + in_count;
 												in_count += 1;											
 											} else {
 												in_str = "in-" + in_count;

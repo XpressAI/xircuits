@@ -144,7 +144,8 @@ export  class CustomPortModel extends DefaultPortModel  {
             nodeModelType === 'float' ||
             nodeModelType === 'string' ||
             nodeModelType === 'list' ||
-            nodeModelType === 'tuple'
+            nodeModelType === 'tuple' ||
+            nodeModelType === 'dict'
         );
     }
 
@@ -213,7 +214,8 @@ export  class CustomPortModel extends DefaultPortModel  {
                 nodeType != 'float' &&
                 nodeType != 'string' &&
                 nodeType != 'list' &&
-                nodeType != 'tuple'){
+                nodeType != 'tuple' &&
+                nodeType != 'dict'){
             //console.log("Curent sourceNode:", sourceNode.getOptions()["name"]);
             let inPorts = sourceNode.getInPorts();
             
