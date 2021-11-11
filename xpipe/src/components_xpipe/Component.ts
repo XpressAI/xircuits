@@ -231,7 +231,9 @@ function getVariableType(input: string) {
     return 'list'
     } else if (input.includes("tuple")) {
     return 'tuple'
-    }   
+    } else if (input.includes("dict")) {
+    return 'dict'
+    }
 }
 
 function getComponentType(input: string, header: string) {
@@ -337,6 +339,7 @@ async function get_all_components_method(serviceManager: ServiceManager, basePat
         { task: "Literal False", id: 13 },
         { task: "Literal List", id: 14 },
         { task: "Literal Tuple", id: 15 },
+        { task: "Literal Dict", id: 16 },
     ];
 
     const colorList_adv = [
