@@ -1,5 +1,4 @@
-from pyspark.sql import SparkSession
-from pyspark.sql import Row
+from pyspark.ml.classification import LogisticRegression
 
 from datetime import datetime, date
 import pandas as pd
@@ -64,7 +63,7 @@ class SparkLoadLIBSVM(Component):
         options = self.options.value if self.options.value else ""
 
         if options:
-            df = spark.read.format("libsvm").option("numFeatures", "780").load(filepath)
+            df = spark.read.format("libsvm").option(*options).load(filepath)
         
         else:
             df = spark.read.format("libsvm").load(filepath)
@@ -73,3 +72,40 @@ class SparkLoadLIBSVM(Component):
 
         self.out_sparksession.value = spark
         self.out_dataframe.value = df
+
+
+class SparkLogisticRegression(Component):
+
+    train_dataframe: InArg[str]
+    family: InArg[str]
+    options: InArg[dict]
+
+    model: OutArg[any]
+
+    def __init__(self):
+
+        self.train_dataframe = InArg(None)
+        self.family = InArg(None)
+        self.options = InArg(None)
+
+        self.model = OutArg(None)
+
+
+    def execute(self) -> None:
+
+        training = self.train_dataframe.value
+        options = self.options.value if self.options.value else {maxIter:10, regParam:0.3, elasticNetParam:0.8}
+        if self.family.value:
+            #You may try "multinomial" 
+            options.update({'family': self.family.value})
+        lr = LogisticRegression(**options)
+
+        # Fit the model
+        lrModel = lr.fit(training)
+
+        # Print the coefficients and intercept for logistic regression
+        print("Coefficients: " + str(lrModel.coefficients))
+        print("Intercept: " + str(lrModel.intercept))
+
+        self.model.value = lrModel
+
