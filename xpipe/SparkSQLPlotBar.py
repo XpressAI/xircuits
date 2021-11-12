@@ -1,8 +1,9 @@
 from argparse import ArgumentParser
-from xai_spark.pyspark import xSparkSession
-from xai_spark.pyspark import SparkReadCSV
-from xai_spark.pyspark import SparkSQL
-from xai_spark.pyspark import SparkVisualize
+from datetime import datetime
+from xai_spark.pyspark_core import xSparkSession
+from xai_spark.pyspark_core import SparkReadCSV
+from xai_spark.pyspark_core import SparkSQL
+from xai_spark.pyspark_core import SparkVisualize
 
 def main(args):
     c_1 = xSparkSession()
@@ -31,5 +32,5 @@ def main(args):
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument('--name', default='test', type=str)
+    parser.add_argument('--experiment_name', default=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), type=str)
     main(parser.parse_args())
