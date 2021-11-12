@@ -217,13 +217,6 @@ const xpipe: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    // Add command signal to toggle next node
-    app.commands.addCommand(commandIDs.nextNode, {
-      execute: args => {
-        widgetFactory.nextNodeSignal.emit(args);
-      }
-    });
-
     // Add command signal to test xpipe
     app.commands.addCommand(commandIDs.testXpipe, {
       execute: args => {

@@ -50,9 +50,15 @@ export interface BodyWidgetProps {
 	runXpipeSignal: Signal<XPipePanel, any>;
 	debugXpipeSignal: Signal<XPipePanel, any>;
 	breakpointXpipeSignal: Signal<XPipePanel, any>;
-	nextNodeSignal: Signal<XPipePanel, any>;
 	currentNodeSignal: Signal<XPipePanel, any>;
 	testXpipeSignal: Signal<XPipePanel, any>;
+	continueDebugSignal: Signal<XPipePanel, any>;
+	nextNodeDebugSignal: Signal<XPipePanel, any>;
+	stepOverDebugSignal: Signal<XPipePanel, any>;
+	terminateDebugSignal: Signal<XPipePanel, any>;
+	stepInDebugSignal: Signal<XPipePanel, any>;
+	stepOutDebugSignal: Signal<XPipePanel, any>;
+	evaluateDebugSignal: Signal<XPipePanel, any>;
 	customDeserializeModel;
 }
 
@@ -139,9 +145,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	runXpipeSignal,
 	debugXpipeSignal,
 	breakpointXpipeSignal,
-	nextNodeSignal,
 	currentNodeSignal,
 	testXpipeSignal,
+	continueDebugSignal,
+	nextNodeDebugSignal,
+	stepOverDebugSignal,
+	terminateDebugSignal,
+	stepInDebugSignal,
+	stepOutDebugSignal,
+	evaluateDebugSignal,
 	customDeserializeModel
 }) => {
 
@@ -659,6 +671,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		});
 	}
 
+	const handleToggleContinueDebug = () => {
+		// Only toggle continue if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+		alert("Continue");
+	}
+
 	const handleToggleNextNode = () => {
 		// Only toggle next node if it is currently in focus
 		// This must be first to avoid unnecessary complication
@@ -703,6 +724,51 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			alert("Finish Execution.");
 		}
 
+	}
+
+	const handleToggleStepOverDebug = () => {
+		// Only toggle step over if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+		alert("Step Over");
+	}
+
+	const handleToggleTerminateDebug = () => {
+		// Only toggle continue if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+		alert("Terminate");
+	}
+
+	const handleToggleStepInDebug = () => {
+		// Only toggle step in if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+		alert("Step In");
+	}
+
+	const handleToggleStepOutDebug = () => {
+		// Only toggle step out if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+		alert("Step Out");
+	}
+
+	const handleToggleEvaluateDebug = () => {
+		// Only toggle continue if it is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+		alert("Evaluate Code");
 	}
 
 	const handleTestClick = () => {
@@ -923,16 +989,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}, [breakpointXpipeSignal, handleToggleBreakpoint]);
 
 	useEffect(() => {
-		const handleNextNodeSignal = (): void => {
-			handleToggleNextNode();
-		};
-		nextNodeSignal.connect(handleNextNodeSignal);
-		return (): void => {
-			nextNodeSignal.disconnect(handleNextNodeSignal);
-		};
-	}, [nextNodeSignal, handleToggleNextNode]);
-
-	useEffect(() => {
 		const handleTestSignal = (): void => {
 			handleTestClick();
 		};
@@ -941,6 +997,76 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			testXpipeSignal.disconnect(handleTestSignal);
 		};
 	}, [testXpipeSignal, handleTestClick]);
+
+	useEffect(() => {
+		const handleContinueDebugSignal = (): void => {
+			handleToggleContinueDebug();
+		};
+		continueDebugSignal.connect(handleContinueDebugSignal);
+		return (): void => {
+			continueDebugSignal.disconnect(handleContinueDebugSignal);
+		};
+	}, [continueDebugSignal, handleToggleContinueDebug]);
+
+	useEffect(() => {
+		const handleNextNodeSignal = (): void => {
+			handleToggleNextNode();
+		};
+		nextNodeDebugSignal.connect(handleNextNodeSignal);
+		return (): void => {
+			nextNodeDebugSignal.disconnect(handleNextNodeSignal);
+		};
+	}, [nextNodeDebugSignal, handleToggleNextNode]);
+
+	useEffect(() => {
+		const handleStepOverSignal = (): void => {
+			handleToggleStepOverDebug();
+		};
+		stepOverDebugSignal.connect(handleStepOverSignal);
+		return (): void => {
+			stepOverDebugSignal.disconnect(handleStepOverSignal);
+		};
+	}, [stepOverDebugSignal, handleToggleStepOverDebug]);
+
+	useEffect(() => {
+		const handleTerminateSignal = (): void => {
+			handleToggleTerminateDebug();
+		};
+		terminateDebugSignal.connect(handleTerminateSignal);
+		return (): void => {
+			terminateDebugSignal.disconnect(handleTerminateSignal);
+		};
+	}, [terminateDebugSignal, handleToggleTerminateDebug]);
+
+	useEffect(() => {
+		const handleStepInSignal = (): void => {
+			handleToggleStepInDebug();
+		};
+		stepInDebugSignal.connect(handleStepInSignal);
+		return (): void => {
+			stepInDebugSignal.disconnect(handleStepInSignal);
+		};
+	}, [stepInDebugSignal, handleToggleStepInDebug]);
+
+	useEffect(() => {
+		const handleStepOutSignal = (): void => {
+			handleToggleStepOutDebug();
+		};
+		stepOutDebugSignal.connect(handleStepOutSignal);
+		return (): void => {
+			stepOutDebugSignal.disconnect(handleStepOutSignal);
+		};
+	}, [stepOutDebugSignal, handleToggleStepOutDebug]);
+
+	useEffect(() => {
+		const handleEvaluateSignal = (): void => {
+			handleToggleEvaluateDebug();
+		};
+		evaluateDebugSignal.connect(handleEvaluateSignal);
+		return (): void => {
+			evaluateDebugSignal.disconnect(handleEvaluateSignal);
+		};
+	}, [evaluateDebugSignal, handleToggleEvaluateDebug]);
 
 	const fetchComponentList = async () => {
 		const response = await ComponentList(serviceManager, "");

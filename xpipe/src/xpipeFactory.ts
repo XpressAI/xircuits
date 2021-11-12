@@ -40,9 +40,15 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
   runXpipeSignal: Signal<this, any>;
   debugXpipeSignal: Signal<this, any>;
   breakpointXpipeSignal: Signal<this, any>;
-  nextNodeSignal: Signal<this, any>;
   currentNodeSignal: Signal<this, any>;
   testXpipeSignal: Signal<this, any>;
+  continueDebugSignal: Signal<this, any>;
+  nextNodeDebugSignal: Signal<this, any>;
+  stepOverDebugSignal: Signal<this, any>;
+  terminateDebugSignal: Signal<this, any>;
+  stepInDebugSignal: Signal<this, any>;
+  stepOutDebugSignal: Signal<this, any>;
+  evaluateDebugSignal: Signal<this, any>;
 
   constructor(options: any) {
     super(options);
@@ -59,9 +65,15 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     this.runXpipeSignal = new Signal<this, any>(this);
     this.debugXpipeSignal = new Signal<this, any>(this);
     this.breakpointXpipeSignal = new Signal<this, any>(this);
-    this.nextNodeSignal = new Signal<this, any>(this);
     this.currentNodeSignal = new Signal<this, any>(this);
     this.testXpipeSignal = new Signal<this, any>(this);
+    this.continueDebugSignal = new Signal<this, any>(this);
+    this.nextNodeDebugSignal = new Signal<this, any>(this);
+    this.stepOverDebugSignal = new Signal<this, any>(this);
+    this.terminateDebugSignal = new Signal<this, any>(this);
+    this.stepInDebugSignal = new Signal<this, any>(this);
+    this.stepOutDebugSignal = new Signal<this, any>(this);
+    this.evaluateDebugSignal = new Signal<this, any>(this);
   }
 
   protected createNewWidget(context: DocumentRegistry.IContext<XPipeDocModel>): XPipeWidget {
@@ -80,9 +92,15 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
       runXpipeSignal: this.runXpipeSignal,
       debugXpipeSignal: this.debugXpipeSignal,
       breakpointXpipeSignal: this.breakpointXpipeSignal,
-      nextNodeSignal: this.nextNodeSignal,
       currentNodeSignal: this.currentNodeSignal,
-      testXpipeSignal: this.testXpipeSignal
+      testXpipeSignal: this.testXpipeSignal,
+      continueDebugSignal: this.continueDebugSignal,
+      nextNodeDebugSignal: this.nextNodeDebugSignal,
+      stepOverDebugSignal: this.stepOverDebugSignal,
+      terminateDebugSignal: this.terminateDebugSignal,
+      stepInDebugSignal: this.stepInDebugSignal,
+      stepOutDebugSignal: this.stepOutDebugSignal,
+      evaluateDebugSignal: this.evaluateDebugSignal,
     };
 
     const content = new XPipePanel(props);
