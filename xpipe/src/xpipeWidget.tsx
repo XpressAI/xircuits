@@ -101,9 +101,15 @@ export class XPipePanel extends ReactWidget {
   runXpipeSignal: Signal<this, any>;
   debugXpipeSignal: Signal<this, any>;
   breakpointXpipeSignal: Signal<this, any>;
-  nextNodeSignal: Signal<this, any>;
   currentNodeSignal: Signal<this, any>;
   testXpipeSignal: Signal<this, any>;
+  continueDebugSignal: Signal<this, any>;
+  nextNodeDebugSignal: Signal<this, any>;
+  stepOverDebugSignal: Signal<this, any>;
+  terminateDebugSignal: Signal<this, any>;
+  stepInDebugSignal: Signal<this, any>;
+  stepOutDebugSignal: Signal<this, any>;
+  evaluateDebugSignal: Signal<this, any>;
 
   activeModel: SRD.DiagramModel;
   diagramEngine: SRD.DiagramEngine;
@@ -128,9 +134,15 @@ export class XPipePanel extends ReactWidget {
     this.runXpipeSignal = options.runXpipeSignal;
     this.debugXpipeSignal = options.debugXpipeSignal;
     this.breakpointXpipeSignal = options.breakpointXpipeSignal;
-    this.nextNodeSignal = options.nextNodeSignal;
     this.currentNodeSignal = options.currentNodeSignal;
     this.testXpipeSignal = options.testXpipeSignal;
+    this.continueDebugSignal = options.continueDebugSignal;
+    this.nextNodeDebugSignal = options.nextNodeDebugSignal;
+    this.stepOverDebugSignal = options.stepOverDebugSignal;
+    this.terminateDebugSignal = options.terminateDebugSignal;
+    this.stepInDebugSignal = options.stepInDebugSignal;
+    this.stepOutDebugSignal = options.stepOutDebugSignal;
+    this.evaluateDebugSignal = options.evaluateDebugSignal;
 
     //debugger;
     console.log(this.context);
@@ -263,9 +275,15 @@ export class XPipePanel extends ReactWidget {
         runXpipeSignal={this.runXpipeSignal}
         debugXpipeSignal={this.debugXpipeSignal}
         breakpointXpipeSignal={this.breakpointXpipeSignal}
-        nextNodeSignal={this.nextNodeSignal}
         currentNodeSignal={this.currentNodeSignal}
         testXpipeSignal={this.testXpipeSignal}
+        continueDebugSignal={this.continueDebugSignal}
+        nextNodeDebugSignal={this.nextNodeDebugSignal}
+        stepOverDebugSignal={this.stepOverDebugSignal}
+        terminateDebugSignal={this.terminateDebugSignal}
+        stepInDebugSignal={this.stepInDebugSignal}
+        stepOutDebugSignal={this.stepOutDebugSignal}
+        evaluateDebugSignal={this.evaluateDebugSignal}
         customDeserializeModel={this.customDeserializeModel}
       />
     );
