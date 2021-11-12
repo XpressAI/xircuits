@@ -148,12 +148,12 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                     selected={this.props.node.isSelected()}
                     background={this.props.node.getOptions().color}>
                     <ToolTip active={this.state.isTooltipActive} position="top" arrow="center" parent={this.element}>
-                        <ImageGallery items={this.state.imageGalleryItems} />
-                        {/* Get the current image from the node when getting response from API endpoint
-                        <S.ImageGalleryContainer>
-                        <ImageGallery items={this.props.node.getOptions().extras["imageGalleryItems"] || null?}  />
+                        {/* Get the current image from the node when getting response from API endpoint */}
+                        <S.ImageGalleryContainer >
+                            <ImageGallery items={this.state.imageGalleryItems} />
+                        {/* <ImageGallery items={this.props.node.getOptions().extras["imageGalleryItems"] || null?}  /> */}
                         </S.ImageGalleryContainer> 
-                       */}
+
                         <Pagination
                             totalRecords={100}
                             pageLimit={5}
@@ -161,6 +161,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                             onPageChanged={this.onPageChanged}
                         />
                     </ToolTip>
+                    
                     <S.Title>
                         <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
                     </S.Title>

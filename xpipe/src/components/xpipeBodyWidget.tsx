@@ -107,7 +107,7 @@ export const commandIDs = {
 	runXpipe: 'Xpipe-editor:run-node',
 	debugXpipe: 'Xpipe-editor:debug-node',
 	createArbitraryFile: 'Xpipe-editor:create-arbitrary-file',
-	openCloseDebugger: 'Xpipe-debugger:open/close',
+	openDebugger: 'Xpipe-debugger:open',
 	breakpointXpipe: 'Xpipe-editor:breakpoint-node',
 	nextNode: 'Xpipe-editor:next-node',
 	testXpipe: 'Xpipe-editor:test-node',
@@ -606,6 +606,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
+		let allNodes = diagramEngine.getModel().getNodes();
+		allNodes[1].getOptions().extras["imageGalleryItems"] = "xxx";
+
 		if (saved && compiled) {
 
 			let allNodes = getAllNodesFromStartToFinish();
@@ -627,7 +630,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				startNodeModel.setSelected(true);
 			}
 			alert("Debug xpipe");
-			commands.execute(commandIDs.openCloseDebugger);
+			commands.execute(commandIDs.openDebugger);
 		} else {
 			alert("Please save and compile before debugging.")
 		}
@@ -774,7 +777,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 		debugger;
 		let allNodes = diagramEngine.getModel().getNodes();
-		allNodes[1].getOptions().extras["imageGalleryItems"] = "xxx";
+		delete allNodes[1].getOptions().extras["imageGalleryItems"];
 
 		//allNodes[i].getOptions().extras["imageGalleryItems"] = response;
 		alert("Testing");
@@ -1106,7 +1109,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	
 	return (
 		<Body>
-			<Header>
+			{/* <Header>
 				<RcDialog
 					visible={displayRcDialog}
 					animation="slide-fade"
@@ -1134,7 +1137,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					)}
 					modalRender={modal => <Draggable disabled={disableRcDialog}>{modal}</Draggable>}>
 				</RcDialog>
-			</Header>
+			</Header> */}
 			<Content>
 				<Layer
 					onDrop={(event) => {
