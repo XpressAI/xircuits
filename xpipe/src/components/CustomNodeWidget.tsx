@@ -100,6 +100,11 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
     hideTooltip() {
         this.setState({isTooltipActive: false})
     }
+    handleClose() {
+        let allNodes = this.props.engine.getModel().getNodes();
+        delete allNodes[1].getOptions().extras["imageGalleryItems"];
+        this.hideTooltip();
+    };
 
     /**
      * load more data from server when page changed
@@ -148,6 +153,15 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                     selected={this.props.node.isSelected()}
                     background={this.props.node.getOptions().color}>
                     <ToolTip active={this.state.isTooltipActive} position="top" arrow="center" parent={this.element}>
+                        <button
+                            type="button"
+                            className="close"
+                            data-dismiss="modal"
+                            aria-label="Close"
+                            onClick={this.handleClose.bind(this)}
+                        >
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                         {/* Get the current image from the node when getting response from API endpoint */}
                         <S.ImageGalleryContainer >
                             <ImageGallery items={this.state.imageGalleryItems} />

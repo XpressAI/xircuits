@@ -776,8 +776,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 		debugger;
-		let allNodes = diagramEngine.getModel().getNodes();
-		delete allNodes[1].getOptions().extras["imageGalleryItems"];
 
 		//allNodes[i].getOptions().extras["imageGalleryItems"] = response;
 		alert("Testing");
