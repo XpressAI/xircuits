@@ -29,6 +29,7 @@ import { XpipeFactory, XPipeDocModelFactory } from './xpipeFactory';
 import { XPipeWidget } from './xpipeWidget';
 
 import Sidebar from './components_xpipe/Sidebar';
+import { IDocumentManager } from '@jupyterlab/docmanager';
 
 import { XpipeDebugger } from './debugger/SidebarDebugger';
 import { ITranslator } from '@jupyterlab/translation';
@@ -58,6 +59,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     ILayoutRestorer,
     IMainMenu,
     IRenderMimeRegistry,
+    IDocumentManager,
     ITranslator
   ],
 
@@ -69,6 +71,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     restorer: ILayoutRestorer,
     menu: IMainMenu,
     rendermime: IRenderMimeRegistry,
+    docmanager: IDocumentManager,
     themeManager?: IThemeManager,
     translator?: ITranslator
   ) => {
@@ -277,6 +280,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
               path: model_path
             }
           );
+          docmanager.closeFile(model_path);
         } else {
           alert("Failed to generate arbitrary file!");
         }
