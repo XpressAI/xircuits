@@ -53,3 +53,5 @@ Download corresponding Hadoop winutils from https://github.com/cdarlint/winutils
 Modified from https://github.com/rishabh89007/Time_Series_Datasets
 ### Pinguin.csv
 https://github.com/allisonhorst/palmerpenguins // https://www.kaggle.com/parulpandey/penguin-dataset-the-new-iris/data
+### Mushrooms.txt
+https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html#mushrooms
