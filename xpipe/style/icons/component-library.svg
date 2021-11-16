@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 64 80" style="enable-background:new 0 0 64 64;" xml:space="preserve">
+    <g class="xpipe-sidebar-icon" fill="#616161">
+        <path d="M24,34.586l4,4l1-1V25H3v14h16.586L24,34.586z M7,37H5v-6h2V37z M7,29H5v-2h2V29z"/>
+        <path d="M29,9H3v14h26V9z M7,21H5v-6h2V21z M7,13H5v-2h2V13z"/>
+        <rect x="38.171" y="22.171" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -5.2548 35.3137)" width="3.657" height="3.657"/>
+        <rect x="7" y="3" width="4" height="4"/>
+        <rect x="21" y="3" width="4" height="4"/>
+        <rect x="22.171" y="38.171" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -21.2548 28.6863)" width="3.657" height="3.657"/>
+        <path d="M47,22.414L22.414,47L36,60.586L60.586,36L47,22.414z M46.293,25.293l1.414,1.414l-1.754,1.754l-1.414-1.414L46.293,25.293   z M43.293,28.293l1.414,1.414l-8,8l-1.414-1.414L43.293,28.293z M36,57.757l-6.05-6.05l1.414-1.414L36,54.929l6.041-6.041   l1.414,1.414L36,57.757z M44.679,49.077l-1.414-1.414l1.371-1.37l1.414,1.414L44.679,49.077z"/>
+        <path d="M22.586,44l-3-3H3v14h24.586l-8-8L22.586,44z M7,53H5v-6h2V53z M7,45H5v-2h2V45z"/>
+    </g>
+</svg>
