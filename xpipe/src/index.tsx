@@ -293,6 +293,9 @@ const xpipe: JupyterFrontEndPlugin<void> = {
         // Create the panel if it does not exist
         if (!outputPanel || outputPanel.isDisposed) {
           await createPanel();
+        }else {
+          outputPanel.dispose();
+          await createPanel();
         }
 
         outputPanel.session.ready.then(() => {
