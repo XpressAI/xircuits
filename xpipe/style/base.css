@@ -21,4 +21,5 @@
 .jp-ComponentLibraryLogo {
   background-image: url(./icons/component-library.svg);
   background-repeat: no-repeat;
+  background-size: 28px 28px;
 }
