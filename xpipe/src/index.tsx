@@ -146,13 +146,11 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     restorer.add(sidebarDebugger, sidebarDebugger.id);
     app.shell.add(sidebarDebugger, 'right', { rank: 1001 });
     
-    // Add a command to open/close xpipe sidebar debugger
-    app.commands.addCommand(commandIDs.openCloseDebugger, {
+    // Add a command to open xpipe sidebar debugger
+    app.commands.addCommand(commandIDs.openDebugger, {
       execute: () => {
         if (sidebarDebugger.isHidden) {
           app.shell.activateById(sidebarDebugger.id);
-        }else{
-          app.commands.execute('application:toggle-right-area');
         }
       },
     });
