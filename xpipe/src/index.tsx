@@ -132,7 +132,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     // Creating the sidebar widget
     const sidebarWidget = ReactWidget.create(<Sidebar lab = {app} basePath = ""/>);
     sidebarWidget.id = 'xpipe-component-sidebar';
-    sidebarWidget.title.iconClass = 'jp-XpipeLogo';
+    sidebarWidget.title.iconClass = 'jp-ComponentLibraryLogo';
 
     restorer.add(sidebarWidget, sidebarWidget.id);
     app.shell.add(sidebarWidget, "left");
@@ -140,7 +140,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     // Creating the sidebar debugger
     const sidebarDebugger = new XpipeDebugger.Sidebar({ app, translator, widgetFactory})
     sidebarDebugger.id = 'xpipe-debugger-sidebar';
-    sidebarDebugger.title.iconClass = 'jp-XpipeLogo';
+    sidebarDebugger.title.iconClass = 'jp-DebuggerLogo';
     restorer.add(sidebarDebugger, sidebarDebugger.id);
     app.shell.add(sidebarDebugger, 'right', { rank: 1001 });
     

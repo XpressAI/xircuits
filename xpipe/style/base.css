@@ -12,3 +12,14 @@
   background-image: url(./icons/xpress-logo.svg);
   background-repeat: no-repeat;
 }
+
+.jp-DebuggerLogo {
+  background-image: url(./icons/debugger.svg);
+  background-repeat: no-repeat;
+}
+
+.jp-ComponentLibraryLogo {
+  background-image: url(./icons/component-library.svg);
+  background-repeat: no-repeat;
+  background-size: 28px 28px;
+}
