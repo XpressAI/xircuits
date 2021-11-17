@@ -94,14 +94,11 @@ export const Layer = styled.div`
 
 export const commandIDs = {
 	openXpipeEditor: 'Xpipe-editor:open',
-	openMetadata: 'elyra-metadata:open',
 	openDocManager: 'docmanager:open',
 	newDocManager: 'docmanager:new-untitled',
 	saveDocManager: 'docmanager:save',
 	reloadDocManager: 'docmanager:reload',
 	revertDocManager: 'docmanager:restore-checkpoint',
-	submitScript: 'script-editor:submit',
-	submitNotebook: 'notebook:submit',
 	createNewXpipe: 'Xpipe-editor:create-new',
 	saveXpipe: 'Xpipe-editor:save-node',
 	reloadXpipe: 'Xpipe-editor:reload-node',
@@ -110,7 +107,6 @@ export const commandIDs = {
 	runXpipe: 'Xpipe-editor:run-node',
 	debugXpipe: 'Xpipe-editor:debug-node',
 	createArbitraryFile: 'Xpipe-editor:create-arbitrary-file',
-	openAnalysisViewer: 'Xpipe-analysis-viewer:open',
 	openCloseDebugger: 'Xpipe-debugger:open/close',
 	breakpointXpipe: 'Xpipe-editor:breakpoint-node',
 	nextNode: 'Xpipe-editor:next-node',
@@ -569,7 +565,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		if (saved && allNodesConnected) {
 			let pythonCode = getPythonCompiler();
-			alert("Compiled.")
 			setCompiled(true);
 			commands.execute(commandIDs.createArbitraryFile, { pythonCode });
 		} else if (!allNodesConnected) {

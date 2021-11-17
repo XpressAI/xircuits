@@ -5,7 +5,6 @@ from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 
 import tornado
-from tornado.web import StaticFileHandler
 from subprocess import Popen, PIPE
 
 import os
@@ -130,12 +129,3 @@ def setup_handlers(web_app, url_path):
     web_app.add_handlers(host_pattern, execute_file_handlers_1)
     web_app.add_handlers(host_pattern, execute_file_handlers_2)
     web_app.add_handlers(host_pattern, compile_file_handlers)
-
-    # Prepend the base_url so that it works in a JupyterHub setting
-    doc_url = url_path_join(base_url, url_path, "public")
-    doc_dir = os.getenv(
-        "XPIPE_STATIC_DIR",
-        os.path.join(os.path.dirname(__file__), "public"),
-    )
-    handlers = [("{}/(.*)".format(doc_url), StaticFileHandler, {"path": doc_dir})]
-    web_app.add_handlers(".*$", handlers)

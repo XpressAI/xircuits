@@ -6,8 +6,6 @@ import {
   ILayoutRestorer
 } from '@jupyterlab/application';
 
-import { createXpipeAnalysisViewer, IXpipeAnalysisViewerOptions } from './components/AnalysisViewerWidget';
-
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 
 import { commandIDs } from './components/xpipeBodyWidget';
@@ -16,8 +14,7 @@ import {
   ICommandPalette,
   IThemeManager,
   WidgetTracker,
-  ReactWidget,
-  IFrame
+  ReactWidget
 } from '@jupyterlab/apputils';
 
 import { ILauncher } from '@jupyterlab/launcher';
@@ -29,12 +26,12 @@ import { XpipeFactory, XPipeDocModelFactory } from './xpipeFactory';
 import { XPipeWidget } from './xpipeWidget';
 
 import Sidebar from './components_xpipe/Sidebar';
+import { IDocumentManager } from '@jupyterlab/docmanager';
 
 import { XpipeDebugger } from './debugger/SidebarDebugger';
 import { ITranslator } from '@jupyterlab/translation';
 import { Log, logPlugin } from './log/LogPlugin';
 import { requestAPI } from './server/handler';
-import { PageConfig } from '@jupyterlab/coreutils';
 import { OutputPanel } from './kernel/panel';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
@@ -58,6 +55,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     ILayoutRestorer,
     IMainMenu,
     IRenderMimeRegistry,
+    IDocumentManager,
     ITranslator
   ],
 
@@ -69,6 +67,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     restorer: ILayoutRestorer,
     menu: IMainMenu,
     rendermime: IRenderMimeRegistry,
+    docmanager: IDocumentManager,
     themeManager?: IThemeManager,
     translator?: ITranslator
   ) => {
@@ -144,18 +143,6 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     sidebarDebugger.title.iconClass = 'jp-XpipeLogo';
     restorer.add(sidebarDebugger, sidebarDebugger.id);
     app.shell.add(sidebarDebugger, 'right', { rank: 1001 });
-
-    /**
-     * Add a command to open IFrame that will display static content fetched from the server extension.
-     */
-    app.commands.addCommand('server:get-file', {
-      label: 'Get Server Content in a IFrame Widget',
-      caption: 'Get Server Content in a IFrame Widget',
-      execute: () => {
-        const fwidget = new IFrameWidget();
-        app.shell.add(fwidget, 'main');
-      },
-    });
     
     // Add a command to open/close xpipe sidebar debugger
     app.commands.addCommand(commandIDs.openCloseDebugger, {
@@ -277,16 +264,11 @@ const xpipe: JupyterFrontEndPlugin<void> = {
               path: model_path
             }
           );
+          docmanager.closeFile(model_path);
+          alert(`${model_path} successfully compiled!`);
         } else {
           alert("Failed to generate arbitrary file!");
         }
-      }
-    });
-
-    // Add a command for opening the xpipe analysis viewer when run button clicked.
-    app.commands.addCommand(commandIDs.openAnalysisViewer, {
-      execute: (options: IXpipeAnalysisViewerOptions) => {
-        return createXpipeAnalysisViewer(app, options);
       }
     });
 
@@ -312,6 +294,9 @@ const xpipe: JupyterFrontEndPlugin<void> = {
         // Create the panel if it does not exist
         if (!outputPanel || outputPanel.isDisposed) {
           await createPanel();
+        }else {
+          outputPanel.dispose();
+          await createPanel();
         }
 
         outputPanel.session.ready.then(() => {
@@ -333,21 +318,6 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     }
   },
 };
-
-/**
- * IFrame that will display static content fetched from the server extension.
- */
-class IFrameWidget extends IFrame {
-  constructor() {
-    super();
-    const baseUrl = PageConfig.getBaseUrl();
-    this.url = baseUrl + 'xpipe/public/index.html';
-    this.id = 'doc-example';
-    this.title.label = 'Server Doc';
-    this.title.closable = true;
-    this.node.style.overflowY = 'auto';
-  }
-}
 
 /**
  * Export the plugins as default.
