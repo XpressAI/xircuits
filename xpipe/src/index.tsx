@@ -265,6 +265,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
             }
           );
           docmanager.closeFile(model_path);
+          alert(`${model_path} successfully compiled!`);
         } else {
           alert("Failed to generate arbitrary file!");
         }
