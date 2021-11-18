@@ -1,13 +1,13 @@
 # JupyterLab Engine Plugins
 
-The current iteration of the juypterlab engine are made of seperate extensions of Jupyterlab 3.1.10. The following steps is if you're developing on a Windows or Ubuntu 20.04. 
+The current iteration of the juypterlab engine are made of seperate extensions of Jupyterlab 3.1.10. The following steps is if you're developing on a Windows or Ubuntu 20.04.
 ```
 git clone https://github.com/XpressAI/xai-jupyterlab
 ```
 Make and activate python env. The tested python versions are 3.9.6
 
 ```
-python -m install venv venv
+python -m venv venv
 venv/Scripts/activate
 ```
 
