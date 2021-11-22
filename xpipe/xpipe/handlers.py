@@ -126,16 +126,22 @@ class DebuggerRouteHandler(APIHandler):
         
         output_content = ""
         if input_data["command"] == "run":
-            output = requests.get("http://127.0.0.1:5000/run?source=run") # next node
+            output = requests.get("http://127.0.0.1:5000/run") # next node
             
         elif input_data["command"] == "continue":
-            output = requests.get("http://127.0.0.1:5000/continue?source=continue")
+            output = requests.get("http://127.0.0.1:5000/continue")
 
         elif input_data["command"] == "get/output":
             output = requests.get("http://127.0.0.1:5000/get/output")
 
         elif input_data["command"] == "clear":
-            output = requests.get("http://127.0.0.1:5000/clear")
+            output = requests.get("http://127.0.0.1:5000/clear_node")
+
+        elif input_data["command"] == "get_run":
+            output = requests.get("http://127.0.0.1:5000/execution")
+
+        elif input_data["command"] == "clear_run":
+            output = requests.get("http://127.0.0.1:5000/clear_execution")
 
         else:
             output = ""

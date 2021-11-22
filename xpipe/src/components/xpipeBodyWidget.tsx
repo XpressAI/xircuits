@@ -306,6 +306,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		pythonCode += "continue_input_data = []\n";
 		pythonCode += "inarg_output_data = []\n";
 		pythonCode += "outarg_output_data = []\n";
+		pythonCode += "is_done_list = []\n";
 
 		pythonCode += "\ndef main(args):\n";
 
@@ -440,12 +441,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			pythonCode += '    ' + 'while next_component:\n';
 
 			pythonCode += '        ' + 'if debug_mode:\n';
-			pythonCode += '            ' + '# http://127.0.0.1:5000/continue?source=continue\n';
+			pythonCode += '            ' + '# http://127.0.0.1:5000/continue\n';
 			pythonCode += '            ' + 'if len(continue_input_data) > 0 and continue_input_data[-1] == \'continue\':\n';
 			pythonCode += '                ' + 'vars_dict = vars(next_component)\n';
+			pythonCode += '                ' + 'print(vars_dict)\n';
 			pythonCode += '                ' + 'new_dict = {}\n';
 			pythonCode += '                ' + 'for i in vars_dict:\n';
-			pythonCode += '                    ' + 'if not i in [\'next\']:\n';
+			pythonCode += '                    ' + 'if not i in [\'next\', \'done\']:\n';
 			pythonCode += '                        ' + 'new_dict[i] = next_component.__getattribute__(i).value\n';
 			pythonCode += '                        ' + 'print(next_component.__getattribute__(i).value)\n';
 			pythonCode += '                        ' + 'if \'InArg\' in str(vars_dict[i]):\n';
@@ -455,13 +457,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			pythonCode += '                ' + 'continue_input_data.clear()\n';
 			pythonCode += '\n';
 
-			pythonCode += '            ' + '# http://127.0.0.1:5000/run?source=run\n';
+			pythonCode += '            ' + '# http://127.0.0.1:5000/run\n';
 			pythonCode += '            ' + 'if len(input_data) > 0 and input_data[-1] == \'run\':\n';
-			pythonCode += '                ' + 'next_component = next_component.do()\n';
+			pythonCode += '                ' + 'is_done, next_component = next_component.do()\n';
 			pythonCode += '                ' + 'input_data.clear()\n';
+			pythonCode += '                ' + 'is_done_list.append(is_done)\n';
 			pythonCode += '\n';
 
-			pythonCode += '            ' + '# http://127.0.0.1:5000/run?source=skip\n';
+			pythonCode += '            ' + '# http://127.0.0.1:5000/run\n';
 			pythonCode += '            ' + 'if len(input_data) > 0 and input_data[-1] == \'skip\':\n';
 			pythonCode += '                ' + 'next_component = next_component.do()\n';
 			pythonCode += '\n';
@@ -482,19 +485,26 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			pythonCode += '    ' + 'return \'Server shutting down...\'\n\n';
 
 			pythonCode += '@app.route(\'/run\')\n';
-			pythonCode += 'def hello_world(input_data=input_data):\n';
-			pythonCode += '    ' + 'source = request.args.get(\'source\')\n';
-			pythonCode += '    ' + 'input_data.append(source)\n';
+			pythonCode += 'def next_node(input_data=input_data):\n';
+			pythonCode += '    ' + 'input_data.append("run")\n';
 			pythonCode += '    ' + 'return \'run is executed\'\n\n';
 
+			pythonCode += '@app.route(\'/execution\')\n';
+			pythonCode += 'def get_execution_output():\n';
+			pythonCode += '    ' + 'return str(is_done_list)\n\n';
+
+			pythonCode += '@app.route(\'/clear_execution\')\n';
+			pythonCode += 'def clear_execution_output():\n';
+			pythonCode += '    ' + 'is_done_list.clear()\n';
+			pythonCode += '    ' + 'return \'clear execution\'\n\n';
+
 			pythonCode += '@app.route(\'/continue\')\n';
-			pythonCode += 'def continue_flask(continue_input_data=continue_input_data):\n';
-			pythonCode += '    ' + 'source = request.args.get(\'source\')\n';
-			pythonCode += '    ' + 'continue_input_data.append(source)\n';
+			pythonCode += 'def continue_node(continue_input_data=continue_input_data):\n';
+			pythonCode += '    ' + 'continue_input_data.append("continue")\n';
 			pythonCode += '    ' + 'return \'continue is executed\'\n\n';
 
 			pythonCode += '@app.route(\'/clear\')\n';
-			pythonCode += 'def clear_flask():\n';
+			pythonCode += 'def clear_node():\n';
 			pythonCode += '    ' + 'inarg_output_data.clear()\n';
 			pythonCode += '    ' + 'outarg_output_data.clear()\n';
 			pythonCode += '    ' + 'return \'clear flask is executed\'\n\n';
@@ -515,7 +525,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			pythonCode += '    ' + 'parser = ArgumentParser()\n';
 
 			if (stringNodes) {
-
 				for (let i = 0; i < stringNodes.length; i++) {
 					let stringParam = stringNodes[i].replace(/\s+/g, "_");
 					stringParam = stringParam.toLowerCase();
@@ -834,6 +843,197 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 	};
 
+	const runFromNodeToNode2 = async () => {
+		if (!debugMode) {
+			alert("Not in debug mode");
+			return;
+		}
+
+		let allNodes = getAllNodesFromStartToFinish();
+		let prevNode: NodeModel;
+		let currentNode: NodeModel;
+		let nextNode: NodeModel;
+
+		let count = currentIndex;
+		currentNode = allNodes[count];
+		prevNode = allNodes[count];
+		
+		if (currentNode.getOptions()["name"].startsWith("🔴")) {
+			prevNode.setSelected(false);
+			currentNode = allNodes[count + 1];
+			console.log("this");
+			console.log(currentNode.getOptions()["name"]);
+
+			if (currentNode.getOptions()["name"].startsWith("🔴")) {
+				console.log("kk1");
+				console.log(count);
+				console.log(allNodes[count].getOptions()["name"]);
+				console.log(currentNode.getOptions()["name"]);
+
+				if (currentNode.getOptions()["name"] != "🔴Start" && currentNode.getOptions()["name"] != "Start") {
+					await delay(1500);
+					let req_run_command1 = await sendingRunCommand("run");
+					console.log(req_run_command1);
+					
+					console.log("count 2");
+					console.log(count);
+					
+					console.log("get run 3");
+					let req_run_command5 = await sendingRunCommand("get_run");
+					let output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
+					console.log(output_req);
+					console.log(typeof output_req);
+					console.log(output_req.split(","));
+					while (output_req.split(",").length != count) {
+						await delay(3000);
+						console.log("waiting333");
+						req_run_command5 = await sendingRunCommand("get_run");
+						output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
+						console.log("again");
+						console.log(req_run_command5);
+						console.log(output_req);
+						console.log(22);
+					}
+				}
+
+				console.log("run abc");
+				console.log(currentNode.getOptions()["name"]);
+				console.log(currentNode);
+				currentNode.setSelected(true);
+				currentNode.getOptions()["color"] = "rgb(150,150,150)";
+				prevNode.setSelected(false);
+				currentNode.getOptions()["color"] = "rgb(150,150,150)";
+
+				if (currentNode.getOptions()["name"] != "Finish" && currentNode.getOptions()["name"] != "🔴Finish") {
+					count = count + 1;
+					currentNode = allNodes[count];
+
+					console.log("run abcdefg");
+					// console.log(currentNode.getOptions()["name"]);
+					console.log(currentNode);
+
+					// prevNode.getOptions()["color"] = "rgb(150,150,150)";
+					setCurrentIndex(count);
+					console.log("kk2");
+					console.log(count);
+				}
+			}
+		}
+
+		while (!currentNode.getOptions()["name"].startsWith("🔴")) {
+			console.log("kk1");
+			console.log(count);								// 0             1
+			console.log(currentNode.getOptions()["name"]);  // Start        ReadDataset
+			console.log(prevNode.getOptions()["name"]); 	// Start		Start
+			if (currentNode.getOptions()["name"] != "Start" && currentNode.getOptions()["name"] != "🔴Start") {
+				await delay(1500);
+				let req_run_command1 = await sendingRunCommand("run");
+				console.log(req_run_command1);
+				
+				console.log("count 1");
+				console.log(count);
+				
+				console.log("get run 2");
+				let req_run_command5 = await sendingRunCommand("get_run");
+				let output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
+				console.log(output_req);
+				console.log(typeof output_req);
+				console.log(output_req.split(","));
+				while (output_req.split(",").length != count) {
+					await delay(3000);
+					console.log("waiting333");
+					req_run_command5 = await sendingRunCommand("get_run");
+					output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
+					console.log("again");
+					console.log(req_run_command5);
+					console.log(output_req);
+					console.log(22);
+				}
+
+			}
+
+			console.log("run abc");
+			console.log(currentNode.getOptions()["name"]); // Start
+			console.log(currentNode);					   // Start
+
+			prevNode = currentNode;						   // Start
+			// currentNode.setSelected(true);
+			// currentNode.getOptions()["color"] = "rgb(150,150,150)";
+			// currentNode.setSelected(false);
+			prevNode.setSelected(true);                    // Start
+			count = count + 1;
+			currentNode = allNodes[count];                 // HelloList
+			currentNode.setSelected(true);
+
+			prevNode.getOptions()["color"] = "rgb(150,150,150)";
+			prevNode.setSelected(false);
+			// await delay(1000);
+			// console.log(currentNode.getOptions()["name"]);
+			if (currentNode.getOptions()["name"] == "Finish" || currentNode.getOptions()["name"] == "🔴Finish") {
+				prevNode.setSelected(false);
+				currentNode.setSelected(true);
+				currentNode.getOptions()["color"] = "rgb(150,150,150)";
+
+				setCurrentIndex(-1);
+				setDebugMode(false);
+				currentNode.setSelected(false);
+				alert("Finish Execution.");
+				console.log(currentNode);
+
+				allNodes.forEach((node) => {
+					console.log(node);
+					node.setSelected(true);
+					console.log("allnodes");
+					node.getOptions()["color"] = node["color"];
+				});
+				return;
+			}
+
+			console.log(currentNode);                   // Hello List
+			// currentNode.setSelected(true);
+			// currentNode.getOptions()["color"] = "rgb(150,150,150)";
+			// prevNode.getOptions()["color"] = "rgb(150,150,150)";
+			setCurrentIndex(count);                     // 1
+			console.log("kk2");
+			console.log(count);
+		}
+
+		console.log("kk3");
+		console.log(count);
+		
+		await getContinuePost();
+
+		await delay(1000);
+		let item2 = await sendingRunCommand("get/output");
+		let runOnce = 0;
+		console.log(item2);
+		console.log("item3 from xpipe");
+
+		// alert("Step Over");
+		console.log("kk4");
+		console.log(count);
+		console.log(currentNode.getOptions()["name"]);
+
+		if (currentNode.getOptions()["name"] == "Finish" || currentNode.getOptions()["name"] == "🔴Finish") {
+			prevNode.setSelected(false);
+			currentNode.setSelected(true);
+			currentNode.getOptions()["color"] = "rgb(150,150,150)";
+
+			setCurrentIndex(-1);
+			setDebugMode(false);
+
+			alert("Finish Execution.");
+			console.log(currentNode);
+
+			allNodes.forEach((node) => {
+				console.log(node);
+				node.setSelected(true);
+				console.log("allnodes");
+				node.getOptions()["color"] = node["color"];
+			});
+		}
+	}
+
 	const runFromNodeToNode = async () => {
 		if (!debugMode) {
 			alert("Not in debug mode");
@@ -865,6 +1065,20 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					await delay(1500);
 					let req_run_command1 = await sendingRunCommand("run");
 					console.log(req_run_command1);
+					
+					console.log("count 2");
+					console.log(count);
+					
+					console.log("get run 3");
+					let req_run_command5 = await sendingRunCommand("get_run");
+					const output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
+					console.log(output_req);
+					console.log(typeof output_req);
+					console.log(output_req.split(","));
+					while (output_req.split(",").length != count) {
+						await delay(1500);
+						console.log("waiting333");
+					}
 				}
 
 				console.log("run abc");
@@ -900,6 +1114,21 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				await delay(1500);
 				let req_run_command1 = await sendingRunCommand("run");
 				console.log(req_run_command1);
+				
+				console.log("count 1");
+				console.log(count);
+				
+				console.log("get run 2");
+				let req_run_command5 = await sendingRunCommand("get_run");
+				const output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
+				console.log(output_req);
+				console.log(typeof output_req);
+				console.log(output_req.split(","));
+				while (output_req.split(",").length != count) {
+					await delay(1500);
+					console.log("waiting333");
+				}
+
 			}
 
 			console.log("run abc");
@@ -994,7 +1223,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			resetColorCodeOnStart(true);
 		}
 		
-		await runFromNodeToNode();
+		await runFromNodeToNode2();
 	}
 
 	const handleToggleNextNode = async () => {
@@ -1130,7 +1359,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (currentIndex == 0) {
 			resetColorCodeOnStart(true);
 		}
-		await runFromNodeToNode();
+		await runFromNodeToNode2();
 	}
 
 	const resetColorCodeOnStart = (onStart: boolean) => {

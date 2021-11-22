@@ -15,6 +15,7 @@ class ReadDataSet(Component):
     dataset: OutArg[Tuple[np.array, np.array]]
 
     def __init__(self):
+        self.done = False
         self.dataset_name = InArg.empty()
         self.dataset = OutArg.empty()
 
@@ -73,6 +74,8 @@ class ReadDataSet(Component):
         else:
             print("Keras dataset was not found!")
 
+        self.done = True
+
 
 
 class FlattenImageData(Component):
@@ -81,6 +84,7 @@ class FlattenImageData(Component):
     resized_dataset: OutArg[Tuple[np.array, np.array]]
 
     def __init__(self):
+        self.done = False
         self.dataset = InArg.empty()
         self.resized_dataset = OutArg.empty()
 
@@ -90,6 +94,8 @@ class FlattenImageData(Component):
         x = x.reshape(x.shape[0], -1)
 
         self.resized_dataset.value = (x, self.dataset.value[1])
+
+        self.done = True
 
 
 class TrainTestSplit(Component):
@@ -101,6 +107,7 @@ class TrainTestSplit(Component):
     test: OutArg[Tuple[np.array, np.array]]
 
     def __init__(self):
+        self.done = False
         self.dataset = InArg.empty()
         self.train_split = InArg.empty()
         self.random_state = InArg.empty()
@@ -126,6 +133,7 @@ class TrainTestSplit(Component):
 
         self.train.value = train
         self.test.value = test
+        self.done = True
 
 class Create1DInputModel(Component):
     training_data: InArg[Tuple[np.array, np.array]]
@@ -133,6 +141,7 @@ class Create1DInputModel(Component):
     model: OutArg[keras.Sequential]
 
     def __init__(self):
+        self.done = False
         self.training_data = InArg.empty()
         self.model = OutArg.empty()
 
@@ -154,6 +163,8 @@ class Create1DInputModel(Component):
         )
 
         self.model.value = model
+
+        self.done = True
 
 class Create2DInputModel(Component):
     training_data: InArg[Tuple[np.array, np.array]]
@@ -200,6 +211,7 @@ class TrainImageClassifier(Component):
     trained_model: OutArg[keras.Sequential]
 
     def __init__(self):
+        self.done = False
         self.training_data = InArg.empty()
         self.training_epochs = InArg.empty()
         self.model = InArg.empty()
@@ -216,6 +228,8 @@ class TrainImageClassifier(Component):
 
         self.trained_model.value = self.model.value
 
+        self.done = True
+
 
 class EvaluateAccuracy(Component):
     model: InArg[keras.Sequential]
@@ -224,6 +238,7 @@ class EvaluateAccuracy(Component):
     metrics: OutArg[Dict[str, str]]
 
     def __init__(self):
+        self.done = False
         self.model = InArg.empty()
         self.eval_dataset = InArg.empty()
         self.metrics = OutArg.empty()
@@ -237,6 +252,8 @@ class EvaluateAccuracy(Component):
         print(metrics)
 
         self.metrics.value = metrics
+
+        self.done = True
 
 
 class ShouldStop(Component):
