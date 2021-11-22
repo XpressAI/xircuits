@@ -5,7 +5,7 @@ import { redoIcon } from '@jupyterlab/ui-components';
 import { Debugger } from '@jupyterlab/debugger';
 import { Panel, SplitPanel, Widget, PanelLayout } from '@lumino/widgets';
 import { commandIDs } from '../components/xpipeBodyWidget';
-import { BreakpointWidget } from './BreakpointWidget';
+import { DebuggerWidget } from './DebuggerWidget';
 import { XpipeFactory } from '../xpipeFactory';
 import { Toolbar } from '@jupyterlab/apputils';
 
@@ -40,7 +40,7 @@ export const DebuggerCommandIDs = {
       this._body.orientation = 'vertical';
     //   this._body.addClass('jp-DebuggerSidebar-body');
       this.addWidget(this._body);
-      const content = new BreakpointWidget( xpipeFactory );
+      const content = new DebuggerWidget( xpipeFactory );
       const header = new DebuggerHeader(translator);
       const toolbarPanel = new DebuggerToolbar();
 
