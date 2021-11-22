@@ -158,9 +158,9 @@ export const DebuggerCommandIDs = {
       debuggerToolbar.toolbar.insertItem(1, 'xpipe-debug-next', nextNodeButton)
       debuggerToolbar.toolbar.insertItem(2, 'xpipe-debug-step-over', stepOverButton)
       debuggerToolbar.toolbar.insertItem(3, 'xpipe-debug-terminate', terminateButton)
-      debuggerToolbar.toolbar.insertItem(4, 'xpipe-debug-step-in', stepInButton)
-      debuggerToolbar.toolbar.insertItem(5, 'xpipe-debug-step-out', stepOutButton)
-      debuggerToolbar.toolbar.insertItem(6, 'xpipe-debug-evaluate-code', evaluateCodeButton)
+      // debuggerToolbar.toolbar.insertItem(4, 'xpipe-debug-step-in', stepInButton)
+      // debuggerToolbar.toolbar.insertItem(5, 'xpipe-debug-step-out', stepOutButton)
+      // debuggerToolbar.toolbar.insertItem(6, 'xpipe-debug-evaluate-code', evaluateCodeButton)
 
       const header = new BreakpointHeader(translator);
       this.addWidget(header);
@@ -240,7 +240,7 @@ export const DebuggerCommandIDs = {
       const trans = translator.load('jupyterlab');
   
       const title = new Widget({ node: document.createElement('h2') });
-      title.node.textContent = trans.__('Debugger');
+      title.node.textContent = trans.__('Xpipe Debugger');
   
       const layout = new PanelLayout();
       layout.addWidget(title);
