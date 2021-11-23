@@ -49,6 +49,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
   stepInDebugSignal: Signal<this, any>;
   stepOutDebugSignal: Signal<this, any>;
   evaluateDebugSignal: Signal<this, any>;
+  debugModeSignal: Signal<this, any>;
 
   constructor(options: any) {
     super(options);
@@ -74,6 +75,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     this.stepInDebugSignal = new Signal<this, any>(this);
     this.stepOutDebugSignal = new Signal<this, any>(this);
     this.evaluateDebugSignal = new Signal<this, any>(this);
+    this.debugModeSignal = new Signal<this, any>(this);
   }
 
   protected createNewWidget(context: DocumentRegistry.IContext<XPipeDocModel>): XPipeWidget {
@@ -101,6 +103,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
       stepInDebugSignal: this.stepInDebugSignal,
       stepOutDebugSignal: this.stepOutDebugSignal,
       evaluateDebugSignal: this.evaluateDebugSignal,
+      debugModeSignal: this.debugModeSignal
     };
 
     const content = new XPipePanel(props);
