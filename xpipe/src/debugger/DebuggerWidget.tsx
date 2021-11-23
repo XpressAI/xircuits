@@ -4,11 +4,11 @@ import React, { useState } from "react";
 import { XpipeFactory } from "../xpipeFactory";
 
 /**
- * React component for a breakpoint debugger.
+ * React component for a xpipes debugger.
  *
- * @returns The Brekpoint component
+ * @returns The Debugger component
  */
-const BreakpointComponent = ({
+const DebuggerComponent = ({
   xpipeFactory,
 }: {
   xpipeFactory: XpipeFactory;
@@ -82,11 +82,11 @@ const BreakpointComponent = ({
 };
 
 /**
- * A Breakpoint Widget that wraps a BreakpointComponent.
+ * A Debugger Widget that wraps a BreakpointComponent.
  */
-export class BreakpointWidget extends ReactWidget {
+export class DebuggerWidget extends ReactWidget {
   /**
-   * Constructs a new BreakpointWidget.
+   * Constructs a new DebuggerWidget.
    */
   constructor(xpipeFactory: XpipeFactory) {
     super();
@@ -95,7 +95,7 @@ export class BreakpointWidget extends ReactWidget {
   }
 
   render(): JSX.Element {
-    return <BreakpointComponent xpipeFactory={this._xpipeFactory} />;
+    return <DebuggerComponent xpipeFactory={this._xpipeFactory} />;
   }
   private _xpipeFactory: XpipeFactory;
 }

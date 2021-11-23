@@ -28,7 +28,7 @@ import { XPipeWidget } from './xpipeWidget';
 import Sidebar from './components_xpipe/Sidebar';
 import { IDocumentManager } from '@jupyterlab/docmanager';
 
-import { XpipeDebugger } from './debugger/SidebarDebugger';
+import { XpipesDebugger } from './debugger/SidebarDebugger';
 import { ITranslator } from '@jupyterlab/translation';
 import { Log, logPlugin } from './log/LogPlugin';
 import { requestAPI } from './server/handler';
@@ -139,7 +139,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     app.shell.add(sidebarWidget, "left");
 
     // Creating the sidebar debugger
-    const sidebarDebugger = new XpipeDebugger.Sidebar({ app, translator, widgetFactory})
+    const sidebarDebugger = new XpipesDebugger.Sidebar({ app, translator, widgetFactory})
     sidebarDebugger.id = 'xpipe-debugger-sidebar';
     sidebarDebugger.title.iconClass = 'jp-DebuggerLogo';
     sidebarDebugger.title.caption = "Xpipes Debugger";

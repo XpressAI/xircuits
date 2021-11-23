@@ -1,12 +1,13 @@
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import { MainAreaWidget, ToolbarButton } from '@jupyterlab/apputils';
+import { ToolbarButton } from '@jupyterlab/apputils';
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 import { redoIcon } from '@jupyterlab/ui-components';
 import { Debugger } from '@jupyterlab/debugger';
 import { Panel, SplitPanel, Widget, PanelLayout } from '@lumino/widgets';
 import { commandIDs } from '../components/xpipeBodyWidget';
-import { BreakpointWidget } from './BreakpointWidget';
+import { DebuggerWidget } from './DebuggerWidget';
 import { XpipeFactory } from '../xpipeFactory';
+import { Toolbar } from '@jupyterlab/apputils';
 
 export const DebuggerCommandIDs = {
   continue: 'Xpipes-debugger:continue',
@@ -18,19 +19,20 @@ export const DebuggerCommandIDs = {
 }
 
 /**
- * A xpipe debugger sidebar.
+ * A Xpipes Debugger sidebar.
  */
- export class XpipeDebuggerSidebar extends Panel {
+ export class XpipesDebuggerSidebar extends Panel {
     /**
      * Instantiate a new XpipeDebugger.Sidebar
      *
      * @param options The instantiation options for a XpipeDebugger.Sidebar
      */
-    constructor(options: Breakpoints.IOptions) {
+    constructor(options: XpipeDebugger.IOptions) {
       super();
       const translator = options.translator || nullTranslator;
       const app = options.app;
       const xpipeFactory = options.widgetFactory;
+      const trans = translator.load('jupyterlab');
       this.id = 'jp-debugger-sidebar';
       this.addClass('jp-DebuggerSidebar');
   
@@ -38,79 +40,101 @@ export const DebuggerCommandIDs = {
       this._body.orientation = 'vertical';
     //   this._body.addClass('jp-DebuggerSidebar-body');
       this.addWidget(this._body);
-      const content = new BreakpointWidget( xpipeFactory );
-      const debuggerToolbar = new MainAreaWidget<BreakpointWidget>({ content });
+      const content = new DebuggerWidget( xpipeFactory );
+      const header = new DebuggerHeader(translator);
+      const toolbarPanel = new DebuggerToolbar();
 
       /**
        * Create a continue button toolbar item.
        */
-      let continueButton = new ToolbarButton({
-        icon: Debugger.Icons.continueIcon,
-        tooltip: 'Continue',
-        onClick: (): void => {
-          app.commands.execute(DebuggerCommandIDs.continue);
-        }
-      });
+      toolbarPanel.toolbar.addItem(
+        'xpipes-debugger-continue',
+        new ToolbarButton({
+          icon: Debugger.Icons.continueIcon,
+          onClick: async (): Promise<void> => {
+            app.commands.execute(DebuggerCommandIDs.continue);
+          },
+          tooltip: trans.__('Continue')
+        })
+      );
       /**
-         * Create a next node button toolbar item.
-         */
-       let nextNodeButton = new ToolbarButton({
-        icon: redoIcon,
-        tooltip: 'Next Node',
-        onClick: (): void => {
-          app.commands.execute(commandIDs.nextNode);
-        }
-      });
+       * Create a next node button toolbar item.
+       */
+      toolbarPanel.toolbar.addItem(
+        'xpipes-debugger-next',
+        new ToolbarButton({
+          icon: redoIcon,
+          onClick: async (): Promise<void> => {
+            app.commands.execute(commandIDs.nextNode);
+          },
+          tooltip: trans.__('Next Node')
+        })
+      );
       /**
        * Create a step over button toolbar item.
        */
-       let stepOverButton = new ToolbarButton({
-        icon: Debugger.Icons.stepOverIcon,
-        tooltip: 'Step Over',
-        onClick: (): void => {
-          app.commands.execute(DebuggerCommandIDs.stepOver);
-        }
-      });
+      toolbarPanel.toolbar.addItem(
+        'xpipes-debugger-step-over',
+        new ToolbarButton({
+          icon: Debugger.Icons.stepOverIcon,
+          onClick: async (): Promise<void> => {
+            app.commands.execute(DebuggerCommandIDs.stepOver);
+          },
+          tooltip: trans.__('Step Over')
+        })
+      );
       /**
        * Create a terminate button toolbar item.
        */
-      let terminateButton = new ToolbarButton({
-        icon: Debugger.Icons.terminateIcon,
-        tooltip: 'Terminate',
-        onClick: (): void => {
-          app.commands.execute(DebuggerCommandIDs.terminate);
-        }
-      });
+      toolbarPanel.toolbar.addItem(
+        'xpipes-debugger-terminate',
+        new ToolbarButton({
+          icon: Debugger.Icons.terminateIcon,
+          onClick: async (): Promise<void> => {
+            app.commands.execute(DebuggerCommandIDs.terminate);
+          },
+          tooltip: trans.__('Terminate')
+        })
+      );
       /**
        * Create a step in button toolbar item.
        */
-      let stepInButton = new ToolbarButton({
-        icon: Debugger.Icons.stepIntoIcon,
-        tooltip: 'Step In',
-        onClick: (): void => {
-          app.commands.execute(DebuggerCommandIDs.stepIn);
-        }
-      });
+      toolbarPanel.toolbar.addItem(
+        'xpipes-debugger-step-in',
+        new ToolbarButton({
+          icon: Debugger.Icons.stepIntoIcon,
+          onClick: async (): Promise<void> => {
+            app.commands.execute(DebuggerCommandIDs.stepIn);
+          },
+          tooltip: trans.__('Step In')
+        })
+      );
       /**
        * Create a step out button toolbar item.
        */
-      let stepOutButton = new ToolbarButton({
-        icon: Debugger.Icons.stepOutIcon,
-        tooltip: 'Step Out',
-        onClick: (): void => {
-          app.commands.execute(DebuggerCommandIDs.stepOut);
-        }
-      });
+      toolbarPanel.toolbar.addItem(
+        'xpipes-debugger-step-out',
+        new ToolbarButton({
+          icon: Debugger.Icons.stepOutIcon,
+          onClick: async (): Promise<void> => {
+            app.commands.execute(DebuggerCommandIDs.stepOut);
+          },
+          tooltip: trans.__('Step Out')
+        })
+      );
       /**
        * Create a evaluate code button toolbar item.
        */
-      let evaluateCodeButton = new ToolbarButton({
-        icon: Debugger.Icons.evaluateIcon,
-        tooltip: 'Evaluate Code',
-        onClick: (): void => {
-          app.commands.execute(DebuggerCommandIDs.evaluate);
-        }
-      });
+      toolbarPanel.toolbar.addItem(
+        'xpipes-debugger-evaluate-code',
+        new ToolbarButton({
+          icon: Debugger.Icons.evaluateIcon,
+          onClick: async (): Promise<void> => {
+            app.commands.execute(DebuggerCommandIDs.evaluate);
+          },
+          tooltip: trans.__('Evaluate Code')
+        })
+      );
 
       // Add command signal to continue debugging xpipe
       app.commands.addCommand(DebuggerCommandIDs.continue, {
@@ -154,17 +178,9 @@ export const DebuggerCommandIDs = {
           xpipeFactory.evaluateDebugSignal.emit(args);
         }
       });
-      debuggerToolbar.toolbar.insertItem(0, 'xpipe-debug-continue', continueButton)
-      debuggerToolbar.toolbar.insertItem(1, 'xpipe-debug-next', nextNodeButton)
-      debuggerToolbar.toolbar.insertItem(2, 'xpipe-debug-step-over', stepOverButton)
-      debuggerToolbar.toolbar.insertItem(3, 'xpipe-debug-terminate', terminateButton)
-      // debuggerToolbar.toolbar.insertItem(4, 'xpipe-debug-step-in', stepInButton)
-      // debuggerToolbar.toolbar.insertItem(5, 'xpipe-debug-step-out', stepOutButton)
-      // debuggerToolbar.toolbar.insertItem(6, 'xpipe-debug-evaluate-code', evaluateCodeButton)
 
-      const header = new BreakpointHeader(translator);
       this.addWidget(header);
-      this.addWidget(debuggerToolbar);
+      this.addWidget(toolbarPanel);
       this.addWidget(content);
       this.addClass('jp-DebuggerBreakpoints');
     }
@@ -226,11 +242,11 @@ export const DebuggerCommandIDs = {
 }
 
 /**
- * The header for a Breakpoint Panel.
+ * The header for the Xpipes Debugger Panel.
  */
- export class BreakpointHeader extends Widget {
+ export class DebuggerHeader extends Widget {
     /**
-     * Instantiate a new BreakpointHeader.
+     * Instantiate a new DebuggerHeader.
      */
     constructor(translator?: ITranslator) {
       super({ node: document.createElement('div') });
@@ -240,7 +256,7 @@ export const DebuggerCommandIDs = {
       const trans = translator.load('jupyterlab');
   
       const title = new Widget({ node: document.createElement('h2') });
-      title.node.textContent = trans.__('Xpipe Debugger');
+      title.node.textContent = trans.__('Xpipes Debugger');
   
       const layout = new PanelLayout();
       layout.addWidget(title);
@@ -249,17 +265,37 @@ export const DebuggerCommandIDs = {
 }
 
 /**
- * A namespace for Breakpoints `statics`.
+ * The toolbar for the XpipesDebugger Panel.
  */
-export namespace Breakpoints {
+export class DebuggerToolbar extends Widget {
   /**
-   * Instantiation options for `Breakpoints`.
+   * Instantiate a new DebuggerToolbar.
+   */
+  constructor() {
+    super();
+    const layout = new PanelLayout();
+    layout.addWidget(this.toolbar);
+    this.layout = layout;
+  }
+
+  /**
+   * The toolbar for the xpipes debugger.
+   */
+  readonly toolbar = new Toolbar();
+}
+
+/**
+ * A namespace for XpipeDebugger `statics`.
+ */
+export namespace XpipeDebugger {
+  /**
+   * Instantiation options for `XpipesDebugger`.
    */
   export interface IOptions extends Panel.IOptions {
     /**
      * The front-end application ..
      */
-      app?: JupyterFrontEnd;
+    app?: JupyterFrontEnd;
     /**
      * The application language translator..
      */
@@ -267,16 +303,16 @@ export namespace Breakpoints {
     /**
      * The xpipe factory..
      */
-      widgetFactory?: XpipeFactory;
+    widgetFactory?: XpipeFactory;
   }
 }
 
 /**
- * A namespace for `Debugger` statics.
+ * A namespace for `XpipesDebugger` statics.
  */
-export namespace XpipeDebugger {
+export namespace XpipesDebugger {
 /**
  * The debugger sidebar UI.
  */
-  export class Sidebar extends XpipeDebuggerSidebar {}
+  export class Sidebar extends XpipesDebuggerSidebar {}
 }
