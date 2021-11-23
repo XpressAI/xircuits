@@ -4,7 +4,6 @@ import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
 import { LinkModel, DefaultLinkModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
 import * as SRD from '@projectstorm/react-diagrams';
-import axios, { AxiosResponse } from 'axios';
 import { Dialog } from '@jupyterlab/apputils';
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
