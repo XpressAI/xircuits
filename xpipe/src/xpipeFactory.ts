@@ -178,17 +178,6 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     });
 
     /**
-     * Create a breakpoint button toolbar item.
-     */
-    let breakpointButton = new ToolbarButton({
-      icon: circleIcon,
-      tooltip: 'Toggle breakpoint',
-      onClick: (): void => {
-        this.commands.execute(commandIDs.breakpointXpipe);
-      }
-    });
-
-    /**
      * Create a log button toolbar item.
      */
      let logButton = new ToolbarButton({
@@ -216,9 +205,8 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     widget.toolbar.insertItem(3,'xpipe-add-compile', compileButton);
     widget.toolbar.insertItem(4,'xpipe-add-run', runButton);
     widget.toolbar.insertItem(5,'xpipe-add-debug', debugButton);
-    widget.toolbar.insertItem(6,'xpipe-add-breakpoint', breakpointButton);
-    widget.toolbar.insertItem(7,'xpipe-add-log', logButton);
-    widget.toolbar.insertItem(8,'xpipe-add-test', testButton);
+    widget.toolbar.insertItem(6,'xpipe-add-log', logButton);
+    widget.toolbar.insertItem(7,'xpipe-add-test', testButton);
 
     return widget;
   }

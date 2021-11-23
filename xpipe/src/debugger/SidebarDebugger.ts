@@ -82,6 +82,16 @@ export const DebuggerCommandIDs = {
         })
       );
       /**
+       * Create a breakpoint button toolbar item.
+       */
+       toolbarPanel.toolbar.addItem(
+        'xpipes-debugger-breakpoint',
+        new CommandToolbarButton({
+          commands: app.commands,
+          id: commandIDs.breakpointXpipe
+        })
+      );
+      /**
        * Create a terminate button toolbar item.
        */
       toolbarPanel.toolbar.addItem(
@@ -152,6 +162,17 @@ export const DebuggerCommandIDs = {
           return inDebugMode ?? false;
         },execute: args => {
           xpipeFactory.stepOverDebugSignal.emit(args);
+        }
+      });
+      // Add command signal to toggle breakpoint
+      app.commands.addCommand(commandIDs.breakpointXpipe, {
+        caption: trans.__('Toggle Breakpoint'),
+        iconClass: 'jp-BreakpointLogo',
+        isEnabled: () => {
+          return inDebugMode ?? false;
+        },
+        execute: args => {
+          xpipeFactory.breakpointXpipeSignal.emit(args);
         }
       });
       // Add command signal to terminate debugging xpipe

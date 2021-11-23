@@ -24,6 +24,11 @@
   background-size: 28px 28px;
 }
 
+.jp-BreakpointLogo {
+  background-image: url(./icons/breakpoint.svg);
+  background-repeat: no-repeat;
+}
+
 /* Close button for image viewer*/
 .close {
   color: #fff;
