@@ -24,6 +24,12 @@
   background-size: 28px 28px;
 }
 
+.jp-NextLogo {
+  background-image: url(./icons/next.svg);
+  background-repeat: no-repeat;
+  background-size: 25px 25px;
+}
+
 .jp-BreakpointLogo {
   background-image: url(./icons/breakpoint.svg);
   background-repeat: no-repeat;

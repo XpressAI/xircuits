@@ -1,6 +1,5 @@
 import { JupyterFrontEnd } from '@jupyterlab/application';
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
-import { redoIcon } from '@jupyterlab/ui-components';
 import { Debugger } from '@jupyterlab/debugger';
 import { Panel, SplitPanel, Widget, PanelLayout } from '@lumino/widgets';
 import { commandIDs } from '../components/xpipeBodyWidget';
@@ -146,7 +145,7 @@ export const DebuggerCommandIDs = {
       // Add command signal to toggle next node
       app.commands.addCommand(commandIDs.nextNode, {
         caption: trans.__('Next Node'),
-        icon: redoIcon,
+        iconClass: 'jp-NextLogo',
         isEnabled: () => {
           return inDebugMode ?? false;
         },
