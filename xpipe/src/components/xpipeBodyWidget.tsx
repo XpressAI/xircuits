@@ -288,7 +288,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				current_node = componentList[component_exist];
 				if (current_node["path"] != "") {
 					if (current_node["path"].indexOf("/") != -1) {
-						package_name = current_node["path"].substring(0, current_node["path"].length - 3).replace("/", ".");
+						package_name = current_node["path"].substring(0, current_node["path"].length - 3).split("/").join(".");
 					} else {
 						package_name = "." + current_node["path"].substring(0, current_node["path"].length - 3);
 					}
@@ -1065,7 +1065,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}, [evaluateDebugSignal, handleToggleEvaluateDebug]);
 
 	const fetchComponentList = async () => {
-		const response = await ComponentList(serviceManager, "");
+		const response = await ComponentList(serviceManager, "xai_components");
 		if (response.length > 0) {
 			setComponentList([]);
 		}

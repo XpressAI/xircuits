@@ -1,18 +1,13 @@
 from argparse import ArgumentParser
 from datetime import datetime
-from xai_spark.pyspark_mllib import SparkSparseVector
-from xai_spark.pyspark_mllib import SparkLabeledPoint
+from xai_components.xai_learning.component_test import HelloHyperparameter2
 
 def main(args):
-    c_1 = SparkSparseVector()
-    c_2 = SparkLabeledPoint()
+    c_1 = HelloHyperparameter2()
 
-    c_1.vector_list.value = [3, [0, 2], [1.0, 3.0]]
-    c_2.label.value = 1.0
-    c_2.sparse_vector = c_1.sparse_vector
+    c_1.input_str.value = 'asd'
 
-    c_1.next = c_2
-    c_2.next = None
+    c_1.next = None
 
     next_component = c_1.do()
     while next_component:
