@@ -110,6 +110,7 @@ export class XPipePanel extends ReactWidget {
   stepInDebugSignal: Signal<this, any>;
   stepOutDebugSignal: Signal<this, any>;
   evaluateDebugSignal: Signal<this, any>;
+  debugModeSignal: Signal<this, any>;
 
   activeModel: SRD.DiagramModel;
   diagramEngine: SRD.DiagramEngine;
@@ -143,6 +144,7 @@ export class XPipePanel extends ReactWidget {
     this.stepInDebugSignal = options.stepInDebugSignal;
     this.stepOutDebugSignal = options.stepOutDebugSignal;
     this.evaluateDebugSignal = options.evaluateDebugSignal;
+    this.debugModeSignal = options.debugModeSignal;
 
     //debugger;
     console.log(this.context);
@@ -284,6 +286,7 @@ export class XPipePanel extends ReactWidget {
         stepInDebugSignal={this.stepInDebugSignal}
         stepOutDebugSignal={this.stepOutDebugSignal}
         evaluateDebugSignal={this.evaluateDebugSignal}
+        debugModeSignal={this.debugModeSignal}
         customDeserializeModel={this.customDeserializeModel}
       />
     );

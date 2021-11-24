@@ -57,6 +57,7 @@ export interface BodyWidgetProps {
 	stepInDebugSignal: Signal<XPipePanel, any>;
 	stepOutDebugSignal: Signal<XPipePanel, any>;
 	evaluateDebugSignal: Signal<XPipePanel, any>;
+	debugModeSignal: Signal<XPipePanel, any>;
 	customDeserializeModel;
 }
 
@@ -148,6 +149,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	stepInDebugSignal,
 	stepOutDebugSignal,
 	evaluateDebugSignal,
+	debugModeSignal,
 	customDeserializeModel
 }) => {
 
@@ -172,8 +174,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [runOnce, setRunOnce] = useState(false);
 	const [displayRcDialog, setDisplayRcDialog] = useState(false);
 	const [disableRcDialog, setDisableRcDialog] = useState(false);
-	const [debugMode, setDebugMode] = useState(false);
-	const [currentIndex, setCurrentIndex] = useState(-1);
+	const [debugMode, setDebugMode] = useState<boolean>(false);
+	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
+	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const xpipeLogger = new Log(app);
 
 	const getBindingIndexById = (nodeModels: any[], id: string): number | null => {
@@ -724,7 +727,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		resetColorCodeOnStart(true);
-
+		setDebugMode(true);
+		
 		saveAndCompile();
 
 		// let allNodes = diagramEngine.getModel().getNodes();
@@ -1237,6 +1241,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 		
 		await runFromNodeToNode2();
+		setInDebugMode(true);
 	}
 
 	const handleToggleNextNode = async () => {
@@ -1458,9 +1463,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 		debugger;
 
-		//allNodes[i].getOptions().extras["imageGalleryItems"] = response;
 		alert("Testing");
-		//commands.execute('server:get-file');
+		setDebugMode(false);
+		setInDebugMode(false);
 	}
 
 	const hideRcDialog = () => {
@@ -1747,6 +1752,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 		setComponentList(response);
 	}
+
+	useEffect(() => {
+		debugModeSignal.emit({
+			debugMode,
+			inDebugMode
+		});
+	}, [debugMode, inDebugMode])
 
 	useEffect(() => {
 		if (!runOnce) {
