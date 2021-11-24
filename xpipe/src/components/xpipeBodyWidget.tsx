@@ -59,6 +59,7 @@ export interface BodyWidgetProps {
 	stepInDebugSignal: Signal<XPipePanel, any>;
 	stepOutDebugSignal: Signal<XPipePanel, any>;
 	evaluateDebugSignal: Signal<XPipePanel, any>;
+	debugModeSignal: Signal<XPipePanel, any>;
 	customDeserializeModel;
 }
 
@@ -150,6 +151,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	stepInDebugSignal,
 	stepOutDebugSignal,
 	evaluateDebugSignal,
+	debugModeSignal,
 	customDeserializeModel
 }) => {
 
@@ -174,6 +176,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [runOnce, setRunOnce] = useState(false);
 	const [displayRcDialog, setDisplayRcDialog] = useState(false);
 	const [disableRcDialog, setDisableRcDialog] = useState(false);
+	const [debugMode, setDebugMode] = useState<boolean>(false);
+	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const xpipeLogger = new Log(app);
 
 
@@ -606,8 +610,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		let allNodes = diagramEngine.getModel().getNodes();
-		allNodes[1].getOptions().extras["imageGalleryItems"] = "xxx";
+		// Image viewer
+		// let allNodes = diagramEngine.getModel().getNodes();
+		// allNodes[1].getOptions().extras["imageGalleryItems"] = "xxx";
+
+		setDebugMode(true)
 
 		if (saved && compiled) {
 
@@ -676,6 +683,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 		alert("Continue");
+		setInDebugMode(true)
 	}
 
 	const handleToggleNextNode = () => {
@@ -777,9 +785,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 		debugger;
 
-		//allNodes[i].getOptions().extras["imageGalleryItems"] = response;
 		alert("Testing");
-		//commands.execute('server:get-file');
+		setDebugMode(false);
+		setInDebugMode(false);
 	}
 	
 	const hideRcDialog = () => {
@@ -1071,6 +1079,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 		setComponentList(response);
 	}
+
+	useEffect(() => {
+		debugModeSignal.emit({
+			debugMode,
+			inDebugMode
+		});
+	}, [debugMode, inDebugMode])
 
 	useEffect(() => {
 		if (!runOnce) {

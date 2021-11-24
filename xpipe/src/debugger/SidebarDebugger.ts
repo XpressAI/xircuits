@@ -1,13 +1,11 @@
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import { ToolbarButton } from '@jupyterlab/apputils';
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
-import { redoIcon } from '@jupyterlab/ui-components';
 import { Debugger } from '@jupyterlab/debugger';
 import { Panel, SplitPanel, Widget, PanelLayout } from '@lumino/widgets';
 import { commandIDs } from '../components/xpipeBodyWidget';
 import { DebuggerWidget } from './DebuggerWidget';
 import { XpipeFactory } from '../xpipeFactory';
-import { Toolbar } from '@jupyterlab/apputils';
+import { Toolbar, CommandToolbarButton } from '@jupyterlab/apputils';
 
 export const DebuggerCommandIDs = {
   continue: 'Xpipes-debugger:continue',
@@ -43,18 +41,23 @@ export const DebuggerCommandIDs = {
       const content = new DebuggerWidget( xpipeFactory );
       const header = new DebuggerHeader(translator);
       const toolbarPanel = new DebuggerToolbar();
+      let debugMode;
+      let inDebugMode;
+
+      xpipeFactory.debugModeSignal.connect((_, args) => {
+        debugMode = args["debugMode"];
+        inDebugMode = args["inDebugMode"];
+        app.commands.notifyCommandChanged();
+      });
 
       /**
        * Create a continue button toolbar item.
        */
       toolbarPanel.toolbar.addItem(
         'xpipes-debugger-continue',
-        new ToolbarButton({
-          icon: Debugger.Icons.continueIcon,
-          onClick: async (): Promise<void> => {
-            app.commands.execute(DebuggerCommandIDs.continue);
-          },
-          tooltip: trans.__('Continue')
+        new CommandToolbarButton({
+          commands: app.commands,
+          id: DebuggerCommandIDs.continue
         })
       );
       /**
@@ -62,12 +65,9 @@ export const DebuggerCommandIDs = {
        */
       toolbarPanel.toolbar.addItem(
         'xpipes-debugger-next',
-        new ToolbarButton({
-          icon: redoIcon,
-          onClick: async (): Promise<void> => {
-            app.commands.execute(commandIDs.nextNode);
-          },
-          tooltip: trans.__('Next Node')
+        new CommandToolbarButton({
+          commands: app.commands,
+          id: commandIDs.nextNode
         })
       );
       /**
@@ -75,12 +75,19 @@ export const DebuggerCommandIDs = {
        */
       toolbarPanel.toolbar.addItem(
         'xpipes-debugger-step-over',
-        new ToolbarButton({
-          icon: Debugger.Icons.stepOverIcon,
-          onClick: async (): Promise<void> => {
-            app.commands.execute(DebuggerCommandIDs.stepOver);
-          },
-          tooltip: trans.__('Step Over')
+        new CommandToolbarButton({
+          commands: app.commands,
+          id: DebuggerCommandIDs.stepOver
+        })
+      );
+      /**
+       * Create a breakpoint button toolbar item.
+       */
+       toolbarPanel.toolbar.addItem(
+        'xpipes-debugger-breakpoint',
+        new CommandToolbarButton({
+          commands: app.commands,
+          id: commandIDs.breakpointXpipe
         })
       );
       /**
@@ -88,12 +95,9 @@ export const DebuggerCommandIDs = {
        */
       toolbarPanel.toolbar.addItem(
         'xpipes-debugger-terminate',
-        new ToolbarButton({
-          icon: Debugger.Icons.terminateIcon,
-          onClick: async (): Promise<void> => {
-            app.commands.execute(DebuggerCommandIDs.terminate);
-          },
-          tooltip: trans.__('Terminate')
+        new CommandToolbarButton({
+          commands: app.commands,
+          id: DebuggerCommandIDs.terminate
         })
       );
       /**
@@ -101,12 +105,9 @@ export const DebuggerCommandIDs = {
        */
       toolbarPanel.toolbar.addItem(
         'xpipes-debugger-step-in',
-        new ToolbarButton({
-          icon: Debugger.Icons.stepIntoIcon,
-          onClick: async (): Promise<void> => {
-            app.commands.execute(DebuggerCommandIDs.stepIn);
-          },
-          tooltip: trans.__('Step In')
+        new CommandToolbarButton({
+          commands: app.commands,
+          id: DebuggerCommandIDs.stepIn
         })
       );
       /**
@@ -114,12 +115,9 @@ export const DebuggerCommandIDs = {
        */
       toolbarPanel.toolbar.addItem(
         'xpipes-debugger-step-out',
-        new ToolbarButton({
-          icon: Debugger.Icons.stepOutIcon,
-          onClick: async (): Promise<void> => {
-            app.commands.execute(DebuggerCommandIDs.stepOut);
-          },
-          tooltip: trans.__('Step Out')
+        new CommandToolbarButton({
+          commands: app.commands,
+          id: DebuggerCommandIDs.stepOut
         })
       );
       /**
@@ -127,53 +125,95 @@ export const DebuggerCommandIDs = {
        */
       toolbarPanel.toolbar.addItem(
         'xpipes-debugger-evaluate-code',
-        new ToolbarButton({
-          icon: Debugger.Icons.evaluateIcon,
-          onClick: async (): Promise<void> => {
-            app.commands.execute(DebuggerCommandIDs.evaluate);
-          },
-          tooltip: trans.__('Evaluate Code')
+        new CommandToolbarButton({
+          commands: app.commands,
+          id: DebuggerCommandIDs.evaluate
         })
       );
 
       // Add command signal to continue debugging xpipe
       app.commands.addCommand(DebuggerCommandIDs.continue, {
+        caption: trans.__('Continue'),
+        icon: Debugger.Icons.continueIcon,
+        isEnabled: () => {
+          return debugMode ?? false;
+        },
         execute: args => {
           xpipeFactory.continueDebugSignal.emit(args);
         }
       });
       // Add command signal to toggle next node
       app.commands.addCommand(commandIDs.nextNode, {
+        caption: trans.__('Next Node'),
+        iconClass: 'jp-NextLogo',
+        isEnabled: () => {
+          return inDebugMode ?? false;
+        },
         execute: args => {
           xpipeFactory.nextNodeDebugSignal.emit(args);
         }
       });
       // Add command signal to toggle step over 
       app.commands.addCommand(DebuggerCommandIDs.stepOver, {
-        execute: args => {
+        caption: trans.__('Step Over'),
+        icon: Debugger.Icons.stepOverIcon,
+        isEnabled: () => {
+          return inDebugMode ?? false;
+        },execute: args => {
           xpipeFactory.stepOverDebugSignal.emit(args);
+        }
+      });
+      // Add command signal to toggle breakpoint
+      app.commands.addCommand(commandIDs.breakpointXpipe, {
+        caption: trans.__('Toggle Breakpoint'),
+        iconClass: 'jp-BreakpointLogo',
+        isEnabled: () => {
+          return inDebugMode ?? false;
+        },
+        execute: args => {
+          xpipeFactory.breakpointXpipeSignal.emit(args);
         }
       });
       // Add command signal to terminate debugging xpipe
       app.commands.addCommand(DebuggerCommandIDs.terminate, {
+        caption: trans.__('Terminate'),
+        icon: Debugger.Icons.terminateIcon,
+        isEnabled: () => {
+          return inDebugMode ?? false;
+        },
         execute: args => {
           xpipeFactory.terminateDebugSignal.emit(args);
         }
       });
       // Add command signal to toggle step in
       app.commands.addCommand(DebuggerCommandIDs.stepIn, {
+        caption: trans.__('Step In'),
+        icon: Debugger.Icons.stepIntoIcon,
+        isEnabled: () => {
+          return inDebugMode ?? false;
+        },
         execute: args => {
           xpipeFactory.stepInDebugSignal.emit(args);
         }
       });
       // Add command signal to toggle step out
       app.commands.addCommand(DebuggerCommandIDs.stepOut, {
+        caption: trans.__('Step Out'),
+        icon: Debugger.Icons.stepOutIcon,
+        isEnabled: () => {
+          return inDebugMode ?? false;
+        },
         execute: args => {
           xpipeFactory.stepOutDebugSignal.emit(args);
         }
       });
       // Add command signal to evaluate debugging xpipe
       app.commands.addCommand(DebuggerCommandIDs.evaluate, {
+        caption: trans.__('Evaluate Code'),
+        icon: Debugger.Icons.evaluateIcon,
+        isEnabled: () => {
+          return inDebugMode ?? false;
+        },
         execute: args => {
           xpipeFactory.evaluateDebugSignal.emit(args);
         }
