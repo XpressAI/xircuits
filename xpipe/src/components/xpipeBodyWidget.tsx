@@ -463,7 +463,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			pythonCode += '                ' + 'is_done_list.append(is_done)\n';
 			pythonCode += '\n';
 
-			pythonCode += '            ' + '# http://127.0.0.1:5000/run\n';
+			pythonCode += '            ' + '# http://127.0.0.1:5000/skip\n';
 			pythonCode += '            ' + 'if len(input_data) > 0 and input_data[-1] == \'skip\':\n';
 			pythonCode += '                ' + 'next_component = next_component.do()\n';
 			pythonCode += '\n';
@@ -789,9 +789,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		diagramEngine.getModel().getNodes().forEach((item) => {
 			if (item.getOptions()["selected"] == true) {
-				let name = item.getOptions()["name"]
+				let name = item.getOptions()["name"];
+				let item2 = "asdd<br>asd";
+
 				currentNodeSignal.emit({
-					item
+					item, item2
 				});
 				if (name.startsWith("🔴")) {
 					item.getOptions()["name"] = name.split("🔴")[1]
@@ -858,7 +860,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		prevNode = allNodes[count];
 		
 		if (currentNode.getOptions()["name"].startsWith("🔴")) {
-			prevNode.setSelected(false);
+			prevNode.setSelected(true);
+			prevNode.getOptions()["color"] = "rgb(150,150,150)";
 			currentNode = allNodes[count + 1];
 			console.log("this");
 			console.log(currentNode.getOptions()["name"]);
@@ -870,6 +873,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				console.log(currentNode.getOptions()["name"]);
 
 				if (currentNode.getOptions()["name"] != "🔴Start" && currentNode.getOptions()["name"] != "Start") {
+					prevNode.setSelected(false);
 					await delay(1500);
 					let req_run_command1 = await sendingRunCommand("run");
 					console.log(req_run_command1);
@@ -894,14 +898,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						console.log(22);
 					}
 				}
-
+				prevNode.setSelected(false);
 				console.log("run abc");
 				console.log(currentNode.getOptions()["name"]);
 				console.log(currentNode);
 				currentNode.setSelected(true);
-				currentNode.getOptions()["color"] = "rgb(150,150,150)";
-				prevNode.setSelected(false);
-				currentNode.getOptions()["color"] = "rgb(150,150,150)";
+				// currentNode.getOptions()["color"] = "rgb(150,150,150)";
+				// prevNode.setSelected(false);
+				// currentNode.getOptions()["color"] = "rgb(150,150,150)";
 
 				if (currentNode.getOptions()["name"] != "Finish" && currentNode.getOptions()["name"] != "🔴Finish") {
 					count = count + 1;
@@ -924,7 +928,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			console.log(count);								// 0             1
 			console.log(currentNode.getOptions()["name"]);  // Start        ReadDataset
 			console.log(prevNode.getOptions()["name"]); 	// Start		Start
+			currentNode.setSelected(true);
+			prevNode.setSelected(true);
+			prevNode.getOptions()["color"] = "rgb(150,150,150)";
 			if (currentNode.getOptions()["name"] != "Start" && currentNode.getOptions()["name"] != "🔴Start") {
+				prevNode.setSelected(false);
 				await delay(1500);
 				let req_run_command1 = await sendingRunCommand("run");
 				console.log(req_run_command1);
@@ -939,7 +947,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				console.log(typeof output_req);
 				console.log(output_req.split(","));
 				while (output_req.split(",").length != count) {
-					await delay(3000);
+					await delay(1500);
 					console.log("waiting333");
 					req_run_command5 = await sendingRunCommand("get_run");
 					output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
@@ -950,7 +958,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				}
 
 			}
-
+			prevNode.setSelected(false);
 			console.log("run abc");
 			console.log(currentNode.getOptions()["name"]); // Start
 			console.log(currentNode);					   // Start
@@ -964,6 +972,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			currentNode = allNodes[count];                 // HelloList
 			currentNode.setSelected(true);
 
+			prevNode.setSelected(true);
 			prevNode.getOptions()["color"] = "rgb(150,150,150)";
 			prevNode.setSelected(false);
 			// await delay(1000);
@@ -972,11 +981,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				prevNode.setSelected(false);
 				currentNode.setSelected(true);
 				currentNode.getOptions()["color"] = "rgb(150,150,150)";
+				await delay(1500);
 
-				setCurrentIndex(-1);
-				setDebugMode(false);
 				currentNode.setSelected(false);
 				alert("Finish Execution.");
+				setCurrentIndex(-1);
+				setDebugMode(false);
 				console.log(currentNode);
 
 				allNodes.forEach((node) => {
@@ -1004,7 +1014,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		await delay(1000);
 		let item2 = await sendingRunCommand("get/output");
-		let runOnce = 0;
+		
 		console.log(item2);
 		console.log("item3 from xpipe");
 
@@ -1012,6 +1022,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		console.log("kk4");
 		console.log(count);
 		console.log(currentNode.getOptions()["name"]);
+		// currentNodeSignal.emit({
+		// 	currentNode
+		// });
+		// await sendingRunCommand("clear");
 
 		if (currentNode.getOptions()["name"] == "Finish" || currentNode.getOptions()["name"] == "🔴Finish") {
 			prevNode.setSelected(false);
@@ -1183,7 +1197,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		await delay(1000);
 		let item2 = await sendingRunCommand("get/output");
-		let runOnce = 0;
+		
 		console.log(item2);
 		console.log("item3 from xpipe");
 
@@ -1258,7 +1272,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			// let output = await getContinuePost();
 			// console.log(output);
 			currentNode.setSelected(true);
-			await getContinuePost();
+			let req_run_command3 = await getContinuePost();
 			console.log("asd355");
 
 			currentNode.getOptions()["color"] = "rgb(150,150,150)";
@@ -1276,13 +1290,20 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			await delay(1500);
 
 			let item2 = await sendingRunCommand("get/output");
-			let runOnce = 0;
+			
 			console.log(item2);
 			console.log("item2 from xpipe")
 			console.log(item2);
-			// currentNodeSignal.emit({
-			// 	currentNode, item2, runOnce
-			// });
+			console.log("req_run_command3");
+			console.log(req_run_command3);
+			item2 = req_run_command3;
+
+			let item = currentNode;
+			currentNodeSignal.emit({
+				item, item2
+			});
+
+			// await sendingRunCommand("clear");
 
 
 		} else {
@@ -1297,7 +1318,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 			// await delay(1000);
 
-			await getContinuePost();
+			let req_run_command3 = await getContinuePost();
 			// alert(req_run_command3);
 			// currentNodeSignal.emit({
 			// 	currentNode
@@ -1319,13 +1340,20 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 			await delay(1000);
 			let item2 = await sendingRunCommand("get/output");
-			let runOnce = 0;
+			
 			console.log(item2);
+
+			console.log(req_run_command3);
+			item2 = req_run_command3;
+
 			console.log("item3 from xpipe")
 
-			// currentNodeSignal.emit({
-			// 	currentNode, item2, runOnce
-			// });
+			let item = currentNode;
+			currentNodeSignal.emit({
+				item, item2
+			});
+
+			
 		}
 
 		if (currentNode.getOptions()["name"] == "Finish") {

@@ -20,12 +20,15 @@ const DebuggerComponent = ({
   const [pOutLabels, setPOutLabel] = useState([]);
 
   xpipeFactory.currentNodeSignal.connect((_, args) => {
+    console.log("calling here");
     let item = typeof args["item"] === "undefined" ? "" : (args["item"] as any);
+    let item2 = typeof args["item2"] === "undefined" ? "" : (args["item2"] as any);
     let name = item.getOptions()["name"];
     let id = item.getOptions()["id"];
     let type = item.getOptions()["extras"]["type"];
-    let pInList = [],
-      pOutList = [];
+    let pInList = [], pOutList = [];
+    // console.log("item2");
+    // console.log(item2);
 
     if (name.startsWith("🔴")) {
       name = name.split("🔴")[1];

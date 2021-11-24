@@ -135,10 +135,10 @@ class DebuggerRouteHandler(APIHandler):
             output = requests.get("http://127.0.0.1:5000/get/output")
 
         elif input_data["command"] == "clear":
-            output = requests.get("http://127.0.0.1:5000/clear_node")
+            output = requests.get("http://127.0.0.1:5000/clear")
 
         elif input_data["command"] == "get_run":
-            output = requests.get("http://127.0.0.1:5000/execution")
+            output = requests.get("http://127.0.0.1:5000/execute")
 
         elif input_data["command"] == "clear_run":
             output = requests.get("http://127.0.0.1:5000/clear_execution")
