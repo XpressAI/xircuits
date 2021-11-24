@@ -39,7 +39,7 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 				onClick={(event) => {
 					if (event.ctrlKey || event.metaKey) {
 						const { commands } = this.props.app;
-						const openComponentFile = commands.execute('docmanager:open', {
+						commands.execute('docmanager:open', {
 							path: this.props.path,
 							factory: 'Editor',
 						});
@@ -49,7 +49,7 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 				onDoubleClick={(event) => {
 					if (this.props.path != "") {
 						const { commands } = this.props.app;
-						const openComponentFile = commands.execute('docmanager:open', {
+						commands.execute('docmanager:open', {
 							path: this.props.path,
 							factory: 'Editor',
 						});

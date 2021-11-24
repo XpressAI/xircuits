@@ -381,7 +381,7 @@ async function get_all_components_method(serviceManager: ServiceManager, basePat
 
         let path: string = "";
         let rootFile: string = "ADVANCED";
-        path = tempArr[i].split(" - ")[tempArr[i].split(" - ").length - 1];
+        path = tempArr[i].split(" - ")[tempArr[i].split(" - ").length - 1].replace(basePath + "/", "");
         if (path.indexOf("/") != -1) {
             rootFile = path.split("/")[0].toUpperCase();
             if (rootFile.indexOf("_") != -1) {

@@ -9,7 +9,7 @@ class HelloHyperparameter(Component):
     def execute(self) -> None:
         input_str = self.input_str.value
         print("Hello " + input_str)
-        
+
 class HelloListTupleDict(Component):
     input_list: InArg[list]
     input_tuple: InArg[tuple]

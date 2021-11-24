@@ -130,7 +130,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     });
 
     // Creating the sidebar widget
-    const sidebarWidget = ReactWidget.create(<Sidebar lab = {app} basePath = ""/>);
+    const sidebarWidget = ReactWidget.create(<Sidebar lab = {app} basePath = "xai_components"/>);
     sidebarWidget.id = 'xpipe-component-sidebar';
     sidebarWidget.title.iconClass = 'jp-ComponentLibraryLogo';
     sidebarWidget.title.caption = "Xpipes Component Library";
