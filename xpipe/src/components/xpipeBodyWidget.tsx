@@ -464,11 +464,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			pythonCode += '\n';
 
 			pythonCode += '            ' + 'if len(input_data) > 0 and input_data[-1] == \'skip\':\n';
-			pythonCode += '                ' + 'next_component = next_component.do()\n';
+			pythonCode += '                ' + 'is_done, next_component = next_component.do()\n';
 			pythonCode += '\n';
 
 			pythonCode += '        ' + 'else:\n';
-			pythonCode += '            ' + 'next_component = next_component.do()\n';
+			pythonCode += '            ' + 'is_done, next_component = next_component.do()\n';
 			pythonCode += '\n';
 
 			pythonCode += '@app.route(\'/terminate\')\n';
