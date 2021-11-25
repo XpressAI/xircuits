@@ -11,8 +11,6 @@ class HelloHyperparameter(Component):
         input_str = self.input_str.value
         print("Hello " + input_str)
 
-        self.done = True
-        
 class HelloListTupleDict(Component):
     input_list: InArg[list]
     input_tuple: InArg[tuple]

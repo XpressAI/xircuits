@@ -220,7 +220,7 @@ class ResNet50(Component):
                             setattr(model_config, config, portValue)
 
             except Exception as e:
-                print(e)
+                pass
 
         model = applications.ResNet50(model_config)
         self.model.value = model
@@ -261,7 +261,7 @@ class ResNet101(Component):
                             setattr(model_config, config, portValue)
 
             except Exception as e:
-                print(e)
+                pass
 
         model = applications.ResNet101(model_config)
         self.model.value = model
@@ -303,7 +303,7 @@ class ResNet152(Component):
                             setattr(model_config, config, portValue)
 
             except Exception as e:
-                print(e)
+                pass
 
         model = applications.ResNet152(model_config)
         self.model.value = model
@@ -362,7 +362,7 @@ class VGG16(Component):
                             setattr(model_config, config, portValue)
 
             except Exception as e:
-                print(e)
+                pass
 
         model = applications.VGG16(model_config)
         self.model.value = model
@@ -404,7 +404,7 @@ class VGG19(Component):
                             setattr(model_config, config, portValue)
 
             except Exception as e:
-                print(e)
+                pass
 
         model = applications.VGG19(model_config)
         self.model.value = model
@@ -445,7 +445,7 @@ class Xception(Component):
                             setattr(model_config, config, portValue)
 
             except Exception as e:
-                print(e)
+                pass
 
         model = applications.VGG19(model_config)
         self.model.value = model
@@ -517,7 +517,7 @@ class MobileNet(Component):
                             setattr(model_config, config, portValue)
 
             except Exception as e:
-                print(e)
+                pass
 
         model = applications.VGG19(model_config)
         self.model.value = model
