@@ -801,7 +801,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 	};
 
-	const runFromNodeToNode2 = async () => {
+	const runFromNodeToNode = async () => {
 		if (!debugMode) {
 			alert("Not in debug mode");
 			return;
@@ -810,7 +810,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let allNodes = getAllNodesFromStartToFinish();
 		let prevNode: NodeModel;
 		let currentNode: NodeModel;
-		let nextNode: NodeModel;
 
 		let count = currentIndex;
 		currentNode = allNodes[count];
@@ -824,24 +823,22 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			if (currentNode.getOptions()["name"].startsWith("🔴")) {
 				if (currentNode.getOptions()["name"] != "🔴Start" && currentNode.getOptions()["name"] != "Start") {
 					await delay(1000);
+
 					prevNode.setSelected(false);
-					// await delay(1500);
+
 					await sendingRunCommand("run");
 
-					let req_run_command5 = await sendingRunCommand("get_run");
-					let output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
+					let req_run_command = await sendingRunCommand("get_run");
+					let output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
 					while (output_req.split(",").length != count) {
 						await delay(1500);
-						req_run_command5 = await sendingRunCommand("get_run");
-						output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
+						req_run_command = await sendingRunCommand("get_run");
+						output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
 					}
 				}
 				await delay(1000);
 				prevNode.setSelected(false);
 				currentNode.setSelected(true);
-				// currentNode.getOptions()["color"] = "rgb(150,150,150)";
-				// prevNode.setSelected(false);
-				// currentNode.getOptions()["color"] = "rgb(150,150,150)";
 
 				if (currentNode.getOptions()["name"] != "Finish" && currentNode.getOptions()["name"] != "🔴Finish") {
 					count = count + 1;
@@ -857,40 +854,46 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			prevNode.getOptions()["color"] = "rgb(150,150,150)";
 			if (currentNode.getOptions()["name"] != "Start" && currentNode.getOptions()["name"] != "🔴Start") {
 				await delay(1000);
+
 				prevNode.setSelected(false);
 				currentNode.setSelected(true);
+
 				await sendingRunCommand("run");
 
-				let req_run_command5 = await sendingRunCommand("get_run");
-				let output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
+				let req_run_command = await sendingRunCommand("get_run");
+				let output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
 				while (output_req.split(",").length != count) {
 					await delay(1500);
-					req_run_command5 = await sendingRunCommand("get_run");
-					output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
+					req_run_command = await sendingRunCommand("get_run");
+					output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
 				}
-
 			}
-
 			await delay(1000);
+
 			prevNode.setSelected(false);
+
 			prevNode = currentNode;
 			count = count + 1;
 			currentNode = allNodes[count];
-
 
 			prevNode.setSelected(true);
 			prevNode.getOptions()["color"] = "rgb(150,150,150)";
 			prevNode.setSelected(false);
 			currentNode.setSelected(true);
+
 			setInDebugMode(true);
 
 			if (currentNode.getOptions()["name"] == "Finish" || currentNode.getOptions()["name"] == "🔴Finish") {
 				prevNode.setSelected(false);
 				currentNode.setSelected(true);
 				currentNode.getOptions()["color"] = "rgb(150,150,150)";
+
 				await delay(1000);
+
 				currentNode.setSelected(false);
+
 				alert("Finish Execution.");
+
 				setCurrentIndex(-1);
 				setDebugMode(false);
 				setInDebugMode(false);
@@ -905,8 +908,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			setCurrentIndex(count);
 		}
 		await getContinuePost();
-
 		await delay(1000);
+
 		let item2 = await sendingRunCommand("get/output");
 		let item = currentNode;
 
@@ -943,7 +946,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			resetColorCodeOnStart(true);
 		}
 
-		await runFromNodeToNode2();
+		await runFromNodeToNode();
 	}
 
 	const handleToggleNextNode = async () => {
@@ -968,7 +971,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		if (currentNode.getOptions()["name"] == "Start" || currentNode.getOptions()["name"] == "🔴Start") {
 			currentNode.setSelected(true);
-			let req_run_command3 = await getContinuePost();
+			await getContinuePost();
 
 			currentNode.getOptions()["color"] = "rgb(150,150,150)";
 			currentNode.setSelected(false);
@@ -990,16 +993,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		} else {
 			await sendingRunCommand("run");
 
-			let req_run_command5 = await sendingRunCommand("get_run");
-			let output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
+			let req_run_command = await sendingRunCommand("get_run");
+			let output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
 
 			while (output_req.split(",").length != count) {
 				await delay(1500);
-				req_run_command5 = await sendingRunCommand("get_run");
-				output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
+				req_run_command = await sendingRunCommand("get_run");
+				output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
 			}
 
-			let req_run_command3 = await getContinuePost();
+			await getContinuePost();
 			prevNode.setSelected(true);
 			count += 1;
 			currentNode = allNodes[count];
@@ -1048,7 +1051,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (currentIndex == 0) {
 			resetColorCodeOnStart(true);
 		}
-		await runFromNodeToNode2();
+
+		await runFromNodeToNode();
 	}
 
 	const resetColorCodeOnStart = (onStart: boolean) => {
@@ -1133,7 +1137,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	useEffect(() => {
-
 		if (initialize) {
 			let allNodes = diagramEngine.getModel().getNodes();
 			let nodesCount = allNodes.length;
