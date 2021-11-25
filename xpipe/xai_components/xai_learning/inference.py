@@ -11,6 +11,7 @@ class LoadImage(Component):
     dataset: OutArg[Tuple[np.array, np.array]]
 
     def __init__(self):
+        self.done = False
         self.dataset_name = InArg.empty()
         self.dataset = OutArg.empty()
 
@@ -28,6 +29,8 @@ class LoadImage(Component):
             new_x = np.vstack((x_train, x_test))
             new_y = np.concatenate((y_train, y_test), axis=None)
             self.dataset.value = (new_x, new_y)
+        
+        self.done = True
 
 
 class ResizeImageData(Component):
@@ -35,6 +38,7 @@ class ResizeImageData(Component):
     resized_dataset: OutArg[Tuple[np.array, np.array]]
 
     def __init__(self):
+        self.done = False
         self.dataset = InArg.empty()
         self.resized_dataset = OutArg.empty()
 
@@ -43,3 +47,4 @@ class ResizeImageData(Component):
         x = x.reshape(x.shape[0], x.shape[1] * x.shape[2])
 
         self.resized_dataset.value = (x, self.dataset.value[1])
+        self.done = True

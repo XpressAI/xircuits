@@ -146,7 +146,6 @@ class Create1DInputModel(Component):
         self.model = OutArg.empty()
 
     def execute(self) -> None:
-
         x_shape = self.training_data.value[0].shape
         y_shape = self.training_data.value[1].shape
 
@@ -172,6 +171,7 @@ class Create2DInputModel(Component):
     model: OutArg[keras.Sequential]
 
     def __init__(self):
+        self.done = False
         self.training_data = InArg.empty()
         self.model = OutArg.empty()
 
@@ -201,6 +201,7 @@ class Create2DInputModel(Component):
         )
 
         self.model.value = model
+        self.done = True
 
 
 class TrainImageClassifier(Component):
@@ -227,7 +228,6 @@ class TrainImageClassifier(Component):
         )
 
         self.trained_model.value = self.model.value
-
         self.done = True
 
 
@@ -264,6 +264,7 @@ class ShouldStop(Component):
     should_retrain: OutArg[bool]
 
     def __init__(self):
+        self.done = False
         self.target_accuracy = InArg.empty()
         self.max_retries = InArg.empty()
         self.metrics = InArg.empty()
@@ -286,7 +287,7 @@ class ShouldStop(Component):
         else:
             print('Unable to achieve target accuracy.  Giving up.')
             self.should_retrain.value = False
-
+        self.done = True
 
 class SaveKerasModelInModelStash(Component):
     model: InArg[keras.Sequential]
@@ -294,6 +295,7 @@ class SaveKerasModelInModelStash(Component):
     metrics: InArg[Dict[str, float]]
 
     def __init__(self):
+        self.done = False
         self.model = InArg.empty()
         self.experiment_name = InArg.empty()
         self.metrics = InArg.empty()
@@ -321,3 +323,4 @@ class SaveKerasModelInModelStash(Component):
             f.write(config_json)
 
         os.system("git add . && git commit -m 'experiment %s'" % (exp_dir))
+        self.done = True

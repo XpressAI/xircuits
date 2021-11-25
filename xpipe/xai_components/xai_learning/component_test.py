@@ -9,7 +9,8 @@ class HelloHyperparameter(Component):
 
     def execute(self) -> None:
         input_str = self.input_str.value
-        print("Hello " + input_str)
+        print("Hello, " + input_str)
+        self.done = True
 
 class HelloListTupleDict(Component):
     input_list: InArg[list]
@@ -23,7 +24,6 @@ class HelloListTupleDict(Component):
         self.input_dict = InArg.empty()
 
     def execute(self) -> None:
-        
         input_list = self.input_list.value if self.input_list.value else ""
         input_tuple = self.input_tuple.value if self.input_tuple.value else ""
         input_dict = self.input_dict.value if self.input_dict.value else ""
