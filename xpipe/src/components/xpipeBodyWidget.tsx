@@ -262,7 +262,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let pythonCode = 'from argparse import ArgumentParser\n';
 		pythonCode += 'from datetime import datetime\n';
 		pythonCode += 'from time import sleep\n';
-		pythonCode += 'from flask import Flask, request\n';
+		pythonCode += 'import json, os, signal\n';
+		pythonCode += 'from flask import Flask, jsonify, request\n';
 		pythonCode += 'from threading import Thread\n';
 
 		let uniqueComponents = {};
@@ -443,15 +444,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			pythonCode += '    ' + 'while next_component:\n';
 
 			pythonCode += '        ' + 'if debug_mode:\n';
-			pythonCode += '            ' + '# http://127.0.0.1:5000/continue\n';
 			pythonCode += '            ' + 'if len(continue_input_data) > 0 and continue_input_data[-1] == \'continue\':\n';
 			pythonCode += '                ' + 'vars_dict = vars(next_component)\n';
-			pythonCode += '                ' + 'print(vars_dict)\n';
 			pythonCode += '                ' + 'new_dict = {}\n';
 			pythonCode += '                ' + 'for i in vars_dict:\n';
 			pythonCode += '                    ' + 'if not i in [\'next\', \'done\']:\n';
 			pythonCode += '                        ' + 'new_dict[i] = next_component.__getattribute__(i).value\n';
-			pythonCode += '                        ' + 'print(next_component.__getattribute__(i).value)\n';
 			pythonCode += '                        ' + 'if \'InArg\' in str(vars_dict[i]):\n';
 			pythonCode += '                            ' + 'inarg_output_data.append(str(i) + \': \' + str(next_component.__getattribute__(i).value))\n';
 			pythonCode += '                        ' + 'if \'OutArg\' in str(vars_dict[i]):\n';
@@ -459,14 +457,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			pythonCode += '                ' + 'continue_input_data.clear()\n';
 			pythonCode += '\n';
 
-			pythonCode += '            ' + '# http://127.0.0.1:5000/run\n';
 			pythonCode += '            ' + 'if len(input_data) > 0 and input_data[-1] == \'run\':\n';
 			pythonCode += '                ' + 'is_done, next_component = next_component.do()\n';
 			pythonCode += '                ' + 'input_data.clear()\n';
 			pythonCode += '                ' + 'is_done_list.append(is_done)\n';
 			pythonCode += '\n';
 
-			pythonCode += '            ' + '# http://127.0.0.1:5000/skip\n';
 			pythonCode += '            ' + 'if len(input_data) > 0 and input_data[-1] == \'skip\':\n';
 			pythonCode += '                ' + 'next_component = next_component.do()\n';
 			pythonCode += '\n';
@@ -475,41 +471,35 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			pythonCode += '            ' + 'next_component = next_component.do()\n';
 			pythonCode += '\n';
 
-			pythonCode += 'def shutdown_server():\n';
-			pythonCode += '    ' + 'func = request.environ.get(\'werkzeug.server.shutdown\')\n';
-			pythonCode += '    ' + 'if func is None:\n';
-			pythonCode += '        ' + 'raise RuntimeError(\'Not running with the Werkzeug Server\')\n';
-			pythonCode += '    ' + 'func()\n\n';
-
-			pythonCode += '@app.route(\'/stop\')\n';
+			pythonCode += '@app.route(\'/terminate\')\n';
 			pythonCode += 'def shutdown():\n';
-			pythonCode += '    ' + 'shutdown_server()\n';
-			pythonCode += '    ' + 'return \'Server shutting down...\'\n\n';
+			pythonCode += '    ' + 'os.kill(os.getpid(), signal.SIGINT)\n';
+			pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Server is shutting down..." })\n\n';
 
 			pythonCode += '@app.route(\'/run\')\n';
 			pythonCode += 'def next_node(input_data=input_data):\n';
 			pythonCode += '    ' + 'input_data.append("run")\n';
-			pythonCode += '    ' + 'return \'run is executed\'\n\n';
+			pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Run is executed" })\n\n';
 
-			pythonCode += '@app.route(\'/execution\')\n';
+			pythonCode += '@app.route(\'/execute\')\n';
 			pythonCode += 'def get_execution_output():\n';
 			pythonCode += '    ' + 'return str(is_done_list)\n\n';
 
 			pythonCode += '@app.route(\'/clear_execution\')\n';
 			pythonCode += 'def clear_execution_output():\n';
 			pythonCode += '    ' + 'is_done_list.clear()\n';
-			pythonCode += '    ' + 'return \'clear execution\'\n\n';
+			pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Clearing execution" })\n\n';
 
 			pythonCode += '@app.route(\'/continue\')\n';
 			pythonCode += 'def continue_node(continue_input_data=continue_input_data):\n';
 			pythonCode += '    ' + 'continue_input_data.append("continue")\n';
-			pythonCode += '    ' + 'return \'continue is executed\'\n\n';
+			pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Continue is executed" })\n\n';
 
 			pythonCode += '@app.route(\'/clear\')\n';
 			pythonCode += 'def clear_node():\n';
 			pythonCode += '    ' + 'inarg_output_data.clear()\n';
 			pythonCode += '    ' + 'outarg_output_data.clear()\n';
-			pythonCode += '    ' + 'return \'clear flask is executed\'\n\n';
+			pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Clearing input/output args" })\n\n';
 
 			pythonCode += '@app.route(\'/get/output\')\n';
 			pythonCode += 'def get_output_data():\n';
@@ -691,7 +681,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		// compile
 		let allNodesConnected = checkAllNodesConnected();
-		
+
 		if (!allNodesConnected) {
 			alert("Please connect all the nodes before debugging.");
 			return;
@@ -727,8 +717,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		resetColorCodeOnStart(true);
-		setDebugMode(true);
-		
+
 		saveAndCompile();
 
 		// let allNodes = diagramEngine.getModel().getNodes();
@@ -740,6 +729,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			commands.execute(commandIDs.executeToOutputPanel, { runCommand, debug_mode });
 			commands.execute(commandIDs.openDebugger);
 			setDebugMode(true);
+			setInDebugMode(false);
 			let allNodes = getAllNodesFromStartToFinish();
 			allNodes.forEach((node) => {
 				node.setSelected(false);
@@ -749,39 +739,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			let currentNode = allNodes[0];
 			currentNode.setSelected(true);
 		}
-
-		// if (saved && compiled) {
-
-		// 	let allNodes = getAllNodesFromStartToFinish();
-		// 	let isNodeSelected = false;
-
-		// 	for (let i = 0; i < allNodes.length; i++) {
-
-		// 		if (allNodes[i].getOptions()["name"].startsWith("🔴")) {
-		// 			allNodes[i].setSelected(true);
-		// 			isNodeSelected = true;
-		// 			break;
-		// 		} else {
-		// 			allNodes[i].setSelected(false);
-		// 		}
-		// 	}
-
-		// 	if (!isNodeSelected) {
-		// 		let startNodeModel = getNodeModelByName(allNodes, 'Start');
-		// 		startNodeModel.setSelected(true);
-		// 	}
-		// 	alert("Debug xpipe");
-		// 	commands.execute(commandIDs.openDebugger);
-		// } else {
-		// 	alert("Please save and compile before debugging.")
-		// }
-
-		// if (compiled && saved) {
-		// 	onClick('displayDebug');
-		// }
-		// else {
-		// 	onClick('displaySavedAndCompiled');
-		// }
 	}
 
 	const handleToggleBreakpoint = () => {
@@ -816,16 +773,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const getContinuePost = async () => {
-		let req_run_command4 = await sendingRunCommand("clear");
-		console.log(req_run_command4);
+		await sendingRunCommand("clear");
 
-		let req_run_command2 = await sendingRunCommand("continue");
-		console.log(req_run_command2);
+		await sendingRunCommand("continue");
 
-		let req_run_command3 = await sendingRunCommand("get/output");
-		console.log(req_run_command3);
-		
-		return req_run_command3;
+		return await sendingRunCommand("get/output");
+	};
+
+	const terminateExecution = async () => {
+		return await sendingRunCommand("terminate");
 	};
 
 	async function sendingRunCommand(command: string) {
@@ -836,9 +792,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				body: JSON.stringify(dataToSend),
 				method: 'POST',
 			});
-
-			console.log(server_reply);
-			console.log("server_reply");
 
 			return server_reply;
 		} catch (reason) {
@@ -862,50 +815,29 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let count = currentIndex;
 		currentNode = allNodes[count];
 		prevNode = allNodes[count];
-		
+
 		if (currentNode.getOptions()["name"].startsWith("🔴")) {
 			prevNode.setSelected(true);
 			prevNode.getOptions()["color"] = "rgb(150,150,150)";
 			currentNode = allNodes[count + 1];
-			console.log("this");
-			console.log(currentNode.getOptions()["name"]);
 
 			if (currentNode.getOptions()["name"].startsWith("🔴")) {
-				console.log("kk1");
-				console.log(count);
-				console.log(allNodes[count].getOptions()["name"]);
-				console.log(currentNode.getOptions()["name"]);
-
 				if (currentNode.getOptions()["name"] != "🔴Start" && currentNode.getOptions()["name"] != "Start") {
+					await delay(1000);
 					prevNode.setSelected(false);
-					await delay(1500);
-					let req_run_command1 = await sendingRunCommand("run");
-					console.log(req_run_command1);
-					
-					console.log("count 2");
-					console.log(count);
-					
-					console.log("get run 3");
+					// await delay(1500);
+					await sendingRunCommand("run");
+
 					let req_run_command5 = await sendingRunCommand("get_run");
 					let output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
-					console.log(output_req);
-					console.log(typeof output_req);
-					console.log(output_req.split(","));
 					while (output_req.split(",").length != count) {
-						await delay(3000);
-						console.log("waiting333");
+						await delay(1500);
 						req_run_command5 = await sendingRunCommand("get_run");
 						output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
-						console.log("again");
-						console.log(req_run_command5);
-						console.log(output_req);
-						console.log(22);
 					}
 				}
+				await delay(1000);
 				prevNode.setSelected(false);
-				console.log("run abc");
-				console.log(currentNode.getOptions()["name"]);
-				console.log(currentNode);
 				currentNode.setSelected(true);
 				// currentNode.getOptions()["color"] = "rgb(150,150,150)";
 				// prevNode.setSelected(false);
@@ -914,317 +846,88 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				if (currentNode.getOptions()["name"] != "Finish" && currentNode.getOptions()["name"] != "🔴Finish") {
 					count = count + 1;
 					currentNode = allNodes[count];
-
-					console.log("run abcdefg");
-					// console.log(currentNode.getOptions()["name"]);
-					console.log(currentNode);
-
-					// prevNode.getOptions()["color"] = "rgb(150,150,150)";
 					setCurrentIndex(count);
-					console.log("kk2");
-					console.log(count);
 				}
 			}
 		}
 
 		while (!currentNode.getOptions()["name"].startsWith("🔴")) {
-			console.log("kk1");
-			console.log(count);								// 0             1
-			console.log(currentNode.getOptions()["name"]);  // Start        ReadDataset
-			console.log(prevNode.getOptions()["name"]); 	// Start		Start
-			currentNode.setSelected(true);
+
 			prevNode.setSelected(true);
 			prevNode.getOptions()["color"] = "rgb(150,150,150)";
 			if (currentNode.getOptions()["name"] != "Start" && currentNode.getOptions()["name"] != "🔴Start") {
+				await delay(1000);
 				prevNode.setSelected(false);
-				await delay(1500);
-				let req_run_command1 = await sendingRunCommand("run");
-				console.log(req_run_command1);
-				
-				console.log("count 1");
-				console.log(count);
-				
-				console.log("get run 2");
+				currentNode.setSelected(true);
+				await sendingRunCommand("run");
+
 				let req_run_command5 = await sendingRunCommand("get_run");
 				let output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
-				console.log(output_req);
-				console.log(typeof output_req);
-				console.log(output_req.split(","));
 				while (output_req.split(",").length != count) {
 					await delay(1500);
-					console.log("waiting333");
 					req_run_command5 = await sendingRunCommand("get_run");
 					output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
-					console.log("again");
-					console.log(req_run_command5);
-					console.log(output_req);
-					console.log(22);
-				}
-
-			}
-			prevNode.setSelected(false);
-			console.log("run abc");
-			console.log(currentNode.getOptions()["name"]); // Start
-			console.log(currentNode);					   // Start
-
-			prevNode = currentNode;						   // Start
-			// currentNode.setSelected(true);
-			// currentNode.getOptions()["color"] = "rgb(150,150,150)";
-			// currentNode.setSelected(false);
-			prevNode.setSelected(true);                    // Start
-			count = count + 1;
-			currentNode = allNodes[count];                 // HelloList
-			currentNode.setSelected(true);
-
-			prevNode.setSelected(true);
-			prevNode.getOptions()["color"] = "rgb(150,150,150)";
-			prevNode.setSelected(false);
-			// await delay(1000);
-			// console.log(currentNode.getOptions()["name"]);
-			if (currentNode.getOptions()["name"] == "Finish" || currentNode.getOptions()["name"] == "🔴Finish") {
-				prevNode.setSelected(false);
-				currentNode.setSelected(true);
-				currentNode.getOptions()["color"] = "rgb(150,150,150)";
-				await delay(1500);
-
-				currentNode.setSelected(false);
-				alert("Finish Execution.");
-				setCurrentIndex(-1);
-				setDebugMode(false);
-				console.log(currentNode);
-
-				allNodes.forEach((node) => {
-					console.log(node);
-					node.setSelected(true);
-					console.log("allnodes");
-					node.getOptions()["color"] = node["color"];
-				});
-				return;
-			}
-
-			console.log(currentNode);                   // Hello List
-			// currentNode.setSelected(true);
-			// currentNode.getOptions()["color"] = "rgb(150,150,150)";
-			// prevNode.getOptions()["color"] = "rgb(150,150,150)";
-			setCurrentIndex(count);                     // 1
-			console.log("kk2");
-			console.log(count);
-		}
-
-		console.log("kk3");
-		console.log(count);
-		
-		await getContinuePost();
-
-		await delay(1000);
-		let item2 = await sendingRunCommand("get/output");
-		
-		console.log(item2);
-		console.log("item3 from xpipe");
-
-		// alert("Step Over");
-		console.log("kk4");
-		console.log(count);
-		console.log(currentNode.getOptions()["name"]);
-		// currentNodeSignal.emit({
-		// 	currentNode
-		// });
-		// await sendingRunCommand("clear");
-
-		if (currentNode.getOptions()["name"] == "Finish" || currentNode.getOptions()["name"] == "🔴Finish") {
-			prevNode.setSelected(false);
-			currentNode.setSelected(true);
-			currentNode.getOptions()["color"] = "rgb(150,150,150)";
-
-			setCurrentIndex(-1);
-			setDebugMode(false);
-
-			alert("Finish Execution.");
-			console.log(currentNode);
-
-			allNodes.forEach((node) => {
-				console.log(node);
-				node.setSelected(true);
-				console.log("allnodes");
-				node.getOptions()["color"] = node["color"];
-			});
-		}
-	}
-
-	const runFromNodeToNode = async () => {
-		if (!debugMode) {
-			alert("Not in debug mode");
-			return;
-		}
-
-		let allNodes = getAllNodesFromStartToFinish();
-		let prevNode: NodeModel;
-		let currentNode: NodeModel;
-		let nextNode: NodeModel;
-
-		let count = currentIndex;
-		currentNode = allNodes[count];
-		prevNode = allNodes[count];
-		
-		if (currentNode.getOptions()["name"].startsWith("🔴")) {
-			prevNode.setSelected(false);
-			currentNode = allNodes[count + 1];
-			console.log("this");
-			console.log(currentNode.getOptions()["name"]);
-
-			if (currentNode.getOptions()["name"].startsWith("🔴")) {
-				console.log("kk1");
-				console.log(count);
-				console.log(allNodes[count].getOptions()["name"]);
-				console.log(currentNode.getOptions()["name"]);
-
-				if (currentNode.getOptions()["name"] != "🔴Start" && currentNode.getOptions()["name"] != "Start") {
-					await delay(1500);
-					let req_run_command1 = await sendingRunCommand("run");
-					console.log(req_run_command1);
-					
-					console.log("count 2");
-					console.log(count);
-					
-					console.log("get run 3");
-					let req_run_command5 = await sendingRunCommand("get_run");
-					const output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
-					console.log(output_req);
-					console.log(typeof output_req);
-					console.log(output_req.split(","));
-					while (output_req.split(",").length != count) {
-						await delay(1500);
-						console.log("waiting333");
-					}
-				}
-
-				console.log("run abc");
-				console.log(currentNode.getOptions()["name"]);
-				console.log(currentNode);
-				currentNode.setSelected(true);
-				currentNode.getOptions()["color"] = "rgb(150,150,150)";
-				prevNode.setSelected(false);
-				currentNode.getOptions()["color"] = "rgb(150,150,150)";
-
-				if (currentNode.getOptions()["name"] != "Finish" && currentNode.getOptions()["name"] != "🔴Finish") {
-					count = count + 1;
-					currentNode = allNodes[count];
-
-					console.log("run abcdefg");
-					// console.log(currentNode.getOptions()["name"]);
-					console.log(currentNode);
-
-					// prevNode.getOptions()["color"] = "rgb(150,150,150)";
-					setCurrentIndex(count);
-					console.log("kk2");
-					console.log(count);
-				}
-			}
-		}
-
-		while (!currentNode.getOptions()["name"].startsWith("🔴")) {
-			console.log("kk1");
-			console.log(count);
-			console.log(currentNode.getOptions()["name"]);
-			console.log(prevNode.getOptions()["name"]);
-			if (prevNode.getOptions()["name"] != "🔴Start" && currentNode.getOptions()["name"] != "Start" && currentNode.getOptions()["name"] != "🔴Start") {
-				await delay(1500);
-				let req_run_command1 = await sendingRunCommand("run");
-				console.log(req_run_command1);
-				
-				console.log("count 1");
-				console.log(count);
-				
-				console.log("get run 2");
-				let req_run_command5 = await sendingRunCommand("get_run");
-				const output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
-				console.log(output_req);
-				console.log(typeof output_req);
-				console.log(output_req.split(","));
-				while (output_req.split(",").length != count) {
-					await delay(1500);
-					console.log("waiting333");
 				}
 
 			}
 
-			console.log("run abc");
-			console.log(currentNode.getOptions()["name"]);
-			console.log(currentNode);
-
+			await delay(1000);
+			prevNode.setSelected(false);
 			prevNode = currentNode;
-			// currentNode.setSelected(true);
-			// currentNode.getOptions()["color"] = "rgb(150,150,150)";
-			// currentNode.setSelected(false);
-			prevNode.setSelected(true);
 			count = count + 1;
 			currentNode = allNodes[count];
-			currentNode.setSelected(true);
 
+
+			prevNode.setSelected(true);
 			prevNode.getOptions()["color"] = "rgb(150,150,150)";
 			prevNode.setSelected(false);
-			// await delay(1000);
-			// console.log(currentNode.getOptions()["name"]);
+			currentNode.setSelected(true);
+			setInDebugMode(true);
+
 			if (currentNode.getOptions()["name"] == "Finish" || currentNode.getOptions()["name"] == "🔴Finish") {
 				prevNode.setSelected(false);
 				currentNode.setSelected(true);
 				currentNode.getOptions()["color"] = "rgb(150,150,150)";
-
-				setCurrentIndex(-1);
-				setDebugMode(false);
+				await delay(1000);
 				currentNode.setSelected(false);
 				alert("Finish Execution.");
-				console.log(currentNode);
+				setCurrentIndex(-1);
+				setDebugMode(false);
+				setInDebugMode(false);
 
 				allNodes.forEach((node) => {
-					console.log(node);
 					node.setSelected(true);
-					console.log("allnodes");
 					node.getOptions()["color"] = node["color"];
 				});
 				return;
 			}
 
-			console.log(currentNode);
-			// currentNode.setSelected(true);
-			// currentNode.getOptions()["color"] = "rgb(150,150,150)";
-			// prevNode.getOptions()["color"] = "rgb(150,150,150)";
 			setCurrentIndex(count);
-			console.log("kk2");
-			console.log(count);
 		}
-
-		console.log("kk3");
-		console.log(count);
-		
 		await getContinuePost();
 
 		await delay(1000);
 		let item2 = await sendingRunCommand("get/output");
-		
-		console.log(item2);
-		console.log("item3 from xpipe");
+		let item = currentNode;
 
-		// alert("Step Over");
-		console.log("kk4");
-		console.log(count);
-		console.log(currentNode.getOptions()["name"]);
+		currentNodeSignal.emit({
+			item, item2
+		});
 
 		if (currentNode.getOptions()["name"] == "Finish" || currentNode.getOptions()["name"] == "🔴Finish") {
+			await delay(1000);
 			prevNode.setSelected(false);
 			currentNode.setSelected(true);
 			currentNode.getOptions()["color"] = "rgb(150,150,150)";
 
 			setCurrentIndex(-1);
 			setDebugMode(false);
+			setInDebugMode(false);
 
 			alert("Finish Execution.");
-			console.log(currentNode);
 
 			allNodes.forEach((node) => {
-				console.log(node);
 				node.setSelected(true);
-				console.log("allnodes");
 				node.getOptions()["color"] = node["color"];
 			});
 		}
@@ -1239,9 +942,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (currentIndex == 0) {
 			resetColorCodeOnStart(true);
 		}
-		
+
 		await runFromNodeToNode2();
-		setInDebugMode(true);
 	}
 
 	const handleToggleNextNode = async () => {
@@ -1259,106 +961,61 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let allNodes = getAllNodesFromStartToFinish();
 		let currentNode: NodeModel;
 		let prevNode: NodeModel;
-
 		let count = currentIndex;
-		console.log("currentIndex2");
-		console.log(count);
-		console.log(allNodes);
 
 		currentNode = allNodes[count];
 		prevNode = allNodes[count];
 
 		if (currentNode.getOptions()["name"] == "Start" || currentNode.getOptions()["name"] == "🔴Start") {
-			console.log(1243);
-
-			console.log("currentIndex");
-			console.log(count);
-
-			// let output = await getContinuePost();
-			// console.log(output);
 			currentNode.setSelected(true);
 			let req_run_command3 = await getContinuePost();
-			console.log("asd355");
 
 			currentNode.getOptions()["color"] = "rgb(150,150,150)";
 			currentNode.setSelected(false);
-			// select
-			count += 1;
-			console.log(count);
-			currentNode = allNodes[count];
 
+			count += 1;
+			currentNode = allNodes[count];
 			currentNode.setSelected(true);
-			
 			prevNode.setSelected(false);
 			setCurrentIndex(count);
-
 			await delay(1500);
-
 			let item2 = await sendingRunCommand("get/output");
-			
-			console.log(item2);
-			console.log("item2 from xpipe")
-			console.log(item2);
-			console.log("req_run_command3");
-			console.log(req_run_command3);
-			item2 = req_run_command3;
+			await delay(1000);
 
 			let item = currentNode;
 			currentNodeSignal.emit({
 				item, item2
 			});
 
-			// await sendingRunCommand("clear");
-
-
 		} else {
-			// not start
-			// run
-			// continue
-			// get/output456456
-			// clear
-			console.log("run asd4");
-			let req_run_command1 = await sendingRunCommand("run");
-			console.log(req_run_command1);
+			await sendingRunCommand("run");
 
-			// await delay(1000);
+			let req_run_command5 = await sendingRunCommand("get_run");
+			let output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
+
+			while (output_req.split(",").length != count) {
+				await delay(1500);
+				req_run_command5 = await sendingRunCommand("get_run");
+				output_req = req_run_command5["output"] === undefined ? '' : req_run_command5["output"];
+			}
 
 			let req_run_command3 = await getContinuePost();
-			// alert(req_run_command3);
-			// currentNodeSignal.emit({
-			// 	currentNode
-			// });
-			// let output3 = await getRunPost();
-			console.log("run asd4");
-			// let output = await getContinuePost();
-			// console.log(output);
-			// console.log("asd4");
 			prevNode.setSelected(true);
 			count += 1;
 			currentNode = allNodes[count];
 
 			currentNode.setSelected(true);
-			// currentNode.getOptions()["color"] = "rgb(150,150,150)";
 			prevNode.getOptions()["color"] = "rgb(150,150,150)";
 			prevNode.setSelected(false);
 			setCurrentIndex(count);
 
-			await delay(1000);
+			await delay(1500);
 			let item2 = await sendingRunCommand("get/output");
-			
-			console.log(item2);
-
-			console.log(req_run_command3);
-			item2 = req_run_command3;
-
-			console.log("item3 from xpipe")
-
 			let item = currentNode;
+
 			currentNodeSignal.emit({
 				item, item2
 			});
-
-			
 		}
 
 		if (currentNode.getOptions()["name"] == "Finish") {
@@ -1368,15 +1025,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 			setCurrentIndex(-1);
 			setDebugMode(false);
+			setInDebugMode(false);
 
 			allNodes.forEach((node) => {
 				node.getOptions()["color"] = "rgb(150,150,150)";
 				node.setSelected(false);
 				node.setSelected(true);
-				console.log("allnodes");
 				node.getOptions()["color"] = node["color"];
 			});
-			
+
 			alert("Finish Execution.");
 		}
 	}
@@ -1419,11 +1076,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		
+
 		resetColorCodeOnStart(false);
 
 		setCurrentIndex(-1);
 		setDebugMode(false);
+		setInDebugMode(false);
+
+		terminateExecution();
 
 		alert("Execution has been terminated.");
 	}
@@ -1545,7 +1205,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				var dt = new Date();
 
 				let dateTime = `${dt.getFullYear().toString().padStart(4, '0')}-${(
-						dt.getMonth() + 1).toString().padStart(2, '0')}-${dt.getDate().toString().padStart(2, '0')} ${dt.getHours().toString().padStart(2, '0')}:${dt.getMinutes().toString().padStart(2, '0')}:${dt.getSeconds().toString().padStart(2, '0')}`
+					dt.getMonth() + 1).toString().padStart(2, '0')}-${dt.getDate().toString().padStart(2, '0')} ${dt.getHours().toString().padStart(2, '0')}:${dt.getMinutes().toString().padStart(2, '0')}:${dt.getSeconds().toString().padStart(2, '0')}`
 
 				xpipeLogger.info(param + ": " + dateTime);
 			}

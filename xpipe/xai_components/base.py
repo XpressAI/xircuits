@@ -52,12 +52,8 @@ class Component(BaseComponent):
     def do(self) -> BaseComponent:
         print(f"Executing: {self.__class__.__name__}")
         self.execute()
-        print(self.done)
         while not self.done:
             print("waiting")
-            print(self.done)
-        print("waiting2")
-        print(self.done)
         return self.done, self.next
 
     def debug_repr(self) -> str:

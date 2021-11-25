@@ -121,8 +121,6 @@ class DebuggerRouteHandler(APIHandler):
     @tornado.web.authenticated
     def post(self):
         input_data = self.get_json_body()
-        print(input_data)
-        print(991)
         
         output_content = ""
         if input_data["command"] == "run":
@@ -143,14 +141,13 @@ class DebuggerRouteHandler(APIHandler):
         elif input_data["command"] == "clear_run":
             output = requests.get("http://127.0.0.1:5000/clear_execution")
 
+        elif input_data["command"] == "terminate":
+            output = requests.get("http://127.0.0.1:5000/terminate")
+
         else:
             output = ""
         
         try:
-            print(output)
-            print(122)
-            print(output.content)
-            print(1224)
             if output != "":
                 encoding = 'utf-8'
                 output_content = output.content.decode(encoding)
