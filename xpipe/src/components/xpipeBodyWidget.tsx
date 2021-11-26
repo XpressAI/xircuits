@@ -751,11 +751,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		diagramEngine.getModel().getNodes().forEach((item) => {
 			if (item.getOptions()["selected"] == true) {
 				let name = item.getOptions()["name"];
-				let item2 = "asdd<br>asd";
 
-				currentNodeSignal.emit({
-					item, item2
-				});
 				if (name.startsWith("🔴")) {
 					item.getOptions()["name"] = name.split("🔴")[1]
 				}
