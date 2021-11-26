@@ -22,6 +22,7 @@ class SparkSparseVector(Component):
 
     def __init__(self):
 
+        self.done = False
         self.vector_list = InArg(None)
         self.sparse_vector = OutArg(None)
 
@@ -33,6 +34,7 @@ class SparkSparseVector(Component):
         sparse_vector
 
         self.sparse_vector.value = sparse_vector
+        self.done = True
 
 
 class SparkLabeledPoint(Component):
@@ -45,6 +47,7 @@ class SparkLabeledPoint(Component):
 
     def __init__(self):
 
+        self.done = False
         self.label = InArg(None)
         self.dense_vector = InArg(None)
         self.sparse_vector = InArg(None)
@@ -60,6 +63,7 @@ class SparkLabeledPoint(Component):
         print(labeled_point)
 
         self.labeled_point.value = labeled_point
+        self.done = True
 
 
 class SparkLoadImageFolder(Component):
@@ -70,6 +74,7 @@ class SparkLoadImageFolder(Component):
 
     def __init__(self):
 
+        self.done = False
         self.in_sparksession = InArg(None)
         self.folder_path = InArg(None)
         self.out_sparksession = OutArg(None)
@@ -87,6 +92,8 @@ class SparkLoadImageFolder(Component):
         self.out_sparksession.value = spark
         self.out_dataframe.value = df
 
+        self.done = True
+
 class SparkSplitDataFrame(Component):
     
     in_dataframe: InArg[any]
@@ -100,6 +107,7 @@ class SparkSplitDataFrame(Component):
 
     def __init__(self):
 
+        self.done = False
         self.in_dataframe = InArg(None)
         self.train_split = InArg(None)
         self.test_split = InArg(None)
@@ -131,6 +139,7 @@ class SparkSplitDataFrame(Component):
 
         self.train_dataframe.value = train
         self.test_dataframe.value = test
+        self.done = True
 
 
 class SparkLoadLIBSVM(Component):
@@ -143,6 +152,7 @@ class SparkLoadLIBSVM(Component):
 
     def __init__(self):
 
+        self.done = False
         self.in_sparksession = InArg(None)
         self.file_input = InArg(None)
         self.options = InArg(None)
@@ -167,6 +177,7 @@ class SparkLoadLIBSVM(Component):
 
         self.out_sparksession.value = spark
         self.out_dataframe.value = df
+        self.done = True
 
 
 class SparkLogisticRegression(Component):
@@ -179,6 +190,7 @@ class SparkLogisticRegression(Component):
 
     def __init__(self):
 
+        self.done = False
         self.train_dataframe = InArg(None)
         self.family = InArg(None)
         self.options = InArg(None)
@@ -209,6 +221,7 @@ class SparkLogisticRegression(Component):
             print("Intercept: " + str(model.intercept))
 
         self.model.value = model
+        self.done = True
 
 
 class SparkPredict(Component):
@@ -218,6 +231,7 @@ class SparkPredict(Component):
 
     def __init__(self):
 
+        self.done = False
         self.model = InArg(None)
         self.test_df = InArg(None)
 
@@ -228,3 +242,5 @@ class SparkPredict(Component):
         test_result = model.evaluate(test)
 
         test_result.predictions.show()
+
+        self.done = True
