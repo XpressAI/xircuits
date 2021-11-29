@@ -98,7 +98,7 @@ const DebuggerComponent = ({
   }
 
   return (
-    <div style={{ minHeight: '800px', height: '800px', width: '150px', minWidth: '150px', flexGrow: 1, flexShrink: 1, margin: '7px', padding: '7px', overflowY: 'scroll', fontSize: '14px' }}>
+    <div style={{ minHeight: '800px', height: '100%', width: '100%', minWidth: '150px', flexGrow: 1, flexShrink: 1, margin: '7px', padding: '7px', fontSize: '14px' }}>
       <p><b>Selected Node</b></p>
       <p><b>Name:</b> {names}</p>
       <p><b>Id:</b> {ids}</p>

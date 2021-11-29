@@ -312,7 +312,8 @@ export class DebuggerToolbar extends Widget {
    * Instantiate a new DebuggerToolbar.
    */
   constructor() {
-    super();
+    super({ node: document.createElement('div') });
+    this.node.classList.add('jp-debugger-toolbar-panel');
     const layout = new PanelLayout();
     layout.addWidget(this.toolbar);
     this.layout = layout;
