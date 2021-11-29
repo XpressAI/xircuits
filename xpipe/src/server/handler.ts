@@ -22,6 +22,7 @@ export async function requestAPI<T>(
   );
 
   let response: Response;
+  
   try {
     response = await ServerConnection.makeRequest(requestUrl, init, settings);
   } catch (error) {

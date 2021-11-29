@@ -26,13 +26,19 @@ import { XpipeFactory, XPipeDocModelFactory } from './xpipeFactory';
 import { XPipeWidget } from './xpipeWidget';
 
 import Sidebar from './components_xpipe/Sidebar';
+
 import { IDocumentManager } from '@jupyterlab/docmanager';
 
 import { XpipesDebugger } from './debugger/SidebarDebugger';
+
 import { ITranslator } from '@jupyterlab/translation';
+
 import { Log, logPlugin } from './log/LogPlugin';
+
 import { requestAPI } from './server/handler';
+
 import { OutputPanel } from './kernel/panel';
+
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
 const FACTORY = 'Xpipe editor';

@@ -818,10 +818,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 			if (currentNode.getOptions()["name"].startsWith("🔴")) {
 				if (currentNode.getOptions()["name"] != "🔴Start" && currentNode.getOptions()["name"] != "Start") {
-					await delay(1000);
-
-					prevNode.setSelected(false);
-
 					await sendingRunCommand("run");
 
 					let req_run_command = await sendingRunCommand("get_run");
@@ -831,6 +827,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						req_run_command = await sendingRunCommand("get_run");
 						output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
 					}
+
+					await getContinuePost();
+					await delay(1000);
+
+					let item2 = await sendingRunCommand("get/output");
+					let item = currentNode;
+
+					currentNodeSignal.emit({
+						item, item2
+					});
 				}
 				await delay(1000);
 				prevNode.setSelected(false);
@@ -842,10 +848,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					setCurrentIndex(count);
 				}
 			}
+			await delay(1000);
+			prevNode.setSelected(false);
 		}
 
 		while (!currentNode.getOptions()["name"].startsWith("🔴")) {
-
+			prevNode = currentNode;
 			prevNode.setSelected(true);
 			prevNode.getOptions()["color"] = "rgb(150,150,150)";
 			if (currentNode.getOptions()["name"] != "Start" && currentNode.getOptions()["name"] != "🔴Start") {
@@ -865,16 +873,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				}
 			}
 			await delay(1000);
-
 			prevNode.setSelected(false);
 
 			prevNode = currentNode;
 			count = count + 1;
 			currentNode = allNodes[count];
 
-			prevNode.setSelected(true);
-			prevNode.getOptions()["color"] = "rgb(150,150,150)";
-			prevNode.setSelected(false);
 			currentNode.setSelected(true);
 
 			setInDebugMode(true);

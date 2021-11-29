@@ -19,6 +19,7 @@ import {
 import { Message } from '@lumino/messaging';
 
 import { StackedPanel } from '@lumino/widgets';
+
 import { Log } from '../log/LogPlugin';
 
 /**
@@ -103,7 +104,6 @@ export class OutputPanel extends StackedPanel {
 
                             for (let data of traceback) {
                                 xpipeLogger.error(data);
-                                console.log(data);
                             }
 
                             return;
@@ -113,7 +113,6 @@ export class OutputPanel extends StackedPanel {
                         for (let text_index = 0; text_index < text.split("\n").length; text_index++) {
                             if (text.split("\n")[text_index].trim() != "") {
                                 xpipeLogger.info(text.split("\n")[text_index]);
-                                console.log(text.split("\n")[text_index]);
                             }
                         }
                     }

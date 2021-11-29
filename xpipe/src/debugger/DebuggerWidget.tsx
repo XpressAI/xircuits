@@ -23,7 +23,6 @@ const DebuggerComponent = ({
   const notInitialRender = useRef(false)
 
   const handleCurrentNode = () => {
-    console.log("calling here");
     let item = typeof currentNode["item"] === "undefined" ? "" : (currentNode["item"] as any);
     let item2 = typeof currentNode["item2"] === "undefined" ? "" : (currentNode["item2"] as any);
     let name = item.getOptions()["name"];
