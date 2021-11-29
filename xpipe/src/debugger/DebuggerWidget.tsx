@@ -20,7 +20,6 @@ const DebuggerComponent = ({
   const [types, setTypes] = useState("");
   const [pInLabels, setPInLabel] = useState([]);
   const [pOutLabels, setPOutLabel] = useState([]);
-  const [itemOutput, setItemOutput] = useState("");
   const notInitialRender = useRef(false)
 
   const handleCurrentNode = () => {
@@ -30,7 +29,7 @@ const DebuggerComponent = ({
     let name = item.getOptions()["name"];
     let id = item.getOptions()["id"];
     let type = item.getOptions()["extras"]["type"];
-    let pInList = [], pOutList = [];
+    let pInList = [];
     let pInArgList = [], pOutArgList = [];
 
     let item_output = item2;
@@ -77,7 +76,7 @@ const DebuggerComponent = ({
         pOutArgList.push(element.getOptions()["label"]);
       }
     });
-    handleChanges(name, id, type, pInList, pOutArgList, item_output);
+    handleChanges(name, id, type, pInList, pOutArgList);
   };
 
   useEffect(() => {
@@ -88,17 +87,18 @@ const DebuggerComponent = ({
     }
   }, [currentNode]);
 
-  function handleChanges(name, id, type, pInLabel, pOutLabel, pItemOutput) {
+  function handleChanges(name, id, type, pInLabel, pOutLabel) {
     setNames(name);
     setIds(id);
     setTypes(type);
     setPInLabel(pInLabel);
     setPOutLabel(pOutLabel);
-    setItemOutput(pItemOutput);
   }
 
   return (
-    <div style={{ minHeight: '800px', height: '100%', width: '100%', minWidth: '150px', flexGrow: 1, flexShrink: 1, margin: '7px', padding: '7px', fontSize: '14px' }}>
+    <div style={{
+      minHeight: '800px', height: '100%', width: '100%', minWidth: '150px', flexGrow: 1, flexShrink: 1, margin: '7px', padding: '7px', fontSize: '14px'
+    }}>
       <p><b>Selected Node</b></p>
       <p><b>Name:</b> {names}</p>
       <p><b>Id:</b> {ids}</p>
