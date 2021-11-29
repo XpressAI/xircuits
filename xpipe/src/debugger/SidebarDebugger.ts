@@ -168,7 +168,7 @@ export const DebuggerCommandIDs = {
         caption: trans.__('Toggle Breakpoint'),
         iconClass: 'jp-BreakpointLogo',
         isEnabled: () => {
-          return inDebugMode ?? false;
+          return debugMode ?? false;
         },
         execute: args => {
           xpipeFactory.breakpointXpipeSignal.emit(args);
@@ -179,45 +179,45 @@ export const DebuggerCommandIDs = {
         caption: trans.__('Terminate'),
         icon: Debugger.Icons.terminateIcon,
         isEnabled: () => {
-          return inDebugMode ?? false;
+          return debugMode ?? false;
         },
         execute: args => {
           xpipeFactory.terminateDebugSignal.emit(args);
         }
       });
-      // Add command signal to toggle step in
-      app.commands.addCommand(DebuggerCommandIDs.stepIn, {
-        caption: trans.__('Step In'),
-        icon: Debugger.Icons.stepIntoIcon,
-        isEnabled: () => {
-          return inDebugMode ?? false;
-        },
-        execute: args => {
-          xpipeFactory.stepInDebugSignal.emit(args);
-        }
-      });
-      // Add command signal to toggle step out
-      app.commands.addCommand(DebuggerCommandIDs.stepOut, {
-        caption: trans.__('Step Out'),
-        icon: Debugger.Icons.stepOutIcon,
-        isEnabled: () => {
-          return inDebugMode ?? false;
-        },
-        execute: args => {
-          xpipeFactory.stepOutDebugSignal.emit(args);
-        }
-      });
-      // Add command signal to evaluate debugging xpipe
-      app.commands.addCommand(DebuggerCommandIDs.evaluate, {
-        caption: trans.__('Evaluate Code'),
-        icon: Debugger.Icons.evaluateIcon,
-        isEnabled: () => {
-          return inDebugMode ?? false;
-        },
-        execute: args => {
-          xpipeFactory.evaluateDebugSignal.emit(args);
-        }
-      });
+      // // Add command signal to toggle step in
+      // app.commands.addCommand(DebuggerCommandIDs.stepIn, {
+      //   caption: trans.__('Step In'),
+      //   icon: Debugger.Icons.stepIntoIcon,
+      //   isEnabled: () => {
+      //     return inDebugMode ?? false;
+      //   },
+      //   execute: args => {
+      //     xpipeFactory.stepInDebugSignal.emit(args);
+      //   }
+      // });
+      // // Add command signal to toggle step out
+      // app.commands.addCommand(DebuggerCommandIDs.stepOut, {
+      //   caption: trans.__('Step Out'),
+      //   icon: Debugger.Icons.stepOutIcon,
+      //   isEnabled: () => {
+      //     return inDebugMode ?? false;
+      //   },
+      //   execute: args => {
+      //     xpipeFactory.stepOutDebugSignal.emit(args);
+      //   }
+      // });
+      // // Add command signal to evaluate debugging xpipe
+      // app.commands.addCommand(DebuggerCommandIDs.evaluate, {
+      //   caption: trans.__('Evaluate Code'),
+      //   icon: Debugger.Icons.evaluateIcon,
+      //   isEnabled: () => {
+      //     return inDebugMode ?? false;
+      //   },
+      //   execute: args => {
+      //     xpipeFactory.evaluateDebugSignal.emit(args);
+      //   }
+      // });
 
       this.addWidget(header);
       this.addWidget(toolbarPanel);
@@ -312,7 +312,8 @@ export class DebuggerToolbar extends Widget {
    * Instantiate a new DebuggerToolbar.
    */
   constructor() {
-    super();
+    super({ node: document.createElement('div') });
+    this.node.classList.add('jp-debugger-toolbar-panel');
     const layout = new PanelLayout();
     layout.addWidget(this.toolbar);
     this.layout = layout;

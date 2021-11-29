@@ -26,13 +26,19 @@ import { XpipeFactory, XPipeDocModelFactory } from './xpipeFactory';
 import { XPipeWidget } from './xpipeWidget';
 
 import Sidebar from './components_xpipe/Sidebar';
+
 import { IDocumentManager } from '@jupyterlab/docmanager';
 
 import { XpipesDebugger } from './debugger/SidebarDebugger';
+
 import { ITranslator } from '@jupyterlab/translation';
+
 import { Log, logPlugin } from './log/LogPlugin';
+
 import { requestAPI } from './server/handler';
+
 import { OutputPanel } from './kernel/panel';
+
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
 const FACTORY = 'Xpipe editor';
@@ -246,7 +252,8 @@ const xpipe: JupyterFrontEndPlugin<void> = {
       execute: async args => {
         const current_path = tracker.currentWidget.context.path;
         const path = current_path;
-        const message = typeof args['pythonCode'] === 'undefined' ? '' : (args['pythonCode'] as string);
+        const message = typeof args['pythonCode'] === undefined ? '' : (args['pythonCode'] as string);
+        const showOutput = typeof args['showOutput'] === undefined ? false : (args['showOutput'] as boolean);
         const request = await requestToGenerateArbitraryFile(path, message); // send this file and create new file
         
         if (request["message"] == "completed") {
@@ -258,7 +265,9 @@ const xpipe: JupyterFrontEndPlugin<void> = {
             }
           );
           docmanager.closeFile(model_path);
-          alert(`${model_path} successfully compiled!`);
+          if (showOutput) {
+            alert(`${model_path} successfully compiled!`);
+          }
         } else {
           alert("Failed to generate arbitrary file!");
         }
@@ -284,6 +293,8 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     execute: async args => {
         const xpipeLogger = new Log(app);
         const message = typeof args['runCommand'] === 'undefined' ? '' : (args['runCommand'] as string);
+        const debug_mode = typeof args['debug_mode'] === 'undefined' ? '' : (args['debug_mode'] as string);
+
         // Create the panel if it does not exist
         if (!outputPanel || outputPanel.isDisposed) {
           await createPanel();
@@ -295,7 +306,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
         outputPanel.session.ready.then(() => {
           const current_path = tracker.currentWidget.context.path;
           const model_path = current_path.split(".xpipe")[0] + ".py";
-          const code = "%run " + model_path + message;
+          const code = "%run " + model_path + message + debug_mode;
           outputPanel.execute(code, xpipeLogger);
         });
       },

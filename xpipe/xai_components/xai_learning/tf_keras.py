@@ -22,7 +22,7 @@ class LoadKerasModel(Component):
     model: OutArg[any]
 
     def __init__(self):
-
+        self.done = False
         self.model_name = InArg(None)
         self.include_top = InArg(None)
         self.weights = InArg(None)
@@ -34,7 +34,6 @@ class LoadKerasModel(Component):
 
 
     def execute(self) -> None:
-
         model = None
         model_name = (self.model_name.value).lower()
 
@@ -80,6 +79,7 @@ class LoadKerasModel(Component):
         else:
             self.model.value = model
 
+        self.done = True
 
 class KerasPredict(Component):
     
@@ -87,12 +87,11 @@ class KerasPredict(Component):
     img_string: InArg[str]
 
     def __init__(self):
-        
+        self.done = False
         self.model = InArg(None)
         self.img_string = InArg(None)
 
     def execute(self) -> None:
-        
         model = self.model.value
 
         class keras_model_config:
@@ -169,6 +168,8 @@ class KerasPredict(Component):
         else:
             print("Keras model ", model.name, " config not found!")
 
+        self.done = True
+
 class resnet_model_config:
     include_top: bool #true
     weights:str #"imagenet",
@@ -185,7 +186,6 @@ class resnet_model_config:
         self.classes = 1000
 
 class ResNet50(Component):
-
     include_top: InArg[bool]
     weights:InArg[str] 
     input_tensor: InArg[any]
@@ -196,7 +196,7 @@ class ResNet50(Component):
     model: OutArg[any]
 
     def __init__(self):
-
+        self.done = False
         self.include_top = InArg(None)
         self.weights = InArg(None)
         self.input_tensor = InArg(None)
@@ -207,7 +207,6 @@ class ResNet50(Component):
 
 
     def execute(self) -> None:
-
         model_config = resnet_model_config()
 
         #dynamically sync model config with node inputs
@@ -224,6 +223,7 @@ class ResNet50(Component):
 
         model = applications.ResNet50(model_config)
         self.model.value = model
+        self.done = True
 
 class ResNet101(Component):
 
@@ -237,7 +237,7 @@ class ResNet101(Component):
     model: OutArg[any]
 
     def __init__(self):
-
+        self.done = False
         self.include_top = InArg(None)
         self.weights = InArg(None)
         self.input_tensor = InArg(None)
@@ -248,7 +248,6 @@ class ResNet101(Component):
 
 
     def execute(self) -> None:
-
         model_config = resnet_model_config()
 
         #dynamically sync model config with node inputs
@@ -265,10 +264,10 @@ class ResNet101(Component):
 
         model = applications.ResNet101(model_config)
         self.model.value = model
+        self.done = True
 
 
 class ResNet152(Component):
-
     include_top: InArg[bool]
     weights:InArg[str] 
     input_tensor: InArg[any]
@@ -279,7 +278,7 @@ class ResNet152(Component):
     model: OutArg[any]
 
     def __init__(self):
-
+        self.done = False
         self.include_top = InArg(None)
         self.weights = InArg(None)
         self.input_tensor = InArg(None)
@@ -290,9 +289,7 @@ class ResNet152(Component):
 
 
     def execute(self) -> None:
-
         model_config = resnet_model_config()
-
         #dynamically sync model config with node inputs
         for port in self.__dict__.keys():
             try:
@@ -307,6 +304,7 @@ class ResNet152(Component):
 
         model = applications.ResNet152(model_config)
         self.model.value = model
+        self.done = True
 
 
 class vgg_model_config:
@@ -338,7 +336,7 @@ class VGG16(Component):
     model: OutArg[any]
 
     def __init__(self):
-
+        self.done = False
         self.include_top = InArg(None)
         self.weights = InArg(None)
         self.input_tensor = InArg(None)
@@ -366,10 +364,10 @@ class VGG16(Component):
 
         model = applications.VGG16(model_config)
         self.model.value = model
+        self.done = True
 
 
 class VGG19(Component):
-
     include_top: InArg[bool]
     weights:InArg[str] 
     input_tensor: InArg[any]
@@ -380,7 +378,7 @@ class VGG19(Component):
     model: OutArg[any]
 
     def __init__(self):
-
+        self.done = False
         self.include_top = InArg(None)
         self.weights = InArg(None)
         self.input_tensor = InArg(None)
@@ -408,6 +406,7 @@ class VGG19(Component):
 
         model = applications.VGG19(model_config)
         self.model.value = model
+        self.done = True
 
 class Xception(Component):
 
@@ -421,7 +420,7 @@ class Xception(Component):
     model: OutArg[any]
 
     def __init__(self):
-
+        self.done = False
         self.include_top = InArg(None)
         self.weights = InArg(None)
         self.input_tensor = InArg(None)
@@ -449,6 +448,7 @@ class Xception(Component):
 
         model = applications.VGG19(model_config)
         self.model.value = model
+        self.done = True
 
 
 class mobile_model_config:
@@ -493,7 +493,7 @@ class MobileNet(Component):
     model: OutArg[any]
 
     def __init__(self):
-
+        self.done = False
         self.include_top = InArg(None)
         self.weights = InArg(None)
         self.input_tensor = InArg(None)
@@ -521,3 +521,4 @@ class MobileNet(Component):
 
         model = applications.VGG19(model_config)
         self.model.value = model
+        self.done = True

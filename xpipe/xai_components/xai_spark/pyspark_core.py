@@ -22,6 +22,7 @@ class xSparkSession(Component):
 
     def __init__(self):
 
+        self.done = False
         self.master = InArg(None)
         self.appname = InArg(None)
         self.config = InArg(None)
@@ -32,10 +33,11 @@ class xSparkSession(Component):
 
         spark = SparkSession.builder.getOrCreate()
         self.sparksession.value = spark
+        self.done = True
 
 
 class SparkReadPandas(Component):
-    
+
     in_sparksession: InArg[any]
     pandas_dataframe: InArg[str]
     out_sparksession: OutArg[any]
@@ -44,6 +46,7 @@ class SparkReadPandas(Component):
 
     def __init__(self):
 
+        self.done = False
         self.in_sparksession = InArg(None)
         self.pandas_dataframe = InArg(None)
         self.out_sparksession = OutArg(None)
@@ -58,9 +61,10 @@ class SparkReadPandas(Component):
         self.out_sparksession.value = spark
         self.out_dataframe.value = spark_df
 
+        self.done = True
 
 class SparkReadFile(Component):
-    
+
     in_sparksession: InArg[any]
     file_input: InArg[str]
     out_sparksession: OutArg[any]
@@ -68,6 +72,7 @@ class SparkReadFile(Component):
 
     def __init__(self):
 
+        self.done = False
         self.in_sparksession = InArg(None)
         self.file_input = InArg(None)
         self.out_sparksession = OutArg(None)
@@ -101,10 +106,11 @@ class SparkReadFile(Component):
 
         self.out_sparksession.value = spark
         self.out_dataframe.value = df
+        self.done = True
 
 
 class SparkReadCSV(Component):
-    
+
     in_sparksession: InArg[any]
     file_input: InArg[str]
     separator: InArg[str]
@@ -114,6 +120,7 @@ class SparkReadCSV(Component):
 
     def __init__(self):
 
+        self.done = False
         self.in_sparksession = InArg(None)
         self.file_input = InArg(None)
         self.separator = InArg(None)
@@ -137,12 +144,11 @@ class SparkReadCSV(Component):
 
         self.out_sparksession.value = spark
         self.out_dataframe.value = df
-
-
+        self.done = True
 
 
 class SparkWriteFile(Component):
-    
+
     dataframe: InArg[any]
     output_name: InArg[str]
     header: InArg[bool]
@@ -150,6 +156,7 @@ class SparkWriteFile(Component):
 
     def __init__(self):
 
+        self.done = False
         self.dataframe = InArg(None)
         self.output_name = InArg(None)
         self.header = InArg(None)
@@ -170,9 +177,10 @@ class SparkWriteFile(Component):
         else:
             print("Unrecognized file format! Please input csv / parquet / orc.")
 
+        self.done = True
 
 class SparkSQL(Component):
-    
+
     in_sparksession: InArg[any]
     dataframe: InArg[any]
     table_name: InArg[str]
@@ -183,6 +191,7 @@ class SparkSQL(Component):
 
     def __init__(self):
 
+        self.done = False
         self.in_sparksession = InArg(None)
         self.dataframe = InArg(None)
         self.table_name = InArg(None)
@@ -211,9 +220,10 @@ class SparkSQL(Component):
         
         self.out_sparksession.value = spark
         self.sql_dataframe.value = sql_df
+        self.done = True
 
 class SparkVisualize(Component):
-    
+
     dataframe: InArg[any]
     plot_type: InArg[str]
     x_axis: InArg[str]
@@ -221,7 +231,8 @@ class SparkVisualize(Component):
     output_name: InArg[str]
 
     def __init__(self):
-
+        
+        self.done = False
         self.dataframe = InArg(None)
         self.plot_type = InArg(None)
         self.x_axis = InArg(None)
@@ -252,3 +263,4 @@ class SparkVisualize(Component):
         plt.tight_layout()
         plt.savefig(output_name)
         plt.show()
+        self.done = True

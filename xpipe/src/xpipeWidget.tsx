@@ -146,9 +146,6 @@ export class XPipePanel extends ReactWidget {
     this.evaluateDebugSignal = options.evaluateDebugSignal;
     this.debugModeSignal = options.debugModeSignal;
 
-    //debugger;
-    console.log(this.context);
-
     this.diagramEngine = SRD.default({ registerDefaultZoomCanvasAction: false, registerDefaultDeleteItemsAction: false });
     this.activeModel = new SRD.DiagramModel();
     this.diagramEngine.getNodeFactories().registerFactory(new CustomNodeFactory());
@@ -166,7 +163,6 @@ export class XPipePanel extends ReactWidget {
 
       //check if model.id is empty / does not have an id
       if (model.id != '') {
-        console.log("deserializing using custom method");
         //this.activeModel.deserializeModel(model, this.diagramEngine);
         let deserializedModel = this.customDeserializeModel(model, this.diagramEngine);
         this.diagramEngine.setModel(deserializedModel);
@@ -176,7 +172,6 @@ export class XPipePanel extends ReactWidget {
       }
 
       else {
-
         console.log("init new model!")
         let startNode = new CustomNodeModel({ name: 'Start', color: 'rgb(255,102,102)', extras: { "type": "Start" } });
         startNode.addOutPortEnhance('▶', 'out-0');

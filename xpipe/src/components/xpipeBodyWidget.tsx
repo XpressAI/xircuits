@@ -4,7 +4,6 @@ import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
 import { LinkModel, DefaultLinkModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
 import * as SRD from '@projectstorm/react-diagrams';
-
 import { Dialog } from '@jupyterlab/apputils';
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
@@ -29,10 +28,9 @@ import { RunDialog } from '../dialog/RunDialog';
 import 'rc-dialog/assets/bootstrap.css';
 import Draggable from 'react-draggable';
 import RcDialog from 'rc-dialog';
-
+import { requestAPI } from '../server/handler';
 
 export interface BodyWidgetProps {
-	//app: Application;
 	context: any;
 	browserFactory: IFileBrowserFactory;
 	app: JupyterFrontEnd;
@@ -178,8 +176,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [disableRcDialog, setDisableRcDialog] = useState(false);
 	const [debugMode, setDebugMode] = useState<boolean>(false);
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
+	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const xpipeLogger = new Log(app);
-
 
 	const getBindingIndexById = (nodeModels: any[], id: string): number | null => {
 		for (let i = 0; i < nodeModels.length; i++) {
@@ -193,7 +191,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const getTargetNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
-
 		for (let i = 0; i < linkModels.length; i++) {
 			let linkModel = linkModels[i];
 
@@ -227,10 +224,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const getAllNodesFromStartToFinish = (): NodeModel[] | null => {
-
 		let model = diagramEngine.getModel();
 		let nodeModels = model.getNodes();
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
+		if (startNodeModel == null) {
+			startNodeModel = getNodeModelByName(nodeModels, '🔴Start');
+		}
 
 		if (startNodeModel) {
 			let sourceNodeModelId = startNodeModel.getID();
@@ -248,7 +247,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						retNodeModels.push(nodeModel)
 					}
 				}
-
 			}
 			return retNodeModels;
 		}
@@ -263,6 +261,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 		let pythonCode = 'from argparse import ArgumentParser\n';
 		pythonCode += 'from datetime import datetime\n';
+		pythonCode += 'from time import sleep\n';
+		pythonCode += 'import json, os, signal\n';
+		pythonCode += 'from flask import Flask, jsonify, request\n';
+		pythonCode += 'from threading import Thread\n';
+
 		let uniqueComponents = {};
 
 		let allNodes = getAllNodesFromStartToFinish();
@@ -300,6 +303,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			}
 			pythonCode += "from " + package_name + " import " + componentName + "\n";
 		}
+
+		pythonCode += "\napp = Flask(__name__)\n";
+		pythonCode += "input_data = []\n";
+		pythonCode += "continue_input_data = []\n";
+		pythonCode += "inarg_output_data = []\n";
+		pythonCode += "outarg_output_data = []\n";
+		pythonCode += "is_done_list = []\n";
 
 		pythonCode += "\ndef main(args):\n";
 
@@ -361,19 +371,19 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 										if (sourceNodeName.startsWith("Literal")) {
 
-											if (sourceNodeType == 'string'){
+											if (sourceNodeType == 'string') {
 												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "'" + sourcePortLabel + "'\n";
 											}
-											
-											else if (sourceNodeType == 'list'){
-												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "[" + sourcePortLabel + "]" +"\n";
+
+											else if (sourceNodeType == 'list') {
+												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "[" + sourcePortLabel + "]" + "\n";
 											}
-											
-											else if (sourceNodeType == 'tuple'){
+
+											else if (sourceNodeType == 'tuple') {
 												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "(" + sourcePortLabel + ")" + "\n";
 											}
 
-											else if (sourceNodeType == 'dict'){
+											else if (sourceNodeType == 'dict') {
 												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "{" + sourcePortLabel + "}" + "\n";
 											}
 
@@ -426,25 +436,95 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		}
 
+		pythonCode += '    ' + 'debug_mode = args.debug_mode\n';
+
 		if (allNodes.length > 2) {
 			pythonCode += '\n';
-			pythonCode += '    ' + 'next_component = c_1.do()\n';
+			pythonCode += '    ' + 'next_component = c_1\n';
 			pythonCode += '    ' + 'while next_component:\n';
-			pythonCode += '        ' + 'next_component = next_component.do()\n';
+
+			pythonCode += '        ' + 'if debug_mode:\n';
+			pythonCode += '            ' + 'if len(continue_input_data) > 0 and continue_input_data[-1] == \'continue\':\n';
+			pythonCode += '                ' + 'vars_dict = vars(next_component)\n';
+			pythonCode += '                ' + 'new_dict = {}\n';
+			pythonCode += '                ' + 'for i in vars_dict:\n';
+			pythonCode += '                    ' + 'if not i in [\'next\', \'done\']:\n';
+			pythonCode += '                        ' + 'new_dict[i] = next_component.__getattribute__(i).value\n';
+			pythonCode += '                        ' + 'if \'InArg\' in str(vars_dict[i]):\n';
+			pythonCode += '                            ' + 'inarg_output_data.append(str(i) + \': \' + str(next_component.__getattribute__(i).value))\n';
+			pythonCode += '                        ' + 'if \'OutArg\' in str(vars_dict[i]):\n';
+			pythonCode += '                            ' + 'outarg_output_data.append(str(i) + \': \' + str(next_component.__getattribute__(i).value))\n';
+			pythonCode += '                ' + 'continue_input_data.clear()\n';
 			pythonCode += '\n';
+
+			pythonCode += '            ' + 'if len(input_data) > 0 and input_data[-1] == \'run\':\n';
+			pythonCode += '                ' + 'is_done, next_component = next_component.do()\n';
+			pythonCode += '                ' + 'input_data.clear()\n';
+			pythonCode += '                ' + 'is_done_list.append(is_done)\n';
+			pythonCode += '\n';
+
+			pythonCode += '            ' + 'if len(input_data) > 0 and input_data[-1] == \'skip\':\n';
+			pythonCode += '                ' + 'is_done, next_component = next_component.do()\n';
+			pythonCode += '\n';
+
+			pythonCode += '        ' + 'else:\n';
+			pythonCode += '            ' + 'is_done, next_component = next_component.do()\n';
+			pythonCode += '\n';
+
+			pythonCode += '@app.route(\'/terminate\')\n';
+			pythonCode += 'def shutdown():\n';
+			pythonCode += '    ' + 'os.kill(os.getpid(), signal.SIGINT)\n';
+			pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Server is shutting down..." })\n\n';
+
+			pythonCode += '@app.route(\'/run\')\n';
+			pythonCode += 'def next_node(input_data=input_data):\n';
+			pythonCode += '    ' + 'input_data.append("run")\n';
+			pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Run is executed" })\n\n';
+
+			pythonCode += '@app.route(\'/execute\')\n';
+			pythonCode += 'def get_execution_output():\n';
+			pythonCode += '    ' + 'return str(is_done_list)\n\n';
+
+			pythonCode += '@app.route(\'/clear_execution\')\n';
+			pythonCode += 'def clear_execution_output():\n';
+			pythonCode += '    ' + 'is_done_list.clear()\n';
+			pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Clearing execution" })\n\n';
+
+			pythonCode += '@app.route(\'/continue\')\n';
+			pythonCode += 'def continue_node(continue_input_data=continue_input_data):\n';
+			pythonCode += '    ' + 'continue_input_data.append("continue")\n';
+			pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Continue is executed" })\n\n';
+
+			pythonCode += '@app.route(\'/clear\')\n';
+			pythonCode += 'def clear_node():\n';
+			pythonCode += '    ' + 'inarg_output_data.clear()\n';
+			pythonCode += '    ' + 'outarg_output_data.clear()\n';
+			pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Clearing input/output args" })\n\n';
+
+			pythonCode += '@app.route(\'/get/output\')\n';
+			pythonCode += 'def get_output_data():\n';
+			pythonCode += '    ' + 'inarg_output = \'\'\n';
+			pythonCode += '    ' + 'if inarg_output_data != []:\n';
+			pythonCode += '        ' + 'inarg_output = \'InArg -> \'\n';
+			pythonCode += '        ' + 'inarg_output += \'\t\'.join(inarg_output_data)\n\n';
+			pythonCode += '    ' + 'outarg_output = \'\'\n';
+			pythonCode += '    ' + 'if outarg_output_data != []:\n';
+			pythonCode += '        ' + 'outarg_output = \'OutArg -> \'\n';
+			pythonCode += '        ' + 'outarg_output += \'\t\'.join(outarg_output_data)\n\n';
+			pythonCode += '    ' + 'return (str(inarg_output) + \' \' + str(outarg_output)).strip()\n\n';
+
 			pythonCode += "if __name__ == '__main__':\n";
 			pythonCode += '    ' + 'parser = ArgumentParser()\n';
 
 			if (stringNodes) {
-
 				for (let i = 0; i < stringNodes.length; i++) {
 					let stringParam = stringNodes[i].replace(/\s+/g, "_");
 					stringParam = stringParam.toLowerCase();
 
-					if (stringParam == 'experiment_name'){
-						let dateTimeStr = "\"\%Y-\%m-\%d \%H:\%M:\%S\""
-						pythonCode += '    ' + "parser.add_argument('--" + stringParam + "', default=datetime.now().strftime("+ dateTimeStr+ "), type=str)\n";
-					}else{
+					if (stringParam == 'experiment_name') {
+						let dateTimeStr = "\'\%Y-\%m-\%d \%H:\%M:\%S\'"
+						pythonCode += '    ' + "parser.add_argument('--" + stringParam + "', default=datetime.now().strftime(" + dateTimeStr + "), type=str)\n";
+					} else {
 						pythonCode += '    ' + "parser.add_argument('--" + stringParam + "', default='test', type=str)\n";
 					}
 				}
@@ -476,6 +556,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					pythonCode += '    ' + "parser.add_argument('--" + boolParam + "', default=True, type=bool)\n";
 				}
 			}
+			pythonCode += '    ' + "parser.add_argument('--debug_mode', default=False, type=bool)\n\n";
+			pythonCode += '    ' + "debug_mode = parser.parse_args().debug_mode\n";
+			pythonCode += '    ' + "if debug_mode:\n";
+			pythonCode += '        ' + 'thread = Thread(target=app.run, daemon=True)\n';
+			pythonCode += '        ' + 'thread.start()\n\n';
 
 			pythonCode += '    ' + 'main(parser.parse_args())';
 		}
@@ -484,35 +569,30 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const checkAllNodesConnected = (): boolean | null => {
-
 		let nodeModels = diagramEngine.getModel().getNodes();
 
 		for (let i = 0; i < nodeModels.length; i++) {
-
 			let inPorts = nodeModels[i]["portsIn"];
 			let j = 0;
-
 			if (inPorts != 0) {
-
 				if (inPorts[j].getOptions()["label"] == '▶' && Object.keys(inPorts[0].getLinks()).length != 0) {
 					continue
 				} else {
 					return false;
 				}
-
 			}
 		}
 		return true;
 	}
 
-	const handleSaveClick = async () => {
+	const handleSaveClick = () => {
 		// Only save xpipe if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
 
-		await setInitialize(true);
+		setInitialize(true);
 		setSaved(true);
 		let currentModel = diagramEngine.getModel().serialize();
 		context.model.setSerializedModel(currentModel);
@@ -565,17 +645,23 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
+
 		let allNodesConnected = checkAllNodesConnected();
 
-		if (saved && allNodesConnected) {
-			let pythonCode = getPythonCompiler();
-			setCompiled(true);
-			commands.execute(commandIDs.createArbitraryFile, { pythonCode });
-		} else if (!allNodesConnected) {
-			alert("Please connect all the nodes before compiling.");
-		} else {
+		if (!saved) {
 			alert("Please save before compiling.");
+			return;
 		}
+
+		if (!allNodesConnected) {
+			alert("Please connect all the nodes before compiling.");
+			return;
+		}
+
+		let pythonCode = getPythonCompiler();
+		let showOutput = true;
+		setCompiled(true);
+		commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
 	}
 
 	const handleUnsaved = () => {
@@ -585,6 +671,28 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		handleCompileClick();
 	}
 
+	const saveAndCompile = () => {
+		// save
+		setInitialize(true);
+		setSaved(true);
+		let currentModel = diagramEngine.getModel().serialize();
+		context.model.setSerializedModel(currentModel);
+		commands.execute(commandIDs.saveDocManager);
+
+		// compile
+		let allNodesConnected = checkAllNodesConnected();
+
+		if (!allNodesConnected) {
+			alert("Please connect all the nodes before debugging.");
+			return;
+		}
+
+		let pythonCode = getPythonCompiler();
+		let showOutput = false;
+		setCompiled(true);
+		commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
+	}
+
 	const handleRunClick = async () => {
 		// Only run xpipe if it is currently in focus
 		// This must be first to avoid unnecessary complication
@@ -592,62 +700,45 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		if (compiled) {
-			const runCommand = await handleRunDialog();
-			if (runCommand){
-				// commands.execute(commandIDs.executeArbitraryFile, { pythonCode });
-				commands.execute(commandIDs.executeToOutputPanel, { runCommand });
-			}
-		}else {
-			alert("Please save and compile before running.");
+		saveAndCompile();
+
+		const runCommand = await handleRunDialog();
+
+		if (runCommand) {
+			commands.execute(commandIDs.executeToOutputPanel, { runCommand });
 		}
 	}
-	
-	const handleDebugClick = () => {
+
+	const handleDebugClick = async () => {
 		// Only debug xpipe if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
 
-		// Image viewer
+		resetColorCodeOnStart(true);
+
+		saveAndCompile();
+
 		// let allNodes = diagramEngine.getModel().getNodes();
 		// allNodes[1].getOptions().extras["imageGalleryItems"] = "xxx";
 
-		setDebugMode(true)
-
-		if (saved && compiled) {
-
-			let allNodes = getAllNodesFromStartToFinish();
-			let isNodeSelected = false;
-
-			for (let i = 0; i < allNodes.length; i++) {
-
-				if (allNodes[i].getOptions()["name"].startsWith("🔴")) {
-					allNodes[i].setSelected(true);
-					isNodeSelected = true;
-					break;
-				} else {
-					allNodes[i].setSelected(false);
-				}
-			}
-
-			if (!isNodeSelected) {
-				let startNodeModel = getNodeModelByName(allNodes, 'Start');
-				startNodeModel.setSelected(true);
-			}
-			alert("Debug xpipe");
+		const runCommand = await handleRunDialog();
+		const debug_mode = "--debug_mode True";
+		if (runCommand) {
+			commands.execute(commandIDs.executeToOutputPanel, { runCommand, debug_mode });
 			commands.execute(commandIDs.openDebugger);
-		} else {
-			alert("Please save and compile before debugging.")
-		}
+			setDebugMode(true);
+			setInDebugMode(false);
+			let allNodes = getAllNodesFromStartToFinish();
+			allNodes.forEach((node) => {
+				node.setSelected(false);
+			});
 
-		// if (compiled && saved) {
-		// 	onClick('displayDebug');
-		// }
-		// else {
-		// 	onClick('displaySavedAndCompiled');
-		// }
+			setCurrentIndex(0);
+			let currentNode = allNodes[0];
+			currentNode.setSelected(true);
+		}
 	}
 
 	const handleToggleBreakpoint = () => {
@@ -658,87 +749,330 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		diagramEngine.getModel().getNodes().forEach((item) => {
-            if (item.getOptions()["selected"] == true){
-                let name = item.getOptions()["name"]
-				currentNodeSignal.emit({
-					item
-				});
-                if (name.startsWith("🔴")){
-                    item.getOptions()["name"] = name.split("🔴")[1]
-                }
-                else{
-                    item.getOptions()["name"] = "🔴" + name
-                }
-                item.setSelected(true);
-                item.setSelected(false);
-            }
+			if (item.getOptions()["selected"] == true) {
+				let name = item.getOptions()["name"];
 
+				if (name.startsWith("🔴")) {
+					item.getOptions()["name"] = name.split("🔴")[1]
+				}
+				else {
+					item.getOptions()["name"] = "🔴" + name
+				}
+				item.setSelected(true);
+				item.setSelected(false);
+			}
 		});
 	}
 
-	const handleToggleContinueDebug = () => {
+	function delay(ms: number) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
+	const getContinuePost = async () => {
+		await sendingRunCommand("clear");
+
+		await sendingRunCommand("continue");
+
+		return await sendingRunCommand("get/output");
+	};
+
+	const terminateExecution = async () => {
+		return await sendingRunCommand("terminate");
+	};
+
+	async function sendingRunCommand(command: string) {
+		const dataToSend = { "command": command };
+
+		try {
+			const server_reply = await requestAPI<any>('debug/enable', {
+				body: JSON.stringify(dataToSend),
+				method: 'POST',
+			});
+
+			return server_reply;
+		} catch (reason) {
+			console.error(
+				`Error on POST /xpipe/debug/enable ${dataToSend}.\n${reason}`
+			);
+		}
+	};
+
+	const runFromNodeToNode = async () => {
+		if (!debugMode) {
+			alert("Not in debug mode");
+			return;
+		}
+
+		let allNodes = getAllNodesFromStartToFinish();
+		let prevNode: NodeModel;
+		let currentNode: NodeModel;
+
+		let count = currentIndex;
+		currentNode = allNodes[count];
+		prevNode = allNodes[count];
+
+		if (currentNode.getOptions()["name"].startsWith("🔴")) {
+			prevNode.setSelected(true);
+			prevNode.getOptions()["color"] = "rgb(150,150,150)";
+			currentNode = allNodes[count + 1];
+
+			if (currentNode.getOptions()["name"].startsWith("🔴")) {
+				if (currentNode.getOptions()["name"] != "🔴Start" && currentNode.getOptions()["name"] != "Start") {
+					await sendingRunCommand("run");
+
+					let req_run_command = await sendingRunCommand("get_run");
+					let output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
+					while (output_req.split(",").length != count) {
+						await delay(1500);
+						req_run_command = await sendingRunCommand("get_run");
+						output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
+					}
+
+					await getContinuePost();
+					await delay(1000);
+
+					let item2 = await sendingRunCommand("get/output");
+					let item = currentNode;
+
+					currentNodeSignal.emit({
+						item, item2
+					});
+				}
+				await delay(1000);
+				prevNode.setSelected(false);
+				currentNode.setSelected(true);
+
+				if (currentNode.getOptions()["name"] != "Finish" && currentNode.getOptions()["name"] != "🔴Finish") {
+					count = count + 1;
+					currentNode = allNodes[count];
+					setCurrentIndex(count);
+				}
+			}
+			await delay(1000);
+			prevNode.setSelected(false);
+		}
+
+		while (!currentNode.getOptions()["name"].startsWith("🔴")) {
+			prevNode = currentNode;
+			prevNode.setSelected(true);
+			prevNode.getOptions()["color"] = "rgb(150,150,150)";
+			if (currentNode.getOptions()["name"] != "Start" && currentNode.getOptions()["name"] != "🔴Start") {
+				await delay(1000);
+
+				prevNode.setSelected(false);
+				currentNode.setSelected(true);
+
+				await sendingRunCommand("run");
+
+				let req_run_command = await sendingRunCommand("get_run");
+				let output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
+				while (output_req.split(",").length != count) {
+					await delay(1500);
+					req_run_command = await sendingRunCommand("get_run");
+					output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
+				}
+			}
+			await delay(1000);
+			prevNode.setSelected(false);
+
+			prevNode = currentNode;
+			count = count + 1;
+			currentNode = allNodes[count];
+
+			currentNode.setSelected(true);
+
+			setInDebugMode(true);
+
+			if (currentNode.getOptions()["name"] == "Finish" || currentNode.getOptions()["name"] == "🔴Finish") {
+				prevNode.setSelected(false);
+				currentNode.setSelected(true);
+				currentNode.getOptions()["color"] = "rgb(150,150,150)";
+
+				await delay(1000);
+
+				currentNode.setSelected(false);
+
+				alert("Finish Execution.");
+
+				setCurrentIndex(-1);
+				setDebugMode(false);
+				setInDebugMode(false);
+
+				allNodes.forEach((node) => {
+					node.setSelected(true);
+					node.getOptions()["color"] = node["color"];
+				});
+				return;
+			}
+
+			setCurrentIndex(count);
+
+			await getContinuePost();
+			await delay(1000);
+
+			let item2 = await sendingRunCommand("get/output");
+			let item = currentNode;
+
+			currentNodeSignal.emit({
+				item, item2
+			});
+		}
+
+		if (currentNode.getOptions()["name"] == "Finish" || currentNode.getOptions()["name"] == "🔴Finish") {
+			await delay(1000);
+			prevNode.setSelected(false);
+			currentNode.setSelected(true);
+			currentNode.getOptions()["color"] = "rgb(150,150,150)";
+
+			setCurrentIndex(-1);
+			setDebugMode(false);
+			setInDebugMode(false);
+
+			alert("Finish Execution.");
+
+			allNodes.forEach((node) => {
+				node.setSelected(true);
+				node.getOptions()["color"] = node["color"];
+			});
+		}
+	}
+
+	const handleToggleContinueDebug = async () => {
 		// Only toggle continue if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		alert("Continue");
-		setInDebugMode(true)
+		if (currentIndex == 0) {
+			resetColorCodeOnStart(true);
+		}
+
+		await runFromNodeToNode();
 	}
 
-	const handleToggleNextNode = () => {
+	const handleToggleNextNode = async () => {
 		// Only toggle next node if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		let allNodes = getAllNodesFromStartToFinish();
-		let isFinished = false;
-		let currentNode: NodeModel;
-		let nextNode: NodeModel;
 
-		for (let i = 0; i < allNodes.length; i++) {
-
-			if (allNodes[i].getOptions()["selected"] == true) {
-				currentNode = allNodes[i];
-				nextNode = allNodes[i + 1];
-				currentNode.setSelected(false);
-				currentNode.getOptions()["color"] = "rgb(150,150,150)";
-
-				if (nextNode) {
-					nextNode.setSelected(true);
-				} else {
-					diagramEngine.getModel().getNodes().forEach((node) => {
-						let nodeType = node.getOptions()["extras"]["type"];
-
-						nodesColor.forEach((typeOfNode) => {
-							if (nodeType == typeOfNode.type) {
-								node.getOptions()["color"] = typeOfNode.color;
-							}
-						})
-					});
-					isFinished = true;
-				}
-				break;
-			}
+		if (!debugMode) {
+			alert("Not in debug mode");
+			return;
 		}
 
-		if (isFinished) {
-			allNodes.forEach((node) => {
-				node.setSelected(true);
+		let allNodes = getAllNodesFromStartToFinish();
+		let currentNode: NodeModel;
+		let prevNode: NodeModel;
+		let count = currentIndex;
+
+		currentNode = allNodes[count];
+		prevNode = allNodes[count];
+
+		if (currentNode.getOptions()["name"] == "Start" || currentNode.getOptions()["name"] == "🔴Start") {
+			currentNode.setSelected(true);
+			await getContinuePost();
+
+			currentNode.getOptions()["color"] = "rgb(150,150,150)";
+			currentNode.setSelected(false);
+
+			count += 1;
+			currentNode = allNodes[count];
+			currentNode.setSelected(true);
+			prevNode.setSelected(false);
+			setCurrentIndex(count);
+			await delay(1500);
+			let item2 = await sendingRunCommand("get/output");
+			await delay(1000);
+
+			let item = currentNode;
+			currentNodeSignal.emit({
+				item, item2
 			});
+
+		} else {
+			await sendingRunCommand("run");
+
+			let req_run_command = await sendingRunCommand("get_run");
+			let output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
+
+			while (output_req.split(",").length != count) {
+				await delay(1500);
+				req_run_command = await sendingRunCommand("get_run");
+				output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
+			}
+
+			await getContinuePost();
+			prevNode.setSelected(true);
+			count += 1;
+			currentNode = allNodes[count];
+
+			currentNode.setSelected(true);
+			prevNode.getOptions()["color"] = "rgb(150,150,150)";
+			prevNode.setSelected(false);
+			setCurrentIndex(count);
+
+			await delay(1500);
+			let item2 = await sendingRunCommand("get/output");
+			let item = currentNode;
+
+			currentNodeSignal.emit({
+				item, item2
+			});
+		}
+
+		if (currentNode.getOptions()["name"] == "Finish") {
+			currentNode.getOptions()["color"] = "rgb(150,150,150)";
+			currentNode.setSelected(false);
+			currentNode.setSelected(true);
+
+			setCurrentIndex(-1);
+			setDebugMode(false);
+			setInDebugMode(false);
+
+			allNodes.forEach((node) => {
+				node.getOptions()["color"] = "rgb(150,150,150)";
+				node.setSelected(false);
+				node.setSelected(true);
+				node.getOptions()["color"] = node["color"];
+			});
+
 			alert("Finish Execution.");
 		}
-
 	}
 
-	const handleToggleStepOverDebug = () => {
+	const handleToggleStepOverDebug = async () => {
 		// Only toggle step over if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		alert("Step Over");
+
+		if (currentIndex == 0) {
+			resetColorCodeOnStart(true);
+		}
+
+		await runFromNodeToNode();
+	}
+
+	const resetColorCodeOnStart = (onStart: boolean) => {
+		let allNodes = getAllNodesFromStartToFinish();
+		if (onStart) {
+			allNodes.forEach((node) => {
+				node.setSelected(true);
+				node.getOptions()["color"] = node["color"];
+				node.setSelected(false);
+			});
+
+			allNodes[0].setSelected(true);
+			return;
+		}
+
+		allNodes.forEach((node) => {
+			node.setSelected(true);
+			node.getOptions()["color"] = node["color"];
+		});
 	}
 
 	const handleToggleTerminateDebug = () => {
@@ -747,7 +1081,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		alert("Terminate");
+
+		resetColorCodeOnStart(false);
+
+		setCurrentIndex(-1);
+		setDebugMode(false);
+		setInDebugMode(false);
+
+		terminateExecution();
+
+		alert("Execution has been terminated.");
 	}
 
 	const handleToggleStepInDebug = () => {
@@ -789,13 +1132,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setDebugMode(false);
 		setInDebugMode(false);
 	}
-	
+
 	const hideRcDialog = () => {
 		setDisplayRcDialog(false);
 	}
 
 	useEffect(() => {
-
 		if (initialize) {
 			let allNodes = diagramEngine.getModel().getNodes();
 			let nodesCount = allNodes.length;
@@ -852,74 +1194,69 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Start') })],
 			defaultButton: 1,
 			focusNodeSelector: '#name'
-			};
-			const dialogResult = await showFormDialog(dialogOptions);
-		
-			if (dialogResult["button"]["label"] == 'Cancel') {
+		};
+		const dialogResult = await showFormDialog(dialogOptions);
+
+		if (dialogResult["button"]["label"] == 'Cancel') {
 			// When Cancel is clicked on the dialog, just return
-				return false;
+			return false;
+		}
+
+		let commandStr = ' ';
+
+		stringNodes.forEach((param) => {
+			if (param == 'experiment name') {
+				var dt = new Date();
+
+				let dateTime = `${dt.getFullYear().toString().padStart(4, '0')}-${(
+					dt.getMonth() + 1).toString().padStart(2, '0')}-${dt.getDate().toString().padStart(2, '0')} ${dt.getHours().toString().padStart(2, '0')}:${dt.getMinutes().toString().padStart(2, '0')}:${dt.getSeconds().toString().padStart(2, '0')}`
+
+				xpipeLogger.info(param + ": " + dateTime);
 			}
-
-			let commandStr = ' ';
-
-			stringNodes.forEach((param) => {
-                if (param == 'experiment name'){
-					var dt = new Date();
-
-					let dateTime = `${
-						dt.getFullYear().toString().padStart(4, '0')}-${(
-						dt.getMonth()+1).toString().padStart(2, '0')}-${
-    					dt.getDate().toString().padStart(2, '0')} ${
-    					dt.getHours().toString().padStart(2, '0')}:${
-    					dt.getMinutes().toString().padStart(2, '0')}:${
-    					dt.getSeconds().toString().padStart(2, '0')}`
-                    
-                    xpipeLogger.info(param + ": " + dateTime);
-                }
-                else{
-                    if(dialogResult["value"][param]){
-						xpipeLogger.info(param + ": " + dialogResult["value"][param]);
-                        let filteredParam = param.replace(/\s+/g, "_");
-                        filteredParam = filteredParam.toLowerCase();
-                        commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] +' ';
-                    }
-                }
-            });
-
-			if (boolNodes){
-				boolNodes.forEach((param) => {
+			else {
+				if (dialogResult["value"][param]) {
 					xpipeLogger.info(param + ": " + dialogResult["value"][param]);
-					if(dialogResult["value"][param]){
-						let filteredParam = param.replace(/\s+/g, "_");
-						filteredParam = filteredParam.toLowerCase();
-						commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] +' ';
-					}
-				});
+					let filteredParam = param.replace(/\s+/g, "_");
+					filteredParam = filteredParam.toLowerCase();
+					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] + ' ';
+				}
 			}
+		});
 
-			if (intNodes){
-				intNodes.forEach((param) => {
-					xpipeLogger.info(param + ": " + dialogResult["value"][param]);
-					if(dialogResult["value"][param]){
-						let filteredParam = param.replace(/\s+/g, "_");
-						filteredParam = filteredParam.toLowerCase();
-						commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] +' ';
-					}
-				});
-			}
+		if (boolNodes) {
+			boolNodes.forEach((param) => {
+				xpipeLogger.info(param + ": " + dialogResult["value"][param]);
+				if (dialogResult["value"][param]) {
+					let filteredParam = param.replace(/\s+/g, "_");
+					filteredParam = filteredParam.toLowerCase();
+					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] + ' ';
+				}
+			});
+		}
 
-			if (floatNodes){
-				floatNodes.forEach((param) => {
-					xpipeLogger.info(param + ": " + dialogResult["value"][param]);
-					if(dialogResult["value"][param]){
-						let filteredParam = param.replace(/\s+/g, "_");
-						filteredParam = filteredParam.toLowerCase();
-						commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] +' ';
-					}
-				});
-			}
+		if (intNodes) {
+			intNodes.forEach((param) => {
+				xpipeLogger.info(param + ": " + dialogResult["value"][param]);
+				if (dialogResult["value"][param]) {
+					let filteredParam = param.replace(/\s+/g, "_");
+					filteredParam = filteredParam.toLowerCase();
+					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] + ' ';
+				}
+			});
+		}
 
-			return commandStr;
+		if (floatNodes) {
+			floatNodes.forEach((param) => {
+				xpipeLogger.info(param + ": " + dialogResult["value"][param]);
+				if (dialogResult["value"][param]) {
+					let filteredParam = param.replace(/\s+/g, "_");
+					filteredParam = filteredParam.toLowerCase();
+					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] + ' ';
+				}
+			});
+		}
+
+		return commandStr;
 	};
 
 	useEffect(() => {
@@ -1119,7 +1456,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			setBoolNodes([]);
 		}
 	}
-	
+
 	return (
 		<Body>
 			{/* <Header>
@@ -1253,7 +1590,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 										node.addOutPortEnhance('▶', 'parameter-out-0');
 
 									}
-									
+
 								} else if (data.type === 'list') {
 
 									if ((data.name).startsWith("Literal")) {
@@ -1386,7 +1723,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 												in_count += 1;
 											} else if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[dict]")) {
 												in_str = "parameter-dict-in-" + in_count;
-												in_count += 1;											
+												in_count += 1;
 											} else {
 												in_str = "in-" + in_count;
 												in_count += 1;

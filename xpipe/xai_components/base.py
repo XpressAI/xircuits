@@ -47,11 +47,13 @@ class BaseComponent:
 
 class Component(BaseComponent):
     next: BaseComponent
+    done: False
 
     def do(self) -> BaseComponent:
         print(f"Executing: {self.__class__.__name__}")
         self.execute()
-        return self.next
+
+        return self.done, self.next
 
     def debug_repr(self) -> str:
         return "<h1>Component</h1>"

@@ -2,10 +2,14 @@
   color: var(--jp-ui-font-color1);
   background: var(--jp-layout-color1);
   font-size: 14px;
-  display: flex;
   align-items: center;
   justify-content: left;
   text-align: left;
+  overflow-y: auto;
+}
+
+.jp-debugger-toolbar-panel {
+  flex: 0 0 auto;
 }
 
 .jp-XpipeLogo {
