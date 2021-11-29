@@ -902,16 +902,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			}
 
 			setCurrentIndex(count);
+
+			await getContinuePost();
+			await delay(1000);
+
+			let item2 = await sendingRunCommand("get/output");
+			let item = currentNode;
+
+			currentNodeSignal.emit({
+				item, item2
+			});
 		}
-		await getContinuePost();
-		await delay(1000);
-
-		let item2 = await sendingRunCommand("get/output");
-		let item = currentNode;
-
-		currentNodeSignal.emit({
-			item, item2
-		});
 
 		if (currentNode.getOptions()["name"] == "Finish" || currentNode.getOptions()["name"] == "🔴Finish") {
 			await delay(1000);

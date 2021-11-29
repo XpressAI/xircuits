@@ -1,6 +1,6 @@
-import { ReactWidget } from "@jupyterlab/apputils";
+import { ReactWidget, UseSignal } from "@jupyterlab/apputils";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { XpipeFactory } from "../xpipeFactory";
 
 /**
@@ -10,8 +10,10 @@ import { XpipeFactory } from "../xpipeFactory";
  */
 const DebuggerComponent = ({
   xpipeFactory,
+  currentNode
 }: {
   xpipeFactory: XpipeFactory;
+  currentNode: any;
 }): JSX.Element => {
   const [names, setNames] = useState("");
   const [ids, setIds] = useState("");
@@ -19,11 +21,12 @@ const DebuggerComponent = ({
   const [pInLabels, setPInLabel] = useState([]);
   const [pOutLabels, setPOutLabel] = useState([]);
   const [itemOutput, setItemOutput] = useState("");
+  const notInitialRender = useRef(false)
 
-  xpipeFactory.currentNodeSignal.connect((_, args) => {
+  const handleCurrentNode = () => {
     console.log("calling here");
-    let item = typeof args["item"] === "undefined" ? "" : (args["item"] as any);
-    let item2 = typeof args["item2"] === "undefined" ? "" : (args["item2"] as any);
+    let item = typeof currentNode["item"] === "undefined" ? "" : (currentNode["item"] as any);
+    let item2 = typeof currentNode["item2"] === "undefined" ? "" : (currentNode["item2"] as any);
     let name = item.getOptions()["name"];
     let id = item.getOptions()["id"];
     let type = item.getOptions()["extras"]["type"];
@@ -75,7 +78,15 @@ const DebuggerComponent = ({
       }
     });
     handleChanges(name, id, type, pInList, pOutArgList, item_output);
-  });
+  };
+
+  useEffect(() => {
+    if (notInitialRender.current) {
+      handleCurrentNode();
+    } else {
+      notInitialRender.current = true
+    }
+  }, [currentNode]);
 
   function handleChanges(name, id, type, pInLabel, pOutLabel, pItemOutput) {
     setNames(name);
@@ -124,7 +135,18 @@ export class DebuggerWidget extends ReactWidget {
   }
 
   render(): JSX.Element {
-    return <DebuggerComponent xpipeFactory={this._xpipeFactory} />;
+    return (
+      <UseSignal signal={this._xpipeFactory.currentNodeSignal}>
+        {(_, args) => {
+          return (
+            <DebuggerComponent
+              xpipeFactory={this._xpipeFactory}
+              currentNode={args}
+            />
+          );
+        }}
+      </UseSignal>
+    );
   }
   private _xpipeFactory: XpipeFactory;
 }
