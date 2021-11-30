@@ -71,8 +71,46 @@ class ReadDataSet(Component):
 
             self.dataset.value = (new_x, new_y)
 
+
+        elif self.dataset_name.value:
+            try:
+                import cv2
+                BASE_FOLDER = self.dataset_name.value
+                folders = os.listdir(BASE_FOLDER)
+                # lists to store data
+                data = []
+                label = []
+                for folder in folders:
+                    for file in os.listdir(BASE_FOLDER + '//' + folder + '//'):
+                        #print(f'Processing {file}')
+                        img = cv2.imread(BASE_FOLDER + folder + '//' + file)
+                        # do any pre-processing if needed like resize, sharpen etc.
+                        # print(img)
+                        if img is None:
+                            print(f'Error reading file: {file}. Skipping...')
+                        else:
+                            img = cv2.resize(img, (256, 256))
+                            data.append(img)
+                            label.append(folder)
+
+
+                new_x = np.asarray(data)
+
+                # Import label encoder
+                from sklearn import preprocessing
+                label_encoder = preprocessing.LabelEncoder()
+                new_y = label_encoder.fit_transform(label)
+
+                print(f"x_shape = {new_x.shape}, y_shape = {new_y.shape}")
+
+                self.dataset.value = (new_x, new_y)
+
+            except Exception as e: 
+                print(e)
+
         else:
-            print("Keras dataset was not found!")
+            print("Dataset was not found!")
+
 
         self.done = True
 
