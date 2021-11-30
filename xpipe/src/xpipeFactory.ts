@@ -110,6 +110,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
 
     const widget = new DocumentWidget({ content, context });
     widget.addClass(XPIPE_CLASS);
+    widget.title.iconClass = 'jp-XpipeLogo';
 
     /**
      * Create a save button toolbar item.
