@@ -2,7 +2,7 @@
 
 The current iteration of the juypterlab engine are made of seperate extensions of Jupyterlab 3.1.10. The following steps is if you're developing on a Windows or Ubuntu 20.04.
 ```
-git clone https://github.com/XpressAI/xai-jupyterlab
+git clone https://github.com/XpressAI/xpipes
 ```
 Make and activate python env. The tested python versions are 3.9.6
 
@@ -53,5 +53,3 @@ By running jupyter lab, you should be able to load the Xpipe Panel by selecting 
 The current extension looks like this.
 ![Xpipe v0 3 4](https://user-images.githubusercontent.com/68586800/134819194-c7f932e2-beb5-4e35-ba53-3a3bf24dccdc.png)
 
-
-You may view the current features implemented in our [feature spreadsheet](https://docs.google.com/spreadsheets/d/158-vQ3sFknn0Kd4M5vNVCabWzlAglk-xh8uFOE1dhHQ/edit?usp=sharing).
