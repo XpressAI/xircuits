@@ -129,6 +129,8 @@ dmypy.json
 .pyre/
 
 # Nodejs
-
-node_modules
+node_modules/
+*.bundle.*
+jupyterlab_xpipe/labextension/static/
+labextension/
 
