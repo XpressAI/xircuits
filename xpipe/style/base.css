@@ -1,3 +1,17 @@
+/*-----------------------------------------------------------------------------
+| Copyright (c) XpressAI GK and Jupyter Development Team.
+| Distributed under the terms of the Modified BSD License.
+|----------------------------------------------------------------------------*/
+
+#jp-MainLogo {
+    background-image: url(../style/icons/xpress-logo.svg);
+    background-repeat: no-repeat;
+}
+
+#jp-MainLogo > svg {
+    visibility: hidden;
+}
+
 .jp-DebuggerWidget {
   color: var(--jp-ui-font-color1);
   background: var(--jp-layout-color1);
