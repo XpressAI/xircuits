@@ -41,7 +41,7 @@ import { OutputPanel } from './kernel/panel';
 
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
-const FACTORY = 'Xpipe editor';
+const FACTORY = 'Xpipes editor';
 
 // Export a token so other extensions can require it
 // export const IExampleDocTracker = new Token<IWidgetTracker<ExampleDocWidget>>(
@@ -51,8 +51,8 @@ const FACTORY = 'Xpipe editor';
 /**
  * Initialization data for the documents extension.
  */
-const xpipe: JupyterFrontEndPlugin<void> = {
-  id: 'xpipe',
+const xpipes: JupyterFrontEndPlugin<void> = {
+  id: 'xpipes',
   autoStart: true,
   requires: [
     ICommandPalette,
@@ -78,15 +78,15 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     translator?: ITranslator
   ) => {
 
-    console.log('Xpipe is activated!');
+    console.log('Xpipes is activated!');
 
     // Creating the widget factory to register it so the document manager knows about
     // our new DocumentWidget
     const widgetFactory = new XpipeFactory({
       name: FACTORY,
-      modelName: 'xpipe-model',
-      fileTypes: ['xpipe'],
-      defaultFor: ['xpipe'],
+      modelName: 'xpipes-model',
+      fileTypes: ['xpipes'],
+      defaultFor: ['xpipes'],
       app: app,
       shell: app.shell,
       commands: app.commands,
@@ -96,9 +96,9 @@ const xpipe: JupyterFrontEndPlugin<void> = {
 
     // register the filetype
     app.docRegistry.addFileType({
-      name: 'xpipe',
-      displayName: 'Xpipe',
-      extensions: ['.xpipe'],
+      name: 'xpipes',
+      displayName: 'Xpipes',
+      extensions: ['.xpipes'],
       iconClass: 'jp-XpipeLogo'
     });
 
@@ -106,7 +106,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     app.docRegistry.addWidgetFactory(widgetFactory);
 
     const tracker = new WidgetTracker<XPipeWidget>({
-      namespace: "Xpipe Tracker"
+      namespace: "Xpipes Tracker"
     });
 
 
@@ -137,7 +137,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
 
     // Creating the sidebar widget
     const sidebarWidget = ReactWidget.create(<Sidebar lab = {app} basePath = "xai_components"/>);
-    sidebarWidget.id = 'xpipe-component-sidebar';
+    sidebarWidget.id = 'xpipes-component-sidebar';
     sidebarWidget.title.iconClass = 'jp-ComponentLibraryLogo';
     sidebarWidget.title.caption = "Xpipes Component Library";
 
@@ -146,13 +146,13 @@ const xpipe: JupyterFrontEndPlugin<void> = {
 
     // Creating the sidebar debugger
     const sidebarDebugger = new XpipesDebugger.Sidebar({ app, translator, widgetFactory})
-    sidebarDebugger.id = 'xpipe-debugger-sidebar';
+    sidebarDebugger.id = 'xpipes-debugger-sidebar';
     sidebarDebugger.title.iconClass = 'jp-DebuggerLogo';
     sidebarDebugger.title.caption = "Xpipes Debugger";
     restorer.add(sidebarDebugger, sidebarDebugger.id);
     app.shell.add(sidebarDebugger, 'right', { rank: 1001 });
     
-    // Add a command to open xpipe sidebar debugger
+    // Add a command to open xpipes sidebar debugger
     app.commands.addCommand(commandIDs.openDebugger, {
       execute: () => {
         if (sidebarDebugger.isHidden) {
@@ -161,66 +161,66 @@ const xpipe: JupyterFrontEndPlugin<void> = {
       },
     });
 
-    // Add command signal to save xpipe
+    // Add command signal to save xpipes
     app.commands.addCommand(commandIDs.saveXpipe, {
       execute: args => {
         widgetFactory.saveXpipeSignal.emit(args);
       }
     });
 
-    // Add command signal to reload xpipe
+    // Add command signal to reload xpipes
     app.commands.addCommand(commandIDs.reloadXpipe, {
       execute: args => {
         widgetFactory.reloadXpipeSignal.emit(args);
       }
     });
 
-    // Add command signal to revert xpipe
+    // Add command signal to revert xpipes
     app.commands.addCommand(commandIDs.revertXpipe, {
       execute: args => {
         widgetFactory.revertXpipeSignal.emit(args);
       }
     });
 
-    // Add command signal to compile xpipe
+    // Add command signal to compile xpipes
     app.commands.addCommand(commandIDs.compileXpipe, {
       execute: args => {
         widgetFactory.compileXpipeSignal.emit(args);
       }
     });
 
-    // Add command signal to run xpipe
+    // Add command signal to run xpipes
     app.commands.addCommand(commandIDs.runXpipe, {
       execute: args => {
         widgetFactory.runXpipeSignal.emit(args);
       }
     });
 
-    // Add command signal to debug xpipe
+    // Add command signal to debug xpipes
     app.commands.addCommand(commandIDs.debugXpipe, {
       execute: args => {
         widgetFactory.debugXpipeSignal.emit(args);
       }
     });
 
-    // Add command signal to test xpipe
+    // Add command signal to test xpipes
     app.commands.addCommand(commandIDs.testXpipe, {
       execute: args => {
         widgetFactory.testXpipeSignal.emit(args);
       }
     });
 
-    // Add a command for creating a new xpipe file.
+    // Add a command for creating a new xpipes file.
     app.commands.addCommand(commandIDs.createNewXpipe, {
-      label: 'Xpipe File',
+      label: 'Xpipes File',
       iconClass: 'jp-XpipeLogo',
-      caption: 'Create a new xpipe file',
+      caption: 'Create a new xpipes file',
       execute: () => {
         app.commands
           .execute(commandIDs.newDocManager, {
             path: browserFactory.defaultBrowser.model.path,
             type: 'file',
-            ext: '.xpipe'
+            ext: '.xpipes'
           })
           .then(model =>
             app.commands.execute(commandIDs.openDocManager, {
@@ -232,7 +232,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
     });
 
     async function requestToGenerateArbitraryFile(path: string, pythonScript: string) {
-      const dataToSend = { "currentPath": path.split(".xpipe")[0] + ".py", "compilePythonScript": pythonScript};
+      const dataToSend = { "currentPath": path.split(".xpipes")[0] + ".py", "compilePythonScript": pythonScript};
 
       try {
         const server_reply = await requestAPI<any>('file/generate', {
@@ -243,7 +243,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
         return server_reply;
       } catch (reason) {
         console.error(
-          `Error on POST /xpipe/file/generate ${dataToSend}.\n${reason}`
+          `Error on POST /xpipes/file/generate ${dataToSend}.\n${reason}`
         );
       }
     };
@@ -257,7 +257,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
         const request = await requestToGenerateArbitraryFile(path, message); // send this file and create new file
         
         if (request["message"] == "completed") {
-          const model_path = current_path.split(".xpipe")[0] + ".py";
+          const model_path = current_path.split(".xpipes")[0] + ".py";
           await app.commands.execute(
             commandIDs.openDocManager,
             {
@@ -288,10 +288,10 @@ const xpipe: JupyterFrontEndPlugin<void> = {
       return outputPanel;
     }
 
-    // Execute xpipe python script and display at output panel
+    // Execute xpipes python script and display at output panel
     app.commands.addCommand(commandIDs.executeToOutputPanel, {
     execute: async args => {
-        const xpipeLogger = new Log(app);
+        const xpipesLogger = new Log(app);
         const message = typeof args['runCommand'] === 'undefined' ? '' : (args['runCommand'] as string);
         const debug_mode = typeof args['debug_mode'] === 'undefined' ? '' : (args['debug_mode'] as string);
 
@@ -305,9 +305,9 @@ const xpipe: JupyterFrontEndPlugin<void> = {
 
         outputPanel.session.ready.then(() => {
           const current_path = tracker.currentWidget.context.path;
-          const model_path = current_path.split(".xpipe")[0] + ".py";
+          const model_path = current_path.split(".xpipes")[0] + ".py";
           const code = "%run " + model_path + message + debug_mode;
-          outputPanel.execute(code, xpipeLogger);
+          outputPanel.execute(code, xpipesLogger);
         });
       },
     });
@@ -327,7 +327,7 @@ const xpipe: JupyterFrontEndPlugin<void> = {
  * Export the plugins as default.
  */
  const plugins: JupyterFrontEndPlugin<any>[] = [
-  xpipe,
+  xpipes,
   logPlugin
 ];
 
