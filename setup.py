@@ -132,7 +132,14 @@ setup_args = dict(
         "webencodings==0.5.1",
         "websocket-client==1.2.1",
         "Werkzeug==2.0.2",
-        "zipp==3.4.0"
+        "zipp==3.4.0",
+        "tensorflow",
+        "numpy",
+        "scikit-learn",
+        "pillow",
+        "pandas",
+        "py4j",
+        "pyspark"
     ],
     zip_safe=False,
     include_package_data=True,
