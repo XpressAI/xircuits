@@ -23,7 +23,7 @@ import { CommandIDs } from './log/LogPlugin';
 
 import { ServiceManager } from '@jupyterlab/services';
 
-const XPIPE_CLASS = 'xpipe-editor';
+const XPIPE_CLASS = 'xpipes-editor';
 
 export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
 
@@ -117,7 +117,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
      */
     let saveButton = new ToolbarButton({
       icon: saveIcon,
-      tooltip: 'Save Xpipe',
+      tooltip: 'Save Xpipes',
       onClick: (): void => {
         this.commands.execute(commandIDs.saveXpipe);
       }
@@ -128,7 +128,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
      */
     let reloadButton = new ToolbarButton({
       icon: refreshIcon,
-      tooltip: 'Reload Xpipe from Disk',
+      tooltip: 'Reload Xpipes from Disk',
       onClick: (): void => {
         this.commands.execute(commandIDs.reloadXpipe);
       }
@@ -139,7 +139,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
      */
     let revertButton = new ToolbarButton({
       icon: undoIcon,
-      tooltip: 'Revert Xpipe to Checkpoint',
+      tooltip: 'Revert Xpipes to Checkpoint',
       onClick: (): void => {
         this.commands.execute(commandIDs.revertXpipe);
       }
@@ -150,7 +150,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
      */
     let compileButton = new ToolbarButton({
       icon: checkIcon,
-      tooltip: 'Compile Xpipe',
+      tooltip: 'Compile Xpipes',
       onClick: (): void => {
         this.commands.execute(commandIDs.compileXpipe);
       }
@@ -161,7 +161,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
      */
     let runButton = new ToolbarButton({
       icon: runIcon,
-      tooltip: 'Run Xpipe',
+      tooltip: 'Run Xpipes',
       onClick: (): void => {
         this.commands.execute(commandIDs.runXpipe);
       }
@@ -172,7 +172,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
      */
     let debugButton = new ToolbarButton({
       icon:bugIcon,
-      tooltip: 'Open Xpipe Debugger and enable Image Viewer',
+      tooltip: 'Open Xpipes Debugger and enable Image Viewer',
       onClick: (): void => {
         this.commands.execute(commandIDs.debugXpipe);
       }
@@ -200,14 +200,14 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
       }
     });
   
-    widget.toolbar.insertItem(0,'xpipe-add-save', saveButton);
-    widget.toolbar.insertItem(1,'xpipe-add-reload', reloadButton);
-    widget.toolbar.insertItem(2,'xpipe-add-revert', revertButton);
-    widget.toolbar.insertItem(3,'xpipe-add-compile', compileButton);
-    widget.toolbar.insertItem(4,'xpipe-add-run', runButton);
-    widget.toolbar.insertItem(5,'xpipe-add-debug', debugButton);
-    widget.toolbar.insertItem(6,'xpipe-add-log', logButton);
-    widget.toolbar.insertItem(7,'xpipe-add-test', testButton);
+    widget.toolbar.insertItem(0,'xpipes-add-save', saveButton);
+    widget.toolbar.insertItem(1,'xpipes-add-reload', reloadButton);
+    widget.toolbar.insertItem(2,'xpipes-add-revert', revertButton);
+    widget.toolbar.insertItem(3,'xpipes-add-compile', compileButton);
+    widget.toolbar.insertItem(4,'xpipes-add-run', runButton);
+    widget.toolbar.insertItem(5,'xpipes-add-debug', debugButton);
+    widget.toolbar.insertItem(6,'xpipes-add-log', logButton);
+    widget.toolbar.insertItem(7,'xpipes-add-test', testButton);
 
     return widget;
   }
@@ -223,7 +223,7 @@ export class XPipeDocModelFactory
    * @returns The name
    */
   get name(): string {
-    return 'xpipe-model';
+    return 'xpipes-model';
   }
 
   /**

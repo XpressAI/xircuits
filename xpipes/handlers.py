@@ -13,7 +13,7 @@ import sys
 class CompileFileRouteHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
-        self.finish(json.dumps({"data": "This is /xpipe/hello endpoint!"}))
+        self.finish(json.dumps({"data": "This is /xpipes/hello endpoint!"}))
 
     @tornado.web.authenticated
     def post(self):

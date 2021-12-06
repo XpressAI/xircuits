@@ -11,16 +11,15 @@ python -m venv venv
 venv/Scripts/activate
 ```
 
-Download python packages. Currently it's located at /xpipe/
+Download python packages. 
 
 ```
-cd xpipe
 pip install -r requirements.txt
 # For Linux
 # pip install -r requirements_linux.txt
 ```
 
-The main body of the app is the xpipe. It also have a server extension. Ensure you are in the /xpipe/ folder and run
+Run the following commands to install the package in local editable mode and install xpipes into the JupyterLab environment.
 
 ```
 # Install package in development mode
@@ -28,7 +27,7 @@ pip install -e .
 # Link your development version of the extension with JupyterLab
 jupyter labextension develop . --overwrite
 # Enable the server extension
-jupyter server extension enable xpipe
+jupyter server extension enable xpipes
 
 # Rebuild Typescript source after making changes
 jlpm build
@@ -40,7 +39,7 @@ jupyter lab build
 You can watch the source directory and run JupyterLab in watch mode to watch for changes in the extension's source and automatically rebuild the extension and application.
 ```
 # Watch the source directory in another terminal tab
-jlpm watch
+jlpm run watch
 # Run jupyterlab in watch mode in one terminal tab
 jupyter lab --watch
 ```

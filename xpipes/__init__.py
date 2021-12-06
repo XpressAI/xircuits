@@ -15,7 +15,7 @@ def _jupyter_labextension_paths():
 
 
 def _jupyter_server_extension_points():
-    return [{"module": "xpipe"}]
+    return [{"module": "xpipes"}]
 
 
 def _load_jupyter_server_extension(server_app):
@@ -25,10 +25,10 @@ def _load_jupyter_server_extension(server_app):
     server_app: jupyterlab.labapp.LabApp
         JupyterLab application instance
     """
-    url_path = "xpipe"
+    url_path = "xpipes"
     setup_handlers(server_app.web_app, url_path)
     server_app.log.info(
-        f"Registered xpipe extension at URL path /{url_path}"
+        f"Registered xpipes extension at URL path /{url_path}"
     )
 
 # For backward compatibility with the classical notebook
