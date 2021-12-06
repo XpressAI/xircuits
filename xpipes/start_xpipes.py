@@ -9,12 +9,27 @@ from pathlib import Path
 
 
 def start_xpipes():
+    print(
+'''
+================================
+ __   __      _                 
+ \ \ / /     (_)                
+  \ V / _ __  _ _ __   ___  ___ 
+   > < | '_ \| | '_ \ / _ \/ __|
+  / . \| |_) | | |_) |  __/\__ \\
+ /_/ \_\ .__/|_| .__/ \___||___/
+       | |     | |              
+       |_|     |_|             
+================================
+'''
+    )
+
     xai_component_path = Path(sys.executable).parents[1] / "Lib" / "site-packages" / "xai_components"
     current_path = Path(os.getcwd()) / "xai_components"
 
 
     if not current_path.exists():
-        val = input("Xpipes Component Library is not found.\nWould you like to load it in the current path?\n(Y/N)")
+        val = input("Xpipes Component Library is not found. Would you like to load it in the current path (Y/N)? ")
         if val.lower() == ("y" or "yes"):
             shutil.copytree(xai_component_path, current_path, dirs_exist_ok=True)
         
