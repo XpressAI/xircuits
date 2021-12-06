@@ -281,7 +281,7 @@ const xpipes: JupyterFrontEndPlugin<void> = {
       * @returns The panel
       */
     async function createPanel(): Promise<OutputPanel> {
-      outputPanel = new OutputPanel(app.serviceManager, rendermime, translator);
+      outputPanel = new OutputPanel(app.serviceManager, rendermime, widgetFactory, translator);
       app.shell.add(outputPanel, 'main',{ 
         mode: 'split-bottom'
       } );
