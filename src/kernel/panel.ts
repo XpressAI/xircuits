@@ -21,6 +21,7 @@ import { Message } from '@lumino/messaging';
 import { StackedPanel } from '@lumino/widgets';
 
 import { Log } from '../log/LogPlugin';
+import { XpipeFactory } from '../xpipeFactory';
 
 /**
  * The class name added to the output panel.
@@ -34,11 +35,13 @@ export class OutputPanel extends StackedPanel {
     constructor(
         manager: ServiceManager.IManager,
         rendermime: IRenderMimeRegistry,
+        xpipeFactory: XpipeFactory,
         translator?: ITranslator
     ) {
         super();
         this._translator = translator || nullTranslator;
         this._trans = this._translator.load('jupyterlab');
+        this._xpipeFactory = xpipeFactory;
         this.addClass(PANEL_CLASS);
         this.id = 'xpipe-output-panel';
         this.title.label = this._trans.__('Xpipe Output');
@@ -79,6 +82,7 @@ export class OutputPanel extends StackedPanel {
     dispose(): void {
         this._sessionContext.sessionManager.shutdown(this._sessionContext.session.id);
         this._sessionContext.dispose();
+        this._xpipeFactory.terminateDebugSignal.emit(this);
         this._sessionContext.sessionManager.refreshRunning();
         super.dispose();
     }
@@ -129,6 +133,7 @@ export class OutputPanel extends StackedPanel {
     private _sessionContext: SessionContext;
     private _outputarea: SimplifiedOutputArea;
     private _outputareamodel: OutputAreaModel;
+    private _xpipeFactory: XpipeFactory;
 
     private _translator: ITranslator;
     private _trans: TranslationBundle;

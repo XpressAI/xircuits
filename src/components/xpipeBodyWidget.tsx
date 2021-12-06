@@ -693,6 +693,56 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
 	}
 
+	const saveAndCompileAndRun = async (compileMode: boolean) => {
+		// save
+		setInitialize(true);
+		setSaved(true);
+		let currentModel = diagramEngine.getModel().serialize();
+		context.model.setSerializedModel(currentModel);
+		commands.execute(commandIDs.saveDocManager);
+
+		// compile
+		let allNodesConnected = checkAllNodesConnected();
+
+		if (!allNodesConnected) {
+			alert("Please connect all the nodes before debugging.");
+			return;
+		}
+
+		let pythonCode = getPythonCompiler();
+		let showOutput = false;
+		setCompiled(true);
+		commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
+
+		// Compile Mode
+		if (compileMode) {
+			const runCommand = await handleRunDialog();
+			const debug_mode = "--debug_mode True";
+			if (runCommand) {
+				commands.execute(commandIDs.executeToOutputPanel, { runCommand, debug_mode });
+				commands.execute(commandIDs.openDebugger);
+				setDebugMode(true);
+				setInDebugMode(false);
+				let allNodes = getAllNodesFromStartToFinish();
+				allNodes.forEach((node) => {
+					node.setSelected(false);
+				});
+
+				setCurrentIndex(0);
+				let currentNode = allNodes[0];
+				currentNode.setSelected(true);
+			}
+			return;
+		}
+
+		// Run Mode
+		const runCommand = await handleRunDialog();
+
+		if (runCommand) {
+			commands.execute(commandIDs.executeToOutputPanel, { runCommand });
+		}
+	}
+
 	const handleRunClick = async () => {
 		// Only run xpipe if it is currently in focus
 		// This must be first to avoid unnecessary complication
@@ -700,13 +750,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		saveAndCompile();
-
-		const runCommand = await handleRunDialog();
-
-		if (runCommand) {
-			commands.execute(commandIDs.executeToOutputPanel, { runCommand });
-		}
+		await saveAndCompileAndRun(false);
 	}
 
 	const handleDebugClick = async () => {
@@ -718,27 +762,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		resetColorCodeOnStart(true);
 
-		saveAndCompile();
+		await saveAndCompileAndRun(true);
 
 		// let allNodes = diagramEngine.getModel().getNodes();
 		// allNodes[1].getOptions().extras["imageGalleryItems"] = "xxx";
-
-		const runCommand = await handleRunDialog();
-		const debug_mode = "--debug_mode True";
-		if (runCommand) {
-			commands.execute(commandIDs.executeToOutputPanel, { runCommand, debug_mode });
-			commands.execute(commandIDs.openDebugger);
-			setDebugMode(true);
-			setInDebugMode(false);
-			let allNodes = getAllNodesFromStartToFinish();
-			allNodes.forEach((node) => {
-				node.setSelected(false);
-			});
-
-			setCurrentIndex(0);
-			let currentNode = allNodes[0];
-			currentNode.setSelected(true);
-		}
 	}
 
 	const handleToggleBreakpoint = () => {
@@ -1084,13 +1111,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		resetColorCodeOnStart(false);
 
+		terminateExecution();
+
+		if (debugMode) {
+			alert("Execution has been terminated.");
+		}
+
 		setCurrentIndex(-1);
 		setDebugMode(false);
 		setInDebugMode(false);
-
-		terminateExecution();
-
-		alert("Execution has been terminated.");
 	}
 
 	const handleToggleStepInDebug = () => {
