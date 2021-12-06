@@ -115,8 +115,6 @@ setup_args = dict(
         "pyrsistent==0.17.3",
         "python-dateutil==2.8.1",
         "pytz==2020.5",
-        "pywin32==301",
-        "pywinpty==1.1.4",
         "pyzmq==20.0.0",
         "requests==2.25.1",
         "requests-unixsocket==0.2.0",
