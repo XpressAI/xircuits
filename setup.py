@@ -6,6 +6,8 @@ import sys
 from pathlib import Path
 
 import setuptools
+from setuptools import setup, find_packages
+
 
 HERE = Path(__file__).parent.resolve()
 
@@ -160,6 +162,10 @@ setup_args = dict(
         "Framework :: Jupyter :: JupyterLab :: Extensions",
         "Framework :: Jupyter :: JupyterLab :: Extensions :: Prebuilt",
     ],
+    entry_points ={
+        'console_scripts': [
+            'xpipes = xpipes.start_xpipes:main'
+            ]}
 )
 
 try:
