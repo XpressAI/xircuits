@@ -18,7 +18,7 @@ def start_xpipes():
         if val.lower() == ("y" or "yes"):
             shutil.copytree(xai_component_path, current_path, dirs_exist_ok=True)
         
-    os.system('cmd /k "jupyter lab"')
+    os.system("jupyter lab")
 
 def main(argv=None):
 
