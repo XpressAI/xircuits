@@ -8,6 +8,7 @@ from xai_components.base import InArg, OutArg, Component
 from sklearn.model_selection import train_test_split
 import json
 import os
+from tqdm import tqdm
 
 
 class ReadDataSet(Component):
@@ -76,23 +77,25 @@ class ReadDataSet(Component):
             try:
                 import cv2
                 BASE_FOLDER = self.dataset_name.value
-                folders = os.listdir(BASE_FOLDER)
+                folders = [os.path.join(BASE_FOLDER, folder) for folder in os.listdir(BASE_FOLDER)]
+                
+                print(f"Detecting {len(folders)} classes in {BASE_FOLDER}.")
                 # lists to store data
                 data = []
                 label = []
-                for folder in folders:
-                    for file in os.listdir(BASE_FOLDER + '//' + folder + '//'):
-                        #print(f'Processing {file}')
-                        img = cv2.imread(BASE_FOLDER + folder + '//' + file)
-                        # do any pre-processing if needed like resize, sharpen etc.
-                        # print(img)
-                        if img is None:
-                            print(f'Error reading file: {file}. Skipping...')
-                        else:
+                for folder in tqdm(folders):
+                    for file in os.listdir(folder):
+
+                        file = os.path.join(folder, file)
+
+                        try:
+                            img = cv2.imread(file)
                             img = cv2.resize(img, (256, 256))
                             data.append(img)
                             label.append(folder)
 
+                        except: 
+                            print(f'Error reading file: {os.path.abspath(file)}. Skipping...')                        
 
                 new_x = np.asarray(data)
 
