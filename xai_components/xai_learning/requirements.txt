@@ -1,4 +1,5 @@
 tensorflow
 numpy
 sklearn
-pillow
+opencv-python
+tqdm

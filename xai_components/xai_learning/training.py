@@ -8,6 +8,7 @@ from xai_components.base import InArg, OutArg, Component
 from sklearn.model_selection import train_test_split
 import json
 import os
+from tqdm import tqdm
 
 
 class ReadDataSet(Component):
@@ -71,8 +72,48 @@ class ReadDataSet(Component):
 
             self.dataset.value = (new_x, new_y)
 
+
+        elif self.dataset_name.value:
+            try:
+                import cv2
+                BASE_FOLDER = self.dataset_name.value
+                folders = [os.path.join(BASE_FOLDER, folder) for folder in os.listdir(BASE_FOLDER)]
+                
+                print(f"Detecting {len(folders)} classes in {BASE_FOLDER}.")
+                # lists to store data
+                data = []
+                label = []
+                for folder in tqdm(folders):
+                    for file in os.listdir(folder):
+
+                        file = os.path.join(folder, file)
+
+                        try:
+                            img = cv2.imread(file)
+                            img = cv2.resize(img, (256, 256))
+                            data.append(img)
+                            label.append(folder)
+
+                        except: 
+                            print(f'Error reading file: {os.path.abspath(file)}. Skipping...')                        
+
+                new_x = np.asarray(data)
+
+                # Import label encoder
+                from sklearn import preprocessing
+                label_encoder = preprocessing.LabelEncoder()
+                new_y = label_encoder.fit_transform(label)
+
+                print(f"x_shape = {new_x.shape}, y_shape = {new_y.shape}")
+
+                self.dataset.value = (new_x, new_y)
+
+            except Exception as e: 
+                print(e)
+
         else:
-            print("Keras dataset was not found!")
+            print("Dataset was not found!")
+
 
         self.done = True
 
