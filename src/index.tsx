@@ -134,9 +134,10 @@ const xpipes: JupyterFrontEndPlugin<void> = {
       }),
       name: widget => widget.context.path
     });
+    
 
-    // Creating the sidebar widget
-    const sidebarWidget = ReactWidget.create(<Sidebar lab = {app} basePath = "xai_components"/>);
+    // Creating the sidebar widget for the xai components
+    const sidebarWidget = ReactWidget.create(<Sidebar lab={app}/>);
     sidebarWidget.id = 'xpipes-component-sidebar';
     sidebarWidget.title.iconClass = 'jp-ComponentLibraryLogo';
     sidebarWidget.title.caption = "Xpipes Component Library";
@@ -145,13 +146,13 @@ const xpipes: JupyterFrontEndPlugin<void> = {
     app.shell.add(sidebarWidget, "left");
 
     // Creating the sidebar debugger
-    const sidebarDebugger = new XpipesDebugger.Sidebar({ app, translator, widgetFactory})
+    const sidebarDebugger = new XpipesDebugger.Sidebar({ app, translator, widgetFactory })
     sidebarDebugger.id = 'xpipes-debugger-sidebar';
     sidebarDebugger.title.iconClass = 'jp-DebuggerLogo';
     sidebarDebugger.title.caption = "Xpipes Debugger";
     restorer.add(sidebarDebugger, sidebarDebugger.id);
     app.shell.add(sidebarDebugger, 'right', { rank: 1001 });
-    
+
     // Add a command to open xpipes sidebar debugger
     app.commands.addCommand(commandIDs.openDebugger, {
       execute: () => {
@@ -232,7 +233,7 @@ const xpipes: JupyterFrontEndPlugin<void> = {
     });
 
     async function requestToGenerateArbitraryFile(path: string, pythonScript: string) {
-      const dataToSend = { "currentPath": path.split(".xpipes")[0] + ".py", "compilePythonScript": pythonScript};
+      const dataToSend = { "currentPath": path.split(".xpipes")[0] + ".py", "compilePythonScript": pythonScript };
 
       try {
         const server_reply = await requestAPI<any>('file/generate', {
@@ -255,7 +256,7 @@ const xpipes: JupyterFrontEndPlugin<void> = {
         const message = typeof args['pythonCode'] === undefined ? '' : (args['pythonCode'] as string);
         const showOutput = typeof args['showOutput'] === undefined ? false : (args['showOutput'] as boolean);
         const request = await requestToGenerateArbitraryFile(path, message); // send this file and create new file
-        
+
         if (request["message"] == "completed") {
           const model_path = current_path.split(".xpipes")[0] + ".py";
           await app.commands.execute(
@@ -282,15 +283,15 @@ const xpipes: JupyterFrontEndPlugin<void> = {
       */
     async function createPanel(): Promise<OutputPanel> {
       outputPanel = new OutputPanel(app.serviceManager, rendermime, widgetFactory, translator);
-      app.shell.add(outputPanel, 'main',{ 
+      app.shell.add(outputPanel, 'main', {
         mode: 'split-bottom'
-      } );
+      });
       return outputPanel;
     }
 
     // Execute xpipes python script and display at output panel
     app.commands.addCommand(commandIDs.executeToOutputPanel, {
-    execute: async args => {
+      execute: async args => {
         const xpipesLogger = new Log(app);
         const message = typeof args['runCommand'] === 'undefined' ? '' : (args['runCommand'] as string);
         const debug_mode = typeof args['debug_mode'] === 'undefined' ? '' : (args['debug_mode'] as string);
@@ -298,7 +299,7 @@ const xpipes: JupyterFrontEndPlugin<void> = {
         // Create the panel if it does not exist
         if (!outputPanel || outputPanel.isDisposed) {
           await createPanel();
-        }else {
+        } else {
           outputPanel.dispose();
           await createPanel();
         }
@@ -326,7 +327,7 @@ const xpipes: JupyterFrontEndPlugin<void> = {
 /**
  * Export the plugins as default.
  */
- const plugins: JupyterFrontEndPlugin<any>[] = [
+const plugins: JupyterFrontEndPlugin<any>[] = [
   xpipes,
   logPlugin
 ];

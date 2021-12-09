@@ -824,6 +824,23 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 	};
 
+	async function getConfig(request: string) {
+		const dataToSend = { "config_request": request };
+	
+		try {
+			const server_reply = await requestAPI<any>('get/config', {
+				body: JSON.stringify(dataToSend),
+				method: 'POST',
+			});
+	
+			return server_reply;
+		} catch (reason) {
+			console.error(
+				`Error on POST get/config ${dataToSend}.\n${reason}`
+			);
+		}
+	};
+
 	const runFromNodeToNode = async () => {
 		if (!debugMode) {
 			alert("Not in debug mode");
@@ -1439,7 +1456,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}, [evaluateDebugSignal, handleToggleEvaluateDebug]);
 
 	const fetchComponentList = async () => {
-		const response = await ComponentList(serviceManager, "xai_components");
+		const base_path = await getConfig("BASE_PATH");
+    	const base_path_cfg = base_path["cfg"];
+		const response = await ComponentList(serviceManager, base_path_cfg);
+		
 		if (response.length > 0) {
 			setComponentList([]);
 		}
