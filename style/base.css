@@ -36,6 +36,11 @@
   background-repeat: no-repeat;
 }
 
+.jp-LockLogo {
+  background-image: url(./icons/lock.svg);
+  background-repeat: no-repeat;
+}
+
 .jp-ComponentLibraryLogo {
   background-image: url(./icons/component-library.svg);
   background-repeat: no-repeat;

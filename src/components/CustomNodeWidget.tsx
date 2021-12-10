@@ -9,6 +9,9 @@ import ImageGallery from 'react-image-gallery';
 import ToolTip from 'react-portal-tooltip';
 import { Pagination } from "krc-pagination";
 import 'krc-pagination/styles.css';
+import { Action, ActionEvent, InputType } from '@projectstorm/react-canvas-core';
+import Toggle from 'react-toggle'
+
 
 var S;
 (function (S) {
@@ -64,6 +67,47 @@ export interface DefaultNodeProps {
     engine: DiagramEngine;
 }
 
+interface CustomDeleteItemsActionOptions {
+	keyCodes?: number[];
+    customDelete?: CustomNodeWidget;
+}
+
+export class CustomDeleteItemsAction extends Action {
+    constructor(options: CustomDeleteItemsActionOptions = {}) {
+        options = {
+            keyCodes: [46, 8],
+            ...options
+        };
+
+        super({
+            type: InputType.KEY_DOWN,
+            fire: (event: ActionEvent<React.KeyboardEvent>) => {
+                if (options.keyCodes.indexOf(event.event.keyCode) !== -1) {
+                    const selectedEntities = this.engine.getModel().getSelectedEntities();
+
+                    _.forEach(selectedEntities, (model) => {
+                        if (model.getOptions()["name"] !== "undefined") {
+                            let modelName = model.getOptions()["name"];
+                            debugger;
+                            if (modelName !== 'Start' && modelName !== 'Finish') {
+                                if (!model.isLocked()) {
+                                    model.remove()
+                                } else {
+                                    alert(`${modelName}'s node cannot be deleted!`);
+                                }
+                            }
+                            else {
+                                alert(`${modelName}'s node cannot be deleted!`);
+                            }
+                        }
+                    });
+                    this.engine.repaintCanvas();
+                }
+            }
+        });
+    }
+}
+
 /**
  * Default node that models the DefaultNodeModel. It creates two columns
  * for both all the input ports on the left, and the output ports on the right.
@@ -77,6 +121,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
     state = {
 
         isTooltipActive: false,
+        nodeDeletable: false,
 
         imageGalleryItems:[
         {
@@ -117,6 +162,15 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
 
         //update imageGalleryItems after data loaded from server
     };
+
+    handleDeletableNode(key, event) {
+        this.setState({
+            [key]: event.target.checked
+                ? this.props.node.setLocked(true)
+                : this.props.node.setLocked(false),
+        })
+    }
+    
     render() {
 
         if(this.props.node.getOptions().extras["tip"]!=undefined&&this.props.node.getOptions().extras["tip"]!=""){
@@ -186,6 +240,31 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                 </S.Node>
             );
         }
+        else if(this.props.node.getOptions()["name"] !== 'Start' && this.props.node.getOptions()["name"] !== 'Finish'){
+            return (
+                <S.Node
+                    borderColor={this.props.node.getOptions().extras["borderColor"]}
+                    data-default-node-name={this.props.node.getOptions().name}
+                    selected={this.props.node.isSelected()}
+                    background={this.props.node.getOptions().color}>
+                    <S.Title>
+                        <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
+                        <label>
+                            <Toggle
+                                className='lock'
+                                checked={this.props.node.isLocked()}
+                                onChange={this.handleDeletableNode.bind(this, 'nodeDeletable')}
+                                
+                            />
+                        </label>
+                    </S.Title>
+                    <S.Ports>
+                        <S.PortsContainer>{_.map(this.props.node.getInPorts(), this.generatePort)}</S.PortsContainer>
+                        <S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
+                    </S.Ports>
+                </S.Node>
+            );
+        }
         return (
             <S.Node
                 borderColor={this.props.node.getOptions().extras["borderColor"]}
@@ -193,12 +272,12 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                 selected={this.props.node.isSelected()}
                 background={this.props.node.getOptions().color}>
                 <S.Title>
-                  <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
+                    <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
                 </S.Title>
-            <S.Ports>
-              <S.PortsContainer>{_.map(this.props.node.getInPorts(), this.generatePort)}</S.PortsContainer>
-              <S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
-            </S.Ports>
+                <S.Ports>
+                    <S.PortsContainer>{_.map(this.props.node.getInPorts(), this.generatePort)}</S.PortsContainer>
+                    <S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
+                </S.Ports>
             </S.Node>
         );
     }
