@@ -213,62 +213,6 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
         this.commands.execute(commandIDs.testXpipe)
       }
     });
-
-    // Add command signal to save xpipes
-    this.commands.addCommand(commandIDs.saveXpipe, {
-      execute: args => {
-        this.saveXpipeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to reload xpipes
-    this.commands.addCommand(commandIDs.reloadXpipe, {
-      execute: args => {
-        this.reloadXpipeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to revert xpipes
-    this.commands.addCommand(commandIDs.revertXpipe, {
-      execute: args => {
-        this.revertXpipeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to compile xpipes
-    this.commands.addCommand(commandIDs.compileXpipe, {
-      execute: args => {
-        this.compileXpipeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to run xpipes
-    this.commands.addCommand(commandIDs.runXpipe, {
-      execute: args => {
-        this.runXpipeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to debug xpipes
-    this.commands.addCommand(commandIDs.debugXpipe, {
-      execute: args => {
-        this.debugXpipeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to lock xpipes
-    this.commands.addCommand(commandIDs.lockXpipe, {
-      execute: args => {
-        this.lockNodeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to test xpipes
-    this.commands.addCommand(commandIDs.testXpipe, {
-      execute: args => {
-        this.testXpipeSignal.emit(args);
-      }
-    });
   
     widget.toolbar.insertItem(0,'xpipes-add-save', saveButton);
     widget.toolbar.insertItem(1,'xpipes-add-reload', reloadButton);
