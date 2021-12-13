@@ -39,6 +39,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
   compileXpipeSignal: Signal<this, any>;
   runXpipeSignal: Signal<this, any>;
   debugXpipeSignal: Signal<this, any>;
+  lockNodeSignal: Signal<this, any>;
   breakpointXpipeSignal: Signal<this, any>;
   currentNodeSignal: Signal<this, any>;
   testXpipeSignal: Signal<this, any>;
@@ -65,6 +66,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     this.compileXpipeSignal = new Signal<this, any>(this);
     this.runXpipeSignal = new Signal<this, any>(this);
     this.debugXpipeSignal = new Signal<this, any>(this);
+    this.lockNodeSignal = new Signal<this, any>(this);
     this.breakpointXpipeSignal = new Signal<this, any>(this);
     this.currentNodeSignal = new Signal<this, any>(this);
     this.testXpipeSignal = new Signal<this, any>(this);
@@ -93,6 +95,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
       compileXpipeSignal: this.compileXpipeSignal,
       runXpipeSignal: this.runXpipeSignal,
       debugXpipeSignal: this.debugXpipeSignal,
+      lockNodeSignal: this.lockNodeSignal,
       breakpointXpipeSignal: this.breakpointXpipeSignal,
       currentNodeSignal: this.currentNodeSignal,
       testXpipeSignal: this.testXpipeSignal,
@@ -190,6 +193,17 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     });
 
     /**
+     * Create a lock button toolbar item.
+     */
+     let lockButton = new ToolbarButton({
+      iconClass: 'jp-LockLogo',
+      tooltip: "Lock all non-general nodes connected from start node",
+      onClick: (): void => {
+        this.commands.execute(commandIDs.lockXpipe);
+      }
+    });
+
+    /**
      * Create a test button toolbar item.
      */
     let testButton = new ToolbarButton({
@@ -206,8 +220,9 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     widget.toolbar.insertItem(3,'xpipes-add-compile', compileButton);
     widget.toolbar.insertItem(4,'xpipes-add-run', runButton);
     widget.toolbar.insertItem(5,'xpipes-add-debug', debugButton);
-    widget.toolbar.insertItem(6,'xpipes-add-log', logButton);
-    widget.toolbar.insertItem(7,'xpipes-add-test', testButton);
+    widget.toolbar.insertItem(6,'xpipes-add-lock', lockButton);
+    widget.toolbar.insertItem(7,'xpipes-add-log', logButton);
+    widget.toolbar.insertItem(8,'xpipes-add-test', testButton);
 
     return widget;
   }

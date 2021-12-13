@@ -161,55 +161,6 @@ const xpipes: JupyterFrontEndPlugin<void> = {
       },
     });
 
-    // Add command signal to save xpipes
-    app.commands.addCommand(commandIDs.saveXpipe, {
-      execute: args => {
-        widgetFactory.saveXpipeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to reload xpipes
-    app.commands.addCommand(commandIDs.reloadXpipe, {
-      execute: args => {
-        widgetFactory.reloadXpipeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to revert xpipes
-    app.commands.addCommand(commandIDs.revertXpipe, {
-      execute: args => {
-        widgetFactory.revertXpipeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to compile xpipes
-    app.commands.addCommand(commandIDs.compileXpipe, {
-      execute: args => {
-        widgetFactory.compileXpipeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to run xpipes
-    app.commands.addCommand(commandIDs.runXpipe, {
-      execute: args => {
-        widgetFactory.runXpipeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to debug xpipes
-    app.commands.addCommand(commandIDs.debugXpipe, {
-      execute: args => {
-        widgetFactory.debugXpipeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to test xpipes
-    app.commands.addCommand(commandIDs.testXpipe, {
-      execute: args => {
-        widgetFactory.testXpipeSignal.emit(args);
-      }
-    });
-
     // Add a command for creating a new xpipes file.
     app.commands.addCommand(commandIDs.createNewXpipe, {
       label: 'Xpipes File',
@@ -310,6 +261,62 @@ const xpipes: JupyterFrontEndPlugin<void> = {
           outputPanel.execute(code, xpipesLogger);
         });
       },
+    });
+
+    // Add command signal to save xpipes
+    app.commands.addCommand(commandIDs.saveXpipe, {
+      execute: args => {
+        widgetFactory.saveXpipeSignal.emit(args);
+      }
+    });
+
+    // Add command signal to reload xpipes
+    app.commands.addCommand(commandIDs.reloadXpipe, {
+      execute: args => {
+        widgetFactory.reloadXpipeSignal.emit(args);
+      }
+    });
+
+    // Add command signal to revert xpipes
+    app.commands.addCommand(commandIDs.revertXpipe, {
+      execute: args => {
+        widgetFactory.revertXpipeSignal.emit(args);
+      }
+    });
+
+    // Add command signal to compile xpipes
+    app.commands.addCommand(commandIDs.compileXpipe, {
+      execute: args => {
+        widgetFactory.compileXpipeSignal.emit(args);
+      }
+    });
+
+    // Add command signal to run xpipes
+    app.commands.addCommand(commandIDs.runXpipe, {
+      execute: args => {
+        widgetFactory.runXpipeSignal.emit(args);
+      }
+    });
+
+    // Add command signal to debug xpipes
+    app.commands.addCommand(commandIDs.debugXpipe, {
+      execute: args => {
+        widgetFactory.debugXpipeSignal.emit(args);
+      }
+    });
+
+    // Add command signal to lock xpipes
+    app.commands.addCommand(commandIDs.lockXpipe, {
+      execute: args => {
+        widgetFactory.lockNodeSignal.emit(args);
+      }
+    });
+
+    // Add command signal to test xpipes
+    app.commands.addCommand(commandIDs.testXpipe, {
+      execute: args => {
+        widgetFactory.testXpipeSignal.emit(args);
+      }
     });
 
     // Add a launcher item if the launcher is available.

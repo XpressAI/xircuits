@@ -12,6 +12,7 @@ import { BodyWidget } from './components/xpipeBodyWidget';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import * as SRD from '@projectstorm/react-diagrams';
 import { ActionEventBus, ZoomCanvasAction, CanvasWidget, Action, ActionEvent, InputType } from '@projectstorm/react-canvas-core';
+import { CustomDeleteItemsAction } from './components/CustomNodeWidget';
 
 import { DefaultLinkModel } from '@projectstorm/react-diagrams';
 
@@ -47,45 +48,6 @@ export class XPipeWidget extends DocumentWidget<
   }
 }
 
-interface CustomDeleteItemsActionOptions {
-	keyCodes?: number[];
-}
-
-class CustomDeleteItemsAction extends Action {
-	constructor(options: CustomDeleteItemsActionOptions = {}) {
-		options = {
-			keyCodes: [46, 8],
-			...options
-		};
-		super({
-			type: InputType.KEY_DOWN,
-			fire: (event: ActionEvent<React.KeyboardEvent>) => {
-				if (options.keyCodes.indexOf(event.event.keyCode) !== -1) {
-					const selectedEntities = this.engine.getModel().getSelectedEntities();
-
-          _.forEach(selectedEntities, (model) => {
-
-            if (model.getOptions()["name"] !== "undefined"){
-              let modelName = model.getOptions()["name"];
-              if (modelName !== 'Start' && modelName !== 'Finish') {
-                model.remove();
-              }
-              else{
-                alert("Start and Finish node cannot be deleted!");
-              }
-          }
-          });
-          this.engine.repaintCanvas();
-						
-					
-				}
-			}
-		});
-	}
-}
-
-
-
 export class XPipePanel extends ReactWidget {
 
   browserFactory: IFileBrowserFactory;
@@ -100,6 +62,7 @@ export class XPipePanel extends ReactWidget {
   compileXpipeSignal: Signal<this, any>;
   runXpipeSignal: Signal<this, any>;
   debugXpipeSignal: Signal<this, any>;
+  lockNodeSignal: Signal<this, any>;
   breakpointXpipeSignal: Signal<this, any>;
   currentNodeSignal: Signal<this, any>;
   testXpipeSignal: Signal<this, any>;
@@ -134,6 +97,7 @@ export class XPipePanel extends ReactWidget {
     this.compileXpipeSignal = options.compileXpipeSignal;
     this.runXpipeSignal = options.runXpipeSignal;
     this.debugXpipeSignal = options.debugXpipeSignal;
+    this.lockNodeSignal = options.lockNodeSignal;
     this.breakpointXpipeSignal = options.breakpointXpipeSignal;
     this.currentNodeSignal = options.currentNodeSignal;
     this.testXpipeSignal = options.testXpipeSignal;
@@ -208,7 +172,7 @@ export class XPipePanel extends ReactWidget {
       let node = nodes[nodeID];
       let newNode = new CustomNodeModel({
         id: node.id, type: node.type, name: node.name,
-        color: node.color, extras: node.extras
+        color: node.color, extras: node.extras, locked: node.locked
       });
       newNode.setPosition(node.x, node.y);
 
@@ -271,6 +235,7 @@ export class XPipePanel extends ReactWidget {
         compileXpipeSignal={this.compileXpipeSignal}
         runXpipeSignal={this.runXpipeSignal}
         debugXpipeSignal={this.debugXpipeSignal}
+        lockNodeSignal={this.lockNodeSignal}
         breakpointXpipeSignal={this.breakpointXpipeSignal}
         currentNodeSignal={this.currentNodeSignal}
         testXpipeSignal={this.testXpipeSignal}

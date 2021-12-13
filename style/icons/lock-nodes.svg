@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" viewBox="0 0 3600 3600" xmlns="http://www.w3.org/2000/svg">
+    <path d="m3e3 3e3v-1500c0-165-135-300-300-300h-1800c-165 0-300 135-300 300v1500c0 165 135 300 300 300h1800c165 0 300-135 300-300zm-900-750c0 165-135 300-300 300s-300-135-300-300 135-300 300-300 300 135 300 300z"/>
+    <path transform="scale(150)" d="m17 12v-5c0-2.8-2.2-5-5-5s-5 2.2-5 5v5" fill="none" stroke="#000" stroke-miterlimit="10" stroke-width="2"/>
+</svg>

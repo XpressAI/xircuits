@@ -47,6 +47,7 @@ export interface BodyWidgetProps {
 	compileXpipeSignal: Signal<XPipePanel, any>;
 	runXpipeSignal: Signal<XPipePanel, any>;
 	debugXpipeSignal: Signal<XPipePanel, any>;
+	lockNodeSignal: Signal<XPipePanel, any>;
 	breakpointXpipeSignal: Signal<XPipePanel, any>;
 	currentNodeSignal: Signal<XPipePanel, any>;
 	testXpipeSignal: Signal<XPipePanel, any>;
@@ -105,6 +106,7 @@ export const commandIDs = {
 	compileXpipe: 'Xpipe-editor:compile-node',
 	runXpipe: 'Xpipe-editor:run-node',
 	debugXpipe: 'Xpipe-editor:debug-node',
+	lockXpipe: 'Xpipe-editor:lock-node',
 	createArbitraryFile: 'Xpipe-editor:create-arbitrary-file',
 	openDebugger: 'Xpipe-debugger:open',
 	breakpointXpipe: 'Xpipe-editor:breakpoint-node',
@@ -139,6 +141,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	compileXpipeSignal,
 	runXpipeSignal,
 	debugXpipeSignal,
+	lockNodeSignal,
 	breakpointXpipeSignal,
 	currentNodeSignal,
 	testXpipeSignal,
@@ -768,6 +771,25 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		// allNodes[1].getOptions().extras["imageGalleryItems"] = "xxx";
 	}
 
+	const handleLockClick = () => {
+		// Only lock node if xpipes is currently in focus
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
+		let allNodes = getAllNodesFromStartToFinish();
+		allNodes.forEach((node) => {
+			const compulsaryNodes = node.getOptions()["name"];
+			if(!node.isLocked()){
+				if(compulsaryNodes !== 'Start' && compulsaryNodes !== 'Finish') {
+					node.setSelected(true);
+					node.setLocked(true);
+				}
+			}
+		});
+	}
+
 	const handleToggleBreakpoint = () => {
 		// Only toggle breakpoint if it is currently in focus
 		// This must be first to avoid unnecessary complication
@@ -1158,8 +1180,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		debugger;
 
 		alert("Testing");
-		setDebugMode(false);
-		setInDebugMode(false);
 	}
 
 	const hideRcDialog = () => {
@@ -1347,6 +1367,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			debugXpipeSignal.disconnect(handleDebugSignal);
 		};
 	}, [debugXpipeSignal, handleDebugClick]);
+
+	useEffect(() => {
+		const handleLockSignal = (): void => {
+			handleLockClick();
+		};
+		lockNodeSignal.connect(handleLockSignal);
+		return (): void => {
+			lockNodeSignal.disconnect(handleLockSignal);
+		};
+	}, [lockNodeSignal, handleLockClick]);
 
 	useEffect(() => {
 		const handleBreakpointSignal = (): void => {
