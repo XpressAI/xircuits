@@ -1,5 +1,7 @@
 import * as React from 'react';
+
 import styled from '@emotion/styled';
+
 import { JupyterFrontEnd } from '@jupyterlab/application';
 
 export interface TrayItemWidgetProps {

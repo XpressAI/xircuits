@@ -228,11 +228,11 @@ function getVariableType(input: string) {
     } else if (input.includes("string")) {
         return 'string'
     } else if (input.includes("list")) {
-    return 'list'
+        return 'list'
     } else if (input.includes("tuple")) {
-    return 'tuple'
+        return 'tuple'
     } else if (input.includes("dict")) {
-    return 'dict'
+        return 'dict'
     }
 }
 
@@ -290,38 +290,41 @@ function getComponentType(input: string, header: string) {
 
 async function get_all_components_method(serviceManager: ServiceManager, basePath: string) {
     let arr: any[] = [];
-
     let tempArr: string[] = [];
 
-    let res_1 = await serviceManager.contents.get(basePath);
-    for (let i = 0; i < res_1.content.length; i++) {
-        if (res_1.content[i].type == "file" && res_1.content[i].mimetype == "text/x-python") {
-            let res_2 = await serviceManager.contents.get(res_1.content[i].path);
-            var j = filbert_loose.parse_dammit(res_2.content);
-            var j3 = filbert_loose.parse_dammit(res_2.content, { locations: true, ranges: false });
-            arr = [];
-            let arr2 = getComponentClass(j, j3, arr, res_1.content[i].path, res_2.content);
-            for (let i = 0; i < arr2.length; i++) {
-                tempArr.push(arr2[i].toString());
-            }
-        } else if (res_1.content[i].type == "directory") {
-            let res_3 = await serviceManager.contents.get(res_1.content[i].path);
-            for (let i = 0; i < res_3.content.length; i++) {
-                if (res_3.content[i].name != "lib" && res_3.content[i].type == "file" && res_3.content[i].mimetype == "text/x-python") {
-                    let res_4 = await serviceManager.contents.get(res_3.content[i].path);
-                    if (res_4.content != "") {
-                        var j2 = filbert_loose.parse_dammit(res_4.content);
-                        var j4 = filbert_loose.parse_dammit(res_4.content, { locations: true, ranges: false });
-                        arr = [];
-                        let arr2 = getComponentClass(j2, j4, arr, res_3.content[i].path, res_4.content);
-                        for (let i = 0; i < arr2.length; i++) {
-                            tempArr.push(arr2[i].toString());
+    try {
+        let res_1 = await serviceManager.contents.get(basePath);
+        for (let i = 0; i < res_1.content.length; i++) {
+            // when it is a python file
+            if (res_1.content[i].type == "file" && res_1.content[i].mimetype == "text/x-python") {
+                let res_2 = await serviceManager.contents.get(res_1.content[i].path);
+                var j = filbert_loose.parse_dammit(res_2.content);
+                var j3 = filbert_loose.parse_dammit(res_2.content, { locations: true, ranges: false });
+                arr = [];
+                let arr2 = getComponentClass(j, j3, arr, res_1.content[i].path, res_2.content);
+                for (let i = 0; i < arr2.length; i++) {
+                    tempArr.push(arr2[i].toString());
+                }
+                // check when it is a directory
+            } else if (res_1.content[i].type == "directory") {
+                let res_3 = await serviceManager.contents.get(res_1.content[i].path);
+                for (let i = 0; i < res_3.content.length; i++) {
+                    if (res_3.content[i].name != "lib" && res_3.content[i].type == "file" && res_3.content[i].mimetype == "text/x-python") {
+                        let res_4 = await serviceManager.contents.get(res_3.content[i].path);
+                        if (res_4.content != "") {
+                            var j2 = filbert_loose.parse_dammit(res_4.content);
+                            var j4 = filbert_loose.parse_dammit(res_4.content, { locations: true, ranges: false });
+                            arr = [];
+                            let arr2 = getComponentClass(j2, j4, arr, res_3.content[i].path, res_4.content);
+                            for (let i = 0; i < arr2.length; i++) {
+                                tempArr.push(arr2[i].toString());
+                            }
                         }
                     }
                 }
             }
         }
-    }
+    } catch (err) { }
 
     const componentList = [
         { task: "Math Operation", id: 1 },
@@ -372,6 +375,7 @@ async function get_all_components_method(serviceManager: ServiceManager, basePat
 
         let colorCode: any = colorList_adv[0]["task"];
 
+        // color coding the component that follows sequence
         if (i < colorList_adv.length) {
             colorCode = colorList_adv[i]["task"];
         } else {
@@ -379,6 +383,7 @@ async function get_all_components_method(serviceManager: ServiceManager, basePat
             colorCode = colorList_adv[index]["task"]
         }
 
+        // specifying what header it should be. Otherwise It should be "Advanced" by default
         let path: string = "";
         let rootFile: string = "ADVANCED";
         path = tempArr[i].split(" - ")[tempArr[i].split(" - ").length - 1].replace(basePath + "/", "");
@@ -389,6 +394,7 @@ async function get_all_components_method(serviceManager: ServiceManager, basePat
             }
         }
 
+        // adding the advanced component to the list
         displayArr.push({
             task: tempArr[i].split(" - ")[0],
             id: i + 1,
@@ -404,6 +410,7 @@ async function get_all_components_method(serviceManager: ServiceManager, basePat
     for (let i = 0; i < componentList.length; i++) {
         let colorCode: any = colorList_adv[0]["task"];
 
+        // add color code in sequence
         if (i < colorList_adv.length) {
             colorCode = colorList_adv[i]["task"];
         } else {
@@ -411,6 +418,7 @@ async function get_all_components_method(serviceManager: ServiceManager, basePat
             colorCode = colorList_adv[index]["task"]
         }
 
+        // adding the general component to the list
         if (componentList[i]["task"] != null) {
             displayArr.push({
                 task: componentList[i]["task"],

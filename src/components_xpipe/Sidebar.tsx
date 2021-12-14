@@ -1,9 +1,15 @@
 import ComponentList from './Component';
+
 import React, { useEffect, useState } from 'react';
+
 import styled from '@emotion/styled';
+
 import { TrayItemWidget } from './TrayItemWidget';
+
 import { TrayWidget } from './TrayWidget';
+
 import { JupyterFrontEnd } from '@jupyterlab/application';
+
 import {
     Accordion,
     AccordionItem,
@@ -11,6 +17,8 @@ import {
     AccordionItemButton,
     AccordionItemPanel
 } from "react-accessible-accordion";
+
+import { requestAPI } from '../server/handler';
 
 export const Body = styled.div`
   flex-grow: 1;
@@ -29,7 +37,6 @@ export const Content = styled.div`
     max-height: auto;
     'border-top': '4px solid #dfe2e5'
 `;
-
 
 const headerList = [
     { task: 'GENERAL', id: 1 }
@@ -65,10 +72,9 @@ const colorList_general = [
 
 export interface SidebarProps {
     lab: JupyterFrontEnd;
-    basePath: string;
 }
 
-async function fetcComponent(componentList: string[]) {
+async function fetchComponent(componentList: string[]) {
     let component_root = componentList.map(x => x["rootFile"]);
 
     let headers = Array.from(new Set(component_root));
@@ -114,10 +120,35 @@ export default function Sidebar(props: SidebarProps) {
         setSearchTerm(searchTerm);
     }
 
-    const fetchComponentList = async () => {
-        const response_1 = await ComponentList(props.lab.serviceManager, props.basePath);
-        const response_2 = await fetcComponent(response_1);
+    async function getConfig(request: string) {
+        const dataToSend = { "config_request": request };
 
+        try {
+            const server_reply = await requestAPI<any>('get/config', {
+                body: JSON.stringify(dataToSend),
+                method: 'POST',
+            });
+
+            return server_reply;
+        } catch (reason) {
+            console.error(
+                `Error on POST get/config ${dataToSend}.\n${reason}`
+            );
+        }
+    };
+
+    const fetchComponentList = async () => {
+        // get the base path configuration 
+        const base_path = await getConfig("BASE_PATH");
+        const base_path_cfg = base_path["cfg"];
+
+        // get the component list by sending the jupyterlab frontend and base path
+        const response_1 = await ComponentList(props.lab.serviceManager, base_path_cfg);
+
+        // get the header from the components
+        const response_2 = await fetchComponent(response_1);
+
+        // to ensure the component list is empty before setting the component list
         if (response_1.length > 0) {
             setComponentList([]);
             setRootFile([]);
@@ -142,7 +173,7 @@ export default function Sidebar(props: SidebarProps) {
     useEffect(() => {
         const intervalId = setInterval(() => {
             fetchComponentList();
-        }, 600000); // 10 minutes
+        }, 600000); // every 10 minutes should re-fetch the component list
         return () => clearInterval(intervalId);
     }, [rootFile, componentList]);
 
@@ -200,7 +231,6 @@ export default function Sidebar(props: SidebarProps) {
                             }
 
                         </Accordion>
-
                         {
                             componentList.filter((val) => {
                                 if (searchTerm != "" && val.task.toLowerCase().includes(searchTerm.toLowerCase())) {

@@ -1,6 +1,7 @@
 import { ReactWidget, UseSignal } from "@jupyterlab/apputils";
 
 import React, { useEffect, useRef, useState } from "react";
+
 import { XpipeFactory } from "../xpipeFactory";
 
 /**

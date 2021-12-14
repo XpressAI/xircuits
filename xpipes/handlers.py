@@ -1,19 +1,16 @@
 import os
 import json
-
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
-
 import tornado
-from subprocess import Popen, PIPE
 import requests
 import os
-import sys
+from configparser import ConfigParser
 
 class CompileFileRouteHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
-        self.finish(json.dumps({"data": "This is /xpipes/hello endpoint!"}))
+        self.finish(json.dumps({"data": "This is file/generate endpoint!"}))
 
     @tornado.web.authenticated
     def post(self):
@@ -41,27 +38,32 @@ class DebuggerRouteHandler(APIHandler):
     def post(self):
         input_data = self.get_json_body()
         
+        cfg = ConfigParser()
+        cfg.read('.xpipes/config.ini')
+
+        port = str(cfg['SERVER']['IP_ADD'] + ":" + cfg['SERVER']['PORT'])
+        
         output_content = ""
         if input_data["command"] == "run":
-            output = requests.get("http://127.0.0.1:5000/run") # next node
+            output = requests.get(port + "/run") # next node
             
         elif input_data["command"] == "continue":
-            output = requests.get("http://127.0.0.1:5000/continue")
+            output = requests.get(port +"/continue")
 
         elif input_data["command"] == "get/output":
-            output = requests.get("http://127.0.0.1:5000/get/output")
+            output = requests.get(port + "/output")
 
         elif input_data["command"] == "clear":
-            output = requests.get("http://127.0.0.1:5000/clear")
+            output = requests.get(port + "/clear")
 
         elif input_data["command"] == "get_run":
-            output = requests.get("http://127.0.0.1:5000/execute")
+            output = requests.get(port + "/execute")
 
         elif input_data["command"] == "clear_run":
-            output = requests.get("http://127.0.0.1:5000/clear_execution")
+            output = requests.get(port + "/clear_execution")
 
         elif input_data["command"] == "terminate":
-            output = requests.get("http://127.0.0.1:5000/terminate")
+            output = requests.get(port + "/terminate")
 
         else:
             output = ""
@@ -77,6 +79,28 @@ class DebuggerRouteHandler(APIHandler):
 
         self.finish(json.dumps(data))
 
+
+class HandleConfigRouteHandler(APIHandler):
+    @tornado.web.authenticated
+    def get(self):
+        self.finish(json.dumps({"data": "This is /get/config endpoint!"}))
+
+    @tornado.web.authenticated
+    def post(self):
+        input_data = self.get_json_body()
+
+        cfg = ConfigParser()
+        cfg.read('.xpipes/config.ini')
+
+        config_request = input_data["config_request"]
+        config_cfg = str(cfg['DEV'][config_request]).replace('"', "")
+
+        if config_cfg == '""' or config_cfg == "''":
+            config_cfg = ""
+            
+        data = {"cfg": config_cfg}
+        self.finish(json.dumps(data))
+
 def setup_handlers(web_app, url_path):
     host_pattern = ".*$"
     base_url = web_app.settings["base_url"]
@@ -87,6 +111,10 @@ def setup_handlers(web_app, url_path):
     
     compile_route_pattern_2 = url_path_join(base_url, url_path, "debug/enable")
     compile_file_handlers_2 = [(compile_route_pattern_2, DebuggerRouteHandler)]
+
+    compile_route_pattern_3 = url_path_join(base_url, url_path, "get/config")
+    compile_file_handlers_3 = [(compile_route_pattern_3, HandleConfigRouteHandler)]
     
     web_app.add_handlers(host_pattern, compile_file_handlers_1)
     web_app.add_handlers(host_pattern, compile_file_handlers_2)
+    web_app.add_handlers(host_pattern, compile_file_handlers_3)

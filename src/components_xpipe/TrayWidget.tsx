@@ -1,6 +1,6 @@
 import * as React from 'react';
-import styled from '@emotion/styled';
 
+import styled from '@emotion/styled';
 
 export const Tray = styled.div`
 	min-width: 150px;
@@ -11,7 +11,6 @@ export const Tray = styled.div`
 	max-height: auto;
 	overflow-y: auto;
 `;
-
 
 export class TrayWidget extends React.Component {
 	render() {
