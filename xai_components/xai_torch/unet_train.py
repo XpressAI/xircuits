@@ -10,7 +10,8 @@ import torch.nn.functional as F
 
 
 class ImageCountNotEqual(Exception):
-    """Exception raised for errors when images are not equal.
+    """
+    Exception raised for errors when images are not equal.
     """
 
     def __init__(self, message="Image count is not equal."):
@@ -22,7 +23,8 @@ class ImageCountNotEqual(Exception):
 
     
 class ModelNotFound(Exception):
-    """Exception raised for errors when model type is not found.
+    """
+    Exception raised for errors when model type is not found.
     """
 
     def __init__(self, message="Model is not found."):
