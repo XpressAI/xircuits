@@ -1,11 +1,11 @@
-import torch.nn as nn
-import numpy as np
+from torchvision import transforms
 from torch.utils.data import Dataset
 from tqdm import tqdm
 import cv2
+import numpy as np
 import os
 import torch
-from torchvision import transforms
+import torch.nn as nn
 import torch.nn.functional as F
 
 
@@ -167,20 +167,7 @@ class UNet(nn.Module):
 
 
 class EarlyStopping:
-    """Early stops the training if validation loss doesn't improve after a given patience."""
-
     def __init__(self, patience=20, verbose=False, delta=0, trace_func=print, n_epoch=1):
-        """
-        Args:
-            patience (int): How long to wait after last time validation loss improved.
-                            Default: 7
-            verbose (bool): If True, prints a message for each validation loss improvement.
-                            Default: False
-            delta (float): Minimum change in the monitored quantity to qualify as an improvement.
-                            Default: 0
-            trace_func (function): trace print function.
-                            Default: print
-        """
         self.patience = patience
         self.verbose = verbose
         self.counter = 0
@@ -193,7 +180,6 @@ class EarlyStopping:
         self.n_epoch = n_epoch
 
     def __call__(self, val_iou, model, wpath_folder, model_name):
-
         score = val_iou
 
         if self.best_score is None:
@@ -210,9 +196,7 @@ class EarlyStopping:
             self.save_checkpoint(model, wpath_folder, model_name)
 
     def save_checkpoint(self, model, wpath_folder, model_name):
-        checkpoint = {'arch': "UNET",
-                      'model_state_dict': model.state_dict()
-                      }
+        checkpoint = {'arch': "UNET", 'model_state_dict': model.state_dict()}
 
         if self.verbose:
             self.trace_func(
@@ -227,7 +211,7 @@ class EarlyStopping:
         self.val_iou_max = self.best_score
         
         
-class TimeLapse():
+class TimeLapse:
     def __init__(self, lapsed_time):
         self.lapsed_time = lapsed_time
         

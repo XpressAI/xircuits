@@ -3,17 +3,16 @@ from typing import Tuple, Dict
 from xai_components.xai_torch.unet_train import CvSaveImage, UNet, UNetDataset, EarlyStopping, TimeLapse
 from xai_components.xai_torch.unet_train import ImageCountNotEqual, ModelNotFound
 from pathlib import Path
-import torchvision.transforms as T
-import torchvision
-import cv2
-import torch
-import numpy as np
 from tqdm import tqdm
-import os
+import cv2
 import numpy as np
-import torch.optim as optim
+import os
 import time
+import torch
+import torchvision
+import torchvision.transforms as T
 import torch.nn.functional as F
+import torch.optim as optim
 
 
 class ConvertTorchModelToOnnx(Component):
@@ -251,7 +250,6 @@ class PrepareUnetDataLoader(Component):
 class TrainUnet(Component):
     train_data: InArg[torch.utils.data.DataLoader]
     test_data: InArg[torch.utils.data.DataLoader]
-    
     model: InArg[UNet]
     optimizer: InArg[optim.Adam]
     early_stopping: InArg[EarlyStopping]

@@ -438,6 +438,6 @@ async function get_all_components_method(serviceManager: ServiceManager, basePat
 
 export default async function ComponentList(serviceManager: ServiceManager, basePath: string) {
     let component_list_result: string[] = await get_all_components_method(serviceManager, basePath);
-
+    
     return component_list_result;
 }
