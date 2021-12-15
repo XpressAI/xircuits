@@ -43,7 +43,7 @@ class ConvertTorchModelToOnnx(Component):
         dummy_input = torch.randn(1, 1, self.image_size.value[0], self.image_size.value[1], device=self.device_name.value)
         
         # rgb channel
-        # dummy_input = torch.randn(1, 3, arguments.width, arguments.height, device='cpu')
+        # dummy_input = torch.randn(1, 3, self.image_size.value[0], self.image_size.value[1], device=self.device_name.value)
         
         torch.onnx.export(model,
                           dummy_input,
