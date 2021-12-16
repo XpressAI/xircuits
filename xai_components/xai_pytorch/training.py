@@ -1,7 +1,7 @@
 from xai_components.base import InArg, OutArg, Component
 from typing import Tuple, Dict
-from xai_components.xai_torch.unet_train import CvSaveImage, UNet, UNetDataset, EarlyStopping, TimeLapse
-from xai_components.xai_torch.unet_train import ImageCountNotEqual, ModelNotFound
+from xai_components.xai_pytorch.unet_train import CvSaveImage, UNet, UNetDataset, EarlyStopping, TimeLapse
+from xai_components.xai_pytorch.unet_train import ImageCountNotEqual, ModelNotFound
 from pathlib import Path
 from tqdm import tqdm
 import cv2
