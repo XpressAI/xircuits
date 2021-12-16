@@ -46,6 +46,7 @@ export class OutputPanel extends StackedPanel {
         this.id = 'xpipe-output-panel';
         this.title.label = this._trans.__('Xpipe Output');
         this.title.closable = true;
+        this.title.iconClass = 'jp-XpipeLogo';
 
         this._sessionContext = new SessionContext({
             sessionManager: manager.sessions,
