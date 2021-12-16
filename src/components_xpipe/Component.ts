@@ -33,6 +33,7 @@ function getComponentClass(ast: any, ast2: any, _arr: string[], path: string, co
                                     let count = l + 1;
 
                                     let ins = "";
+                                    let compIns = "";
                                     let outs = "";
 
                                     while (ast.body[i].body[k].body.body[count] != undefined) {
@@ -50,6 +51,24 @@ function getComponentClass(ast: any, ast2: any, _arr: string[], path: string, co
                                                     if (ast2.body[i].body[k].body.body[count].loc != undefined) {
                                                         if (content.split("\n").length > ast2.body[i].body[k].body.body[count].loc.start.line - 1) {
                                                             ins += " , " + content.split("\n")[ast2.body[i].body[k].body.body[count].loc.start.line - 1].trim();
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        } else if (ast.body[i].body[k].body.body[count].type == "ExpressionStatement"
+                                            && ast.body[i].body[k].body.body[count].expression != null
+                                            && ast.body[i].body[k].body.body[count].expression.type == "MemberExpression"
+                                            && ast.body[i].body[k].body.body[count].expression.object != null
+                                            && ast.body[i].body[k].body.body[count].expression.object.name == "InCompArg") {
+
+                                            if (ast.body[i].body[k].body.body[count - 1] != undefined) {
+                                                if (ast.body[i].body[k].body.body[count - 1].type == "ExpressionStatement"
+                                                    && ast.body[i].body[k].body.body[count - 1].expression != null
+                                                    && ast.body[i].body[k].body.body[count - 1].expression.type == "Identifier") {
+
+                                                    if (ast2.body[i].body[k].body.body[count].loc != undefined) {
+                                                        if (content.split("\n").length > ast2.body[i].body[k].body.body[count].loc.start.line - 1) {
+                                                            compIns += " , " + content.split("\n")[ast2.body[i].body[k].body.body[count].loc.start.line - 1].trim();
                                                         }
                                                     }
                                                 }
@@ -77,11 +96,17 @@ function getComponentClass(ast: any, ast2: any, _arr: string[], path: string, co
                                     }
 
                                     let temp_inArg = "";
+                                    let temp_compInArg = "";
                                     let temp_outArg = "";
 
                                     if (ins.substring(0, 3) == " , ") {
                                         ins = ins.substring(3);
                                         temp_inArg = ins;
+                                    }
+
+                                    if (compIns.substring(0, 3) == " , ") {
+                                        compIns = compIns.substring(3);
+                                        temp_compInArg = compIns;
                                     }
 
                                     if (outs.substring(0, 3) == " , ") {
@@ -94,6 +119,11 @@ function getComponentClass(ast: any, ast2: any, _arr: string[], path: string, co
                                     if (temp_inArg != "") {
                                         _info += " - " + temp_inArg;
                                     }
+
+                                    if (temp_compInArg != "") {
+                                        _info += " - " + temp_compInArg;
+                                    }
+
                                     if (temp_outArg != "") {
                                         _info += " - " + temp_outArg;
                                     }
@@ -123,6 +153,7 @@ function getComponentClass(ast: any, ast2: any, _arr: string[], path: string, co
                             && ast.body[i].body.body[l].expression.callee.object.name == "Component") {
                             let count = l + 1;
                             let ins = "";
+                            let compIns = "";
                             let outs = "";
 
                             while (ast.body[i].body.body[count] != undefined) {
@@ -140,6 +171,24 @@ function getComponentClass(ast: any, ast2: any, _arr: string[], path: string, co
                                             if (ast2.body[i].body.body[count].loc != undefined) {
                                                 if (content.split("\n").length > ast2.body[i].body.body[count].loc.start.line - 1) {
                                                     ins += " , " + content.split("\n")[ast2.body[i].body.body[count].loc.start.line - 1].trim();
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else if (ast.body[i].body.body[count].type == "ExpressionStatement"
+                                    && ast.body[i].body.body[count].expression != null
+                                    && ast.body[i].body.body[count].expression.type == "MemberExpression"
+                                    && ast.body[i].body.body[count].expression.object != null
+                                    && ast.body[i].body.body[count].expression.object.name == "InCompArg") {
+
+                                    if (ast.body[i].body.body[count - 1] != undefined) {
+                                        if (ast.body[i].body.body[count - 1].type == "ExpressionStatement"
+                                            && ast.body[i].body.body[count - 1].expression != null
+                                            && ast.body[i].body.body[count - 1].expression.type == "Identifier") {
+
+                                            if (ast2.body[i].body.body[count].loc != undefined) {
+                                                if (content.split("\n").length > ast2.body[i].body.body[count].loc.start.line - 1) {
+                                                    compIns += " , " + content.split("\n")[ast2.body[i].body.body[count].loc.start.line - 1].trim();
                                                 }
                                             }
                                         }
@@ -168,11 +217,17 @@ function getComponentClass(ast: any, ast2: any, _arr: string[], path: string, co
                             }
 
                             let temp_inArg = "";
+                            let temp_compInArg = "";
                             let temp_outArg = "";
 
                             if (ins.substring(0, 3) == " , ") {
                                 ins = ins.substring(3);
                                 temp_inArg = ins;
+                            }
+
+                            if (compIns.substring(0, 3) == " , ") {
+                                compIns = compIns.substring(3);
+                                temp_compInArg = compIns;
                             }
 
                             if (outs.substring(0, 3) == " , ") {
@@ -184,6 +239,9 @@ function getComponentClass(ast: any, ast2: any, _arr: string[], path: string, co
                             _info += ast.body[i].id.name;
                             if (temp_inArg != "") {
                                 _info += " - " + temp_inArg;
+                            }
+                            if (temp_compInArg != "") {
+                                _info += " - " + temp_compInArg;
                             }
                             if (temp_outArg != "") {
                                 _info += " - " + temp_outArg;

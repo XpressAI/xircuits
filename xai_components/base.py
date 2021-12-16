@@ -25,6 +25,16 @@ class OutArg(Generic[T]):
     def empty(cls):
         return OutArg(None)
 
+class InCompArg(Generic[T]):
+    value: T
+
+    def __init__(self, value: T) -> None:
+        self.value = value
+
+    @classmethod
+    def empty(cls):
+        return InCompArg(None)
+
 
 class ExecutionContext:
     args: Namespace
