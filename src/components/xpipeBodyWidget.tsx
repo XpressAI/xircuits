@@ -358,6 +358,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							label = label.replace(/\s+/g, "_");
 							label = label.toLowerCase();
 
+							if(label.startsWith("★")){
+								const newLabel = label.split("★")[1];
+								label = newLabel;
+							}
+							
 							if (label == '▶') {
 							} else {
 								let portLinks = allPort[port].getLinks();
@@ -581,8 +586,27 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				if (inPorts[j].getOptions()["label"] == '▶' && Object.keys(inPorts[0].getLinks()).length != 0) {
 					continue
 				} else {
+					nodeModels[i].getOptions().extras["borderColor"]="red";
+					nodeModels[i].getOptions().extras["tip"]="Please make sure this node ▶ is properly connected ";
+					nodeModels[i].setSelected(true);
 					return false;
 				}
+			}
+		}
+		return true;
+	}
+
+	const checkAllCompulsoryInPortsConnected = (): boolean | null  => {
+		let allNodes = getAllNodesFromStartToFinish();
+		for (let i = 0; i < allNodes.length; i++) {
+			for(let k = 0; k < allNodes[i]["portsIn"].length; k++){
+				let node = allNodes[i]["portsIn"][k]
+				if (node.getOptions()["label"].startsWith("★") && Object.keys(node.getLinks()).length == 0) {
+					allNodes[i].getOptions().extras["borderColor"]="red";
+					allNodes[i].getOptions().extras["tip"]="Please make sure the [★]COMPULSORY InPorts are connected ";
+					allNodes[i].setSelected(true);
+					return false;
+				} 
 			}
 		}
 		return true;
@@ -706,9 +730,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		// compile
 		let allNodesConnected = checkAllNodesConnected();
+		let allCompulsoryNodesConnected = checkAllCompulsoryInPortsConnected();
 
 		if (!allNodesConnected) {
+			if (!debugMode) {
+				alert("Please connect all the nodes before running.");
+				return;
+			}
 			alert("Please connect all the nodes before debugging.");
+			return;
+		}
+		if (!allCompulsoryNodesConnected) {
+			alert("Please connect all [★]COMPULSORY InPorts.");
 			return;
 		}
 
@@ -1148,17 +1181,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
+		if (!debugMode) {
+			return
+		}
+
 		resetColorCodeOnStart(false);
 
 		terminateExecution();
 
-		if (debugMode) {
-			alert("Execution has been terminated.");
-		}
-
 		setCurrentIndex(-1);
 		setDebugMode(false);
 		setInDebugMode(false);
+		alert("Execution has been terminated.");
 	}
 
 	const handleToggleStepInDebug = () => {
@@ -1748,68 +1782,136 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								node.addInPortEnhance('▶', 'in-0');
 								let in_count = 1;
 								let in_str = "";
+								let compulsory = '';
 								if (current_node["variable"].split(" - ").length > 1) {
 									for (let node_index = 0; node_index < current_node["variable"].split(" - ").length; node_index++) {
 										if (current_node["variable"].split(" - ")[node_index].includes('InArg')) {
 											for (let variable_index = 0; variable_index < current_node["variable"].split(" - ")[node_index].split(" , ").length; variable_index++) {
-												if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[str]")) {
+												let variable = current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim();
+												if (variable.includes("InArg[str]")) {
 													in_str = "parameter-string-in-" + in_count;
 													in_count += 1;
-												} else if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[int]")) {
+												} else if (variable.includes("InArg[int]")) {
 													in_str = "parameter-int-in-" + in_count;
 													in_count += 1;
-												} else if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[bool]")) {
+												} else if (variable.includes("InArg[bool]")) {
 													in_str = "parameter-boolean-in-" + in_count;
 													in_count += 1;
-												} else if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[float]")) {
+												} else if (variable.includes("InArg[float]")) {
 													in_str = "parameter-float-in-" + in_count;
 													in_count += 1;
-												} else if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[list]")) {
+												} else if (variable.includes("InArg[list]")) {
 													in_str = "parameter-list-in-" + in_count;
 													in_count += 1;
-												} else if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[tuple]")) {
+												} else if (variable.includes("InArg[tuple]")) {
 													in_str = "parameter-tuple-in-" + in_count;
 													in_count += 1;
-												} else if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("InArg[dict]")) {
+												} else if (variable.includes("InArg[dict]")) {
 													in_str = "parameter-dict-in-" + in_count;
 													in_count += 1;
 												} else {
 													in_str = "in-" + in_count;
 													in_count += 1;
 												}
-												node.addInPortEnhance(current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().split(":")[0], in_str);
+												node.addInPortEnhance(`${variable.split(":")[0]}`, in_str);
+											}
+										} 
+										else if (current_node["variable"].split(" - ")[node_index].includes('InCompArg')) {
+											for (let variable_index = 0; variable_index < current_node["variable"].split(" - ")[node_index].split(" , ").length; variable_index++) {
+												let variable = current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim();
+												compulsory = "★";
+												if (variable.includes("InCompArg[str]")) {
+													in_str = "parameter-string-in-" + in_count;
+													in_count += 1;
+												} else if (variable.includes("InCompArg[int]")) {
+													in_str = "parameter-int-in-" + in_count;
+													in_count += 1;
+												} else if (variable.includes("InCompArg[bool]")) {
+													in_str = "parameter-boolean-in-" + in_count;
+													in_count += 1;
+												} else if (variable.includes("InCompArg[float]")) {
+													in_str = "parameter-float-in-" + in_count;
+													in_count += 1;
+												} else if (variable.includes("InCompArg[list]")) {
+													in_str = "parameter-list-in-" + in_count;
+													in_count += 1;
+												} else if (variable.includes("InCompArg[tuple]")) {
+													in_str = "parameter-tuple-in-" + in_count;
+													in_count += 1;
+												} else if (variable.includes("InCompArg[dict]")) {
+													in_str = "parameter-dict-in-" + in_count;
+													in_count += 1;
+												} else {
+													in_str = "in-" + in_count;
+													in_count += 1;
+												}
+												node.addInPortEnhance(`${compulsory}${variable.split(":")[0]}`, in_str);
 											}
 										}
 									}
 								} else if (current_node["variable"].includes('InArg')) {
 									if (current_node["variable"].split(" , ").length > 0) {
 										for (let variable_index = 0; variable_index < current_node["variable"].split(" , ").length; variable_index++) {
-											if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[str]")) {
+											let variable = current_node["variable"].split(" , ")[variable_index].trim();
+											if (variable.includes("InArg[str]")) {
 												in_str = "parameter-string-in-" + in_count;
 												in_count += 1;
-											} else if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[int]")) {
+											} else if (variable.includes("InArg[int]")) {
 												in_str = "parameter-int-in-" + in_count;
 												in_count += 1;
-											} else if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[bool]")) {
+											} else if (variable.includes("InArg[bool]")) {
 												in_str = "parameter-boolean-in-" + in_count;
 												in_count += 1;
-											} else if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[float]")) {
+											} else if (variable.includes("InArg[float]")) {
 												in_str = "parameter-float-in-" + in_count;
 												in_count += 1;
-											} else if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[list]")) {
+											} else if (variable.includes("InArg[list]")) {
 												in_str = "parameter-list-in-" + in_count;
 												in_count += 1;
-											} else if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[tuple]")) {
+											} else if (variable.includes("InArg[tuple]")) {
 												in_str = "parameter-tuple-in-" + in_count;
 												in_count += 1;
-											} else if (current_node["variable"].split(" , ")[variable_index].trim().includes("InArg[dict]")) {
+											} else if (variable.includes("InArg[dict]")) {
 												in_str = "parameter-dict-in-" + in_count;
 												in_count += 1;
 											} else {
 												in_str = "in-" + in_count;
 												in_count += 1;
 											}
-											node.addInPortEnhance(current_node["variable"].split(" , ")[variable_index].trim().split(":")[0], in_str);
+											node.addInPortEnhance(`${variable.split(":")[0]}`, in_str);
+										}
+									}
+								} else if (current_node["variable"].includes('InCompArg')) {
+									if (current_node["variable"].split(" , ").length > 0) {
+										for (let variable_index = 0; variable_index < current_node["variable"].split(" , ").length; variable_index++) {
+											let variable = current_node["variable"].split(" , ")[variable_index].trim();
+											compulsory = "★";
+											if (variable.includes("InCompArg[str]")) {
+												in_str = "parameter-string-in-" + in_count;
+												in_count += 1;
+											} else if (variable.includes("InCompArg[int]")) {
+												in_str = "parameter-int-in-" + in_count;
+												in_count += 1;
+											} else if (variable.includes("InCompArg[bool]")) {
+												in_str = "parameter-boolean-in-" + in_count;
+												in_count += 1;
+											} else if (variable.includes("InCompArg[float]")) {
+												in_str = "parameter-float-in-" + in_count;
+												in_count += 1;
+											} else if (variable.includes("InCompArg[list]")) {
+												in_str = "parameter-list-in-" + in_count;
+												in_count += 1;
+											} else if (variable.includes("InCompArg[tuple]")) {
+												in_str = "parameter-tuple-in-" + in_count;
+												in_count += 1;
+											} else if (variable.includes("InCompArg[dict]")) {
+												in_str = "parameter-dict-in-" + in_count;
+												in_count += 1;
+											} else {
+												in_str = "in-" + in_count;
+												in_count += 1;
+											}
+											node.addInPortEnhance(`${compulsory}${variable.split(":")[0]}`, in_str);
 										}
 									}
 								}
@@ -1821,28 +1923,31 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 									for (let node_index = 0; node_index < current_node["variable"].split(" - ").length; node_index++) {
 										if (current_node["variable"].split(" - ")[node_index].includes('OutArg')) {
 											for (let variable_index = 0; variable_index < current_node["variable"].split(" - ")[node_index].split(" , ").length; variable_index++) {
-												if (current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().includes("Dataset")) {
+												let variable = current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim()
+												if (variable.includes("Dataset")) {
 													out_str = "parameter-out-" + count;
 													count += 1;
 												} else {
 													out_str = "out-" + count;
 													count += 1;
 												}
-												node.addOutPortEnhance(current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim().split(":")[0], out_str);
+												node.addOutPortEnhance(variable.split(":")[0], out_str);
 											}
 										}
 									}
-								} else if (current_node["variable"].includes('OutArg')) {
+								} 
+								else if (current_node["variable"].includes('OutArg')) {
 									if (current_node["variable"].split(" , ").length > 0) {
 										for (let variable_index = 0; variable_index < current_node["variable"].split(" , ").length; variable_index++) {
-											if (current_node["variable"].split(" , ")[variable_index].trim().includes("Dataset")) {
+											let variable = current_node["variable"].split(" , ")[variable_index].trim();
+											if (variable.includes("Dataset")) {
 												out_str = "parameter-out-" + count;
 												count += 1;
 											} else {
 												out_str = "out-" + count;
 												count += 1;
 											}
-											node.addInPortEnhance(current_node["variable"].split(" , ")[variable_index].trim().split(":")[0], out_str);
+											node.addInPortEnhance(variable.split(":")[0], out_str);
 										}
 									}
 								}
