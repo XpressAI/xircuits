@@ -64,7 +64,6 @@ class CreateUnetModel(Component):
     earlystop: InArg[int]
     verbose: InArg[bool]
     gpu: InArg[int]
-    no_epochs: InArg[int]
     
     model: OutArg[UNet]
     optimizer: OutArg[optim.Adam]
@@ -77,7 +76,6 @@ class CreateUnetModel(Component):
         self.earlystop = InArg.empty()
         self.verbose = InArg.empty()
         self.gpu = InArg.empty()
-        self.no_epochs = InArg.empty()
         
         self.model = OutArg.empty()
         self.optimizer = OutArg.empty()
@@ -88,7 +86,6 @@ class CreateUnetModel(Component):
         earlyStop = self.earlystop.value if self.earlystop.value else 15
         verbose = self.verbose.value if self.verbose.value else True
         gpu_no = self.gpu.value if self.gpu.value else 0
-        epoch_no = self.no_epochs.value if self.no_epochs.value else 20
         
         if torch.cuda.is_available():
             if torch.cuda.device_count() > gpu_no:
@@ -102,7 +99,7 @@ class CreateUnetModel(Component):
         unet_model.to(device_name)
         
         optimizer = optim.Adam(unet_model.parameters(), lr=float(learningRate))
-        early_stopping = EarlyStopping(patience=earlyStop, verbose=verbose, delta=0, n_epoch=epoch_no)
+        early_stopping = EarlyStopping(patience=earlyStop, verbose=verbose, delta=0)
 
         self.model.value = unet_model
         self.optimizer.value = optimizer
