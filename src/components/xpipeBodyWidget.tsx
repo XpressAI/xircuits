@@ -781,8 +781,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let allNodes = getAllNodesFromStartToFinish();
 		allNodes.forEach((node) => {
 			const compulsaryNodes = node.getOptions()["name"];
-			if(!node.isLocked()){
-				if(compulsaryNodes !== 'Start' && compulsaryNodes !== 'Finish') {
+			if (!node.isLocked()) {
+				if (compulsaryNodes !== 'Start' && compulsaryNodes !== 'Finish') {
 					node.setSelected(true);
 					node.setLocked(true);
 				}
@@ -848,13 +848,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	async function getConfig(request: string) {
 		const dataToSend = { "config_request": request };
-	
+
 		try {
 			const server_reply = await requestAPI<any>('get/config', {
 				body: JSON.stringify(dataToSend),
 				method: 'POST',
 			});
-	
+
 			return server_reply;
 		} catch (reason) {
 			console.error(
@@ -1205,37 +1205,39 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	useEffect(() => {
 		if (initialize) {
-			let allNodes = diagramEngine.getModel().getNodes();
-			let nodesCount = allNodes.length;
-			let nodeProperty = [];
+			try {
+				let allNodes = diagramEngine.getModel().getNodes();
+				let nodesCount = allNodes.length;
+				let nodeProperty = [];
 
-			for (let i = 0; i < nodesCount; i++) {
-				let nodeName = allNodes[i].getOptions()["name"];
-				if (nodeName.startsWith("Hyperparameter")) {
-					let regEx = /\(([^)]+)\)/;
-					let result = nodeName.match(regEx);
-					let nodeText = nodeName.split(": ");
-					if (result[1] == 'String') {
-						setStringNodes(stringNodes => ([...stringNodes, nodeText[nodeText.length - 1]].sort()));
-					} else if (result[1] == 'Int') {
-						setIntNodes(intNodes => ([...intNodes, nodeText[nodeText.length - 1]].sort()));
-					} else if (result[1] == 'Float') {
-						setFloatNodes(floatNodes => ([...floatNodes, nodeText[nodeText.length - 1]].sort()));
-					} else if (result[1] == 'Boolean') {
-						setBoolNodes(boolNodes => ([...boolNodes, nodeText[nodeText.length - 1]].sort()));
+				for (let i = 0; i < nodesCount; i++) {
+					let nodeName = allNodes[i].getOptions()["name"];
+					if (nodeName.startsWith("Hyperparameter")) {
+						let regEx = /\(([^)]+)\)/;
+						let result = nodeName.match(regEx);
+						let nodeText = nodeName.split(": ");
+						if (result[1] == 'String') {
+							setStringNodes(stringNodes => ([...stringNodes, nodeText[nodeText.length - 1]].sort()));
+						} else if (result[1] == 'Int') {
+							setIntNodes(intNodes => ([...intNodes, nodeText[nodeText.length - 1]].sort()));
+						} else if (result[1] == 'Float') {
+							setFloatNodes(floatNodes => ([...floatNodes, nodeText[nodeText.length - 1]].sort()));
+						} else if (result[1] == 'Boolean') {
+							setBoolNodes(boolNodes => ([...boolNodes, nodeText[nodeText.length - 1]].sort()));
+						}
 					}
-				}
 
-				let nodeType, nodeColor, nodeObject;
-				nodeType = allNodes[i].getOptions()["extras"]["type"];
-				nodeColor = allNodes[i].getOptions()["color"];
-				nodeObject = {
-					type: nodeType,
-					color: nodeColor
+					let nodeType, nodeColor, nodeObject;
+					nodeType = allNodes[i].getOptions()["extras"]["type"];
+					nodeColor = allNodes[i].getOptions()["color"];
+					nodeObject = {
+						type: nodeType,
+						color: nodeColor
+					}
+					nodeProperty.push(nodeObject)
 				}
-				nodeProperty.push(nodeObject)
-			}
-			setNodesColor(nodeProperty);
+				setNodesColor(nodeProperty);
+			} catch (err) { }
 
 		} else {
 			setStringNodes(["experiment name"]);
@@ -1487,9 +1489,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	const fetchComponentList = async () => {
 		const base_path = await getConfig("BASE_PATH");
-    	const base_path_cfg = base_path["cfg"];
+		const base_path_cfg = base_path["cfg"];
 		const response = await ComponentList(serviceManager, base_path_cfg);
-		
+
 		if (response.length > 0) {
 			setComponentList([]);
 		}
