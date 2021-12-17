@@ -61,7 +61,6 @@ class CreateUnetModel(Component):
     test_data: InArg[torch.utils.data.DataLoader]
     
     learning_rate: InArg[float]
-    patience: InArg[int]
     earlystop: InArg[int]
     verbose: InArg[bool]
     gpu: InArg[int]
@@ -75,18 +74,21 @@ class CreateUnetModel(Component):
         self.done = False
        
         self.learning_rate = InArg.empty()
-        self.patience = InArg.empty()
         self.earlystop = InArg.empty()
         self.verbose = InArg.empty()
         self.gpu = InArg.empty()
         self.no_epochs = InArg.empty()
+        
         self.model = OutArg.empty()
         self.optimizer = OutArg.empty()
         self.early_stopping = OutArg.empty()
         
     def execute(self) -> None:
+        learningRate = self.learning_rate.value if self.learning_rate.value else 0.0001
+        earlyStop = self.earlystop.value if self.earlystop.value else 15
         verbose = self.verbose.value if self.verbose.value else True
         gpu_no = self.gpu.value if self.gpu.value else 0
+        epoch_no = self.no_epochs.value if self.no_epochs.value else 20
         
         if torch.cuda.is_available():
             if torch.cuda.device_count() > gpu_no:
@@ -99,8 +101,8 @@ class CreateUnetModel(Component):
         unet_model = UNet()
         unet_model.to(device_name)
         
-        optimizer = optim.Adam(unet_model.parameters(), lr=self.learning_rate.value)
-        early_stopping = EarlyStopping(patience=self.earlystop.value, verbose=verbose, delta=0, n_epoch=self.no_epochs.value)
+        optimizer = optim.Adam(unet_model.parameters(), lr=float(learningRate))
+        early_stopping = EarlyStopping(patience=earlyStop, verbose=verbose, delta=0, n_epoch=epoch_no)
 
         self.model.value = unet_model
         self.optimizer.value = optimizer
@@ -128,6 +130,7 @@ class ImageTrainTestSplit(Component):
         self.test_image_path = OutArg.empty()
 
     def execute(self) -> None:
+        splitRatio = self.split_ratio.value if self.split_ratio.value else 0.8
         randomSeed = self.random_seed.value if self.random_seed.value else 1234
         
         train_set_raw_str = "train_image"
@@ -143,7 +146,7 @@ class ImageTrainTestSplit(Component):
             if total_images != total_images_mask:
                 raise ImageCountNotEqual()
 
-            train_set_count = int(total_images * float(self.split_ratio.value))
+            train_set_count = int(total_images * float(splitRatio))
             test_set_count = total_images - train_set_count
 
             new_train_set_raw_str = (Path(self.input_str.value[0] + "-transformed") / train_set_raw_str)
