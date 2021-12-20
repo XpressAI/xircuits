@@ -29,6 +29,10 @@ class CompileFileRouteHandler(APIHandler):
         self.finish(json.dumps(data))
 
 
+def get_config():
+    config = ConfigParser()
+    config.read([".xpipes/config.ini", "xai_components/.xpipes/config.ini", "home/xai_components/.xpipes/config.ini"])
+    return config
 class DebuggerRouteHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
@@ -38,9 +42,7 @@ class DebuggerRouteHandler(APIHandler):
     def post(self):
         input_data = self.get_json_body()
         
-        cfg = ConfigParser()
-        cfg.read('.xpipes/config.ini')
-
+        cfg = get_config()
         port = str(cfg['SERVER']['IP_ADD'] + ":" + cfg['SERVER']['PORT'])
         
         output_content = ""
@@ -89,8 +91,7 @@ class HandleConfigRouteHandler(APIHandler):
     def post(self):
         input_data = self.get_json_body()
 
-        cfg = ConfigParser()
-        cfg.read('.xpipes/config.ini')
+        cfg = get_config()
 
         config_request = input_data["config_request"]
         config_cfg = str(cfg['DEV'][config_request]).replace('"', "")
