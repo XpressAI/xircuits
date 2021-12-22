@@ -8,17 +8,23 @@ from xai_components.base import InArg, OutArg, Component
 from sklearn.model_selection import train_test_split
 import json
 import os
+import sys
+from pathlib import Path
 from tqdm import tqdm
 
 
 class ReadDataSet(Component):
     dataset_name: InArg[str]
     dataset: OutArg[Tuple[np.array, np.array]]
+    class_dict: OutArg[any]
+
 
     def __init__(self):
         self.done = False
         self.dataset_name = InArg.empty()
         self.dataset = OutArg.empty()
+        self.class_dict = OutArg.empty()
+
 
     def execute(self) -> None:
 
@@ -159,6 +165,7 @@ class FlattenImageData(Component):
         x = x.reshape(x.shape[0], -1)
 
         self.resized_dataset.value = (x, self.dataset.value[1])
+        print(f"resized_dataset = {np.shape(self.resized_dataset.value)}")
 
         self.done = True
 
@@ -216,7 +223,7 @@ class Create1DInputModel(Component):
 
         model = keras.Sequential([
             keras.layers.Dense(512, activation='relu', input_shape=(x_shape[1],)),
-            keras.layers.Dropout(rate=0.5),
+           keras.layers.Dropout(rate=0.5),
             keras.layers.Dense(y_shape[1], activation='softmax')
         ])
 
@@ -244,7 +251,8 @@ class Create2DInputModel(Component):
 
         x_shape = self.training_data.value[0].shape[1:]
         y_shape = self.training_data.value[1].shape[1]
-
+        print(f"{x_shape=}")
+        print(f"{y_shape=}")
 
         model = keras.Sequential(
             [
@@ -353,6 +361,29 @@ class ShouldStop(Component):
             print('Unable to achieve target accuracy.  Giving up.')
             self.should_retrain.value = False
         self.done = True
+
+class SaveKerasModel(Component):
+
+    model: InArg[any]
+    model_name: InArg[str]
+    model_h5: OutArg[str]
+
+    def __init__(self):
+        self.done = False
+        self.model = InArg.empty()
+        self.model_name = InArg.empty()
+
+        self.model_h5 = OutArg.empty()
+
+    def execute(self) -> None:
+        model = self.model.value
+        model_name = self.model_name.value if self.model_name.value else os.path.splitext(sys.argv[0])[0] + ".h5"
+        model.save(model_name)
+        print(f"Saving Keras h5 model at: {model_name}")
+        self.model_h5.value = model_name
+
+        self.done = True
+
 
 class SaveKerasModelInModelStash(Component):
     model: InArg[keras.Sequential]

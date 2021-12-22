@@ -85,14 +85,18 @@ class KerasPredict(Component):
     
     model:InArg[any]
     img_string: InArg[str]
+    class_list: InArg[any]
 
     def __init__(self):
         self.done = False
         self.model = InArg(None)
         self.img_string = InArg(None)
+        self.class_list = InArg(None)
 
     def execute(self) -> None:
         model = self.model.value
+        img_path = self.img_string.value
+        class_list = self.class_list.value if self.class_list.value else []
 
         class keras_model_config:
             preprocess_input: any
@@ -100,6 +104,8 @@ class KerasPredict(Component):
             target_size:any
 
             def __init__(self):
+                self.preprocess_input = None
+                self.decode_predictions = None
                 self.target_size = (224, 224)
 
         model_config = keras_model_config()
@@ -153,8 +159,8 @@ class KerasPredict(Component):
             model_config.preprocess_input = applications.densenet.preprocess_input
             model_config.decode_predictions = applications.densenet.decode_predictions
 
-        if (model_config.preprocess_input):
-            img_path = self.img_string.value
+        if model_config.preprocess_input:
+
             img = image.load_img(img_path, target_size=model_config.target_size)
             x = image.img_to_array(img)
             x = np.expand_dims(x, axis=0)
@@ -166,7 +172,19 @@ class KerasPredict(Component):
             print(model.name, ' predictions:', model_config.decode_predictions(preds, top=3)[0])
 
         else:
-            print("Keras model ", model.name, " config not found!")
+
+            print(f"Keras model {model.name} config not found!\n")
+            print(f"Auto adjusting according to model input.\n")
+
+            # expected input_shape => (None, 256, 256, 3)
+            target_shape = model.input_shape[1:3]
+            img = image.load_img(img_path, target_size=target_shape)
+            x = image.img_to_array(img)
+            x = np.expand_dims(x, axis=0)
+
+            preds = model.predict(x)
+            print(preds)
+
 
         self.done = True
 

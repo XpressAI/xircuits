@@ -60,7 +60,7 @@ class Component(BaseComponent):
     done: False
 
     def do(self) -> BaseComponent:
-        print(f"Executing: {self.__class__.__name__}")
+        print(f"\nExecuting: {self.__class__.__name__}")
         self.execute()
 
         return self.done, self.next
