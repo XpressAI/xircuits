@@ -127,7 +127,7 @@ setup_args = dict(
         "tornado==6.1",
         "traitlets==5.0.5",
         "typing-extensions==3.7.4.3",
-        "urllib3==1.26.2",
+        "urllib3>=1.26.5",
         "wcwidth==0.2.5",
         "webencodings==0.5.1",
         "websocket-client==1.2.1",
