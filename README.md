@@ -1,6 +1,25 @@
-# JupyterLab Engine Plugins
+| **[Documentation](https://xpipes.io/docs/index)** |
+**[Dev Discord](https://discord.gg/vgEg2ZtxCw)** |
 
-The current iteration of the juypterlab engine are made of seperate extensions of Jupyterlab 3.1.10. The following steps is if you're developing on a Windows or Ubuntu 20.04.
+
+![Asset 13400x](https://user-images.githubusercontent.com/68586800/144788478-2de08f79-cb0a-4d5b-bde5-90412abc11b0.png)
+
+Xpipes is a Jupyterlab-based extension that enables visual, low-code, training workflows. It allows anyone to easily create executable python code in seconds.
+
+
+## Development
+
+
+### Prerequisites
+
+Xpipes requires nodejs and yarn to build. The test nvm version is 14.15.3. 
+You may also want to set yarn globally accessible by:
+
+```
+npm install --global yarn
+```
+
+### Build
 ```
 git clone https://github.com/XpressAI/xpipes
 ```
@@ -15,8 +34,6 @@ Download python packages.
 
 ```
 pip install -r requirements.txt
-# For Linux
-# pip install -r requirements_linux.txt
 ```
 
 Run the following commands to install the package in local editable mode and install xpipes into the JupyterLab environment.
@@ -50,5 +67,6 @@ By running jupyter lab, you should be able to load the Xpipe Panel by selecting 
 
 
 The current extension looks like this.
-![Xpipe v0 3 4](https://user-images.githubusercontent.com/68586800/134819194-c7f932e2-beb5-4e35-ba53-3a3bf24dccdc.png)
+
+![02-components](https://user-images.githubusercontent.com/68586800/147523242-f549f9f3-edba-492b-9ebe-a2c3fdfb8a86.gif)
 
