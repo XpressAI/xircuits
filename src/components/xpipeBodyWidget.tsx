@@ -1778,179 +1778,34 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								}
 							} else if (current_node.header == "ADVANCED") {
 								node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
-
 								node.addInPortEnhance('▶', 'in-0');
-								let in_count = 1;
-								let in_str = "";
-								let compulsory = '';
-								if (current_node["variable"].split(" - ").length > 1) {
-									for (let node_index = 0; node_index < current_node["variable"].split(" - ").length; node_index++) {
-										if (current_node["variable"].split(" - ")[node_index].includes('InArg')) {
-											for (let variable_index = 0; variable_index < current_node["variable"].split(" - ")[node_index].split(" , ").length; variable_index++) {
-												let variable = current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim();
-												if (variable.includes("InArg[str]")) {
-													in_str = "parameter-string-in-" + in_count;
-													in_count += 1;
-												} else if (variable.includes("InArg[int]")) {
-													in_str = "parameter-int-in-" + in_count;
-													in_count += 1;
-												} else if (variable.includes("InArg[bool]")) {
-													in_str = "parameter-boolean-in-" + in_count;
-													in_count += 1;
-												} else if (variable.includes("InArg[float]")) {
-													in_str = "parameter-float-in-" + in_count;
-													in_count += 1;
-												} else if (variable.includes("InArg[list]")) {
-													in_str = "parameter-list-in-" + in_count;
-													in_count += 1;
-												} else if (variable.includes("InArg[tuple]")) {
-													in_str = "parameter-tuple-in-" + in_count;
-													in_count += 1;
-												} else if (variable.includes("InArg[dict]")) {
-													in_str = "parameter-dict-in-" + in_count;
-													in_count += 1;
-												} else {
-													in_str = "in-" + in_count;
-													in_count += 1;
-												}
-												node.addInPortEnhance(`${variable.split(":")[0]}`, in_str);
-											}
-										} 
-										else if (current_node["variable"].split(" - ")[node_index].includes('InCompArg')) {
-											for (let variable_index = 0; variable_index < current_node["variable"].split(" - ")[node_index].split(" , ").length; variable_index++) {
-												let variable = current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim();
-												compulsory = "★";
-												if (variable.includes("InCompArg[str]")) {
-													in_str = "parameter-string-in-" + in_count;
-													in_count += 1;
-												} else if (variable.includes("InCompArg[int]")) {
-													in_str = "parameter-int-in-" + in_count;
-													in_count += 1;
-												} else if (variable.includes("InCompArg[bool]")) {
-													in_str = "parameter-boolean-in-" + in_count;
-													in_count += 1;
-												} else if (variable.includes("InCompArg[float]")) {
-													in_str = "parameter-float-in-" + in_count;
-													in_count += 1;
-												} else if (variable.includes("InCompArg[list]")) {
-													in_str = "parameter-list-in-" + in_count;
-													in_count += 1;
-												} else if (variable.includes("InCompArg[tuple]")) {
-													in_str = "parameter-tuple-in-" + in_count;
-													in_count += 1;
-												} else if (variable.includes("InCompArg[dict]")) {
-													in_str = "parameter-dict-in-" + in_count;
-													in_count += 1;
-												} else {
-													in_str = "in-" + in_count;
-													in_count += 1;
-												}
-												node.addInPortEnhance(`${compulsory}${variable.split(":")[0]}`, in_str);
-											}
-										}
-									}
-								} else if (current_node["variable"].includes('InArg')) {
-									if (current_node["variable"].split(" , ").length > 0) {
-										for (let variable_index = 0; variable_index < current_node["variable"].split(" , ").length; variable_index++) {
-											let variable = current_node["variable"].split(" , ")[variable_index].trim();
-											if (variable.includes("InArg[str]")) {
-												in_str = "parameter-string-in-" + in_count;
-												in_count += 1;
-											} else if (variable.includes("InArg[int]")) {
-												in_str = "parameter-int-in-" + in_count;
-												in_count += 1;
-											} else if (variable.includes("InArg[bool]")) {
-												in_str = "parameter-boolean-in-" + in_count;
-												in_count += 1;
-											} else if (variable.includes("InArg[float]")) {
-												in_str = "parameter-float-in-" + in_count;
-												in_count += 1;
-											} else if (variable.includes("InArg[list]")) {
-												in_str = "parameter-list-in-" + in_count;
-												in_count += 1;
-											} else if (variable.includes("InArg[tuple]")) {
-												in_str = "parameter-tuple-in-" + in_count;
-												in_count += 1;
-											} else if (variable.includes("InArg[dict]")) {
-												in_str = "parameter-dict-in-" + in_count;
-												in_count += 1;
-											} else {
-												in_str = "in-" + in_count;
-												in_count += 1;
-											}
-											node.addInPortEnhance(`${variable.split(":")[0]}`, in_str);
-										}
-									}
-								} else if (current_node["variable"].includes('InCompArg')) {
-									if (current_node["variable"].split(" , ").length > 0) {
-										for (let variable_index = 0; variable_index < current_node["variable"].split(" , ").length; variable_index++) {
-											let variable = current_node["variable"].split(" , ")[variable_index].trim();
-											compulsory = "★";
-											if (variable.includes("InCompArg[str]")) {
-												in_str = "parameter-string-in-" + in_count;
-												in_count += 1;
-											} else if (variable.includes("InCompArg[int]")) {
-												in_str = "parameter-int-in-" + in_count;
-												in_count += 1;
-											} else if (variable.includes("InCompArg[bool]")) {
-												in_str = "parameter-boolean-in-" + in_count;
-												in_count += 1;
-											} else if (variable.includes("InCompArg[float]")) {
-												in_str = "parameter-float-in-" + in_count;
-												in_count += 1;
-											} else if (variable.includes("InCompArg[list]")) {
-												in_str = "parameter-list-in-" + in_count;
-												in_count += 1;
-											} else if (variable.includes("InCompArg[tuple]")) {
-												in_str = "parameter-tuple-in-" + in_count;
-												in_count += 1;
-											} else if (variable.includes("InCompArg[dict]")) {
-												in_str = "parameter-dict-in-" + in_count;
-												in_count += 1;
-											} else {
-												in_str = "in-" + in_count;
-												in_count += 1;
-											}
-											node.addInPortEnhance(`${compulsory}${variable.split(":")[0]}`, in_str);
-										}
-									}
+								node.addOutPortEnhance('▶', 'out-0');
+
+								// TODO: Get rid of the remapping by using compatible type names everywhere
+								let type_name_remappings = {
+									"bool": "boolean",
+									"str": "string"
 								}
 
-								node.addOutPortEnhance('▶', 'out-0');
-								let count = 1;
-								let out_str = "";
-								if (current_node["variable"].split(" - ").length > 1) {
-									for (let node_index = 0; node_index < current_node["variable"].split(" - ").length; node_index++) {
-										if (current_node["variable"].split(" - ")[node_index].includes('OutArg')) {
-											for (let variable_index = 0; variable_index < current_node["variable"].split(" - ")[node_index].split(" , ").length; variable_index++) {
-												let variable = current_node["variable"].split(" - ")[node_index].split(" , ")[variable_index].trim()
-												if (variable.includes("Dataset")) {
-													out_str = "parameter-out-" + count;
-													count += 1;
-												} else {
-													out_str = "out-" + count;
-													count += 1;
-												}
-												node.addOutPortEnhance(variable.split(":")[0], out_str);
-											}
-										}
+								current_node["variables"].forEach(variable => {
+									let name = variable["name"];
+									let type = type_name_remappings[variable["type"]] || variable["type"];
+
+									switch (variable["kind"]){
+										case "InCompArg":
+											node.addInPortEnhance(`★${name}`, `parameter-${type}-${name}`);
+											break;
+										case "InArg":
+											node.addInPortEnhance(name, `parameter-${type}-${name}`);
+											break;
+										case "OutArg":
+											node.addOutPortEnhance(name, `parameter-out-${type}-${name}`);
+											break;
+										default:
+											console.warn("Unknown variable kind for variable", variable)
+											break;
 									}
-								} 
-								else if (current_node["variable"].includes('OutArg')) {
-									if (current_node["variable"].split(" , ").length > 0) {
-										for (let variable_index = 0; variable_index < current_node["variable"].split(" , ").length; variable_index++) {
-											let variable = current_node["variable"].split(" , ")[variable_index].trim();
-											if (variable.includes("Dataset")) {
-												out_str = "parameter-out-" + count;
-												count += 1;
-											} else {
-												out_str = "out-" + count;
-												count += 1;
-											}
-											node.addInPortEnhance(variable.split(":")[0], out_str);
-										}
-									}
-								}
+								})
 							}
 						}
 

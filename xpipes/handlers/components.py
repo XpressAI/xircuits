@@ -85,7 +85,7 @@ class ComponentsRouteHandler(APIHandler):
                 "header": GROUP_GENERAL,
                 "rootFile": GROUP_GENERAL,
                 "path": "", # Default Components do not have a python-file backed implementation
-                "variable": "", # No IN/OUT mappings
+                "variables": [],
                 "type": c["returnType"]
             })
 
@@ -127,28 +127,17 @@ class ComponentsRouteHandler(APIHandler):
         if root_file == "COMPONENTS":
             root_file = GROUP_ADVANCED
 
-        # TODO: Replace variable handling in frontend with something sane
-        is_type_arg = lambda t:  lambda n: isinstance(n, ast.AnnAssign) and \
+        is_arg = lambda n: isinstance(n, ast.AnnAssign) and \
                                            isinstance(n.annotation, ast.Subscript) and \
-                                           n.annotation.value.id  == t
-        is_inarg = is_type_arg('InArg')
-        is_comp_inarg = is_type_arg("InCompArg")
-        is_outarg = is_type_arg('OutArg')
-
-        inargs = " , ".join(
-            ast.unparse(v)
-            for v in node.body if is_inarg(v)
-        )
-        comp_inargs = " , ".join(
-            ast.unparse(v)
-            for v in node.body if is_comp_inarg(v)
-        )
-        outargs = " , ".join(
-            ast.unparse(v)
-            for v in node.body if is_outarg(v)
-        )
-
-        variable = " - ".join(args for args in [inargs, comp_inargs, outargs] if not len(args) == 0)
+                                           n.annotation.value.id in ('InArg', 'InCompArg', 'OutArg')
+        variables = [
+            {
+                "name": v.target.id,
+                "kind": v.annotation.value.id,
+                "type": ast.unparse(v.annotation.slice)
+            }
+            for v in node.body if is_arg(v)
+        ]
 
         output_type = COMPONENT_OUTPUT_TYPE_MAPPING.get(name) or "debug"
 
@@ -158,5 +147,5 @@ class ComponentsRouteHandler(APIHandler):
             "header": GROUP_ADVANCED,
             "rootFile": root_file,
             "type": output_type,
-            "variable": variable
+            "variables": variables
         }
