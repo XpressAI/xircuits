@@ -86,12 +86,14 @@ class KerasPredict(Component):
     model:InArg[any]
     img_string: InArg[str]
     class_list: InArg[any]
+    target_shape: InArg[tuple]
 
     def __init__(self):
         self.done = False
         self.model = InArg(None)
         self.img_string = InArg(None)
         self.class_list = InArg(None)
+        self.target_shape = InArg(None)
 
     def execute(self) -> None:
         model = self.model.value
@@ -177,7 +179,10 @@ class KerasPredict(Component):
             print(f"Auto adjusting according to model input.\n")
 
             # expected input_shape => (None, 256, 256, 3)
-            target_shape = model.input_shape[1:3]
+            if isinstance(self.target_shape.value, tuple):
+                if len(self.target_shape.value) != 2:
+                    raise AssertionError(f"Expected two values (height and width) as target shape, got {len(self.target_shape.value)}")
+            target_shape = self.target_shape.value if self.target_shape.value else model.input_shape[1:3]
             img = image.load_img(img_path, target_size=target_shape)
             x = image.img_to_array(img)
             x = np.expand_dims(x, axis=0)
