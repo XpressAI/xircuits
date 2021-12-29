@@ -98,7 +98,7 @@ class ComponentsRouteHandler(APIHandler):
                 directory = pathlib.Path(directory_string).absolute()
                 if directory.exists() \
                         and directory.is_dir() \
-                        and directory not in visited_directories:
+                        and not any(pathlib.Path.samefile(directory, d) for d in visited_directories):
                     visited_directories.append(directory)
                     python_files = directory.rglob("*.py")
                     components.extend(chain.from_iterable(self.extract_components(f, directory) for f in python_files))
