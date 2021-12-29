@@ -125,10 +125,6 @@ class ComponentsRouteHandler(APIHandler):
 
         # Group Name for Display
         root_file = file_path.parent.name.removeprefix("xai_").upper()
-        # Special case to get same behavior as before.
-        # TODO: Discuss if this is necessary.
-        if root_file == "COMPONENTS":
-            root_file = GROUP_ADVANCED
 
         is_arg = lambda n: isinstance(n, ast.AnnAssign) and \
                                            isinstance(n.annotation, ast.Subscript) and \
