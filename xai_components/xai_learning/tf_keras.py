@@ -1,7 +1,6 @@
 from tensorflow.keras import applications
 from tensorflow.keras.preprocessing import image
 import numpy as np
-import itertools
 
 from xai_components.base import InArg, OutArg, Component
 import json
@@ -184,8 +183,6 @@ class KerasPredict(Component):
                 if len(self.target_shape.value) != 2:
                     raise AssertionError(f"Expected two values (height and width) as target shape, got {len(self.target_shape.value)}")
             target_shape = self.target_shape.value if self.target_shape.value else model.input_shape[1:3]
-            if isinstance(target_shape, int):
-                target_shape = tuple(itertools.repeat(target_shape, 2))
             img = image.load_img(img_path, target_size=target_shape)
             x = image.img_to_array(img)
             x = np.expand_dims(x, axis=0)
