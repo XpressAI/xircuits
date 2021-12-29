@@ -7,11 +7,14 @@ from itertools import chain
 import tornado
 from jupyter_server.base.handlers import APIHandler
 
+from .config import get_config
+
 DEFAULT_COMPONENTS_PATHS = [
     os.path.join(os.path.dirname(__file__), "..", "..", "xai_components"),
     "xai_components",
-    os.path.join("home", "xai_components"),
-    os.environ.get("XPIPES_COMPONENTS_DIR")
+    os.path.expanduser("~/xai_components"),
+    os.environ.get("XPIPES_COMPONENTS_DIR"),
+    get_config().get("DEV", "BASE_PATH")
 ]
 
 # Get the default components from here for now

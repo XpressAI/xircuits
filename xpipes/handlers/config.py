@@ -10,9 +10,8 @@ def get_config():
     config = ConfigParser()
     config.read([
         os.path.join(os.path.dirname(__file__), "..", "..", ".xpipes", "config.ini"),
-        ".xpipes/config.ini",
-        "xai_components/.xpipes/config.ini",
-        "home/xai_components/.xpipes/config.ini"])
+        os.path.expanduser("~/.xpipes/config.ini"),
+        ".xpipes/config.ini"])
     return config
 
 class HandleConfigRouteHandler(APIHandler):
