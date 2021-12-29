@@ -100,7 +100,7 @@ class ComponentsRouteHandler(APIHandler):
                         and directory.is_dir() \
                         and not any(pathlib.Path.samefile(directory, d) for d in visited_directories):
                     visited_directories.append(directory)
-                    python_files = directory.rglob("*.py")
+                    python_files = directory.rglob("xai_*/*.py")
                     components.extend(chain.from_iterable(self.extract_components(f, directory) for f in python_files))
 
 
