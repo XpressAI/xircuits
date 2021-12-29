@@ -7,7 +7,8 @@
     cursor: pointer;
     background-color: transparent;
     border: 0;
-    padding: 0;
+    padding-top: 4px;
+    padding-right: 2px;
 
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -39,8 +40,8 @@
 }
 
 .react-toggle-track {
-    width: 13px;
-    height: 13px;
+    width: 15px;
+    height: 15px;
     padding: 0;
     border-radius: 30px;
     /* background-color: #4d4d4d; */
