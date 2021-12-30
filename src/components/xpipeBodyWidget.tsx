@@ -4,18 +4,12 @@ import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
 import { LinkModel, DiagramModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
 import { Dialog } from '@jupyterlab/apputils';
-import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
 import {
-	DocumentRegistry,
-	ABCWidgetFactory,
-	DocumentWidget,
-	Context
+	DocumentRegistry
 } from '@jupyterlab/docregistry';
-
 import styled from '@emotion/styled';
-
 import { CustomNodeModel } from "./CustomNodeModel";
 import { XPipePanel } from '../xpipeWidget';
 import { Log } from '../log/LogPlugin';
@@ -25,8 +19,6 @@ import { formDialogWidget } from '../dialog/formDialogwidget';
 import { showFormDialog } from '../dialog/FormDialog';
 import { RunDialog } from '../dialog/RunDialog';
 import 'rc-dialog/assets/bootstrap.css';
-import Draggable from 'react-draggable';
-import RcDialog from 'rc-dialog';
 import { requestAPI } from '../server/handler';
 import { XpipesApplication } from './XpipesApp';
 
@@ -56,7 +48,6 @@ export interface BodyWidgetProps {
 	stepOutDebugSignal: Signal<XPipePanel, any>;
 	evaluateDebugSignal: Signal<XPipePanel, any>;
 	debugModeSignal: Signal<XPipePanel, any>;
-	customDeserializeModel;
 }
 
 export const Body = styled.div`
@@ -145,8 +136,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	stepInDebugSignal,
 	stepOutDebugSignal,
 	evaluateDebugSignal,
-	debugModeSignal,
-	customDeserializeModel
+	debugModeSignal
 }) => {
 
 	const [prevState, updateState] = useState(0);
@@ -755,28 +745,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		onHide('displaySavedAndCompiled');
 		handleSaveClick();
 		handleCompileClick();
-	}
-
-	const saveAndCompile = () => {
-		// save
-		setInitialize(true);
-		setSaved(true);
-		let currentModel = diagramEngine.getModel().serialize();
-		context.model.setSerializedModel(currentModel);
-		commands.execute(commandIDs.saveDocManager);
-
-		// compile
-		let allNodesConnected = checkAllNodesConnected();
-
-		if (!allNodesConnected) {
-			alert("Please connect all the nodes before debugging.");
-			return;
-		}
-
-		let pythonCode = getPythonCompiler();
-		let showOutput = false;
-		setCompiled(true);
-		commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
 	}
 
 	const saveAndCompileAndRun = async (compileMode: boolean) => {

@@ -1,37 +1,36 @@
-import { ABCWidgetFactory, DocumentRegistry, DocumentWidget } from '@jupyterlab/docregistry';
-
-import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
-
-import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
-
+import { 
+  ABCWidgetFactory, 
+  DocumentRegistry, 
+  DocumentWidget 
+} from '@jupyterlab/docregistry';
+import { 
+  ILabShell, 
+  JupyterFrontEnd 
+} from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
-
-import { IModelDB } from '@jupyterlab/observables';
-
-import { Contents } from '@jupyterlab/services';
-
-import { XPipeWidget, XPipePanel } from './xpipeWidget';
-
-import { XPipeDocModel } from './xpipeModel';
-
-import { bugIcon, checkIcon, circleIcon, editIcon, listIcon, refreshIcon, runIcon, saveIcon, undoIcon } from '@jupyterlab/ui-components';
-
+import { XPipePanel } from './xpipeWidget';
+import { 
+  bugIcon, 
+  checkIcon, 
+  editIcon, 
+  listIcon, 
+  refreshIcon, 
+  runIcon, 
+  saveIcon, 
+  undoIcon 
+} from '@jupyterlab/ui-components';
 import { ToolbarButton } from '@jupyterlab/apputils';
-
 import { commandIDs } from './components/xpipeBodyWidget';
 import { CommandIDs } from './log/LogPlugin';
-
 import { ServiceManager } from '@jupyterlab/services';
 
 const XPIPE_CLASS = 'xpipes-editor';
 
 export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
 
-  browserFactory: IFileBrowserFactory;
   app: JupyterFrontEnd;
   shell: ILabShell;
   commands: any;
-  model: any;
   serviceManager: ServiceManager;
   saveXpipeSignal: Signal<this, any>;
   reloadXpipeSignal: Signal<this, any>;
@@ -54,11 +53,9 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
 
   constructor(options: any) {
     super(options);
-    this.browserFactory = options.browserFactory;
     this.app = options.app;
     this.shell = options.shell;
     this.commands = options.commands;
-    this.model = options.modelName;
     this.serviceManager = options.serviceManager;
     this.saveXpipeSignal = new Signal<this, any>(this);
     this.reloadXpipeSignal = new Signal<this, any>(this);
@@ -86,7 +83,6 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
       app: this.app,
       shell: this.shell,
       commands: this.commands,
-      browserFactory: this.browserFactory,
       context: context,
       serviceManager: this.serviceManager,
       saveXpipeSignal: this.saveXpipeSignal,

@@ -1,29 +1,12 @@
-import { Dialog, ReactWidget, showDialog } from '@jupyterlab/apputils';
-import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
+import { ReactWidget } from '@jupyterlab/apputils';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
 import {
-  DocumentRegistry,
-  ABCWidgetFactory,
-  DocumentWidget,
   Context
 } from '@jupyterlab/docregistry';
 import { BodyWidget } from './components/xpipeBodyWidget';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import * as SRD from '@projectstorm/react-diagrams';
-import { ActionEventBus, ZoomCanvasAction, CanvasWidget, Action, ActionEvent, InputType } from '@projectstorm/react-canvas-core';
-import { CustomDeleteItemsAction } from './components/CustomNodeWidget';
-
-import { DefaultLinkModel } from '@projectstorm/react-diagrams';
-
+import React, {  } from 'react';
 import * as _ from 'lodash';
-
-
-import { CustomNodeFactory } from "./components/CustomNodeFactory";
-import { CustomNodeModel } from './components/CustomNodeModel';
-
-import { XPipeDocChange, XPipeDocModel } from './xpipeModel';
-
 import { ServiceManager } from '@jupyterlab/services';
 import { XpipesApplication } from './components/XpipesApp'
 
@@ -31,8 +14,6 @@ import { XpipesApplication } from './components/XpipesApp'
  * DocumentWidget: widget that represents the view or editor for a file type.
  */
 export class XPipePanel extends ReactWidget {
-
-  browserFactory: IFileBrowserFactory;
   app: JupyterFrontEnd;
   shell: ILabShell;
   commands: any;
@@ -60,7 +41,6 @@ export class XPipePanel extends ReactWidget {
 
   constructor(options: any) {
     super(options);
-    this.browserFactory = options.browserFactory;
     this.app = options.app;
     this.shell = options.shell;
     this.commands = options.commands;
@@ -116,7 +96,6 @@ export class XPipePanel extends ReactWidget {
         stepOutDebugSignal={this.stepOutDebugSignal}
         evaluateDebugSignal={this.evaluateDebugSignal}
         debugModeSignal={this.debugModeSignal}
-        customDeserializeModel={this.customDeserializeModel}
       />
     );
   }
