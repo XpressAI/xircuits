@@ -31,30 +31,13 @@ import { commandIDs } from './components/xpipeBodyWidget';
 /**
  * DocumentWidget: widget that represents the view or editor for a file type.
  */
-export class XPipeWidget extends DocumentWidget<
-  XPipePanel,
-  XPipeDocModel
-> {
-  constructor(options: DocumentWidget.IOptions<XPipePanel, XPipeDocModel>) {
-    super(options);
-  }
-
-  /**
-   * Dispose of the resources held by the widget.
-   */
-  dispose(): void {
-    this.content.dispose();
-    super.dispose();
-  }
-}
-
 export class XPipePanel extends ReactWidget {
 
   browserFactory: IFileBrowserFactory;
   app: JupyterFrontEnd;
   shell: ILabShell;
   commands: any;
-  context: any;
+  context: Context;
   serviceManager: ServiceManager;
   saveXpipeSignal: Signal<this, any>;
   reloadXpipeSignal: Signal<this, any>;

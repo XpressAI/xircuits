@@ -25,7 +25,7 @@ import { ServiceManager } from '@jupyterlab/services';
 
 const XPIPE_CLASS = 'xpipes-editor';
 
-export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
+export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
 
   browserFactory: IFileBrowserFactory;
   app: JupyterFrontEnd;
@@ -80,7 +80,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     this.debugModeSignal = new Signal<this, any>(this);
   }
 
-  protected createNewWidget(context: DocumentRegistry.IContext<XPipeDocModel>): XPipeWidget {
+  protected createNewWidget(context: DocumentRegistry.Context): DocumentWidget {
     // Creates a blank widget with a DocumentWidget wrapper
     const props = {
       app: this.app,

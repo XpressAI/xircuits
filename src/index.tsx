@@ -40,6 +40,7 @@ import { requestAPI } from './server/handler';
 import { OutputPanel } from './kernel/panel';
 
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
+import { DocumentWidget } from '@jupyterlab/docregistry';
 
 const FACTORY = 'Xpipes editor';
 
@@ -105,7 +106,7 @@ const xpipes: JupyterFrontEndPlugin<void> = {
     // Registering the widget factory
     app.docRegistry.addWidgetFactory(widgetFactory);
 
-    const tracker = new WidgetTracker<XPipeWidget>({
+    const tracker = new WidgetTracker<DocumentWidget>({
       namespace: "Xpipes Tracker"
     });
 
