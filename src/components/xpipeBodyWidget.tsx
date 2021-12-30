@@ -1255,7 +1255,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		debugger;
 
 		alert("Testing");
 	}

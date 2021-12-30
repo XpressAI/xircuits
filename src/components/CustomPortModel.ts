@@ -55,7 +55,6 @@ export  class CustomPortModel extends DefaultPortModel  {
             //console.log("Loop detected.");
             return false;
         }
-        debugger;
         port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
         delete port.getNode().getOptions().extras["tip"];
         this.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
