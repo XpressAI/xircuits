@@ -45,68 +45,6 @@ export class XpipesApplication {
 
             this.activeModel.addAll(startNode, finishedNode);
             this.diagramEngine.setModel(this.activeModel);
-        // }
-	}
-
-    customDeserializeModel(modelContext: any, diagramEngine: SRD.DiagramEngine) {
-        let tempModel = new SRD.DiagramModel();
-        let links = modelContext["layers"][0]["models"];
-        let nodes = modelContext["layers"][1]["models"];
-        let gridSize = modelContext["gridSize"];
-        let offsetX = modelContext["offsetX"];
-        let offsetY = modelContext["offsetY"];
-        let zoom = modelContext["zoom"];
-
-        tempModel.setGridSize(gridSize);
-        tempModel.setOffsetX(offsetX);
-        tempModel.setOffsetY(offsetY);
-        tempModel.setZoomLevel(zoom);
-
-        for (let nodeID in nodes) {
-
-            let node = nodes[nodeID];
-            let newNode = new CustomNodeModel({
-                id: node.id, type: node.type, name: node.name,
-                color: node.color, extras: node.extras, locked: node.locked
-            });
-            newNode.setPosition(node.x, node.y);
-
-            for (let portID in node.ports) {
-
-                let port = node.ports[portID];
-                if (port.alignment == "right") newNode.addOutPortEnhance(port.label, port.name, true, port.id);
-                if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name, true, port.id);
-
-            }
-
-            tempModel.addAll(newNode);
-            diagramEngine.setModel(tempModel);
-
-        }
-
-        for (let linkID in links) {
-
-
-            let link = links[linkID];
-
-            if (link.sourcePort && link.targetPort) {
-
-                let newLink = new DefaultLinkModel();
-
-                let sourcePort = tempModel.getNode(link.source).getPortFromID(link.sourcePort);
-                newLink.setSourcePort(sourcePort);
-
-                let targetPort = tempModel.getNode(link.target).getPortFromID(link.targetPort);
-                newLink.setTargetPort(targetPort);
-
-                tempModel.addAll(newLink);
-                diagramEngine.setModel(tempModel);
-
-            }
-
-        }
-
-        return tempModel
     }
 
 	public getActiveDiagram(): SRD.DiagramModel {
