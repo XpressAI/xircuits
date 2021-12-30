@@ -31,8 +31,6 @@ export interface BodyWidgetProps {
 	widgetId?: string;
 	serviceManager: ServiceManager;
 	saveXpipeSignal: Signal<XPipePanel, any>;
-	reloadXpipeSignal: Signal<XPipePanel, any>;
-	revertXpipeSignal: Signal<XPipePanel, any>;
 	compileXpipeSignal: Signal<XPipePanel, any>;
 	runXpipeSignal: Signal<XPipePanel, any>;
 	debugXpipeSignal: Signal<XPipePanel, any>;
@@ -88,8 +86,6 @@ export const commandIDs = {
 	revertDocManager: 'docmanager:restore-checkpoint',
 	createNewXpipe: 'Xpipe-editor:create-new',
 	saveXpipe: 'Xpipe-editor:save-node',
-	reloadXpipe: 'Xpipe-editor:reload-node',
-	revertXpipe: 'Xpipe-editor:revert-node',
 	compileXpipe: 'Xpipe-editor:compile-node',
 	runXpipe: 'Xpipe-editor:run-node',
 	debugXpipe: 'Xpipe-editor:debug-node',
@@ -120,8 +116,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	widgetId,
 	serviceManager,
 	saveXpipeSignal,
-	reloadXpipeSignal,
-	revertXpipeSignal,
 	compileXpipeSignal,
 	runXpipeSignal,
 	debugXpipeSignal,
@@ -672,46 +666,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setSaved(true);
 		onChange()
 		commands.execute(commandIDs.saveDocManager);
-	}
-
-	const handleReloadClick = () => {
-		// Only reload xpipe if it is currently in focus
-		// This must be first to avoid unnecessary complication
-		if (shell.currentWidget?.id !== widgetId) {
-			return;
-		}
-
-		commands.execute(commandIDs.reloadDocManager);
-		let model = context.model.getSharedObject();
-		if (model.id == '') {
-			console.log("No context available! Please save xpipe first.")
-		}
-		else {
-			let deserializedModel = customDeserializeModel(model, diagramEngine);
-			diagramEngine.setModel(deserializedModel);
-		}
-		forceUpdate();
-	}
-
-	const handleRevertClick = () => {
-		// Only revert xpipe if it is currently in focus
-		// This must be first to avoid unnecessary complication
-		if (shell.currentWidget?.id !== widgetId) {
-			return;
-		}
-
-		commands.execute(commandIDs.revertDocManager);
-		//todo: check behavior if user presses "cancel"
-		let model = context.model.getSharedObject();
-
-		if (model.id == '') {
-			console.log("No context available! Please save xpipe first.")
-		}
-		else {
-			let deserializedModel = customDeserializeModel(model, diagramEngine);
-			diagramEngine.setModel(deserializedModel);
-		}
-		forceUpdate();
 	}
 
 	const handleCompileClick = () => {
@@ -1390,26 +1344,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			saveXpipeSignal.disconnect(handleSaveSignal);
 		};
 	}, [saveXpipeSignal, handleSaveClick]);
-
-	useEffect(() => {
-		const handleReloadSignal = (): void => {
-			handleReloadClick();
-		};
-		reloadXpipeSignal.connect(handleReloadSignal);
-		return (): void => {
-			reloadXpipeSignal.disconnect(handleReloadSignal);
-		};
-	}, [reloadXpipeSignal, handleReloadClick]);
-
-	useEffect(() => {
-		const handleRevertSignal = (): void => {
-			handleRevertClick();
-		};
-		revertXpipeSignal.connect(handleRevertSignal);
-		return (): void => {
-			revertXpipeSignal.disconnect(handleRevertSignal);
-		};
-	}, [revertXpipeSignal, handleRevertClick]);
 
 	useEffect(() => {
 		const handleCompileSignal = (): void => {

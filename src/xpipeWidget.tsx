@@ -21,8 +21,6 @@ export class XPipePanel extends ReactWidget {
   xpipesApp: XpipesApplication;
   serviceManager: ServiceManager;
   saveXpipeSignal: Signal<this, any>;
-  reloadXpipeSignal: Signal<this, any>;
-  revertXpipeSignal: Signal<this, any>;
   compileXpipeSignal: Signal<this, any>;
   runXpipeSignal: Signal<this, any>;
   debugXpipeSignal: Signal<this, any>;
@@ -47,8 +45,6 @@ export class XPipePanel extends ReactWidget {
     this.context = options.context;
     this.serviceManager = options.serviceManager;
     this.saveXpipeSignal = options.saveXpipeSignal;
-    this.reloadXpipeSignal = options.reloadXpipeSignal;
-    this.revertXpipeSignal = options.revertXpipeSignal;
     this.compileXpipeSignal = options.compileXpipeSignal;
     this.runXpipeSignal = options.runXpipeSignal;
     this.debugXpipeSignal = options.debugXpipeSignal;
@@ -79,8 +75,6 @@ export class XPipePanel extends ReactWidget {
         widgetId={this.parent?.id}
         serviceManager={this.serviceManager}
         saveXpipeSignal={this.saveXpipeSignal}
-        reloadXpipeSignal={this.reloadXpipeSignal}
-        revertXpipeSignal={this.revertXpipeSignal}
         compileXpipeSignal={this.compileXpipeSignal}
         runXpipeSignal={this.runXpipeSignal}
         debugXpipeSignal={this.debugXpipeSignal}

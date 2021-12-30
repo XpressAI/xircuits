@@ -33,8 +33,6 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
   commands: any;
   serviceManager: ServiceManager;
   saveXpipeSignal: Signal<this, any>;
-  reloadXpipeSignal: Signal<this, any>;
-  revertXpipeSignal: Signal<this, any>;
   compileXpipeSignal: Signal<this, any>;
   runXpipeSignal: Signal<this, any>;
   debugXpipeSignal: Signal<this, any>;
@@ -58,8 +56,6 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
     this.commands = options.commands;
     this.serviceManager = options.serviceManager;
     this.saveXpipeSignal = new Signal<this, any>(this);
-    this.reloadXpipeSignal = new Signal<this, any>(this);
-    this.revertXpipeSignal = new Signal<this, any>(this);
     this.compileXpipeSignal = new Signal<this, any>(this);
     this.runXpipeSignal = new Signal<this, any>(this);
     this.debugXpipeSignal = new Signal<this, any>(this);
@@ -86,8 +82,6 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
       context: context,
       serviceManager: this.serviceManager,
       saveXpipeSignal: this.saveXpipeSignal,
-      reloadXpipeSignal: this.reloadXpipeSignal,
-      revertXpipeSignal: this.revertXpipeSignal,
       compileXpipeSignal: this.compileXpipeSignal,
       runXpipeSignal: this.runXpipeSignal,
       debugXpipeSignal: this.debugXpipeSignal,
@@ -129,7 +123,7 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
       icon: refreshIcon,
       tooltip: 'Reload Xpipes from Disk',
       onClick: (): void => {
-        this.commands.execute(commandIDs.reloadXpipe);
+        this.commands.execute(commandIDs.reloadDocManager);
       }
     });
 
@@ -140,7 +134,7 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
       icon: undoIcon,
       tooltip: 'Revert Xpipes to Checkpoint',
       onClick: (): void => {
-        this.commands.execute(commandIDs.revertXpipe);
+        this.commands.execute(commandIDs.revertDocManager);
       }
     });
 

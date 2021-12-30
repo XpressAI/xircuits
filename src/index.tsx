@@ -235,20 +235,6 @@ const xpipes: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    // Add command signal to reload xpipes
-    app.commands.addCommand(commandIDs.reloadXpipe, {
-      execute: args => {
-        widgetFactory.reloadXpipeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to revert xpipes
-    app.commands.addCommand(commandIDs.revertXpipe, {
-      execute: args => {
-        widgetFactory.revertXpipeSignal.emit(args);
-      }
-    });
-
     // Add command signal to compile xpipes
     app.commands.addCommand(commandIDs.compileXpipe, {
       execute: args => {
