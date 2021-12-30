@@ -121,10 +121,6 @@ const xpipes: JupyterFrontEndPlugin<void> = {
       });
     });
 
-    // Creating and registering the model factory for our custom DocumentModel
-    const modelFactory = new XPipeDocModelFactory();
-    app.docRegistry.addModelFactory(modelFactory);
-
     // Handle state restoration
     void restorer.restore(tracker, {
       command: commandIDs.openDocManager,
