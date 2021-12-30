@@ -25,8 +25,7 @@ import { CustomNodeModel } from './components/CustomNodeModel';
 import { XPipeDocChange, XPipeDocModel } from './xpipeModel';
 
 import { ServiceManager } from '@jupyterlab/services';
-
-import { commandIDs } from './components/xpipeBodyWidget';
+import { XpipesApplication } from './components/XpipesApp'
 
 /**
  * DocumentWidget: widget that represents the view or editor for a file type.
@@ -38,6 +37,7 @@ export class XPipePanel extends ReactWidget {
   shell: ILabShell;
   commands: any;
   context: Context;
+  xpipesApp: XpipesApplication;
   serviceManager: ServiceManager;
   saveXpipeSignal: Signal<this, any>;
   reloadXpipeSignal: Signal<this, any>;
@@ -57,14 +57,6 @@ export class XPipePanel extends ReactWidget {
   stepOutDebugSignal: Signal<this, any>;
   evaluateDebugSignal: Signal<this, any>;
   debugModeSignal: Signal<this, any>;
-
-  activeModel: SRD.DiagramModel;
-  diagramEngine: SRD.DiagramEngine;
-
-  private _clients: { [id: string]: HTMLElement };
-
-  postConstructorFlag: boolean = false;
-
 
   constructor(options: any) {
     super(options);
@@ -92,126 +84,20 @@ export class XPipePanel extends ReactWidget {
     this.stepOutDebugSignal = options.stepOutDebugSignal;
     this.evaluateDebugSignal = options.evaluateDebugSignal;
     this.debugModeSignal = options.debugModeSignal;
-
-    this.diagramEngine = SRD.default({ registerDefaultZoomCanvasAction: false, registerDefaultDeleteItemsAction: false });
-    this.activeModel = new SRD.DiagramModel();
-    this.diagramEngine.getNodeFactories().registerFactory(new CustomNodeFactory());
-    this.diagramEngine.getActionEventBus().registerAction(new ZoomCanvasAction({ inverseZoom: true }))
-    this.diagramEngine.getActionEventBus().registerAction(new CustomDeleteItemsAction());
-
-    this.diagramEngine.setModel(this.activeModel);
-
-    this.context.ready.then((value) => {
-
-      this.context.model.sharedModelChanged.connect(this._onContentChanged);
-      this.context.model.clientChanged.connect(this._onClientChanged);
-
-      const model = this.context.model.getSharedObject();
-
-      //check if model.id is empty / does not have an id
-      if (model.id != '') {
-        //this.activeModel.deserializeModel(model, this.diagramEngine);
-        let deserializedModel = this.customDeserializeModel(model, this.diagramEngine);
-        this.diagramEngine.setModel(deserializedModel);
-
-        let currentModel = this.diagramEngine.getModel().serialize();
-        this.context.model.setSerializedModel(currentModel);
-      }
-
-      else {
-        console.log("init new model!")
-        let startNode = new CustomNodeModel({ name: 'Start', color: 'rgb(255,102,102)', extras: { "type": "Start" } });
-        startNode.addOutPortEnhance('▶', 'out-0');
-        startNode.addOutPortEnhance('  ', 'parameter-out-1');
-        startNode.setPosition(100, 100);
-
-        let finishedNode = new CustomNodeModel({ name: 'Finish', color: 'rgb(255,102,102)', extras: { "type": "Finish" } });
-        finishedNode.addInPortEnhance('▶', 'in-0');
-        finishedNode.addInPortEnhance('  ', 'parameter-in-1');
-        finishedNode.setPosition(700, 100);
-
-        this.activeModel.addAll(startNode, finishedNode);
-        this.diagramEngine.setModel(this.activeModel);
-
-        let currentModel = this.diagramEngine.getModel().serialize();
-        this.context.model.setSerializedModel(currentModel);
-
-      }
-
-      this.postConstructorFlag = true;
-      this.update();
-
-    });
+    var xpipesApp = new XpipesApplication(this.context);
+    this.xpipesApp = xpipesApp;
   }
-
-  customDeserializeModel = (modelContext: any, diagramEngine: SRD.DiagramEngine) => {
-
-    let tempModel = new SRD.DiagramModel();
-    let links = modelContext["layers"][0]["models"];
-    let nodes = modelContext["layers"][1]["models"];
-
-    for (let nodeID in nodes) {
-
-      let node = nodes[nodeID];
-      let newNode = new CustomNodeModel({
-        id: node.id, type: node.type, name: node.name,
-        color: node.color, extras: node.extras, locked: node.locked
-      });
-      newNode.setPosition(node.x, node.y);
-
-      for (let portID in node.ports) {
-
-        let port = node.ports[portID];
-        if (port.alignment == "right") newNode.addOutPortEnhance(port.label, port.name, true, port.id);
-        if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name, true, port.id);
-
-      }
-
-      tempModel.addAll(newNode);
-      diagramEngine.setModel(tempModel);
-
-    }
-
-    for (let linkID in links) {
-
-
-      let link = links[linkID];
-
-      if (link.sourcePort && link.targetPort) {
-
-        let newLink = new DefaultLinkModel();
-
-        let sourcePort = tempModel.getNode(link.source).getPortFromID(link.sourcePort);
-        newLink.setSourcePort(sourcePort);
-
-        let targetPort = tempModel.getNode(link.target).getPortFromID(link.targetPort);
-        newLink.setTargetPort(targetPort);
-
-        tempModel.addAll(newLink);
-        diagramEngine.setModel(tempModel);
-
-      }
-
-    }
-
-    return tempModel
-
-  }
-
 
   render(): any {
     return (
       <BodyWidget
         context={this.context}
-        browserFactory={this.browserFactory}
+        xpipesApp={this.xpipesApp}
         app={this.app}
         shell={this.shell}
         commands={this.commands}
         widgetId={this.parent?.id}
-        activeModel={this.activeModel}
-        diagramEngine={this.diagramEngine}
         serviceManager={this.serviceManager}
-        postConstructorFlag={this.postConstructorFlag}
         saveXpipeSignal={this.saveXpipeSignal}
         reloadXpipeSignal={this.reloadXpipeSignal}
         revertXpipeSignal={this.revertXpipeSignal}

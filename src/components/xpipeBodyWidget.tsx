@@ -1,9 +1,8 @@
-import React, { FC, useState, useCallback, useEffect } from 'react';
+import React, { FC, useState, useCallback, useEffect, useRef } from 'react';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
-import { LinkModel, DefaultLinkModel } from '@projectstorm/react-diagrams';
+import { LinkModel, DiagramModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
-import * as SRD from '@projectstorm/react-diagrams';
 import { Dialog } from '@jupyterlab/apputils';
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
@@ -29,18 +28,16 @@ import 'rc-dialog/assets/bootstrap.css';
 import Draggable from 'react-draggable';
 import RcDialog from 'rc-dialog';
 import { requestAPI } from '../server/handler';
+import { XpipesApplication } from './XpipesApp';
 
 export interface BodyWidgetProps {
-	context: any;
-	browserFactory: IFileBrowserFactory;
+	context: DocumentRegistry.Context;
+	xpipesApp: XpipesApplication;
 	app: JupyterFrontEnd;
 	shell: ILabShell;
 	commands: any;
 	widgetId?: string;
-	activeModel: SRD.DiagramModel;
-	diagramEngine: SRD.DiagramEngine;
 	serviceManager: ServiceManager;
-	postConstructorFlag: boolean;
 	saveXpipeSignal: Signal<XPipePanel, any>;
 	reloadXpipeSignal: Signal<XPipePanel, any>;
 	revertXpipeSignal: Signal<XPipePanel, any>;
@@ -61,7 +58,6 @@ export interface BodyWidgetProps {
 	debugModeSignal: Signal<XPipePanel, any>;
 	customDeserializeModel;
 }
-
 
 export const Body = styled.div`
 		flex-grow: 1;
@@ -126,15 +122,12 @@ function useForceUpdate() {
 
 export const BodyWidget: FC<BodyWidgetProps> = ({
 	context,
-	browserFactory,
+	xpipesApp,
 	app,
 	shell,
 	commands,
 	widgetId,
-	activeModel,
-	diagramEngine,
 	serviceManager,
-	postConstructorFlag,
 	saveXpipeSignal,
 	reloadXpipeSignal,
 	revertXpipeSignal,
@@ -181,6 +174,72 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const xpipeLogger = new Log(app);
+	const contextRef = useRef(context);
+
+	const onChange = useCallback(
+		(): void => {
+			if (contextRef.current.isReady) {
+				let currentModel = xpipesApp.getDiagramEngine().getModel().serialize();
+				contextRef.current.model.fromString(
+					JSON.stringify(currentModel, null, 4)
+				);
+			}
+		}, []);
+
+	useEffect(() => {
+		const currentContext = contextRef.current;
+	
+		const changeHandler = (): void => {
+		  const model: any = currentContext.model.toJSON();
+			if (model != undefined) {
+				var newModel = new DiagramModel();
+				newModel.registerListener({
+					// Detect changes when node is dropped or deleted
+					nodesUpdated: () => {
+						// Add delay for links to disappear 
+						const timeout = setTimeout(() => {
+							onChange();
+						}, 10)
+						return () => clearTimeout(timeout)
+					},
+					linksUpdated: function (event) {
+						event.link.registerListener({
+							/**
+							 * sourcePortChanged
+							 * Detect changes when link is connected
+							 */
+							sourcePortChanged: e => {
+								onChange();
+							},
+							/**
+							 * targetPortChanged
+							 * Detect changes when link is connected
+							 */
+							targetPortChanged: e => {
+								onChange();
+							},
+							/**
+							 * entityRemoved
+							 * Detect changes when new link is removed
+							 */
+							entityRemoved: e => {
+								onChange();
+							}
+						});
+					}
+				});
+				newModel.deserializeModel(model, xpipesApp.getDiagramEngine())
+				xpipesApp.getDiagramEngine().setModel(newModel);
+			}
+		};
+
+		currentContext.ready.then(changeHandler);
+		currentContext.model.contentChanged.connect(changeHandler);
+	
+		return (): void => {
+		  currentContext.model.contentChanged.disconnect(changeHandler);
+		};
+	  }, []);
 
 	const getBindingIndexById = (nodeModels: any[], id: string): number | null => {
 		for (let i = 0; i < nodeModels.length; i++) {
@@ -227,7 +286,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const getAllNodesFromStartToFinish = (): NodeModel[] | null => {
-		let model = diagramEngine.getModel();
+		let model = xpipesApp.getDiagramEngine().getModel();
 		let nodeModels = model.getNodes();
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 		if (startNodeModel == null) {
@@ -259,7 +318,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	const getPythonCompiler = (): string => {
 		let component_task = componentList.map(x => x["task"]);
-		let model = diagramEngine.getModel();
+		let model = xpipesApp.getDiagramEngine().getModel();
 		let nodeModels = model.getNodes();
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 		let pythonCode = 'from argparse import ArgumentParser\n';
@@ -577,7 +636,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const checkAllNodesConnected = (): boolean | null => {
-		let nodeModels = diagramEngine.getModel().getNodes();
+		let nodeModels = xpipesApp.getDiagramEngine().getModel().getNodes();
 
 		for (let i = 0; i < nodeModels.length; i++) {
 			let inPorts = nodeModels[i]["portsIn"];
@@ -830,7 +889,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		diagramEngine.getModel().getNodes().forEach((item) => {
+		xpipesApp.getDiagramEngine().getModel().getNodes().forEach((item) => {
 			if (item.getOptions()["selected"] == true) {
 				let name = item.getOptions()["name"];
 
@@ -1239,10 +1298,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	useEffect(() => {
 		if (initialize) {
-			try {
-				let allNodes = diagramEngine.getModel().getNodes();
-				let nodesCount = allNodes.length;
-				let nodeProperty = [];
+			let allNodes = xpipesApp.getDiagramEngine().getModel().getNodes();
+			let nodesCount = allNodes.length;
+			let nodeProperty = [];
 
 				for (let i = 0; i < nodesCount; i++) {
 					let nodeName = allNodes[i].getOptions()["name"];
@@ -1812,19 +1870,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						// note:  can not use the same port name in the same node,or the same name port can not link to other ports
 						// you can use shift + click and then use delete to delete link
 						if (node != null) {
-							let point = diagramEngine.getRelativeMousePoint(event);
+							let point = xpipesApp.getDiagramEngine().getRelativeMousePoint(event);
 							node.setPosition(point);
-							diagramEngine.getModel().addNode(node);
-							node.registerListener({
-								entityRemoved: () => {
-									setInitialize(false);
-									setSaved(false);
-									setCompiled(false);
-								}
-							});
+							xpipesApp.getDiagramEngine().getModel().addNode(node);
 							console.log("Updating doc context due to drop event!")
-							let currentModel = diagramEngine.getModel().serialize();
-							context.model.setSerializedModel(currentModel);
 							setInitialize(false);
 							setSaved(false);
 							setCompiled(false);
@@ -1849,7 +1898,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					}}>
 
 					<DemoCanvasWidget>
-						<CanvasWidget engine={diagramEngine} />
+						<CanvasWidget engine={xpipesApp.getDiagramEngine()} />
 					</DemoCanvasWidget>
 				</Layer>
 			</Content>
