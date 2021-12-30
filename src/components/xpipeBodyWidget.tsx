@@ -670,8 +670,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		setInitialize(true);
 		setSaved(true);
-		let currentModel = diagramEngine.getModel().serialize();
-		context.model.setSerializedModel(currentModel);
+		onChange()
 		commands.execute(commandIDs.saveDocManager);
 	}
 
@@ -749,11 +748,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	const saveAndCompileAndRun = async (compileMode: boolean) => {
 		// save
-		setInitialize(true);
-		setSaved(true);
-		let currentModel = diagramEngine.getModel().serialize();
-		context.model.setSerializedModel(currentModel);
-		commands.execute(commandIDs.saveDocManager);
+		handleSaveClick();
 
 		// compile
 		let allNodesConnected = checkAllNodesConnected();
