@@ -138,12 +138,20 @@ const xpipes: JupyterFrontEndPlugin<void> = {
             type: 'file',
             ext: '.xpipes'
           })
-          .then(model =>
-            app.commands.execute(commandIDs.openDocManager, {
-              path: model.path,
-              factory: FACTORY
-            })
-          );
+          .then(async model => {
+            const newWidget = await app.commands.execute(
+              commandIDs.openDocManager,
+              {
+                path: model.path,
+                factory: FACTORY
+              }
+            );
+            newWidget.context.ready.then(() => {
+              app.commands.execute(commandIDs.saveXpipe, {
+                path: model.path
+              });
+            });
+          });
       }
     });
 
