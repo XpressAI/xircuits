@@ -1,9 +1,27 @@
 from xai_components.base import InArg, OutArg, InCompArg, Component
 
+
+class HelloComponent(Component):
+
+    def __init__(self):
+
+        self.done = False
+
+    def execute(self) -> None:
+        
+        #If the import is only exclusive to 1 component, it is a good practice to import inside execute()
+        import os 
+
+        creator_name = os.getlogin()
+        print("Hello, " + creator_name)
+
+        self.done = True
+
 class HelloHyperparameter(Component):
     input_str: InArg[str]
 
     def __init__(self):
+
         self.done = False
         self.input_str = InArg.empty()
 
@@ -13,7 +31,10 @@ class HelloHyperparameter(Component):
         self.done = True
 
 class CompulsoryHyperparameter(Component):
+
     input_str: InArg[str]
+
+    #if your component requires a certain parameter to be supplied, use In-Comp(ulsory)-Argument ports.
     comp_str: InCompArg[str]
     comp_int: InCompArg[int]
 
@@ -30,9 +51,11 @@ class CompulsoryHyperparameter(Component):
         print("Hello, " + str(input_str))
         print("I'm " + str(comp_str))
         print("Me " + str(comp_int))
+
         self.done = True
 
 class HelloListTupleDict(Component):
+
     input_list: InArg[list]
     input_tuple: InArg[tuple]
     input_dict: InArg[dict]
@@ -44,6 +67,8 @@ class HelloListTupleDict(Component):
         self.input_dict = InArg.empty()
 
     def execute(self) -> None:
+
+        #if you would like ports to have default values if user does not provide, try this way.
         input_list = self.input_list.value if self.input_list.value else ""
         input_tuple = self.input_tuple.value if self.input_tuple.value else ""
         input_dict = self.input_dict.value if self.input_dict.value else ""
