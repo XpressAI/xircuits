@@ -1,10 +1,8 @@
-Welcome to Xpipes! Thank you for making a pull request. Please ensure that your pull request follows the template. 
+Welcome to Xpipes! Thank you for making a pull request. Please ensure that your pull request follows the template.
 
 # Description
 
 Please include a summary of the change and which issue is fixed. Please also include relevant motivation and context. List any dependencies that are required for this change.
-
-Fixes # (issue)
 
 ## Pull Request Type
 
@@ -13,13 +11,14 @@ Please delete options that are not relevant.
 - [ ] Xpipes Core (Jupyterlab Related changes)
 - [ ] Xpipes Canvas (Custom RD Related changes)
 - [ ] Xpipes Component Library
+- [ ] Documentation
 - [ ] Others (Please Specify)
 
 ### Component List
 
 Please delete this section if not a Component Library pull request
 
-- [ ] Component Library Name > Class Component Name: short description
+- [ ] Component Library Name > Class Component Name: short description of component / changes
 
 ## Type of Change
 
