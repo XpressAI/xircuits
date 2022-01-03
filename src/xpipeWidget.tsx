@@ -161,6 +161,22 @@ export class XPipePanel extends ReactWidget {
     });
   }
 
+  handleEvent(event: Event): void {
+    if(event.type === 'mouseup'){
+      // force focus on the editor in order stop key event propagation (e.g. "Delete" key) into unintended
+      // parts of jupyter lab.
+      this.node.focus();
+    }
+  }
+
+  protected onAfterAttach(msg) {
+    this.node.addEventListener('mouseup', this, true);
+  }
+
+  protected onBeforeDetach() {
+    this.node.removeEventListener('mouseup', this, true);
+  }
+
   customDeserializeModel = (modelContext: any, diagramEngine: SRD.DiagramEngine) => {
 
     let tempModel = new SRD.DiagramModel();
