@@ -166,15 +166,23 @@ export class XPipePanel extends ReactWidget {
       // force focus on the editor in order stop key event propagation (e.g. "Delete" key) into unintended
       // parts of jupyter lab.
       this.node.focus();
+    }else if(event.type === 'blur'){
+      // Unselect any selected nodes when the editor loses focus
+      const deactivate = x => x.setSelected(false);
+      const model = this.diagramEngine.getModel();
+      model.getNodes().forEach(deactivate);
+      model.getLinks().forEach(deactivate);
     }
   }
 
   protected onAfterAttach(msg) {
     this.node.addEventListener('mouseup', this, true);
+    this.node.addEventListener('blur', this, true);
   }
 
   protected onBeforeDetach() {
     this.node.removeEventListener('mouseup', this, true);
+    this.node.removeEventListener('blur', this, true);
   }
 
   customDeserializeModel = (modelContext: any, diagramEngine: SRD.DiagramEngine) => {
