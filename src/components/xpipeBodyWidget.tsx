@@ -1214,9 +1214,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	useEffect(() => {
 		if (initialize) {
-			let allNodes = xpipesApp.getDiagramEngine().getModel().getNodes();
-			let nodesCount = allNodes.length;
-			let nodeProperty = [];
+
+			try {
+				let allNodes = xpipesApp.getDiagramEngine().getModel().getNodes();
+				let nodesCount = allNodes.length;
+				let nodeProperty = [];
 
 				for (let i = 0; i < nodesCount; i++) {
 					let nodeName = allNodes[i].getOptions()["name"];
