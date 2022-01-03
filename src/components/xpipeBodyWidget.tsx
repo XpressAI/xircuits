@@ -702,7 +702,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	const saveAndCompileAndRun = async (compileMode: boolean) => {
 		// save
-		handleSaveClick();
+		await handleSaveClick();
 
 		// compile
 		let allNodesConnected = checkAllNodesConnected();
@@ -762,7 +762,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		await saveAndCompileAndRun(false);
+	 	saveAndCompileAndRun(false);
 	}
 
 	const handleDebugClick = async () => {
@@ -774,7 +774,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		resetColorCodeOnStart(true);
 
-		await saveAndCompileAndRun(true);
+		saveAndCompileAndRun(true);
 
 		// let allNodes = diagramEngine.getModel().getNodes();
 		// allNodes[1].getOptions().extras["imageGalleryItems"] = "xxx";
