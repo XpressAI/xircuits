@@ -13,8 +13,7 @@ DEFAULT_COMPONENTS_PATHS = [
     os.path.join(os.path.dirname(__file__), "..", "..", "xai_components"),
     "xai_components",
     os.path.expanduser("~/xai_components"),
-    os.environ.get("XPIPES_COMPONENTS_DIR"),
-    get_config().get("DEV", "BASE_PATH")
+    os.environ.get("XPIPES_COMPONENTS_DIR")
 ]
 
 # Get the default components from here for now
@@ -93,7 +92,7 @@ class ComponentsRouteHandler(APIHandler):
             })
 
         visited_directories = []
-        for directory_string in DEFAULT_COMPONENTS_PATHS:
+        for directory_string in self.get_component_directories():
             if directory_string is not None:
                 directory = pathlib.Path(directory_string).absolute()
                 if directory.exists() \
@@ -109,6 +108,11 @@ class ComponentsRouteHandler(APIHandler):
             c["color"] = COLOR_PALETTE[idx % len(COLOR_PALETTE)]
 
         self.finish(json.dumps(components))
+        
+    def get_component_directories(self):
+        paths = list(DEFAULT_COMPONENTS_PATHS)
+        paths.append(get_config().get("DEV", "BASE_PATH"))
+        return paths
 
     def extract_components(self, file_path, base_dir):
         parse_tree = ast.parse(file_path.read_text(), file_path)
