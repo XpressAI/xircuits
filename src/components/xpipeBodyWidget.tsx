@@ -1337,145 +1337,34 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return commandStr;
 	};
 
-	useEffect(() => {
-		const handleSaveSignal = (): void => {
-			handleSaveClick();
-		};
-		saveXpipeSignal.connect(handleSaveSignal);
-		return (): void => {
-			saveXpipeSignal.disconnect(handleSaveSignal);
-		};
-	}, [saveXpipeSignal, handleSaveClick]);
 
-	useEffect(() => {
-		const handleCompileSignal = (): void => {
-			handleCompileClick();
-		};
-		compileXpipeSignal.connect(handleCompileSignal);
-		return (): void => {
-			compileXpipeSignal.disconnect(handleCompileSignal);
-		};
-	}, [compileXpipeSignal, handleCompileClick]);
+	const connectSignal = ([signal, handler]) => {
+		useEffect(() => {
+			signal.connect(handler);
+			return () => {
+				signal.disconnect(handler);
+			}
+		}, [signal, handler]);
+	}
 
-	useEffect(() => {
-		const handleRunSignal = (): void => {
-			handleRunClick();
-		};
-		runXpipeSignal.connect(handleRunSignal);
-		return (): void => {
-			runXpipeSignal.disconnect(handleRunSignal);
-		};
-	}, [runXpipeSignal, handleRunClick]);
+	const signalConnections = [
+		[saveXpipeSignal, handleSaveClick],
+		[compileXpipeSignal, handleCompileClick],
+		[runXpipeSignal, handleRunClick],
+		[debugXpipeSignal, handleDebugClick],
+		[lockNodeSignal, handleLockClick],
+		[breakpointXpipeSignal, handleToggleBreakpoint],
+		[testXpipeSignal, handleTestClick],
+		[continueDebugSignal, handleToggleContinueDebug],
+		[nextNodeDebugSignal, handleToggleNextNode],
+		[stepOverDebugSignal, handleToggleStepOverDebug],
+		[terminateDebugSignal, handleToggleTerminateDebug],
+		[stepInDebugSignal, handleToggleStepInDebug],
+		[stepOutDebugSignal, handleToggleStepOutDebug],
+		[evaluateDebugSignal, handleToggleEvaluateDebug]
+	];
 
-	useEffect(() => {
-		const handleDebugSignal = (): void => {
-			handleDebugClick();
-		};
-		debugXpipeSignal.connect(handleDebugSignal);
-		return (): void => {
-			debugXpipeSignal.disconnect(handleDebugSignal);
-		};
-	}, [debugXpipeSignal, handleDebugClick]);
-
-	useEffect(() => {
-		const handleLockSignal = (): void => {
-			handleLockClick();
-		};
-		lockNodeSignal.connect(handleLockSignal);
-		return (): void => {
-			lockNodeSignal.disconnect(handleLockSignal);
-		};
-	}, [lockNodeSignal, handleLockClick]);
-
-	useEffect(() => {
-		const handleBreakpointSignal = (): void => {
-			handleToggleBreakpoint();
-		};
-		breakpointXpipeSignal.connect(handleBreakpointSignal);
-		return (): void => {
-			breakpointXpipeSignal.disconnect(handleBreakpointSignal);
-		};
-	}, [breakpointXpipeSignal, handleToggleBreakpoint]);
-
-	useEffect(() => {
-		const handleTestSignal = (): void => {
-			handleTestClick();
-		};
-		testXpipeSignal.connect(handleTestSignal);
-		return (): void => {
-			testXpipeSignal.disconnect(handleTestSignal);
-		};
-	}, [testXpipeSignal, handleTestClick]);
-
-	useEffect(() => {
-		const handleContinueDebugSignal = (): void => {
-			handleToggleContinueDebug();
-		};
-		continueDebugSignal.connect(handleContinueDebugSignal);
-		return (): void => {
-			continueDebugSignal.disconnect(handleContinueDebugSignal);
-		};
-	}, [continueDebugSignal, handleToggleContinueDebug]);
-
-	useEffect(() => {
-		const handleNextNodeSignal = (): void => {
-			handleToggleNextNode();
-		};
-		nextNodeDebugSignal.connect(handleNextNodeSignal);
-		return (): void => {
-			nextNodeDebugSignal.disconnect(handleNextNodeSignal);
-		};
-	}, [nextNodeDebugSignal, handleToggleNextNode]);
-
-	useEffect(() => {
-		const handleStepOverSignal = (): void => {
-			handleToggleStepOverDebug();
-		};
-		stepOverDebugSignal.connect(handleStepOverSignal);
-		return (): void => {
-			stepOverDebugSignal.disconnect(handleStepOverSignal);
-		};
-	}, [stepOverDebugSignal, handleToggleStepOverDebug]);
-
-	useEffect(() => {
-		const handleTerminateSignal = (): void => {
-			handleToggleTerminateDebug();
-		};
-		terminateDebugSignal.connect(handleTerminateSignal);
-		return (): void => {
-			terminateDebugSignal.disconnect(handleTerminateSignal);
-		};
-	}, [terminateDebugSignal, handleToggleTerminateDebug]);
-
-	useEffect(() => {
-		const handleStepInSignal = (): void => {
-			handleToggleStepInDebug();
-		};
-		stepInDebugSignal.connect(handleStepInSignal);
-		return (): void => {
-			stepInDebugSignal.disconnect(handleStepInSignal);
-		};
-	}, [stepInDebugSignal, handleToggleStepInDebug]);
-
-	useEffect(() => {
-		const handleStepOutSignal = (): void => {
-			handleToggleStepOutDebug();
-		};
-		stepOutDebugSignal.connect(handleStepOutSignal);
-		return (): void => {
-			stepOutDebugSignal.disconnect(handleStepOutSignal);
-		};
-	}, [stepOutDebugSignal, handleToggleStepOutDebug]);
-
-	useEffect(() => {
-		const handleEvaluateSignal = (): void => {
-			handleToggleEvaluateDebug();
-		};
-		evaluateDebugSignal.connect(handleEvaluateSignal);
-		return (): void => {
-			evaluateDebugSignal.disconnect(handleEvaluateSignal);
-		};
-	}, [evaluateDebugSignal, handleToggleEvaluateDebug]);
+	signalConnections.forEach(connectSignal);
 
 	const fetchComponentList = async () => {
 		const base_path = await getConfig("BASE_PATH");
