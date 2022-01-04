@@ -3,7 +3,7 @@ import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
 import { LinkModel, DiagramModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
-import { Dialog } from '@jupyterlab/apputils';
+import { Dialog, showDialog } from '@jupyterlab/apputils';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
 import {
@@ -702,7 +702,22 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const saveAndCompileAndRun = async (compileMode: boolean) => {
-		// save
+
+		//This is to avoid running xpipes while in dirty state
+		if (contextRef.current.model.dirty) {
+			await showDialog({
+				title:
+					'This xpipes contains unsaved changes.',
+				body: 
+					'Please save the xpipes before running.',
+				buttons: [
+					Dialog.okButton()
+				]
+			});
+			return
+		}
+
+		//Save the xpipes
 		await handleSaveClick();
 
 		// compile
