@@ -72,7 +72,7 @@ export class XPipePanel extends ReactWidget {
     }else if(event.type === 'blur'){
       // Unselect any selected nodes when the editor loses focus
       const deactivate = x => x.setSelected(false);
-      const model = this.diagramEngine.getModel();
+      const model = this.xpipesApp.getDiagramEngine().getModel();
       model.getNodes().forEach(deactivate);
       model.getLinks().forEach(deactivate);
     }
