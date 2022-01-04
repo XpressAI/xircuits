@@ -2,28 +2,20 @@ Welcome to Xpipes! Thank you for making a pull request. Please ensure that your 
 
 # Description
 
-Please include a summary of the change and which issue is fixed. Please also include relevant motivation and context. List any dependencies that are required for this change.
+Please include a summary which includes relevant motivation and context. You may also describe the code changes. List any dependencies that are required for this change.
 
-Fixes # (issue)
+## References
+
+If applicable, note issue numbers this pull request addresses. You can also note any other pull requests that address this issue and how this pull request is different.
 
 ## Pull Request Type
-
-Please delete options that are not relevant.
 
 - [ ] Xpipes Core (Jupyterlab Related changes)
 - [ ] Xpipes Canvas (Custom RD Related changes)
 - [ ] Xpipes Component Library
 - [ ] Others (Please Specify)
 
-### Component List
-
-Please delete this section if not a Component Library pull request
-
-- [ ] Component Library Name > Class Component Name: short description
-
 ## Type of Change
-
-Please delete options that are not relevant.
 
 - [ ] New feature (non-breaking change which adds functionality)
 - [ ] Bug fix (non-breaking change which fixes an issue)
@@ -32,10 +24,13 @@ Please delete options that are not relevant.
 
 # Tests
 
-Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce. Please also list any relevant details for your test configuration
+Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce. Please also list any relevant details for your test configuration.
 
-- [ ] Test A
-- [ ] Test B
+1. Test A
+
+    1. First step
+    2. Second step
+    3. ...
 
 
 ## Tested on?
