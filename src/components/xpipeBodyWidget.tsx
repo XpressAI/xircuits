@@ -167,6 +167,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				contextRef.current.model.fromString(
 					JSON.stringify(currentModel, null, 4)
 				);
+				setInitialize(false);
+				setSaved(false);
 			}
 		}, []);
 
@@ -661,10 +663,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-
+		onChange();
 		setInitialize(true);
 		setSaved(true);
-		onChange()
 		commands.execute(commandIDs.saveDocManager);
 	}
 
