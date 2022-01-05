@@ -705,20 +705,23 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		//This is to avoid running xpipes while in dirty state
 		if (contextRef.current.model.dirty) {
-			await showDialog({
+			const dialogResult = await showDialog({
 				title:
 					'This xpipes contains unsaved changes.',
-				body: 
-					'Please save the xpipes before running.',
+				body:
+					'To run the xpipes the changes need to be saved.',
 				buttons: [
-					Dialog.okButton()
+					Dialog.cancelButton(),
+					Dialog.okButton({ label: 'Save and Run' })
 				]
 			});
-			return
+			if (dialogResult.button && dialogResult.button.accept === true) {
+				await handleSaveClick();
+			} else {
+				// Don't proceed if cancel button pressed
+				return;
+			}
 		}
-
-		//Save the xpipes
-		await handleSaveClick();
 
 		// compile
 		let allNodesConnected = checkAllNodesConnected();
