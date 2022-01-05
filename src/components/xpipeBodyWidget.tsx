@@ -1,22 +1,15 @@
-import React, { FC, useState, useCallback, useEffect } from 'react';
+import React, { FC, useState, useCallback, useEffect, useRef } from 'react';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
-import { LinkModel, DefaultLinkModel } from '@projectstorm/react-diagrams';
+import { LinkModel, DiagramModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
-import * as SRD from '@projectstorm/react-diagrams';
-import { Dialog } from '@jupyterlab/apputils';
-import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
+import { Dialog, showDialog } from '@jupyterlab/apputils';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
 import {
-	DocumentRegistry,
-	ABCWidgetFactory,
-	DocumentWidget,
-	Context
+	DocumentRegistry
 } from '@jupyterlab/docregistry';
-
 import styled from '@emotion/styled';
-
 import { CustomNodeModel } from "./CustomNodeModel";
 import { XPipePanel } from '../xpipeWidget';
 import { Log } from '../log/LogPlugin';
@@ -26,24 +19,18 @@ import { formDialogWidget } from '../dialog/formDialogwidget';
 import { showFormDialog } from '../dialog/FormDialog';
 import { RunDialog } from '../dialog/RunDialog';
 import 'rc-dialog/assets/bootstrap.css';
-import Draggable from 'react-draggable';
-import RcDialog from 'rc-dialog';
 import { requestAPI } from '../server/handler';
+import { XpipesApplication } from './XpipesApp';
 
 export interface BodyWidgetProps {
-	context: any;
-	browserFactory: IFileBrowserFactory;
+	context: DocumentRegistry.Context;
+	xpipesApp: XpipesApplication;
 	app: JupyterFrontEnd;
 	shell: ILabShell;
 	commands: any;
 	widgetId?: string;
-	activeModel: SRD.DiagramModel;
-	diagramEngine: SRD.DiagramEngine;
 	serviceManager: ServiceManager;
-	postConstructorFlag: boolean;
 	saveXpipeSignal: Signal<XPipePanel, any>;
-	reloadXpipeSignal: Signal<XPipePanel, any>;
-	revertXpipeSignal: Signal<XPipePanel, any>;
 	compileXpipeSignal: Signal<XPipePanel, any>;
 	runXpipeSignal: Signal<XPipePanel, any>;
 	debugXpipeSignal: Signal<XPipePanel, any>;
@@ -59,9 +46,7 @@ export interface BodyWidgetProps {
 	stepOutDebugSignal: Signal<XPipePanel, any>;
 	evaluateDebugSignal: Signal<XPipePanel, any>;
 	debugModeSignal: Signal<XPipePanel, any>;
-	customDeserializeModel;
 }
-
 
 export const Body = styled.div`
 		flex-grow: 1;
@@ -101,8 +86,6 @@ export const commandIDs = {
 	revertDocManager: 'docmanager:restore-checkpoint',
 	createNewXpipe: 'Xpipe-editor:create-new',
 	saveXpipe: 'Xpipe-editor:save-node',
-	reloadXpipe: 'Xpipe-editor:reload-node',
-	revertXpipe: 'Xpipe-editor:revert-node',
 	compileXpipe: 'Xpipe-editor:compile-node',
 	runXpipe: 'Xpipe-editor:run-node',
 	debugXpipe: 'Xpipe-editor:debug-node',
@@ -126,18 +109,13 @@ function useForceUpdate() {
 
 export const BodyWidget: FC<BodyWidgetProps> = ({
 	context,
-	browserFactory,
+	xpipesApp,
 	app,
 	shell,
 	commands,
 	widgetId,
-	activeModel,
-	diagramEngine,
 	serviceManager,
-	postConstructorFlag,
 	saveXpipeSignal,
-	reloadXpipeSignal,
-	revertXpipeSignal,
 	compileXpipeSignal,
 	runXpipeSignal,
 	debugXpipeSignal,
@@ -152,8 +130,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	stepInDebugSignal,
 	stepOutDebugSignal,
 	evaluateDebugSignal,
-	debugModeSignal,
-	customDeserializeModel
+	debugModeSignal
 }) => {
 
 	const [prevState, updateState] = useState(0);
@@ -181,6 +158,74 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const xpipeLogger = new Log(app);
+	const contextRef = useRef(context);
+
+	const onChange = useCallback(
+		(): void => {
+			if (contextRef.current.isReady) {
+				let currentModel = xpipesApp.getDiagramEngine().getModel().serialize();
+				contextRef.current.model.fromString(
+					JSON.stringify(currentModel, null, 4)
+				);
+				setInitialize(false);
+				setSaved(false);
+			}
+		}, []);
+
+	useEffect(() => {
+		const currentContext = contextRef.current;
+	
+		const changeHandler = (): void => {
+		  const model: any = currentContext.model.toJSON();
+			if (model != undefined) {
+				var newModel = new DiagramModel();
+				newModel.registerListener({
+					// Detect changes when node is dropped or deleted
+					nodesUpdated: () => {
+						// Add delay for links to disappear 
+						const timeout = setTimeout(() => {
+							onChange();
+						}, 10)
+						return () => clearTimeout(timeout)
+					},
+					linksUpdated: function (event) {
+						event.link.registerListener({
+							/**
+							 * sourcePortChanged
+							 * Detect changes when link is connected
+							 */
+							sourcePortChanged: e => {
+								onChange();
+							},
+							/**
+							 * targetPortChanged
+							 * Detect changes when link is connected
+							 */
+							targetPortChanged: e => {
+								onChange();
+							},
+							/**
+							 * entityRemoved
+							 * Detect changes when new link is removed
+							 */
+							entityRemoved: e => {
+								onChange();
+							}
+						});
+					}
+				});
+				newModel.deserializeModel(model, xpipesApp.getDiagramEngine())
+				xpipesApp.getDiagramEngine().setModel(newModel);
+			}
+		};
+
+		currentContext.ready.then(changeHandler);
+		currentContext.model.contentChanged.connect(changeHandler);
+	
+		return (): void => {
+		  currentContext.model.contentChanged.disconnect(changeHandler);
+		};
+	  }, []);
 
 	const getBindingIndexById = (nodeModels: any[], id: string): number | null => {
 		for (let i = 0; i < nodeModels.length; i++) {
@@ -227,7 +272,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const getAllNodesFromStartToFinish = (): NodeModel[] | null => {
-		let model = diagramEngine.getModel();
+		let model = xpipesApp.getDiagramEngine().getModel();
 		let nodeModels = model.getNodes();
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 		if (startNodeModel == null) {
@@ -259,7 +304,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	const getPythonCompiler = (): string => {
 		let component_task = componentList.map(x => x["task"]);
-		let model = diagramEngine.getModel();
+		let model = xpipesApp.getDiagramEngine().getModel();
 		let nodeModels = model.getNodes();
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 		let pythonCode = 'from argparse import ArgumentParser\n';
@@ -577,7 +622,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const checkAllNodesConnected = (): boolean | null => {
-		let nodeModels = diagramEngine.getModel().getNodes();
+		let nodeModels = xpipesApp.getDiagramEngine().getModel().getNodes();
 
 		for (let i = 0; i < nodeModels.length; i++) {
 			let inPorts = nodeModels[i]["portsIn"];
@@ -618,52 +663,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-
+		onChange();
 		setInitialize(true);
 		setSaved(true);
-		let currentModel = diagramEngine.getModel().serialize();
-		context.model.setSerializedModel(currentModel);
 		commands.execute(commandIDs.saveDocManager);
-	}
-
-	const handleReloadClick = () => {
-		// Only reload xpipe if it is currently in focus
-		// This must be first to avoid unnecessary complication
-		if (shell.currentWidget?.id !== widgetId) {
-			return;
-		}
-
-		commands.execute(commandIDs.reloadDocManager);
-		let model = context.model.getSharedObject();
-		if (model.id == '') {
-			console.log("No context available! Please save xpipe first.")
-		}
-		else {
-			let deserializedModel = customDeserializeModel(model, diagramEngine);
-			diagramEngine.setModel(deserializedModel);
-		}
-		forceUpdate();
-	}
-
-	const handleRevertClick = () => {
-		// Only revert xpipe if it is currently in focus
-		// This must be first to avoid unnecessary complication
-		if (shell.currentWidget?.id !== widgetId) {
-			return;
-		}
-
-		commands.execute(commandIDs.revertDocManager);
-		//todo: check behavior if user presses "cancel"
-		let model = context.model.getSharedObject();
-
-		if (model.id == '') {
-			console.log("No context available! Please save xpipe first.")
-		}
-		else {
-			let deserializedModel = customDeserializeModel(model, diagramEngine);
-			diagramEngine.setModel(deserializedModel);
-		}
-		forceUpdate();
 	}
 
 	const handleCompileClick = () => {
@@ -698,35 +701,27 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		handleCompileClick();
 	}
 
-	const saveAndCompile = () => {
-		// save
-		setInitialize(true);
-		setSaved(true);
-		let currentModel = diagramEngine.getModel().serialize();
-		context.model.setSerializedModel(currentModel);
-		commands.execute(commandIDs.saveDocManager);
-
-		// compile
-		let allNodesConnected = checkAllNodesConnected();
-
-		if (!allNodesConnected) {
-			alert("Please connect all the nodes before debugging.");
-			return;
-		}
-
-		let pythonCode = getPythonCompiler();
-		let showOutput = false;
-		setCompiled(true);
-		commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
-	}
-
 	const saveAndCompileAndRun = async (compileMode: boolean) => {
-		// save
-		setInitialize(true);
-		setSaved(true);
-		let currentModel = diagramEngine.getModel().serialize();
-		context.model.setSerializedModel(currentModel);
-		commands.execute(commandIDs.saveDocManager);
+
+		//This is to avoid running xpipes while in dirty state
+		if (contextRef.current.model.dirty) {
+			const dialogResult = await showDialog({
+				title:
+					'This xpipes contains unsaved changes.',
+				body:
+					'To run the xpipes the changes need to be saved.',
+				buttons: [
+					Dialog.cancelButton(),
+					Dialog.okButton({ label: 'Save and Run' })
+				]
+			});
+			if (dialogResult.button && dialogResult.button.accept === true) {
+				await handleSaveClick();
+			} else {
+				// Don't proceed if cancel button pressed
+				return;
+			}
+		}
 
 		// compile
 		let allNodesConnected = checkAllNodesConnected();
@@ -786,7 +781,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		await saveAndCompileAndRun(false);
+	 	saveAndCompileAndRun(false);
 	}
 
 	const handleDebugClick = async () => {
@@ -798,7 +793,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		resetColorCodeOnStart(true);
 
-		await saveAndCompileAndRun(true);
+		saveAndCompileAndRun(true);
 
 		// let allNodes = diagramEngine.getModel().getNodes();
 		// allNodes[1].getOptions().extras["imageGalleryItems"] = "xxx";
@@ -830,7 +825,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		diagramEngine.getModel().getNodes().forEach((item) => {
+		xpipesApp.getDiagramEngine().getModel().getNodes().forEach((item) => {
 			if (item.getOptions()["selected"] == true) {
 				let name = item.getOptions()["name"];
 
@@ -1228,7 +1223,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		debugger;
 
 		alert("Testing");
 	}
@@ -1239,8 +1233,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	useEffect(() => {
 		if (initialize) {
+
 			try {
-				let allNodes = diagramEngine.getModel().getNodes();
+				let allNodes = xpipesApp.getDiagramEngine().getModel().getNodes();
 				let nodesCount = allNodes.length;
 				let nodeProperty = [];
 
@@ -1361,165 +1356,34 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return commandStr;
 	};
 
-	useEffect(() => {
-		const handleSaveSignal = (): void => {
-			handleSaveClick();
-		};
-		saveXpipeSignal.connect(handleSaveSignal);
-		return (): void => {
-			saveXpipeSignal.disconnect(handleSaveSignal);
-		};
-	}, [saveXpipeSignal, handleSaveClick]);
 
-	useEffect(() => {
-		const handleReloadSignal = (): void => {
-			handleReloadClick();
-		};
-		reloadXpipeSignal.connect(handleReloadSignal);
-		return (): void => {
-			reloadXpipeSignal.disconnect(handleReloadSignal);
-		};
-	}, [reloadXpipeSignal, handleReloadClick]);
+	const connectSignal = ([signal, handler]) => {
+		useEffect(() => {
+			signal.connect(handler);
+			return () => {
+				signal.disconnect(handler);
+			}
+		}, [signal, handler]);
+	}
 
-	useEffect(() => {
-		const handleRevertSignal = (): void => {
-			handleRevertClick();
-		};
-		revertXpipeSignal.connect(handleRevertSignal);
-		return (): void => {
-			revertXpipeSignal.disconnect(handleRevertSignal);
-		};
-	}, [revertXpipeSignal, handleRevertClick]);
+	const signalConnections = [
+		[saveXpipeSignal, handleSaveClick],
+		[compileXpipeSignal, handleCompileClick],
+		[runXpipeSignal, handleRunClick],
+		[debugXpipeSignal, handleDebugClick],
+		[lockNodeSignal, handleLockClick],
+		[breakpointXpipeSignal, handleToggleBreakpoint],
+		[testXpipeSignal, handleTestClick],
+		[continueDebugSignal, handleToggleContinueDebug],
+		[nextNodeDebugSignal, handleToggleNextNode],
+		[stepOverDebugSignal, handleToggleStepOverDebug],
+		[terminateDebugSignal, handleToggleTerminateDebug],
+		[stepInDebugSignal, handleToggleStepInDebug],
+		[stepOutDebugSignal, handleToggleStepOutDebug],
+		[evaluateDebugSignal, handleToggleEvaluateDebug]
+	];
 
-	useEffect(() => {
-		const handleCompileSignal = (): void => {
-			handleCompileClick();
-		};
-		compileXpipeSignal.connect(handleCompileSignal);
-		return (): void => {
-			compileXpipeSignal.disconnect(handleCompileSignal);
-		};
-	}, [compileXpipeSignal, handleCompileClick]);
-
-	useEffect(() => {
-		const handleRunSignal = (): void => {
-			handleRunClick();
-		};
-		runXpipeSignal.connect(handleRunSignal);
-		return (): void => {
-			runXpipeSignal.disconnect(handleRunSignal);
-		};
-	}, [runXpipeSignal, handleRunClick]);
-
-	useEffect(() => {
-		const handleDebugSignal = (): void => {
-			handleDebugClick();
-		};
-		debugXpipeSignal.connect(handleDebugSignal);
-		return (): void => {
-			debugXpipeSignal.disconnect(handleDebugSignal);
-		};
-	}, [debugXpipeSignal, handleDebugClick]);
-
-	useEffect(() => {
-		const handleLockSignal = (): void => {
-			handleLockClick();
-		};
-		lockNodeSignal.connect(handleLockSignal);
-		return (): void => {
-			lockNodeSignal.disconnect(handleLockSignal);
-		};
-	}, [lockNodeSignal, handleLockClick]);
-
-	useEffect(() => {
-		const handleBreakpointSignal = (): void => {
-			handleToggleBreakpoint();
-		};
-		breakpointXpipeSignal.connect(handleBreakpointSignal);
-		return (): void => {
-			breakpointXpipeSignal.disconnect(handleBreakpointSignal);
-		};
-	}, [breakpointXpipeSignal, handleToggleBreakpoint]);
-
-	useEffect(() => {
-		const handleTestSignal = (): void => {
-			handleTestClick();
-		};
-		testXpipeSignal.connect(handleTestSignal);
-		return (): void => {
-			testXpipeSignal.disconnect(handleTestSignal);
-		};
-	}, [testXpipeSignal, handleTestClick]);
-
-	useEffect(() => {
-		const handleContinueDebugSignal = (): void => {
-			handleToggleContinueDebug();
-		};
-		continueDebugSignal.connect(handleContinueDebugSignal);
-		return (): void => {
-			continueDebugSignal.disconnect(handleContinueDebugSignal);
-		};
-	}, [continueDebugSignal, handleToggleContinueDebug]);
-
-	useEffect(() => {
-		const handleNextNodeSignal = (): void => {
-			handleToggleNextNode();
-		};
-		nextNodeDebugSignal.connect(handleNextNodeSignal);
-		return (): void => {
-			nextNodeDebugSignal.disconnect(handleNextNodeSignal);
-		};
-	}, [nextNodeDebugSignal, handleToggleNextNode]);
-
-	useEffect(() => {
-		const handleStepOverSignal = (): void => {
-			handleToggleStepOverDebug();
-		};
-		stepOverDebugSignal.connect(handleStepOverSignal);
-		return (): void => {
-			stepOverDebugSignal.disconnect(handleStepOverSignal);
-		};
-	}, [stepOverDebugSignal, handleToggleStepOverDebug]);
-
-	useEffect(() => {
-		const handleTerminateSignal = (): void => {
-			handleToggleTerminateDebug();
-		};
-		terminateDebugSignal.connect(handleTerminateSignal);
-		return (): void => {
-			terminateDebugSignal.disconnect(handleTerminateSignal);
-		};
-	}, [terminateDebugSignal, handleToggleTerminateDebug]);
-
-	useEffect(() => {
-		const handleStepInSignal = (): void => {
-			handleToggleStepInDebug();
-		};
-		stepInDebugSignal.connect(handleStepInSignal);
-		return (): void => {
-			stepInDebugSignal.disconnect(handleStepInSignal);
-		};
-	}, [stepInDebugSignal, handleToggleStepInDebug]);
-
-	useEffect(() => {
-		const handleStepOutSignal = (): void => {
-			handleToggleStepOutDebug();
-		};
-		stepOutDebugSignal.connect(handleStepOutSignal);
-		return (): void => {
-			stepOutDebugSignal.disconnect(handleStepOutSignal);
-		};
-	}, [stepOutDebugSignal, handleToggleStepOutDebug]);
-
-	useEffect(() => {
-		const handleEvaluateSignal = (): void => {
-			handleToggleEvaluateDebug();
-		};
-		evaluateDebugSignal.connect(handleEvaluateSignal);
-		return (): void => {
-			evaluateDebugSignal.disconnect(handleEvaluateSignal);
-		};
-	}, [evaluateDebugSignal, handleToggleEvaluateDebug]);
+	signalConnections.forEach(connectSignal);
 
 	const fetchComponentList = async () => {
 		const base_path = await getConfig("BASE_PATH");
@@ -1812,19 +1676,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						// note:  can not use the same port name in the same node,or the same name port can not link to other ports
 						// you can use shift + click and then use delete to delete link
 						if (node != null) {
-							let point = diagramEngine.getRelativeMousePoint(event);
+							let point = xpipesApp.getDiagramEngine().getRelativeMousePoint(event);
 							node.setPosition(point);
-							diagramEngine.getModel().addNode(node);
-							node.registerListener({
-								entityRemoved: () => {
-									setInitialize(false);
-									setSaved(false);
-									setCompiled(false);
-								}
-							});
+							xpipesApp.getDiagramEngine().getModel().addNode(node);
 							console.log("Updating doc context due to drop event!")
-							let currentModel = diagramEngine.getModel().serialize();
-							context.model.setSerializedModel(currentModel);
 							setInitialize(false);
 							setSaved(false);
 							setCompiled(false);
@@ -1849,7 +1704,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					}}>
 
 					<DemoCanvasWidget>
-						<CanvasWidget engine={diagramEngine} />
+						<CanvasWidget engine={xpipesApp.getDiagramEngine()} />
 					</DemoCanvasWidget>
 				</Layer>
 			</Content>

@@ -1,52 +1,28 @@
 import React from 'react';
-
 import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin,
   ILayoutRestorer
 } from '@jupyterlab/application';
-
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
-
 import { commandIDs } from './components/xpipeBodyWidget';
-
 import {
-  ICommandPalette,
-  IThemeManager,
   WidgetTracker,
   ReactWidget
 } from '@jupyterlab/apputils';
-
 import { ILauncher } from '@jupyterlab/launcher';
-
-import { IMainMenu } from '@jupyterlab/mainmenu';
-
-import { XpipeFactory, XPipeDocModelFactory } from './xpipeFactory';
-
-import { XPipeWidget } from './xpipeWidget';
-
+import { XpipeFactory } from './xpipeFactory';
 import Sidebar from './components_xpipe/Sidebar';
-
 import { IDocumentManager } from '@jupyterlab/docmanager';
-
 import { XpipesDebugger } from './debugger/SidebarDebugger';
-
 import { ITranslator } from '@jupyterlab/translation';
-
 import { Log, logPlugin } from './log/LogPlugin';
-
 import { requestAPI } from './server/handler';
-
 import { OutputPanel } from './kernel/panel';
-
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
+import { DocumentWidget } from '@jupyterlab/docregistry';
 
 const FACTORY = 'Xpipes editor';
-
-// Export a token so other extensions can require it
-// export const IExampleDocTracker = new Token<IWidgetTracker<ExampleDocWidget>>(
-//   'exampleDocTracker'
-// );
 
 /**
  * Initialization data for the documents extension.
@@ -55,11 +31,9 @@ const xpipes: JupyterFrontEndPlugin<void> = {
   id: 'xpipes',
   autoStart: true,
   requires: [
-    ICommandPalette,
     ILauncher,
     IFileBrowserFactory,
     ILayoutRestorer,
-    IMainMenu,
     IRenderMimeRegistry,
     IDocumentManager,
     ITranslator
@@ -67,14 +41,11 @@ const xpipes: JupyterFrontEndPlugin<void> = {
 
   activate: async (
     app: JupyterFrontEnd,
-    palette: ICommandPalette,
     launcher: ILauncher,
     browserFactory: IFileBrowserFactory,
     restorer: ILayoutRestorer,
-    menu: IMainMenu,
     rendermime: IRenderMimeRegistry,
     docmanager: IDocumentManager,
-    themeManager?: IThemeManager,
     translator?: ITranslator
   ) => {
 
@@ -84,13 +55,11 @@ const xpipes: JupyterFrontEndPlugin<void> = {
     // our new DocumentWidget
     const widgetFactory = new XpipeFactory({
       name: FACTORY,
-      modelName: 'xpipes-model',
       fileTypes: ['xpipes'],
       defaultFor: ['xpipes'],
       app: app,
       shell: app.shell,
       commands: app.commands,
-      browserFactory: browserFactory,
       serviceManager: app.serviceManager
     });
 
@@ -105,7 +74,7 @@ const xpipes: JupyterFrontEndPlugin<void> = {
     // Registering the widget factory
     app.docRegistry.addWidgetFactory(widgetFactory);
 
-    const tracker = new WidgetTracker<XPipeWidget>({
+    const tracker = new WidgetTracker<DocumentWidget>({
       namespace: "Xpipes Tracker"
     });
 
@@ -121,10 +90,6 @@ const xpipes: JupyterFrontEndPlugin<void> = {
       });
     });
 
-    // Creating and registering the model factory for our custom DocumentModel
-    const modelFactory = new XPipeDocModelFactory();
-    app.docRegistry.addModelFactory(modelFactory);
-
     // Handle state restoration
     void restorer.restore(tracker, {
       command: commandIDs.openDocManager,
@@ -135,7 +100,6 @@ const xpipes: JupyterFrontEndPlugin<void> = {
       name: widget => widget.context.path
     });
     
-
     // Creating the sidebar widget for the xai components
     const sidebarWidget = ReactWidget.create(<Sidebar lab={app}/>);
     sidebarWidget.id = 'xpipes-component-sidebar';
@@ -174,12 +138,20 @@ const xpipes: JupyterFrontEndPlugin<void> = {
             type: 'file',
             ext: '.xpipes'
           })
-          .then(model =>
-            app.commands.execute(commandIDs.openDocManager, {
-              path: model.path,
-              factory: FACTORY
-            })
-          );
+          .then(async model => {
+            const newWidget = await app.commands.execute(
+              commandIDs.openDocManager,
+              {
+                path: model.path,
+                factory: FACTORY
+              }
+            );
+            newWidget.context.ready.then(() => {
+              app.commands.execute(commandIDs.saveXpipe, {
+                path: model.path
+              });
+            });
+          });
       }
     });
 
@@ -268,20 +240,6 @@ const xpipes: JupyterFrontEndPlugin<void> = {
     app.commands.addCommand(commandIDs.saveXpipe, {
       execute: args => {
         widgetFactory.saveXpipeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to reload xpipes
-    app.commands.addCommand(commandIDs.reloadXpipe, {
-      execute: args => {
-        widgetFactory.reloadXpipeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to revert xpipes
-    app.commands.addCommand(commandIDs.revertXpipe, {
-      execute: args => {
-        widgetFactory.revertXpipeSignal.emit(args);
       }
     });
 

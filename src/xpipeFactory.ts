@@ -1,41 +1,38 @@
-import { ABCWidgetFactory, DocumentRegistry, DocumentWidget } from '@jupyterlab/docregistry';
-
-import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
-
-import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
-
+import { 
+  ABCWidgetFactory, 
+  DocumentRegistry, 
+  DocumentWidget 
+} from '@jupyterlab/docregistry';
+import { 
+  ILabShell, 
+  JupyterFrontEnd 
+} from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
-
-import { IModelDB } from '@jupyterlab/observables';
-
-import { Contents } from '@jupyterlab/services';
-
-import { XPipeWidget, XPipePanel } from './xpipeWidget';
-
-import { XPipeDocModel } from './xpipeModel';
-
-import { bugIcon, checkIcon, circleIcon, editIcon, listIcon, refreshIcon, runIcon, saveIcon, undoIcon } from '@jupyterlab/ui-components';
-
+import { XPipePanel } from './xpipeWidget';
+import { 
+  bugIcon, 
+  checkIcon, 
+  editIcon, 
+  listIcon, 
+  refreshIcon, 
+  runIcon, 
+  saveIcon, 
+  undoIcon 
+} from '@jupyterlab/ui-components';
 import { ToolbarButton } from '@jupyterlab/apputils';
-
 import { commandIDs } from './components/xpipeBodyWidget';
 import { CommandIDs } from './log/LogPlugin';
-
 import { ServiceManager } from '@jupyterlab/services';
 
 const XPIPE_CLASS = 'xpipes-editor';
 
-export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
+export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
 
-  browserFactory: IFileBrowserFactory;
   app: JupyterFrontEnd;
   shell: ILabShell;
   commands: any;
-  model: any;
   serviceManager: ServiceManager;
   saveXpipeSignal: Signal<this, any>;
-  reloadXpipeSignal: Signal<this, any>;
-  revertXpipeSignal: Signal<this, any>;
   compileXpipeSignal: Signal<this, any>;
   runXpipeSignal: Signal<this, any>;
   debugXpipeSignal: Signal<this, any>;
@@ -54,15 +51,11 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
 
   constructor(options: any) {
     super(options);
-    this.browserFactory = options.browserFactory;
     this.app = options.app;
     this.shell = options.shell;
     this.commands = options.commands;
-    this.model = options.modelName;
     this.serviceManager = options.serviceManager;
     this.saveXpipeSignal = new Signal<this, any>(this);
-    this.reloadXpipeSignal = new Signal<this, any>(this);
-    this.revertXpipeSignal = new Signal<this, any>(this);
     this.compileXpipeSignal = new Signal<this, any>(this);
     this.runXpipeSignal = new Signal<this, any>(this);
     this.debugXpipeSignal = new Signal<this, any>(this);
@@ -80,18 +73,15 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
     this.debugModeSignal = new Signal<this, any>(this);
   }
 
-  protected createNewWidget(context: DocumentRegistry.IContext<XPipeDocModel>): XPipeWidget {
+  protected createNewWidget(context: DocumentRegistry.Context): DocumentWidget {
     // Creates a blank widget with a DocumentWidget wrapper
     const props = {
       app: this.app,
       shell: this.shell,
       commands: this.commands,
-      browserFactory: this.browserFactory,
       context: context,
       serviceManager: this.serviceManager,
       saveXpipeSignal: this.saveXpipeSignal,
-      reloadXpipeSignal: this.reloadXpipeSignal,
-      revertXpipeSignal: this.revertXpipeSignal,
       compileXpipeSignal: this.compileXpipeSignal,
       runXpipeSignal: this.runXpipeSignal,
       debugXpipeSignal: this.debugXpipeSignal,
@@ -133,7 +123,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
       icon: refreshIcon,
       tooltip: 'Reload Xpipes from Disk',
       onClick: (): void => {
-        this.commands.execute(commandIDs.reloadXpipe);
+        this.commands.execute(commandIDs.reloadDocManager);
       }
     });
 
@@ -144,7 +134,7 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
       icon: undoIcon,
       tooltip: 'Revert Xpipes to Checkpoint',
       onClick: (): void => {
-        this.commands.execute(commandIDs.revertXpipe);
+        this.commands.execute(commandIDs.revertDocManager);
       }
     });
 
@@ -226,75 +216,4 @@ export class XpipeFactory extends ABCWidgetFactory<XPipeWidget, XPipeDocModel> {
 
     return widget;
   }
-}
-
-
-export class XPipeDocModelFactory
-  implements DocumentRegistry.IModelFactory<XPipeDocModel>
-{
-  /**
-   * The name of the model.
-   *
-   * @returns The name
-   */
-  get name(): string {
-    return 'xpipes-model';
-  }
-
-  /**
-   * The content type of the file.
-   *
-   * @returns The content type
-   */
-  get contentType(): Contents.ContentType {
-    return 'file';
-  }
-
-  /**
-   * The format of the file.
-   *
-   * @returns the file format
-   */
-  get fileFormat(): Contents.FileFormat {
-    return 'text';
-  }
-
-  /**
-   * Get whether the model factory has been disposed.
-   *
-   * @returns disposed status
-   */
-  get isDisposed(): boolean {
-    return this._disposed;
-  }
-
-  /**
-   * Dispose the model factory.
-   */
-  dispose(): void {
-    this._disposed = true;
-  }
-
-  /**
-   * Get the preferred language given the path on the file.
-   *
-   * @param path path of the file represented by this document model
-   * @returns The preferred language
-   */
-  preferredLanguage(path: string): string {
-    return '';
-  }
-
-  /**
-   * Create a new instance of XPipeDocModel.
-   *
-   * @param languagePreference Language
-   * @param modelDB Model database
-   * @returns The model
-   */
-  createNew(languagePreference?: string, modelDB?: IModelDB): XPipeDocModel {
-    return new XPipeDocModel(languagePreference, modelDB);
-  }
-
-  private _disposed = false;
 }

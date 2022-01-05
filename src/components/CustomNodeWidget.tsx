@@ -88,7 +88,6 @@ export class CustomDeleteItemsAction extends Action {
                     _.forEach(selectedEntities, (model) => {
                         if (model.getOptions()["name"] !== "undefined") {
                             let modelName = model.getOptions()["name"];
-                            debugger;
                             if (modelName !== 'Start' && modelName !== 'Finish') {
                                 if (!model.isLocked()) {
                                     model.remove()
