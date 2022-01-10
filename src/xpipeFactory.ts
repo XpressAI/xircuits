@@ -23,6 +23,7 @@ import { ToolbarButton } from '@jupyterlab/apputils';
 import { commandIDs } from './components/xpipeBodyWidget';
 import { CommandIDs } from './log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
+import { RunSwitcher } from './components/RunSwitcher';
 
 const XPIPE_CLASS = 'xpipes-editor';
 
@@ -213,6 +214,10 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.insertItem(6,'xpipes-add-lock', lockButton);
     widget.toolbar.insertItem(7,'xpipes-add-log', logButton);
     widget.toolbar.insertItem(8,'xpipes-add-test', testButton);
+    widget.toolbar.insertItem(9,
+      'xpipes-run-type',
+      new RunSwitcher(this)
+    );
 
     return widget;
   }
