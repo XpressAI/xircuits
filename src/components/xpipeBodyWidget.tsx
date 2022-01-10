@@ -33,6 +33,7 @@ export interface BodyWidgetProps {
 	saveXpipeSignal: Signal<XPipePanel, any>;
 	compileXpipeSignal: Signal<XPipePanel, any>;
 	runXpipeSignal: Signal<XPipePanel, any>;
+	runTypeXpipeSignal: Signal<XPipePanel, any>;
 	debugXpipeSignal: Signal<XPipePanel, any>;
 	lockNodeSignal: Signal<XPipePanel, any>;
 	breakpointXpipeSignal: Signal<XPipePanel, any>;
@@ -118,6 +119,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	saveXpipeSignal,
 	compileXpipeSignal,
 	runXpipeSignal,
+	runTypeXpipeSignal,
 	debugXpipeSignal,
 	lockNodeSignal,
 	breakpointXpipeSignal,
@@ -157,6 +159,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [debugMode, setDebugMode] = useState<boolean>(false);
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
+	const [runType, setRunType] = useState<string>("run");
 	const xpipeLogger = new Log(app);
 	const contextRef = useRef(context);
 
@@ -756,8 +759,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		let pythonCode = getPythonCompiler();
 		let showOutput = false;
-		setCompiled(true);
+		
+		// Don't compile if 'Run w/o compile' is chosen
+		if(runType != 'run-dont-compile'){
 		commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
+			setCompiled(true);
+		}
 
 		// Compile Mode
 		if (compileMode) {
@@ -1407,6 +1414,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 		setComponentList(response);
 	}
+
+	useEffect(() => {
+		let runType;
+		runTypeXpipeSignal.connect((_, args) => {
+			runType = args["runType"];
+			setRunType(runType)
+		});
+	}, [runTypeXpipeSignal])
 
 	useEffect(() => {
 		debugModeSignal.emit({

@@ -36,6 +36,7 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
   saveXpipeSignal: Signal<this, any>;
   compileXpipeSignal: Signal<this, any>;
   runXpipeSignal: Signal<this, any>;
+  runTypeXpipeSignal: Signal<this, any>;
   debugXpipeSignal: Signal<this, any>;
   lockNodeSignal: Signal<this, any>;
   breakpointXpipeSignal: Signal<this, any>;
@@ -59,6 +60,7 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
     this.saveXpipeSignal = new Signal<this, any>(this);
     this.compileXpipeSignal = new Signal<this, any>(this);
     this.runXpipeSignal = new Signal<this, any>(this);
+    this.runTypeXpipeSignal = new Signal<this, any>(this);
     this.debugXpipeSignal = new Signal<this, any>(this);
     this.lockNodeSignal = new Signal<this, any>(this);
     this.breakpointXpipeSignal = new Signal<this, any>(this);
@@ -85,6 +87,7 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
       saveXpipeSignal: this.saveXpipeSignal,
       compileXpipeSignal: this.compileXpipeSignal,
       runXpipeSignal: this.runXpipeSignal,
+      runTypeXpipeSignal: this.runTypeXpipeSignal,
       debugXpipeSignal: this.debugXpipeSignal,
       lockNodeSignal: this.lockNodeSignal,
       breakpointXpipeSignal: this.breakpointXpipeSignal,
