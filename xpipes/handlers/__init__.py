@@ -4,6 +4,7 @@ from .compile import CompileFileRouteHandler
 from .components import ComponentsRouteHandler
 from .config import HandleConfigRouteHandler
 from .debugger import DebuggerRouteHandler
+from .spark_submit import SparkSubmitRouteHandler
 
 
 def setup_handlers(web_app, url_path):
@@ -27,6 +28,10 @@ def setup_handlers(web_app, url_path):
         (
             url_path_join(base_url, url_path, "components/"),
             ComponentsRouteHandler
+        ),
+        (
+            url_path_join(base_url, url_path, "spark/submit"),
+            SparkSubmitRouteHandler
         )
 
     ])

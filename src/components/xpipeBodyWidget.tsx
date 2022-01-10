@@ -762,7 +762,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		
 		// Don't compile if 'Run w/o compile' is chosen
 		if(runType != 'run-dont-compile'){
-		commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
+			commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
 			setCompiled(true);
 		}
 
@@ -791,7 +791,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		const runCommand = await handleRunDialog();
 
 		if (runCommand) {
-			commands.execute(commandIDs.executeToOutputPanel, { runCommand });
+			commands.execute(commandIDs.executeToOutputPanel, { runCommand, runType });
 		}
 	}
 

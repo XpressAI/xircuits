@@ -212,12 +212,32 @@ const xpipes: JupyterFrontEndPlugin<void> = {
       return outputPanel;
     }
 
+    async function requestToSparkSubmit(path: string) {
+      const dataToSend = { "currentPath": path };
+
+      try {
+        const server_reply = await requestAPI<any>('spark/submit', {
+          body: JSON.stringify(dataToSend),
+          method: 'POST',
+        });
+
+        return server_reply;
+      } catch (reason) {
+        console.error(
+          `Error on POST /xpipes/spark/submit ${dataToSend}.\n${reason}`
+        );
+      }
+    };
+
     // Execute xpipes python script and display at output panel
     app.commands.addCommand(commandIDs.executeToOutputPanel, {
       execute: async args => {
         const xpipesLogger = new Log(app);
+        const current_path = tracker.currentWidget.context.path;
+        const model_path = current_path.split(".xpipes")[0] + ".py";
         const message = typeof args['runCommand'] === 'undefined' ? '' : (args['runCommand'] as string);
         const debug_mode = typeof args['debug_mode'] === 'undefined' ? '' : (args['debug_mode'] as string);
+        const runType = typeof args['runType'] === 'undefined' ? '' : (args['runType'] as string);
 
         // Create the panel if it does not exist
         if (!outputPanel || outputPanel.isDisposed) {
@@ -227,10 +247,28 @@ const xpipes: JupyterFrontEndPlugin<void> = {
           await createPanel();
         }
 
-        outputPanel.session.ready.then(() => {
-          const current_path = tracker.currentWidget.context.path;
-          const model_path = current_path.split(".xpipes")[0] + ".py";
-          const code = "%run " + model_path + message + debug_mode;
+        outputPanel.session.ready.then(async () => {
+          let code = "%run " + model_path + message + debug_mode;
+
+          // Run spark submit when run type is Spark Submit
+          if (runType == 'spark-submit') {
+            const request = await requestToSparkSubmit(model_path);
+            const errorMsg = request["stderr"];
+            const outputMsg = request["stdout"];
+            let msg = "";
+
+            // Display the errors if there no output
+            if (outputMsg != 0) {
+              msg = outputMsg;
+            } else {
+              msg = errorMsg;
+            }
+
+            // Display the multi-line message
+            const outputCode = `"""${msg}"""`;
+            code = `print(${outputCode})`;
+          }
+
           outputPanel.execute(code, xpipesLogger);
         });
       },
