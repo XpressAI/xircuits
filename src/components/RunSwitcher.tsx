@@ -1,4 +1,4 @@
-import { ReactWidget } from '@jupyterlab/apputils';
+import { ReactWidget, UseSignal } from '@jupyterlab/apputils';
 import { HTMLSelect } from '@jupyterlab/ui-components';
 import React from 'react';
 import { XpipeFactory } from '../xpipeFactory';
@@ -28,16 +28,38 @@ export class RunSwitcher extends ReactWidget {
     render() {
         let value;
         return (
-            <HTMLSelect
-                onChange={this.handleChange}
-                value={value}
-                aria-label={'Run type'}
-                title={'Select the run type'}
-            >
-                <option value="run" >Run</option>
-                <option value="run-dont-compile">Run w/o Compile</option>
-                <option value="spark-submit">Spark Submit</option>
-            </HTMLSelect>
+            <UseSignal signal={this._output.runTypeXpipeSignal}>
+                {(_, args) => {
+                    if (args !== undefined) {
+                        let runType = args["runType"] as any;
+                        return (
+                            <HTMLSelect
+                                onChange={this.handleChange}
+                                value={runType}
+                                aria-label={'Run type'}
+                                title={'Select the run type'}
+                            >
+                                <option value="run" >Run</option>
+                                <option value="run-dont-compile">Run w/o Compile</option>
+                                <option value="spark-submit">Spark Submit</option>
+                            </HTMLSelect>
+                        );
+                    }
+                    // Only for rendering the first time
+                    return (
+                        <HTMLSelect
+                            onChange={this.handleChange}
+                            value={value}
+                            aria-label={'Run type'}
+                            title={'Select the run type'}
+                        >
+                            <option value="run" >Run</option>
+                            <option value="run-dont-compile">Run w/o Compile</option>
+                            <option value="spark-submit">Spark Submit</option>
+                        </HTMLSelect>
+                    );
+                }}
+            </UseSignal>
         );
     }
     private _output: XpipeFactory;
