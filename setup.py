@@ -137,6 +137,7 @@ setup_args = dict(
         "numpy",
         "scikit-learn",
         "opencv-python",
+        "pillow",
         "tqdm",
         "pandas",
         "py4j",
