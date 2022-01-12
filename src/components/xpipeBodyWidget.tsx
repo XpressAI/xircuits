@@ -420,6 +420,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 									let k = getBindingIndexById(allNodes, sourceNodeId);
 									let preBindingName = 'c_' + k;
 
+									//Get the id of the node of the connected link
+									let linkSourceNodeId = allPort[port]["links"][portLink]["sourcePort"]["parent"]["options"]["id"];
+
 									if (port.startsWith("parameter")) {
 
 										if (sourceNodeName.startsWith("Literal")) {
@@ -443,7 +446,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 											else {
 												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + sourcePortLabel + "\n";
 											}
-
+										  // Make sure the node id match between connected link and source node
+										} else if (linkSourceNodeId == sourceNodeId) {
+											pythonCode += '    ' + bindingName + '.' + label + ' = ' + preBindingName + '.' + sourcePortLabel + '\n';
 										} else {
 											sourcePortLabel = sourcePortLabel.replace(/\s+/g, "_");
 											sourcePortLabel = sourcePortLabel.toLowerCase();
