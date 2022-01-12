@@ -444,6 +444,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + sourcePortLabel + "\n";
 											}
 
+										} else if (label == sourcePortLabel) {
+											pythonCode += '    ' + bindingName + '.' + label + ' = ' + preBindingName + '.' + sourcePortLabel + '\n';
 										} else {
 											sourcePortLabel = sourcePortLabel.replace(/\s+/g, "_");
 											sourcePortLabel = sourcePortLabel.toLowerCase();
