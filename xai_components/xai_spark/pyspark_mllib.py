@@ -16,6 +16,7 @@ os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
 
 
 #This should be treated as a parameter component in the future
+@xai_component
 class SparkSparseVector(Component):
     vector_list: InArg[list]
     sparse_vector: OutArg[any]
@@ -37,6 +38,7 @@ class SparkSparseVector(Component):
         self.done = True
 
 
+@xai_component
 class SparkLabeledPoint(Component):
     label: InArg[float]
     dense_vector: InArg[list]
@@ -66,6 +68,7 @@ class SparkLabeledPoint(Component):
         self.done = True
 
 
+@xai_component
 class SparkLoadImageFolder(Component):
     in_sparksession: InArg[any]
     folder_path: InArg[str]
@@ -94,6 +97,7 @@ class SparkLoadImageFolder(Component):
 
         self.done = True
 
+@xai_component
 class SparkSplitDataFrame(Component):
     
     in_dataframe: InArg[any]
@@ -142,6 +146,7 @@ class SparkSplitDataFrame(Component):
         self.done = True
 
 
+@xai_component
 class SparkLoadLIBSVM(Component):
     
     in_sparksession: InArg[any]
@@ -180,6 +185,7 @@ class SparkLoadLIBSVM(Component):
         self.done = True
 
 
+@xai_component
 class SparkLogisticRegression(Component):
 
     train_dataframe: InArg[any]
@@ -224,6 +230,7 @@ class SparkLogisticRegression(Component):
         self.done = True
 
 
+@xai_component
 class SparkPredict(Component):
 
     model: InArg[any]

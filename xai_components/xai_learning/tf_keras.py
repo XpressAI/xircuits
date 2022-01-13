@@ -2,11 +2,12 @@ from tensorflow.keras import applications
 from tensorflow.keras.preprocessing import image
 import numpy as np
 
-from xai_components.base import InArg, OutArg, Component
+from xai_components.base import InArg, OutArg, Component, xai_component
 import json
 import os
 
 
+@xai_component
 class LoadKerasModel(Component):
 
     model_name: InArg[str] #true
@@ -81,6 +82,7 @@ class LoadKerasModel(Component):
 
         self.done = True
 
+@xai_component
 class KerasPredict(Component):
     
     model:InArg[any]
@@ -208,6 +210,7 @@ class resnet_model_config:
         self.pooling = None
         self.classes = 1000
 
+@xai_component
 class ResNet50(Component):
     include_top: InArg[bool]
     weights:InArg[str] 
@@ -248,6 +251,7 @@ class ResNet50(Component):
         self.model.value = model
         self.done = True
 
+@xai_component
 class ResNet101(Component):
 
     include_top: InArg[bool]
@@ -290,6 +294,7 @@ class ResNet101(Component):
         self.done = True
 
 
+@xai_component
 class ResNet152(Component):
     include_top: InArg[bool]
     weights:InArg[str] 
@@ -347,6 +352,7 @@ class vgg_model_config:
         self.classes = 1000
         self.classifier_activation = "softmax"
 
+@xai_component
 class VGG16(Component):
 
     include_top: InArg[bool]
@@ -390,6 +396,7 @@ class VGG16(Component):
         self.done = True
 
 
+@xai_component
 class VGG19(Component):
     include_top: InArg[bool]
     weights:InArg[str] 
@@ -431,6 +438,7 @@ class VGG19(Component):
         self.model.value = model
         self.done = True
 
+@xai_component
 class Xception(Component):
 
     include_top: InArg[bool]
@@ -501,6 +509,7 @@ class mobile_model_config:
         self.classifier_activation="softmax"
 
 
+@xai_component
 class MobileNet(Component):
     
     input_shape: InArg[any]

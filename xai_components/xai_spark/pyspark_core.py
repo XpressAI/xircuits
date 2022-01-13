@@ -5,7 +5,7 @@ from datetime import datetime, date
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from xai_components.base import InArg, OutArg, Component
+from xai_components.base import InArg, OutArg, Component, xai_component
 import json
 import os
 import sys
@@ -14,6 +14,7 @@ import sys
 os.environ['PYSPARK_PYTHON'] = sys.executable
 os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
 
+@xai_component
 class xSparkSession(Component):
     master: InArg[str]  #master("local")
     appname: InArg[str] #appName("Word Count")
@@ -36,6 +37,7 @@ class xSparkSession(Component):
         self.done = True
 
 
+@xai_component
 class SparkReadPandas(Component):
 
     in_sparksession: InArg[any]
@@ -63,6 +65,7 @@ class SparkReadPandas(Component):
 
         self.done = True
 
+@xai_component
 class SparkReadFile(Component):
 
     in_sparksession: InArg[any]
@@ -109,6 +112,7 @@ class SparkReadFile(Component):
         self.done = True
 
 
+@xai_component
 class SparkReadCSV(Component):
 
     in_sparksession: InArg[any]
@@ -147,6 +151,7 @@ class SparkReadCSV(Component):
         self.done = True
 
 
+@xai_component
 class SparkWriteFile(Component):
 
     dataframe: InArg[any]
@@ -179,6 +184,7 @@ class SparkWriteFile(Component):
 
         self.done = True
 
+@xai_component
 class SparkSQL(Component):
 
     in_sparksession: InArg[any]
@@ -222,6 +228,7 @@ class SparkSQL(Component):
         self.sql_dataframe.value = sql_df
         self.done = True
 
+@xai_component
 class SparkVisualize(Component):
 
     dataframe: InArg[any]

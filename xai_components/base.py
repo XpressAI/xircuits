@@ -35,6 +35,10 @@ class InCompArg(Generic[T]):
     def empty(cls):
         return InCompArg(None)
 
+def xai_component(el, **kwargs):
+    # Passthrough element without any changes.
+    # This is used for parser metadata only.
+    return el
 
 class ExecutionContext:
     args: Namespace

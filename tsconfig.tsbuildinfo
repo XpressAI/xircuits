@@ -127,8 +127,8 @@
         "affectsGlobalScope": true
       },
       "./node_modules/csstype/index.d.ts": {
-        "version": "381899b8d1d4c1be716f18cb5242ba39f66f4b1e31d45af62a32a99f8edcb39d",
-        "signature": "381899b8d1d4c1be716f18cb5242ba39f66f4b1e31d45af62a32a99f8edcb39d",
+        "version": "5b1d4ebd62d975c7d3826202f8fac290bac0bae6e04d9e84d1707d7047e108df",
+        "signature": "5b1d4ebd62d975c7d3826202f8fac290bac0bae6e04d9e84d1707d7047e108df",
         "affectsGlobalScope": false
       },
       "./node_modules/@types/prop-types/index.d.ts": {
@@ -136,14 +136,9 @@
         "signature": "f7b46d22a307739c145e5fddf537818038fdfffd580d79ed717f4d4d37249380",
         "affectsGlobalScope": false
       },
-      "./node_modules/@types/scheduler/tracing.d.ts": {
-        "version": "f5a8b384f182b3851cec3596ccc96cb7464f8d3469f48c74bf2befb782a19de5",
-        "signature": "f5a8b384f182b3851cec3596ccc96cb7464f8d3469f48c74bf2befb782a19de5",
-        "affectsGlobalScope": false
-      },
       "./node_modules/@types/react/index.d.ts": {
-        "version": "1bc82f5b3bb93df76d19730c84467b0b346187198537135d63a672956f323720",
-        "signature": "1bc82f5b3bb93df76d19730c84467b0b346187198537135d63a672956f323720",
+        "version": "adf1bb8820af989bb0de3c7c6cb9d7b7dbe208d06028e6113f160447a04e21a8",
+        "signature": "adf1bb8820af989bb0de3c7c6cb9d7b7dbe208d06028e6113f160447a04e21a8",
         "affectsGlobalScope": true
       },
       "./node_modules/@lumino/coreutils/types/json.d.ts": {
@@ -841,14 +836,9 @@
         "signature": "f1e1e68cbe048ee1112f2929c7d68d53d4ad86dacd6e45bafaa5c5801047b7c6",
         "affectsGlobalScope": false
       },
-      "./node_modules/@blueprintjs/core/lib/cjs/common/colors.d.ts": {
-        "version": "0ccaffe1ea5cef0ecb9cc897082b76cafcebe63dee99678ee373d4d037361822",
-        "signature": "0ccaffe1ea5cef0ecb9cc897082b76cafcebe63dee99678ee373d4d037361822",
-        "affectsGlobalScope": false
-      },
       "./node_modules/@blueprintjs/core/lib/cjs/common/constructor.d.ts": {
-        "version": "2fd06d4c195333c49771d66853322b928a15b3900677e2bf46e12f2d7da4540f",
-        "signature": "2fd06d4c195333c49771d66853322b928a15b3900677e2bf46e12f2d7da4540f",
+        "version": "39ce9594d3207d1a101a43eb6eb47a6a1136ee9f96c6166edbd4207da71e6f78",
+        "signature": "39ce9594d3207d1a101a43eb6eb47a6a1136ee9f96c6166edbd4207da71e6f78",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/cjs/common/elevation.d.ts": {
@@ -872,8 +862,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/icons/lib/esm/generated/iconnames.d.ts": {
-        "version": "2a4ba510a7235a1b87dbfab35046d8ee9a9089b9b4b679deb678191b5cc48709",
-        "signature": "2a4ba510a7235a1b87dbfab35046d8ee9a9089b9b4b679deb678191b5cc48709",
+        "version": "547bc62aa97de4f35d58b8ed66f82c3ef149ce53290755e6114819186f0852cc",
+        "signature": "547bc62aa97de4f35d58b8ed66f82c3ef149ce53290755e6114819186f0852cc",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/icons/lib/esm/iconname.d.ts": {
@@ -892,13 +882,23 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/cjs/common/props.d.ts": {
-        "version": "27953c75d82f1fd701c2e3f76c927199c264350d304ca1b6701099d6d4c6ec51",
-        "signature": "27953c75d82f1fd701c2e3f76c927199c264350d304ca1b6701099d6d4c6ec51",
+        "version": "bd0768976a45dcf05d2d8ffb93f2879f89ecadcdd73e9fd2163e2c7a44ef85c5",
+        "signature": "bd0768976a45dcf05d2d8ffb93f2879f89ecadcdd73e9fd2163e2c7a44ef85c5",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@blueprintjs/colors/lib/colors.d.ts": {
+        "version": "10e0b60f4e14b244bd145f694f0690d8b9f26c8c7a755743afabdd992935fc64",
+        "signature": "10e0b60f4e14b244bd145f694f0690d8b9f26c8c7a755743afabdd992935fc64",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@blueprintjs/colors/lib/index.d.ts": {
+        "version": "337e02a755b0968f70db9f570c604a2722b2b1a5e75adfd9d7120db99d78144f",
+        "signature": "337e02a755b0968f70db9f570c604a2722b2b1a5e75adfd9d7120db99d78144f",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/cjs/common/classes.d.ts": {
-        "version": "198ce29d4d850888b5e626e7ac24cf8ea5f2979b6e62e5b63a46bbc926ae3e9a",
-        "signature": "198ce29d4d850888b5e626e7ac24cf8ea5f2979b6e62e5b63a46bbc926ae3e9a",
+        "version": "358639c3ef05eccb6ff33b258bf5f09624e3651115a2de8b1cf6c9ea6f12ac69",
+        "signature": "358639c3ef05eccb6ff33b258bf5f09624e3651115a2de8b1cf6c9ea6f12ac69",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/cjs/common/keys.d.ts": {
@@ -952,8 +952,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/cjs/common/index.d.ts": {
-        "version": "f916f9303709d609e852bd97e8cc6586d3dab103ea4e605a4d63598e37b87190",
-        "signature": "f916f9303709d609e852bd97e8cc6586d3dab103ea4e605a4d63598e37b87190",
+        "version": "b3d04f81629f8991d57a6a1130fc59bce3ee12aab31fe70a34712cec2a63d369",
+        "signature": "b3d04f81629f8991d57a6a1130fc59bce3ee12aab31fe70a34712cec2a63d369",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/cjs/components/icon/icon.d.ts": {
@@ -962,8 +962,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/cjs/components/button/abstractbutton.d.ts": {
-        "version": "a7de820c873e4f0db59303940aaa7f6f06a1a46d3f89eaada44d76c871876fb6",
-        "signature": "a7de820c873e4f0db59303940aaa7f6f06a1a46d3f89eaada44d76c871876fb6",
+        "version": "1e68276863ff95b351c28a311677032982c871654e405346614b63b21c431865",
+        "signature": "1e68276863ff95b351c28a311677032982c871654e405346614b63b21c431865",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/cjs/components/button/buttons.d.ts": {
@@ -1026,14 +1026,9 @@
         "signature": "f1e1e68cbe048ee1112f2929c7d68d53d4ad86dacd6e45bafaa5c5801047b7c6",
         "affectsGlobalScope": false
       },
-      "./node_modules/@blueprintjs/core/lib/esm/common/colors.d.ts": {
-        "version": "0ccaffe1ea5cef0ecb9cc897082b76cafcebe63dee99678ee373d4d037361822",
-        "signature": "0ccaffe1ea5cef0ecb9cc897082b76cafcebe63dee99678ee373d4d037361822",
-        "affectsGlobalScope": false
-      },
       "./node_modules/@blueprintjs/core/lib/esm/common/constructor.d.ts": {
-        "version": "2fd06d4c195333c49771d66853322b928a15b3900677e2bf46e12f2d7da4540f",
-        "signature": "2fd06d4c195333c49771d66853322b928a15b3900677e2bf46e12f2d7da4540f",
+        "version": "39ce9594d3207d1a101a43eb6eb47a6a1136ee9f96c6166edbd4207da71e6f78",
+        "signature": "39ce9594d3207d1a101a43eb6eb47a6a1136ee9f96c6166edbd4207da71e6f78",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/common/elevation.d.ts": {
@@ -1057,13 +1052,13 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/common/props.d.ts": {
-        "version": "27953c75d82f1fd701c2e3f76c927199c264350d304ca1b6701099d6d4c6ec51",
-        "signature": "27953c75d82f1fd701c2e3f76c927199c264350d304ca1b6701099d6d4c6ec51",
+        "version": "bd0768976a45dcf05d2d8ffb93f2879f89ecadcdd73e9fd2163e2c7a44ef85c5",
+        "signature": "bd0768976a45dcf05d2d8ffb93f2879f89ecadcdd73e9fd2163e2c7a44ef85c5",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/common/classes.d.ts": {
-        "version": "198ce29d4d850888b5e626e7ac24cf8ea5f2979b6e62e5b63a46bbc926ae3e9a",
-        "signature": "198ce29d4d850888b5e626e7ac24cf8ea5f2979b6e62e5b63a46bbc926ae3e9a",
+        "version": "358639c3ef05eccb6ff33b258bf5f09624e3651115a2de8b1cf6c9ea6f12ac69",
+        "signature": "358639c3ef05eccb6ff33b258bf5f09624e3651115a2de8b1cf6c9ea6f12ac69",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/common/keys.d.ts": {
@@ -1117,8 +1112,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/common/index.d.ts": {
-        "version": "f916f9303709d609e852bd97e8cc6586d3dab103ea4e605a4d63598e37b87190",
-        "signature": "f916f9303709d609e852bd97e8cc6586d3dab103ea4e605a4d63598e37b87190",
+        "version": "b3d04f81629f8991d57a6a1130fc59bce3ee12aab31fe70a34712cec2a63d369",
+        "signature": "b3d04f81629f8991d57a6a1130fc59bce3ee12aab31fe70a34712cec2a63d369",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/components/context-menu/contextmenu.d.ts": {
@@ -1132,8 +1127,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/components/overlay/overlay.d.ts": {
-        "version": "d1d1e915f9a60a342cdfc8f9b04fee667ede32734a60224dd138b2ac2d3ef260",
-        "signature": "d1d1e915f9a60a342cdfc8f9b04fee667ede32734a60224dd138b2ac2d3ef260",
+        "version": "d6313fb36d6af2a306bd33408d18e6cf9d83e2dbe620ea3f7a3167736b9e7b9a",
+        "signature": "d6313fb36d6af2a306bd33408d18e6cf9d83e2dbe620ea3f7a3167736b9e7b9a",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/components/alert/alert.d.ts": {
@@ -1157,13 +1152,13 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/components/popover/popoversharedprops.d.ts": {
-        "version": "8d4e55cef443510f1cc7d45cb3f91d1690a9bb4cc679bbf70af32b4d81b1f15e",
-        "signature": "8d4e55cef443510f1cc7d45cb3f91d1690a9bb4cc679bbf70af32b4d81b1f15e",
+        "version": "2ff59e2823692c93aa4ae7ec5a4aa72e5c42bbd0e22ffa89aca6b47e28585ab1",
+        "signature": "2ff59e2823692c93aa4ae7ec5a4aa72e5c42bbd0e22ffa89aca6b47e28585ab1",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/components/popover/popover.d.ts": {
-        "version": "a28380967f8329e99968d2c7343b31c0a806d750d89e5660a4d99be9a8f44f29",
-        "signature": "a28380967f8329e99968d2c7343b31c0a806d750d89e5660a4d99be9a8f44f29",
+        "version": "15cadd4fd566c01061a015c34df45376362933b7f5f1efdc9850775695db5cbe",
+        "signature": "15cadd4fd566c01061a015c34df45376362933b7f5f1efdc9850775695db5cbe",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/components/breadcrumbs/breadcrumbs.d.ts": {
@@ -1172,8 +1167,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/components/button/abstractbutton.d.ts": {
-        "version": "a7de820c873e4f0db59303940aaa7f6f06a1a46d3f89eaada44d76c871876fb6",
-        "signature": "a7de820c873e4f0db59303940aaa7f6f06a1a46d3f89eaada44d76c871876fb6",
+        "version": "1e68276863ff95b351c28a311677032982c871654e405346614b63b21c431865",
+        "signature": "1e68276863ff95b351c28a311677032982c871654e405346614b63b21c431865",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/components/button/buttons.d.ts": {
@@ -1227,8 +1222,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/components/dialog/multistepdialog.d.ts": {
-        "version": "60f3d1d93659940320e971563be7e6d44f24c08c54253ba98381dde383dcb35f",
-        "signature": "60f3d1d93659940320e971563be7e6d44f24c08c54253ba98381dde383dcb35f",
+        "version": "1994750f31546b867e46331f2abf5fcd251012a5cea728fee24d48bb77f1a6aa",
+        "signature": "1994750f31546b867e46331f2abf5fcd251012a5cea728fee24d48bb77f1a6aa",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/components/divider/divider.d.ts": {
@@ -1237,13 +1232,13 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/components/drawer/drawer.d.ts": {
-        "version": "f62dec06b428af51d559914fbb558de1512783c506282fc6f9e3f6c3206cb13f",
-        "signature": "f62dec06b428af51d559914fbb558de1512783c506282fc6f9e3f6c3206cb13f",
+        "version": "fd66a12cededbbaee720e44c7e49832802699227d3cee76e522d58fdbfddb31c",
+        "signature": "fd66a12cededbbaee720e44c7e49832802699227d3cee76e522d58fdbfddb31c",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/components/editable-text/editabletext.d.ts": {
-        "version": "eb4218049599f0da9fddfb428bd145e6d21653ea892412d3891c71490fa974f7",
-        "signature": "eb4218049599f0da9fddfb428bd145e6d21653ea892412d3891c71490fa974f7",
+        "version": "b2e1db67c4573be23a135866e20e75323166412eb6ceb5b3d42ee61c60ea995b",
+        "signature": "b2e1db67c4573be23a135866e20e75323166412eb6ceb5b3d42ee61c60ea995b",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/components/forms/controlgroup.d.ts": {
@@ -1262,8 +1257,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/components/forms/formgroup.d.ts": {
-        "version": "f7000be7a6c345e37f609a75e67dbc3330debfd3b40a0bba8418192af0eadafe",
-        "signature": "f7000be7a6c345e37f609a75e67dbc3330debfd3b40a0bba8418192af0eadafe",
+        "version": "e8cca6f9be4f9dc18fb92aea2b5f82705cf07267f4675af9e9e1c5f20e973ce1",
+        "signature": "e8cca6f9be4f9dc18fb92aea2b5f82705cf07267f4675af9e9e1c5f20e973ce1",
         "affectsGlobalScope": false
       },
       "./node_modules/@blueprintjs/core/lib/esm/components/forms/inputgroup.d.ts": {
@@ -1586,7 +1581,7 @@
         "signature": "2be90eb05dc17ec0f6dbe4439c3170e907d0d7601d3bfe5c164cf7a7e93c6275",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts": {
         "version": "76e27a82abcc42653aec48ff050d6235a62a3eb0d5c6c4c2f5f09bdc8fb79807",
         "signature": "76e27a82abcc42653aec48ff050d6235a62a3eb0d5c6c4c2f5f09bdc8fb79807",
         "affectsGlobalScope": false
@@ -1601,87 +1596,87 @@
         "signature": "aca6c5506e2023b46af62d650a80e2c3596b7d4d77e8ec82dd9345604230640f",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/style/icon.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/style/icon.d.ts": {
         "version": "72197af93cb407921c0db36a7c187588c10f994e7924d2ec722004843c226e2d",
         "signature": "72197af93cb407921c0db36a7c187588c10f994e7924d2ec722004843c226e2d",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/style/index.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/style/index.d.ts": {
         "version": "aecf31d8843eecf4011a77ba692a68ba8da0241653a39cd275310eed2ab1649d",
         "signature": "aecf31d8843eecf4011a77ba692a68ba8da0241653a39cd275310eed2ab1649d",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/icon/labicon.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/labicon.d.ts": {
         "version": "bfef935156b81c081b0e58da269d50db594c6229eb9d90622858274d92358700",
         "signature": "bfef935156b81c081b0e58da269d50db594c6229eb9d90622858274d92358700",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/icon/iconimports.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/iconimports.d.ts": {
         "version": "e495765c31525359578384246c9a76fff8b910c675b477efdba73fcf04e705a1",
         "signature": "e495765c31525359578384246c9a76fff8b910c675b477efdba73fcf04e705a1",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/icon/widgets/commandpalettesvg.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/commandpalettesvg.d.ts": {
         "version": "b19f59a453f22453e4735e0b9fee2089fabebddfdd0b0fedab0409e3a2da63ca",
         "signature": "b19f59a453f22453e4735e0b9fee2089fabebddfdd0b0fedab0409e3a2da63ca",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/icon/widgets/menusvg.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/menusvg.d.ts": {
         "version": "f080a7a3aaa9eb07e4b0c38c0ecdb3a409bdb5f827479a4402acfed6111763a7",
         "signature": "f080a7a3aaa9eb07e4b0c38c0ecdb3a409bdb5f827479a4402acfed6111763a7",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/icon/widgets/tabbarsvg.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/tabbarsvg.d.ts": {
         "version": "a098eb23c976a09718d50d55a6738011d24d29612f44f8afa5b0e78a1cd6fdf2",
         "signature": "a098eb23c976a09718d50d55a6738011d24d29612f44f8afa5b0e78a1cd6fdf2",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/icon/widgets/index.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/index.d.ts": {
         "version": "d17f7a001dae13ded8536376f9319169a4c53e0e3789756e2058d0f4b4083a19",
         "signature": "d17f7a001dae13ded8536376f9319169a4c53e0e3789756e2058d0f4b4083a19",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts": {
         "version": "ba42ed466e271511af20653ef52792fc270ae38c2a897c60249efdb5258f22a8",
         "signature": "ba42ed466e271511af20653ef52792fc270ae38c2a897c60249efdb5258f22a8",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/components/interface.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/interface.d.ts": {
         "version": "db3efaf54928d3b92c0e80f1da14e03b49e20272e90158beae18ac9891207798",
         "signature": "db3efaf54928d3b92c0e80f1da14e03b49e20272e90158beae18ac9891207798",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/components/htmlselect.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/htmlselect.d.ts": {
         "version": "cb82c1784b85fe06df3a5bdbebf3e27e68ed9e6e0086014db89adf3954596661",
         "signature": "cb82c1784b85fe06df3a5bdbebf3e27e68ed9e6e0086014db89adf3954596661",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/components/menu.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/menu.d.ts": {
         "version": "5d88c7751a2e431303eb7537734d90c8441831d976a45fe015afbc3a387f0458",
         "signature": "5d88c7751a2e431303eb7537734d90c8441831d976a45fe015afbc3a387f0458",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/components/switch.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/switch.d.ts": {
         "version": "f930cec87b27939416f5d933c8ae49e83827def3c4d6a7b842ee414892dbe873",
         "signature": "f930cec87b27939416f5d933c8ae49e83827def3c4d6a7b842ee414892dbe873",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/components/index.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/index.d.ts": {
         "version": "490333f51a29f5a720d3dcd58912c8456231e17965ccbbd29aedf1d84823e56c",
         "signature": "490333f51a29f5a720d3dcd58912c8456231e17965ccbbd29aedf1d84823e56c",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/tokens.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/tokens.d.ts": {
         "version": "f5f4eed847f0556304760c3beacdcb13a5e0410339897204eedc0b193d4b2d2b",
         "signature": "f5f4eed847f0556304760c3beacdcb13a5e0410339897204eedc0b193d4b2d2b",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/utils.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/utils.d.ts": {
         "version": "3bdcbc4d71a64f44368a69a02566a9c2357381e162f588eeb51ea610abb4766d",
         "signature": "3bdcbc4d71a64f44368a69a02566a9c2357381e162f588eeb51ea610abb4766d",
         "affectsGlobalScope": false
       },
-      "./node_modules/@jupyterlab/ui-components/lib/index.d.ts": {
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts": {
         "version": "a71c8ba8314e45b67cce9c5ed0e49383ad602ad34fd3616877008dcbd3c1bcf6",
         "signature": "a71c8ba8314e45b67cce9c5ed0e49383ad602ad34fd3616877008dcbd3c1bcf6",
         "affectsGlobalScope": false
@@ -2081,6 +2076,11 @@
         "signature": "2f25161c97da541fac8fe4d8770626dba0c3a8564812847e89da336ef7ed604a",
         "affectsGlobalScope": false
       },
+      "./node_modules/@jupyterlab/docregistry/node_modules/@jupyterlab/ui-components/lib/index.d.ts": {
+        "version": "a71c8ba8314e45b67cce9c5ed0e49383ad602ad34fd3616877008dcbd3c1bcf6",
+        "signature": "a71c8ba8314e45b67cce9c5ed0e49383ad602ad34fd3616877008dcbd3c1bcf6",
+        "affectsGlobalScope": false
+      },
       "./node_modules/@jupyterlab/docregistry/lib/registry.d.ts": {
         "version": "d64b6f67f9a3511f90eee07a74d1ccc78bdf421d2f19250c0603917a4e77d80a",
         "signature": "d64b6f67f9a3511f90eee07a74d1ccc78bdf421d2f19250c0603917a4e77d80a",
@@ -2154,6 +2154,11 @@
       "./node_modules/@jupyterlab/docregistry/lib/index.d.ts": {
         "version": "6b3aa0f1ec0fdf7230af21d0d08e33a3259e2d3d1a8a3340b626f26a1a8af4b5",
         "signature": "6b3aa0f1ec0fdf7230af21d0d08e33a3259e2d3d1a8a3340b626f26a1a8af4b5",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/application/node_modules/@jupyterlab/ui-components/lib/index.d.ts": {
+        "version": "a71c8ba8314e45b67cce9c5ed0e49383ad602ad34fd3616877008dcbd3c1bcf6",
+        "signature": "a71c8ba8314e45b67cce9c5ed0e49383ad602ad34fd3616877008dcbd3c1bcf6",
         "affectsGlobalScope": false
       },
       "./node_modules/@lumino/application/types/index.d.ts": {
@@ -2346,32 +2351,32 @@
         "signature": "51126ab661868e1a7e7bfd066a085a5b71c7c68852668f98b08102193e8f7345",
         "affectsGlobalScope": false
       },
-      "./node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts": {
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts": {
         "version": "8d1f632e39ba70a80a603db30716170c616fb580877fff4e826900573117b86f",
         "signature": "8d1f632e39ba70a80a603db30716170c616fb580877fff4e826900573117b86f",
         "affectsGlobalScope": false
       },
-      "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts": {
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/point.d.ts": {
         "version": "968d20d4b75a4bf2dcf6ede9af2e90a9d8c22fa2492d3ccdca07d0bf3ededa9b",
         "signature": "968d20d4b75a4bf2dcf6ede9af2e90a9d8c22fa2492d3ccdca07d0bf3ededa9b",
         "affectsGlobalScope": false
       },
-      "./node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts": {
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts": {
         "version": "13b261b1450d21c5d993de74522fe8d7a3a9f8d4ade2ef68b5e030f04b2a6fd1",
         "signature": "13b261b1450d21c5d993de74522fe8d7a3a9f8d4ade2ef68b5e030f04b2a6fd1",
         "affectsGlobalScope": false
       },
-      "./node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts": {
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts": {
         "version": "b3e81b6bd5b7250ce078be9431064a4cab5208755c9fe8ac641a1467be23d3d4",
         "signature": "b3e81b6bd5b7250ce078be9431064a4cab5208755c9fe8ac641a1467be23d3d4",
         "affectsGlobalScope": false
       },
-      "./node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts": {
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts": {
         "version": "1257e87945f1e930b9ccf3e646b8577dc62ab454e642d26afdae6a5aebe41b2d",
         "signature": "1257e87945f1e930b9ccf3e646b8577dc62ab454e642d26afdae6a5aebe41b2d",
         "affectsGlobalScope": false
       },
-      "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts": {
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts": {
         "version": "dc222f826ae8d67d5cabed4ac6725b7051344f159ee3fa7daeee67eb0a74768c",
         "signature": "dc222f826ae8d67d5cabed4ac6725b7051344f159ee3fa7daeee67eb0a74768c",
         "affectsGlobalScope": false
@@ -2496,14 +2501,24 @@
         "signature": "21fcc1e22048a0eb591f389722909bb0e858a1a726553fcfac3d592924658918",
         "affectsGlobalScope": false
       },
-      "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts": {
+      "./node_modules/@emotion/stylis/types/index.d.ts": {
+        "version": "a6cb30cc0a1fd9dc0b6be4bfa919a35eda7d92be1835bc65a72e3d64a100203c",
+        "signature": "a6cb30cc0a1fd9dc0b6be4bfa919a35eda7d92be1835bc65a72e3d64a100203c",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@emotion/cache/node_modules/@emotion/utils/types/index.d.ts": {
         "version": "4b46f4712ae966996b2cc81949d482063887c55478706e25d942482a44b99b71",
         "signature": "4b46f4712ae966996b2cc81949d482063887c55478706e25d942482a44b99b71",
         "affectsGlobalScope": false
       },
-      "./node_modules/@emotion/react/node_modules/@emotion/cache/types/index.d.ts": {
-        "version": "03d59e612afdc3039a83b12d45b026306b291cfc8e2fc72859f7902b8a857caf",
-        "signature": "03d59e612afdc3039a83b12d45b026306b291cfc8e2fc72859f7902b8a857caf",
+      "./node_modules/@emotion/cache/types/index.d.ts": {
+        "version": "8b7e809ffc5c19880be3af18897d2bcda0c65028c0f36e2ca98b5b4c083f96bb",
+        "signature": "8b7e809ffc5c19880be3af18897d2bcda0c65028c0f36e2ca98b5b4c083f96bb",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts": {
+        "version": "4b46f4712ae966996b2cc81949d482063887c55478706e25d942482a44b99b71",
+        "signature": "4b46f4712ae966996b2cc81949d482063887c55478706e25d942482a44b99b71",
         "affectsGlobalScope": false
       },
       "./node_modules/@emotion/react/node_modules/@emotion/serialize/types/index.d.ts": {
@@ -2527,8 +2542,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@emotion/react/types/index.d.ts": {
-        "version": "909bac92983e542dd29efcf9eedf4ab5a330767c70c505a52326f7f5ee4b288d",
-        "signature": "909bac92983e542dd29efcf9eedf4ab5a330767c70c505a52326f7f5ee4b288d",
+        "version": "413c03b679ca5bbe6456b8a38ac999fffb3834d0e4a9638bd186533d629ab8cb",
+        "signature": "413c03b679ca5bbe6456b8a38ac999fffb3834d0e4a9638bd186533d629ab8cb",
         "affectsGlobalScope": false
       },
       "./node_modules/@emotion/styled/node_modules/@emotion/serialize/types/index.d.ts": {
@@ -2537,8 +2552,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@emotion/styled/types/base.d.ts": {
-        "version": "a10d9cbca387b94d7d31330e44b9af8035331a8c5a9388ff7bea6ac6c547d5ea",
-        "signature": "a10d9cbca387b94d7d31330e44b9af8035331a8c5a9388ff7bea6ac6c547d5ea",
+        "version": "ad41c7519202d7daf1ca369d8e85e607e5604474a25e6d2d2e75730922e9ca76",
+        "signature": "ad41c7519202d7daf1ca369d8e85e607e5604474a25e6d2d2e75730922e9ca76",
         "affectsGlobalScope": false
       },
       "./node_modules/@emotion/styled/types/index.d.ts": {
@@ -2549,6 +2564,11 @@
       "./src/helpers/democanvaswidget.tsx": {
         "version": "027dcf08814265db8dad68789bacb307908fe65f9e75a8f5338d38b89cf3a022",
         "signature": "60355783565bcc6c9874db5150e18fa6b7b0562e1170d61b6e889a8a0fde24af",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts": {
+        "version": "dc222f826ae8d67d5cabed4ac6725b7051344f159ee3fa7daeee67eb0a74768c",
+        "signature": "dc222f826ae8d67d5cabed4ac6725b7051344f159ee3fa7daeee67eb0a74768c",
         "affectsGlobalScope": false
       },
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/nodemodel.d.ts": {
@@ -2762,8 +2782,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@types/dagre/index.d.ts": {
-        "version": "c38f82bf012ee71ad84b9ce0602d4a97d1a957e41276c3eaaadb7a97de5adf4f",
-        "signature": "c38f82bf012ee71ad84b9ce0602d4a97d1a957e41276c3eaaadb7a97de5adf4f",
+        "version": "570ed841f3dd2d69b344f27d941ee30bf38bb2ce0e9e9c8ae354cc9098b244ff",
+        "signature": "570ed841f3dd2d69b344f27d941ee30bf38bb2ce0e9e9c8ae354cc9098b244ff",
         "affectsGlobalScope": false
       },
       "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/dagre/dagreengine.d.ts": {
@@ -2843,8 +2863,98 @@
         "affectsGlobalScope": false
       },
       "./src/xpipewidget.tsx": {
-        "version": "cb0ba4cc53745cca3232802318d9f438e86ff60f32f65e994fc68dfe64dafced",
-        "signature": "1ccf5da14f16f50f297872257847c68c4de927d355a6911e79309e4f92f6b16d",
+        "version": "4781e333ec228448c1d482b061424139dbeefd405c0b121cdfc5f2e91395e3dd",
+        "signature": "fceab5cb52605b9aeee8abb6fccf1e29c4628d69bfa3a1506b14d5e7adb4eab2",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts": {
+        "version": "76e27a82abcc42653aec48ff050d6235a62a3eb0d5c6c4c2f5f09bdc8fb79807",
+        "signature": "76e27a82abcc42653aec48ff050d6235a62a3eb0d5c6c4c2f5f09bdc8fb79807",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/style/icon.d.ts": {
+        "version": "72197af93cb407921c0db36a7c187588c10f994e7924d2ec722004843c226e2d",
+        "signature": "72197af93cb407921c0db36a7c187588c10f994e7924d2ec722004843c226e2d",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/style/index.d.ts": {
+        "version": "aecf31d8843eecf4011a77ba692a68ba8da0241653a39cd275310eed2ab1649d",
+        "signature": "aecf31d8843eecf4011a77ba692a68ba8da0241653a39cd275310eed2ab1649d",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/icon/labicon.d.ts": {
+        "version": "bfef935156b81c081b0e58da269d50db594c6229eb9d90622858274d92358700",
+        "signature": "bfef935156b81c081b0e58da269d50db594c6229eb9d90622858274d92358700",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/icon/iconimports.d.ts": {
+        "version": "24b4b6e0592342923d92e8f7ff9f3db09df030ad76941cd613532b98506c16ff",
+        "signature": "24b4b6e0592342923d92e8f7ff9f3db09df030ad76941cd613532b98506c16ff",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/icon/widgets/commandpalettesvg.d.ts": {
+        "version": "b19f59a453f22453e4735e0b9fee2089fabebddfdd0b0fedab0409e3a2da63ca",
+        "signature": "b19f59a453f22453e4735e0b9fee2089fabebddfdd0b0fedab0409e3a2da63ca",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/icon/widgets/menusvg.d.ts": {
+        "version": "f080a7a3aaa9eb07e4b0c38c0ecdb3a409bdb5f827479a4402acfed6111763a7",
+        "signature": "f080a7a3aaa9eb07e4b0c38c0ecdb3a409bdb5f827479a4402acfed6111763a7",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/icon/widgets/tabbarsvg.d.ts": {
+        "version": "a098eb23c976a09718d50d55a6738011d24d29612f44f8afa5b0e78a1cd6fdf2",
+        "signature": "a098eb23c976a09718d50d55a6738011d24d29612f44f8afa5b0e78a1cd6fdf2",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/icon/widgets/index.d.ts": {
+        "version": "d17f7a001dae13ded8536376f9319169a4c53e0e3789756e2058d0f4b4083a19",
+        "signature": "d17f7a001dae13ded8536376f9319169a4c53e0e3789756e2058d0f4b4083a19",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts": {
+        "version": "ba42ed466e271511af20653ef52792fc270ae38c2a897c60249efdb5258f22a8",
+        "signature": "ba42ed466e271511af20653ef52792fc270ae38c2a897c60249efdb5258f22a8",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/components/interface.d.ts": {
+        "version": "db3efaf54928d3b92c0e80f1da14e03b49e20272e90158beae18ac9891207798",
+        "signature": "db3efaf54928d3b92c0e80f1da14e03b49e20272e90158beae18ac9891207798",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/components/htmlselect.d.ts": {
+        "version": "cb82c1784b85fe06df3a5bdbebf3e27e68ed9e6e0086014db89adf3954596661",
+        "signature": "cb82c1784b85fe06df3a5bdbebf3e27e68ed9e6e0086014db89adf3954596661",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/components/menu.d.ts": {
+        "version": "5d88c7751a2e431303eb7537734d90c8441831d976a45fe015afbc3a387f0458",
+        "signature": "5d88c7751a2e431303eb7537734d90c8441831d976a45fe015afbc3a387f0458",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/components/switch.d.ts": {
+        "version": "f930cec87b27939416f5d933c8ae49e83827def3c4d6a7b842ee414892dbe873",
+        "signature": "f930cec87b27939416f5d933c8ae49e83827def3c4d6a7b842ee414892dbe873",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/components/index.d.ts": {
+        "version": "490333f51a29f5a720d3dcd58912c8456231e17965ccbbd29aedf1d84823e56c",
+        "signature": "490333f51a29f5a720d3dcd58912c8456231e17965ccbbd29aedf1d84823e56c",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/tokens.d.ts": {
+        "version": "f5f4eed847f0556304760c3beacdcb13a5e0410339897204eedc0b193d4b2d2b",
+        "signature": "f5f4eed847f0556304760c3beacdcb13a5e0410339897204eedc0b193d4b2d2b",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/utils.d.ts": {
+        "version": "3bdcbc4d71a64f44368a69a02566a9c2357381e162f588eeb51ea610abb4766d",
+        "signature": "3bdcbc4d71a64f44368a69a02566a9c2357381e162f588eeb51ea610abb4766d",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/ui-components/lib/index.d.ts": {
+        "version": "a71c8ba8314e45b67cce9c5ed0e49383ad602ad34fd3616877008dcbd3c1bcf6",
+        "signature": "a71c8ba8314e45b67cce9c5ed0e49383ad602ad34fd3616877008dcbd3c1bcf6",
         "affectsGlobalScope": false
       },
       "./node_modules/@jupyterlab/outputarea/lib/model.d.ts": {
@@ -2897,18 +3007,13 @@
         "signature": "7a7590e512cc102113fbe870213cefb4db7b693b6070a514acc8fcc92e2265d4",
         "affectsGlobalScope": false
       },
-      "./src/components_xpipe/javascript_python_parser/filbert.js": {
-        "version": "142f37364763322e582df9810b77fd5b39835557d8b5db228f56f7761ebd127a",
-        "signature": "97db21c0396d6f3a49d0db5afc292c7f7753911295347fb69972aa133726075e",
-        "affectsGlobalScope": true
-      },
-      "./src/components_xpipe/javascript_python_parser/filbert_loose.js": {
-        "version": "15f39c8d2750d0e412982af7732f08509e0c606c62178e59a1c381aa2542548f",
-        "signature": "2f6834ebedb86f320f90a1c599590beebab7eb4ddd79b49ad0ef091eb0de0a03",
-        "affectsGlobalScope": true
+      "./src/server/handler.ts": {
+        "version": "4faeaf41d81e6f1b64f0da365e30e6446cd50b8c7a5b9c7704be0caad7990968",
+        "signature": "7f6037fa8d3da3ab5b173e089bd9d6eaf4e04e663844a9822b0463636b6ac816",
+        "affectsGlobalScope": false
       },
       "./src/components_xpipe/component.ts": {
-        "version": "e5c99751b0d17fc23638fedd8be1b3f8bd22b3bdf659727962da15d400931cd0",
+        "version": "588d70552464dbffc643fc98d62ee49f6a78a8e841aa47dedb121be685ab4716",
         "signature": "342a44f8d4fe4190ff84cc5ce2e42395a39301830bf99b710191a2f92564a2e1",
         "affectsGlobalScope": false
       },
@@ -2967,19 +3072,19 @@
         "signature": "9476fd1bf70415200e38045f55e9e148ac641a46e44cacf146fbf83cdbd2bffe",
         "affectsGlobalScope": false
       },
-      "./src/server/handler.ts": {
-        "version": "4faeaf41d81e6f1b64f0da365e30e6446cd50b8c7a5b9c7704be0caad7990968",
-        "signature": "7f6037fa8d3da3ab5b173e089bd9d6eaf4e04e663844a9822b0463636b6ac816",
-        "affectsGlobalScope": false
-      },
       "./src/components/xpipebodywidget.tsx": {
-        "version": "dfe6cf44c03621f387dd7af19838cd41dced7cde8408c84298185d3061f33246",
+        "version": "54fd8a0367e94272a62d274bef587c4c15b8c56bf87fc4bbd61791e371f486c8",
         "signature": "72a39e64d107396b2f4ae55cdd3f46b73e275974e798522b33f3f3449f11e1f9",
         "affectsGlobalScope": false
       },
       "./node_modules/@jupyterlab/launcher/lib/index.d.ts": {
         "version": "468bfd0bfa92326929128ba584b515944d58035229d396ef9264882de91ad0ee",
         "signature": "468bfd0bfa92326929128ba584b515944d58035229d396ef9264882de91ad0ee",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/mainmenu/node_modules/@jupyterlab/ui-components/lib/index.d.ts": {
+        "version": "a71c8ba8314e45b67cce9c5ed0e49383ad602ad34fd3616877008dcbd3c1bcf6",
+        "signature": "a71c8ba8314e45b67cce9c5ed0e49383ad602ad34fd3616877008dcbd3c1bcf6",
         "affectsGlobalScope": false
       },
       "./node_modules/@jupyterlab/mainmenu/lib/file.d.ts": {
@@ -3407,6 +3512,11 @@
         "signature": "5092a24edce5deb47f3e456882bf460ccbaa6c17e230596dbe1497d5cdeae846",
         "affectsGlobalScope": false
       },
+      "./node_modules/@jupyterlab/debugger/node_modules/@jupyterlab/ui-components/lib/index.d.ts": {
+        "version": "a71c8ba8314e45b67cce9c5ed0e49383ad602ad34fd3616877008dcbd3c1bcf6",
+        "signature": "a71c8ba8314e45b67cce9c5ed0e49383ad602ad34fd3616877008dcbd3c1bcf6",
+        "affectsGlobalScope": false
+      },
       "./node_modules/@jupyterlab/debugger/lib/debugger.d.ts": {
         "version": "72b7c05dfe42ad2e7ec019860e5b0758e00222e67bd747229db505afd6dfafcf",
         "signature": "72b7c05dfe42ad2e7ec019860e5b0758e00222e67bd747229db505afd6dfafcf",
@@ -3473,6 +3583,9 @@
       "configFilePath": "./tsconfig.json"
     },
     "referencedMap": {
+      "./node_modules/@blueprintjs/colors/lib/index.d.ts": [
+        "./node_modules/@blueprintjs/colors/lib/colors.d.ts"
+      ],
       "./node_modules/@blueprintjs/core/lib/cjs/common/abstractcomponent.d.ts": [
         "./node_modules/@types/react/index.d.ts"
       ],
@@ -3492,6 +3605,7 @@
         "./node_modules/@blueprintjs/core/lib/cjs/common/position.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/cjs/common/index.d.ts": [
+        "./node_modules/@blueprintjs/colors/lib/index.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/abstractcomponent.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/abstractcomponent2.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/abstractpurecomponent.d.ts",
@@ -3499,7 +3613,6 @@
         "./node_modules/@blueprintjs/core/lib/cjs/common/alignment.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/boundary.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/classes.d.ts",
-        "./node_modules/@blueprintjs/core/lib/cjs/common/colors.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/constructor.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/elevation.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/intent.d.ts",
@@ -3587,6 +3700,7 @@
         "./node_modules/@blueprintjs/core/lib/esm/common/position.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/common/index.d.ts": [
+        "./node_modules/@blueprintjs/colors/lib/index.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/abstractcomponent.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/abstractcomponent2.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/abstractpurecomponent.d.ts",
@@ -3594,7 +3708,6 @@
         "./node_modules/@blueprintjs/core/lib/esm/common/alignment.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/boundary.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/classes.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/common/colors.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/constructor.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/elevation.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/intent.d.ts",
@@ -4157,18 +4270,19 @@
         "./node_modules/@blueprintjs/select/lib/cjs/common/index.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
-      "./node_modules/@emotion/react/node_modules/@emotion/cache/types/index.d.ts": [
-        "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts"
+      "./node_modules/@emotion/cache/types/index.d.ts": [
+        "./node_modules/@emotion/cache/node_modules/@emotion/utils/types/index.d.ts",
+        "./node_modules/@emotion/stylis/types/index.d.ts"
       ],
       "./node_modules/@emotion/react/node_modules/@emotion/serialize/types/index.d.ts": [
-        "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts",
+        "./node_modules/@emotion/cache/node_modules/@emotion/utils/types/index.d.ts",
         "./node_modules/csstype/index.d.ts"
       ],
       "./node_modules/@emotion/react/types/helper.d.ts": [
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@emotion/react/types/index.d.ts": [
-        "./node_modules/@emotion/react/node_modules/@emotion/cache/types/index.d.ts",
+        "./node_modules/@emotion/cache/types/index.d.ts",
         "./node_modules/@emotion/react/node_modules/@emotion/serialize/types/index.d.ts",
         "./node_modules/@emotion/react/types/helper.d.ts",
         "./node_modules/@emotion/react/types/jsx-namespace.d.ts",
@@ -4186,7 +4300,7 @@
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@emotion/styled/node_modules/@emotion/serialize/types/index.d.ts": [
-        "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts",
+        "./node_modules/@emotion/cache/node_modules/@emotion/utils/types/index.d.ts",
         "./node_modules/csstype/index.d.ts"
       ],
       "./node_modules/@emotion/styled/types/base.d.ts": [
@@ -4203,9 +4317,9 @@
       ],
       "./node_modules/@jupyterlab/application/lib/frontend.d.ts": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/docregistry/lib/index.d.ts",
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/algorithm/types/index.d.ts",
         "./node_modules/@lumino/application/types/index.d.ts",
         "./node_modules/@lumino/coreutils/types/index.d.ts",
@@ -4279,6 +4393,13 @@
       ],
       "./node_modules/@jupyterlab/application/lib/treepathupdater.d.ts": [
         "./node_modules/@lumino/coreutils/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/application/node_modules/@jupyterlab/ui-components/lib/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/tokens.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/utils.d.ts"
       ],
       "./node_modules/@jupyterlab/apputils/lib/clipboard.d.ts": [
         "./node_modules/@lumino/coreutils/types/index.d.ts"
@@ -4390,8 +4511,8 @@
       "./node_modules/@jupyterlab/apputils/lib/toolbar.d.ts": [
         "./node_modules/@jupyterlab/apputils/lib/sessioncontext.d.ts",
         "./node_modules/@jupyterlab/apputils/lib/vdom.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/algorithm/types/index.d.ts",
         "./node_modules/@lumino/commands/types/index.d.ts",
         "./node_modules/@lumino/coreutils/types/index.d.ts",
@@ -4413,6 +4534,84 @@
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/apputils/lib/windowresolver.d.ts": [
+        "./node_modules/@lumino/coreutils/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts": [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/intent.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/components/button/buttons.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/components/collapse/collapse.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/components/forms/controls.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/components/forms/inputgroup.d.ts",
+        "./node_modules/@blueprintjs/select/lib/cjs/components/select/select.d.ts",
+        "./node_modules/@types/react/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/htmlselect.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/interface.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts",
+        "./node_modules/@types/react/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/htmlselect.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/interface.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/menu.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/switch.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/menu.d.ts": [
+        "./node_modules/@lumino/disposable/types/index.d.ts",
+        "./node_modules/@lumino/widgets/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/switch.d.ts": [
+        "./node_modules/@jupyterlab/coreutils/lib/index.d.ts",
+        "./node_modules/@lumino/signaling/types/index.d.ts",
+        "./node_modules/@lumino/widgets/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/iconimports.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/labicon.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/iconimports.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/labicon.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/labicon.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/style/index.d.ts",
+        "./node_modules/@lumino/signaling/types/index.d.ts",
+        "./node_modules/@lumino/virtualdom/types/index.d.ts",
+        "./node_modules/@types/react/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/commandpalettesvg.d.ts": [
+        "./node_modules/@lumino/virtualdom/types/index.d.ts",
+        "./node_modules/@lumino/widgets/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/commandpalettesvg.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/menusvg.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/tabbarsvg.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/menusvg.d.ts": [
+        "./node_modules/@lumino/disposable/types/index.d.ts",
+        "./node_modules/@lumino/signaling/types/index.d.ts",
+        "./node_modules/@lumino/virtualdom/types/index.d.ts",
+        "./node_modules/@lumino/widgets/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/tabbarsvg.d.ts": [
+        "./node_modules/@lumino/virtualdom/types/index.d.ts",
+        "./node_modules/@lumino/widgets/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/tokens.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/utils.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/style/icon.d.ts": [
+        "./node_modules/typestyle/lib/types.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/style/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/style/icon.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/tokens.d.ts": [
         "./node_modules/@lumino/coreutils/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/attachments/lib/index.d.ts": [
@@ -4592,6 +4791,7 @@
         "./node_modules/@jupyterlab/debugger/lib/tokens.d.ts"
       ],
       "./node_modules/@jupyterlab/debugger/lib/debugger.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/debugger/lib/config.d.ts",
         "./node_modules/@jupyterlab/debugger/lib/dialogs/evaluate.d.ts",
         "./node_modules/@jupyterlab/debugger/lib/factory.d.ts",
@@ -4602,8 +4802,7 @@
         "./node_modules/@jupyterlab/debugger/lib/service.d.ts",
         "./node_modules/@jupyterlab/debugger/lib/session.d.ts",
         "./node_modules/@jupyterlab/debugger/lib/sidebar.d.ts",
-        "./node_modules/@jupyterlab/debugger/lib/sources.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts"
+        "./node_modules/@jupyterlab/debugger/lib/sources.d.ts"
       ],
       "./node_modules/@jupyterlab/debugger/lib/dialogs/evaluate.d.ts": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
@@ -4745,6 +4944,13 @@
         "./node_modules/@lumino/widgets/types/index.d.ts",
         "./node_modules/vscode-debugprotocol/lib/debugprotocol.d.ts"
       ],
+      "./node_modules/@jupyterlab/debugger/node_modules/@jupyterlab/ui-components/lib/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/tokens.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/utils.d.ts"
+      ],
       "./node_modules/@jupyterlab/docmanager/lib/dialogs.d.ts": [
         "./node_modules/@jupyterlab/docmanager/lib/index.d.ts",
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
@@ -4864,6 +5070,7 @@
       ],
       "./node_modules/@jupyterlab/docregistry/lib/registry.d.ts": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/codeeditor/lib/index.d.ts",
         "./node_modules/@jupyterlab/coreutils/lib/index.d.ts",
         "./node_modules/@jupyterlab/observables/lib/index.d.ts",
@@ -4871,12 +5078,18 @@
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
         "./node_modules/@jupyterlab/shared-models/lib/index.d.ts",
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/algorithm/types/index.d.ts",
         "./node_modules/@lumino/coreutils/types/index.d.ts",
         "./node_modules/@lumino/disposable/types/index.d.ts",
         "./node_modules/@lumino/signaling/types/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/docregistry/node_modules/@jupyterlab/ui-components/lib/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/tokens.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/utils.d.ts"
       ],
       "./node_modules/@jupyterlab/filebrowser/lib/browser.d.ts": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
@@ -5023,22 +5236,23 @@
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/edit.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/file.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/help.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/edit.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/file.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/help.d.ts",
@@ -5048,15 +5262,15 @@
         "./node_modules/@jupyterlab/mainmenu/lib/settings.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tabs.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
-        "./node_modules/@jupyterlab/mainmenu/lib/view.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts"
+        "./node_modules/@jupyterlab/mainmenu/lib/view.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/kernel.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/mainmenu.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/edit.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/file.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/help.d.ts",
@@ -5067,20 +5281,19 @@
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/view.d.ts",
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/commands/types/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/run.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/settings.d.ts": [
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts"
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/tabs.d.ts": [
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts"
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
@@ -5096,9 +5309,16 @@
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/view.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/mainmenu/node_modules/@jupyterlab/ui-components/lib/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/tokens.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/utils.d.ts"
       ],
       "./node_modules/@jupyterlab/nbformat/lib/index.d.ts": [
         "./node_modules/@lumino/coreutils/types/index.d.ts"
@@ -5967,29 +6187,6 @@
         "./node_modules/@lumino/widgets/types/layout.d.ts",
         "./node_modules/@lumino/widgets/types/title.d.ts"
       ],
-      "./node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts"
-      ],
-      "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts"
-      ],
-      "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts"
-      ],
-      "./node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts"
-      ],
-      "./node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts"
-      ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/actions/deleteitemsaction.d.ts": [
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/action.d.ts"
       ],
@@ -5997,7 +6194,6 @@
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/action.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/canvasengine.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/actioneventbus.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basemodel.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/statemachine.d.ts",
@@ -6006,6 +6202,7 @@
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/factorybank.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/canvasmodel.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/layermodel.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/action.d.ts": [
@@ -6029,10 +6226,10 @@
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/canvasmodel.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basepositionmodel.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/baseentity.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basemodel.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/modelgeometryinterface.d.ts"
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/modelgeometryinterface.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/abstractdisplacementstate.d.ts": [
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/canvasengine.d.ts",
@@ -6071,7 +6268,7 @@
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/baseobserver.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/modelgeometryinterface.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts"
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/canvasmodel.d.ts": [
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/canvasengine.d.ts",
@@ -6157,11 +6354,11 @@
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/state.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/moveitemsstate.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/canvasengine.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basepositionmodel.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/abstractdisplacementstate.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/state.d.ts"
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/state.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/selectingstate.d.ts": [
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/state.d.ts"
@@ -6175,9 +6372,32 @@
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basemodel.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts": [
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts"
+      ],
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts": [
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts"
+      ],
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/point.d.ts": [
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts"
+      ],
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts": [
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts"
+      ],
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts": [
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts"
+      ],
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/diagramengine.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/label/labelmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/nodemodel.d.ts",
@@ -6206,8 +6426,8 @@
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkmodel.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/label/labelmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/pointmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portmodel.d.ts",
@@ -6242,8 +6462,8 @@
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/nodemodel.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/models/diagrammodel.d.ts"
@@ -6255,8 +6475,8 @@
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portmodel.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/nodemodel.d.ts"
       ],
@@ -6310,9 +6530,16 @@
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portmodel.d.ts"
       ],
+      "./node_modules/@projectstorm/react-diagrams-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts": [
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts"
+      ],
       "./node_modules/@projectstorm/react-diagrams-core/src/diagramengine.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/src/entities/label/labelmodel.ts",
         "./node_modules/@projectstorm/react-diagrams-core/src/entities/link/linkmodel.ts",
         "./node_modules/@projectstorm/react-diagrams-core/src/entities/node/nodemodel.ts",
@@ -6332,8 +6559,8 @@
         "./node_modules/@projectstorm/react-diagrams-core/src/models/diagrammodel.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-core/src/entities/link/linkmodel.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/src/diagramengine.ts",
         "./node_modules/@projectstorm/react-diagrams-core/src/entities/label/labelmodel.ts",
         "./node_modules/@projectstorm/react-diagrams-core/src/entities/link/pointmodel.ts",
@@ -6351,16 +6578,16 @@
         "./node_modules/@projectstorm/react-diagrams-core/src/models/diagrammodel.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-core/src/entities/node/nodemodel.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/src/diagramengine.ts",
         "./node_modules/@projectstorm/react-diagrams-core/src/entities/link/linkmodel.ts",
         "./node_modules/@projectstorm/react-diagrams-core/src/entities/port/portmodel.ts",
         "./node_modules/@projectstorm/react-diagrams-core/src/models/diagrammodel.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-core/src/entities/port/portmodel.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/src/entities/link/linkmodel.ts",
         "./node_modules/@projectstorm/react-diagrams-core/src/entities/node/nodemodel.ts"
       ],
@@ -6516,7 +6743,6 @@
       "./node_modules/@types/react/index.d.ts": [
         "./node_modules/@types/prop-types/index.d.ts",
         "./node_modules/@types/react/global.d.ts",
-        "./node_modules/@types/scheduler/tracing.d.ts",
         "./node_modules/csstype/index.d.ts"
       ],
       "./node_modules/rc-dialog/lib/dialogwrap.d.ts": [
@@ -6976,10 +7202,7 @@
       ],
       "./src/components_xpipe/component.ts": [
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
-        "./src/components_xpipe/javascript_python_parser/filbert_loose.js"
-      ],
-      "./src/components_xpipe/javascript_python_parser/filbert_loose.js": [
-        "./src/components_xpipe/javascript_python_parser/filbert.js"
+        "./src/server/handler.ts"
       ],
       "./src/components_xpipe/sidebar.tsx": [
         "./node_modules/@emotion/styled/types/index.d.ts",
@@ -7129,6 +7352,9 @@
       ]
     },
     "exportedModulesMap": {
+      "./node_modules/@blueprintjs/colors/lib/index.d.ts": [
+        "./node_modules/@blueprintjs/colors/lib/colors.d.ts"
+      ],
       "./node_modules/@blueprintjs/core/lib/cjs/common/abstractcomponent.d.ts": [
         "./node_modules/@types/react/index.d.ts"
       ],
@@ -7148,6 +7374,7 @@
         "./node_modules/@blueprintjs/core/lib/cjs/common/position.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/cjs/common/index.d.ts": [
+        "./node_modules/@blueprintjs/colors/lib/index.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/abstractcomponent.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/abstractcomponent2.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/abstractpurecomponent.d.ts",
@@ -7155,7 +7382,6 @@
         "./node_modules/@blueprintjs/core/lib/cjs/common/alignment.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/boundary.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/classes.d.ts",
-        "./node_modules/@blueprintjs/core/lib/cjs/common/colors.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/constructor.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/elevation.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/intent.d.ts",
@@ -7243,6 +7469,7 @@
         "./node_modules/@blueprintjs/core/lib/esm/common/position.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/common/index.d.ts": [
+        "./node_modules/@blueprintjs/colors/lib/index.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/abstractcomponent.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/abstractcomponent2.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/abstractpurecomponent.d.ts",
@@ -7250,7 +7477,6 @@
         "./node_modules/@blueprintjs/core/lib/esm/common/alignment.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/boundary.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/classes.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/common/colors.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/constructor.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/elevation.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/intent.d.ts",
@@ -7813,18 +8039,19 @@
         "./node_modules/@blueprintjs/select/lib/cjs/common/index.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
-      "./node_modules/@emotion/react/node_modules/@emotion/cache/types/index.d.ts": [
-        "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts"
+      "./node_modules/@emotion/cache/types/index.d.ts": [
+        "./node_modules/@emotion/cache/node_modules/@emotion/utils/types/index.d.ts",
+        "./node_modules/@emotion/stylis/types/index.d.ts"
       ],
       "./node_modules/@emotion/react/node_modules/@emotion/serialize/types/index.d.ts": [
-        "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts",
+        "./node_modules/@emotion/cache/node_modules/@emotion/utils/types/index.d.ts",
         "./node_modules/csstype/index.d.ts"
       ],
       "./node_modules/@emotion/react/types/helper.d.ts": [
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@emotion/react/types/index.d.ts": [
-        "./node_modules/@emotion/react/node_modules/@emotion/cache/types/index.d.ts",
+        "./node_modules/@emotion/cache/types/index.d.ts",
         "./node_modules/@emotion/react/node_modules/@emotion/serialize/types/index.d.ts",
         "./node_modules/@emotion/react/types/helper.d.ts",
         "./node_modules/@emotion/react/types/jsx-namespace.d.ts",
@@ -7842,7 +8069,7 @@
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@emotion/styled/node_modules/@emotion/serialize/types/index.d.ts": [
-        "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts",
+        "./node_modules/@emotion/cache/node_modules/@emotion/utils/types/index.d.ts",
         "./node_modules/csstype/index.d.ts"
       ],
       "./node_modules/@emotion/styled/types/base.d.ts": [
@@ -7859,9 +8086,9 @@
       ],
       "./node_modules/@jupyterlab/application/lib/frontend.d.ts": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/docregistry/lib/index.d.ts",
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/algorithm/types/index.d.ts",
         "./node_modules/@lumino/application/types/index.d.ts",
         "./node_modules/@lumino/coreutils/types/index.d.ts",
@@ -7935,6 +8162,13 @@
       ],
       "./node_modules/@jupyterlab/application/lib/treepathupdater.d.ts": [
         "./node_modules/@lumino/coreutils/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/application/node_modules/@jupyterlab/ui-components/lib/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/tokens.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/utils.d.ts"
       ],
       "./node_modules/@jupyterlab/apputils/lib/clipboard.d.ts": [
         "./node_modules/@lumino/coreutils/types/index.d.ts"
@@ -8046,8 +8280,8 @@
       "./node_modules/@jupyterlab/apputils/lib/toolbar.d.ts": [
         "./node_modules/@jupyterlab/apputils/lib/sessioncontext.d.ts",
         "./node_modules/@jupyterlab/apputils/lib/vdom.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/algorithm/types/index.d.ts",
         "./node_modules/@lumino/commands/types/index.d.ts",
         "./node_modules/@lumino/coreutils/types/index.d.ts",
@@ -8069,6 +8303,84 @@
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/apputils/lib/windowresolver.d.ts": [
+        "./node_modules/@lumino/coreutils/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts": [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/intent.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/components/button/buttons.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/components/collapse/collapse.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/components/forms/controls.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/components/forms/inputgroup.d.ts",
+        "./node_modules/@blueprintjs/select/lib/cjs/components/select/select.d.ts",
+        "./node_modules/@types/react/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/htmlselect.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/interface.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts",
+        "./node_modules/@types/react/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/htmlselect.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/interface.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/menu.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/switch.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/menu.d.ts": [
+        "./node_modules/@lumino/disposable/types/index.d.ts",
+        "./node_modules/@lumino/widgets/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/switch.d.ts": [
+        "./node_modules/@jupyterlab/coreutils/lib/index.d.ts",
+        "./node_modules/@lumino/signaling/types/index.d.ts",
+        "./node_modules/@lumino/widgets/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/iconimports.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/labicon.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/iconimports.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/labicon.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/labicon.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/style/index.d.ts",
+        "./node_modules/@lumino/signaling/types/index.d.ts",
+        "./node_modules/@lumino/virtualdom/types/index.d.ts",
+        "./node_modules/@types/react/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/commandpalettesvg.d.ts": [
+        "./node_modules/@lumino/virtualdom/types/index.d.ts",
+        "./node_modules/@lumino/widgets/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/commandpalettesvg.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/menusvg.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/tabbarsvg.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/menusvg.d.ts": [
+        "./node_modules/@lumino/disposable/types/index.d.ts",
+        "./node_modules/@lumino/signaling/types/index.d.ts",
+        "./node_modules/@lumino/virtualdom/types/index.d.ts",
+        "./node_modules/@lumino/widgets/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/tabbarsvg.d.ts": [
+        "./node_modules/@lumino/virtualdom/types/index.d.ts",
+        "./node_modules/@lumino/widgets/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/tokens.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/utils.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/style/icon.d.ts": [
+        "./node_modules/typestyle/lib/types.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/style/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/style/icon.d.ts"
+      ],
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/tokens.d.ts": [
         "./node_modules/@lumino/coreutils/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/attachments/lib/index.d.ts": [
@@ -8248,6 +8560,7 @@
         "./node_modules/@jupyterlab/debugger/lib/tokens.d.ts"
       ],
       "./node_modules/@jupyterlab/debugger/lib/debugger.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/debugger/lib/config.d.ts",
         "./node_modules/@jupyterlab/debugger/lib/dialogs/evaluate.d.ts",
         "./node_modules/@jupyterlab/debugger/lib/factory.d.ts",
@@ -8258,8 +8571,7 @@
         "./node_modules/@jupyterlab/debugger/lib/service.d.ts",
         "./node_modules/@jupyterlab/debugger/lib/session.d.ts",
         "./node_modules/@jupyterlab/debugger/lib/sidebar.d.ts",
-        "./node_modules/@jupyterlab/debugger/lib/sources.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts"
+        "./node_modules/@jupyterlab/debugger/lib/sources.d.ts"
       ],
       "./node_modules/@jupyterlab/debugger/lib/dialogs/evaluate.d.ts": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
@@ -8401,6 +8713,13 @@
         "./node_modules/@lumino/widgets/types/index.d.ts",
         "./node_modules/vscode-debugprotocol/lib/debugprotocol.d.ts"
       ],
+      "./node_modules/@jupyterlab/debugger/node_modules/@jupyterlab/ui-components/lib/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/tokens.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/utils.d.ts"
+      ],
       "./node_modules/@jupyterlab/docmanager/lib/dialogs.d.ts": [
         "./node_modules/@jupyterlab/docmanager/lib/index.d.ts",
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
@@ -8520,6 +8839,7 @@
       ],
       "./node_modules/@jupyterlab/docregistry/lib/registry.d.ts": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/codeeditor/lib/index.d.ts",
         "./node_modules/@jupyterlab/coreutils/lib/index.d.ts",
         "./node_modules/@jupyterlab/observables/lib/index.d.ts",
@@ -8527,12 +8847,18 @@
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
         "./node_modules/@jupyterlab/shared-models/lib/index.d.ts",
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/algorithm/types/index.d.ts",
         "./node_modules/@lumino/coreutils/types/index.d.ts",
         "./node_modules/@lumino/disposable/types/index.d.ts",
         "./node_modules/@lumino/signaling/types/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/docregistry/node_modules/@jupyterlab/ui-components/lib/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/tokens.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/utils.d.ts"
       ],
       "./node_modules/@jupyterlab/filebrowser/lib/browser.d.ts": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
@@ -8679,22 +9005,23 @@
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/edit.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/file.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/help.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/edit.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/file.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/help.d.ts",
@@ -8704,15 +9031,15 @@
         "./node_modules/@jupyterlab/mainmenu/lib/settings.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tabs.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
-        "./node_modules/@jupyterlab/mainmenu/lib/view.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts"
+        "./node_modules/@jupyterlab/mainmenu/lib/view.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/kernel.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/mainmenu.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/edit.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/file.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/help.d.ts",
@@ -8723,20 +9050,19 @@
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/view.d.ts",
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/commands/types/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/run.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/settings.d.ts": [
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts"
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/tabs.d.ts": [
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts"
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
@@ -8752,9 +9078,16 @@
         "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./node_modules/@jupyterlab/mainmenu/lib/view.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
-        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts"
+      ],
+      "./node_modules/@jupyterlab/mainmenu/node_modules/@jupyterlab/ui-components/lib/index.d.ts": [
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/tokens.d.ts",
+        "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/utils.d.ts"
       ],
       "./node_modules/@jupyterlab/nbformat/lib/index.d.ts": [
         "./node_modules/@lumino/coreutils/types/index.d.ts"
@@ -9623,29 +9956,6 @@
         "./node_modules/@lumino/widgets/types/layout.d.ts",
         "./node_modules/@lumino/widgets/types/title.d.ts"
       ],
-      "./node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts"
-      ],
-      "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts"
-      ],
-      "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts"
-      ],
-      "./node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts"
-      ],
-      "./node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts"
-      ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/actions/deleteitemsaction.d.ts": [
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/action.d.ts"
       ],
@@ -9653,7 +9963,6 @@
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/action.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/canvasengine.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/actioneventbus.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basemodel.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/statemachine.d.ts",
@@ -9662,6 +9971,7 @@
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/factorybank.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/canvasmodel.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/layermodel.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/action.d.ts": [
@@ -9685,10 +9995,10 @@
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/canvasmodel.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basepositionmodel.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/baseentity.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basemodel.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/modelgeometryinterface.d.ts"
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/modelgeometryinterface.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/abstractdisplacementstate.d.ts": [
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/canvasengine.d.ts",
@@ -9727,7 +10037,7 @@
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/baseobserver.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/modelgeometryinterface.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts"
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/canvasmodel.d.ts": [
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/canvasengine.d.ts",
@@ -9813,11 +10123,11 @@
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/state.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/moveitemsstate.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/canvasengine.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basepositionmodel.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/abstractdisplacementstate.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/state.d.ts"
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/state.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/selectingstate.d.ts": [
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/state.d.ts"
@@ -9831,9 +10141,32 @@
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basemodel.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts": [
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts"
+      ],
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts": [
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts"
+      ],
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/point.d.ts": [
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts"
+      ],
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts": [
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts"
+      ],
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts": [
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts"
+      ],
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/diagramengine.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/label/labelmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/nodemodel.d.ts",
@@ -9862,8 +10195,8 @@
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkmodel.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/label/labelmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/pointmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portmodel.d.ts",
@@ -9898,8 +10231,8 @@
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/nodemodel.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/models/diagrammodel.d.ts"
@@ -9911,8 +10244,8 @@
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portmodel.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/nodemodel.d.ts"
       ],
@@ -9965,6 +10298,13 @@
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/diagramengine.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkmodel.d.ts",
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portmodel.d.ts"
+      ],
+      "./node_modules/@projectstorm/react-diagrams-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts": [
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/index.d.ts": [
         "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/defaultlabelfactory.d.ts",
@@ -10111,7 +10451,6 @@
       "./node_modules/@types/react/index.d.ts": [
         "./node_modules/@types/prop-types/index.d.ts",
         "./node_modules/@types/react/global.d.ts",
-        "./node_modules/@types/scheduler/tracing.d.ts",
         "./node_modules/csstype/index.d.ts"
       ],
       "./node_modules/rc-dialog/lib/dialogwrap.d.ts": [
@@ -10649,6 +10988,8 @@
       ]
     },
     "semanticDiagnosticsPerFile": [
+      "./node_modules/@blueprintjs/colors/lib/colors.d.ts",
+      "./node_modules/@blueprintjs/colors/lib/index.d.ts",
       "./node_modules/@blueprintjs/core/lib/cjs/common/abstractcomponent.d.ts",
       "./node_modules/@blueprintjs/core/lib/cjs/common/abstractcomponent2.d.ts",
       "./node_modules/@blueprintjs/core/lib/cjs/common/abstractpurecomponent.d.ts",
@@ -10656,7 +10997,6 @@
       "./node_modules/@blueprintjs/core/lib/cjs/common/alignment.d.ts",
       "./node_modules/@blueprintjs/core/lib/cjs/common/boundary.d.ts",
       "./node_modules/@blueprintjs/core/lib/cjs/common/classes.d.ts",
-      "./node_modules/@blueprintjs/core/lib/cjs/common/colors.d.ts",
       "./node_modules/@blueprintjs/core/lib/cjs/common/configuredom4.d.ts",
       "./node_modules/@blueprintjs/core/lib/cjs/common/constructor.d.ts",
       "./node_modules/@blueprintjs/core/lib/cjs/common/elevation.d.ts",
@@ -10689,7 +11029,6 @@
       "./node_modules/@blueprintjs/core/lib/esm/common/alignment.d.ts",
       "./node_modules/@blueprintjs/core/lib/esm/common/boundary.d.ts",
       "./node_modules/@blueprintjs/core/lib/esm/common/classes.d.ts",
-      "./node_modules/@blueprintjs/core/lib/esm/common/colors.d.ts",
       "./node_modules/@blueprintjs/core/lib/esm/common/configuredom4.d.ts",
       "./node_modules/@blueprintjs/core/lib/esm/common/constructor.d.ts",
       "./node_modules/@blueprintjs/core/lib/esm/common/context.d.ts",
@@ -10804,7 +11143,8 @@
       "./node_modules/@blueprintjs/select/lib/cjs/common/listitemsutils.d.ts",
       "./node_modules/@blueprintjs/select/lib/cjs/common/predicate.d.ts",
       "./node_modules/@blueprintjs/select/lib/cjs/components/select/select.d.ts",
-      "./node_modules/@emotion/react/node_modules/@emotion/cache/types/index.d.ts",
+      "./node_modules/@emotion/cache/node_modules/@emotion/utils/types/index.d.ts",
+      "./node_modules/@emotion/cache/types/index.d.ts",
       "./node_modules/@emotion/react/node_modules/@emotion/serialize/types/index.d.ts",
       "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts",
       "./node_modules/@emotion/react/types/helper.d.ts",
@@ -10814,6 +11154,7 @@
       "./node_modules/@emotion/styled/node_modules/@emotion/serialize/types/index.d.ts",
       "./node_modules/@emotion/styled/types/base.d.ts",
       "./node_modules/@emotion/styled/types/index.d.ts",
+      "./node_modules/@emotion/stylis/types/index.d.ts",
       "./node_modules/@jupyterlab/application/lib/connectionlost.d.ts",
       "./node_modules/@jupyterlab/application/lib/frontend.d.ts",
       "./node_modules/@jupyterlab/application/lib/index.d.ts",
@@ -10825,6 +11166,7 @@
       "./node_modules/@jupyterlab/application/lib/status.d.ts",
       "./node_modules/@jupyterlab/application/lib/tokens.d.ts",
       "./node_modules/@jupyterlab/application/lib/treepathupdater.d.ts",
+      "./node_modules/@jupyterlab/application/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
       "./node_modules/@jupyterlab/apputils/lib/clipboard.d.ts",
       "./node_modules/@jupyterlab/apputils/lib/collapse.d.ts",
       "./node_modules/@jupyterlab/apputils/lib/commandlinker.d.ts",
@@ -10849,6 +11191,24 @@
       "./node_modules/@jupyterlab/apputils/lib/vdom.d.ts",
       "./node_modules/@jupyterlab/apputils/lib/widgettracker.d.ts",
       "./node_modules/@jupyterlab/apputils/lib/windowresolver.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/htmlselect.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/index.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/interface.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/menu.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/components/switch.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/iconimports.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/labicon.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/commandpalettesvg.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/index.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/menusvg.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/icon/widgets/tabbarsvg.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/style/icon.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/style/index.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/tokens.d.ts",
+      "./node_modules/@jupyterlab/apputils/node_modules/@jupyterlab/ui-components/lib/utils.d.ts",
       "./node_modules/@jupyterlab/attachments/lib/index.d.ts",
       "./node_modules/@jupyterlab/attachments/lib/model.d.ts",
       "./node_modules/@jupyterlab/cells/lib/celldragutils.d.ts",
@@ -10906,6 +11266,7 @@
       "./node_modules/@jupyterlab/debugger/lib/sidebar.d.ts",
       "./node_modules/@jupyterlab/debugger/lib/sources.d.ts",
       "./node_modules/@jupyterlab/debugger/lib/tokens.d.ts",
+      "./node_modules/@jupyterlab/debugger/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
       "./node_modules/@jupyterlab/docmanager/lib/dialogs.d.ts",
       "./node_modules/@jupyterlab/docmanager/lib/index.d.ts",
       "./node_modules/@jupyterlab/docmanager/lib/manager.d.ts",
@@ -10924,6 +11285,7 @@
       "./node_modules/@jupyterlab/docregistry/lib/index.d.ts",
       "./node_modules/@jupyterlab/docregistry/lib/mimedocument.d.ts",
       "./node_modules/@jupyterlab/docregistry/lib/registry.d.ts",
+      "./node_modules/@jupyterlab/docregistry/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
       "./node_modules/@jupyterlab/filebrowser/lib/browser.d.ts",
       "./node_modules/@jupyterlab/filebrowser/lib/crumbs.d.ts",
       "./node_modules/@jupyterlab/filebrowser/lib/index.d.ts",
@@ -10955,6 +11317,7 @@
       "./node_modules/@jupyterlab/mainmenu/lib/tabs.d.ts",
       "./node_modules/@jupyterlab/mainmenu/lib/tokens.d.ts",
       "./node_modules/@jupyterlab/mainmenu/lib/view.d.ts",
+      "./node_modules/@jupyterlab/mainmenu/node_modules/@jupyterlab/ui-components/lib/index.d.ts",
       "./node_modules/@jupyterlab/nbformat/lib/index.d.ts",
       "./node_modules/@jupyterlab/notebook/lib/actions.d.ts",
       "./node_modules/@jupyterlab/notebook/lib/default-toolbar.d.ts",
@@ -11116,12 +11479,6 @@
       "./node_modules/@lumino/widgets/types/tabpanel.d.ts",
       "./node_modules/@lumino/widgets/types/title.d.ts",
       "./node_modules/@lumino/widgets/types/widget.d.ts",
-      "./node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts",
-      "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
-      "./node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts",
-      "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
-      "./node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts",
-      "./node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts",
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/actions/deleteitemsaction.d.ts",
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/actions/zoomcanvasaction.d.ts",
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/canvasengine.d.ts",
@@ -11155,6 +11512,12 @@
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/selectionboxstate.d.ts",
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/toolkit.d.ts",
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/widgets/peformancewidget.d.ts",
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts",
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts",
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts",
+      "./node_modules/@projectstorm/react-canvas-core/node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts",
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/diagramengine.d.ts",
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/label/labelmodel.d.ts",
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/linklayerfactory.d.ts",
@@ -11175,6 +11538,7 @@
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/defaultdiagramstate.d.ts",
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/dragdiagramitemsstate.d.ts",
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/dragnewlinkstate.d.ts",
+      "./node_modules/@projectstorm/react-diagrams-core/node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
       "./node_modules/@projectstorm/react-diagrams-core/src/diagramengine.ts",
       "./node_modules/@projectstorm/react-diagrams-core/src/entities/label/labelmodel.ts",
       "./node_modules/@projectstorm/react-diagrams-core/src/entities/link-layer/linklayermodel.ts",
@@ -11213,7 +11577,6 @@
       "./node_modules/@types/prop-types/index.d.ts",
       "./node_modules/@types/react/global.d.ts",
       "./node_modules/@types/react/index.d.ts",
-      "./node_modules/@types/scheduler/tracing.d.ts",
       "./node_modules/csstype/index.d.ts",
       "./node_modules/lib0/decoding.d.ts",
       "./node_modules/lib0/encoding.d.ts",
@@ -11319,8 +11682,6 @@
       "./src/components/customportmodel.ts",
       "./src/components/xpipebodywidget.tsx",
       "./src/components_xpipe/component.ts",
-      "./src/components_xpipe/javascript_python_parser/filbert.js",
-      "./src/components_xpipe/javascript_python_parser/filbert_loose.js",
       "./src/components_xpipe/sidebar.tsx",
       "./src/components_xpipe/trayitemwidget.tsx",
       "./src/components_xpipe/traywidget.tsx",
@@ -11342,5 +11703,5 @@
       "./src/xpipewidget.tsx"
     ]
   },
-  "version": "4.1.6"
+  "version": "4.1.3"
 }

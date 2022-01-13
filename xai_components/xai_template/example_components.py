@@ -1,6 +1,6 @@
-from xai_components.base import InArg, OutArg, InCompArg, Component
+from xai_components.base import InArg, OutArg, InCompArg, Component, xai_component
 
-
+@xai_component(color="red")
 class HelloComponent(Component):
 
     def __init__(self):
@@ -17,6 +17,7 @@ class HelloComponent(Component):
 
         self.done = True
 
+@xai_component
 class HelloHyperparameter(Component):
     input_str: InArg[str]
 
@@ -30,6 +31,7 @@ class HelloHyperparameter(Component):
         print("Hello, " + str(input_str))
         self.done = True
 
+@xai_component
 class CompulsoryHyperparameter(Component):
 
     input_str: InArg[str]
@@ -54,6 +56,7 @@ class CompulsoryHyperparameter(Component):
 
         self.done = True
 
+@xai_component
 class HelloListTupleDict(Component):
 
     input_list: InArg[list]
