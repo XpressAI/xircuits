@@ -6,7 +6,7 @@ from datetime import datetime, date
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from xai_components.base import InArg, OutArg, Component
+from xai_components.base import InArg, OutArg, Component, xai_component
 import json
 import os
 import sys
