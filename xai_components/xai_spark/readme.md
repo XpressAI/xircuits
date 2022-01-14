@@ -9,7 +9,6 @@ Currently XAI Spark components are tested and working on
 Refer to this documentation for installation: https://sparkbyexamples.com/spark/apache-spark-installation-on-windows/
 
 
-
 Once complete, try:
 
 ```
@@ -40,6 +39,11 @@ scala>
 You can also see the Spark web UI by accessing http://localhost:4040/
 
 ![image](https://user-images.githubusercontent.com/68586800/139038251-cbfd452f-0eab-41bc-9e09-50bfd3a6cf33.png)
+
+
+## WSL
+
+We use Windows Subsystem for Linux (WSL) to test out the Linux distributions. You can refer to [this guide](https://kontext.tech/column/spark/311/apache-spark-243-installation-on-windows-10-using-windows-subsystem-for-linux) for installing Spark on WSL. The tested version, [Spark 3.1.2 - Hadoop 3.2](https://www.apache.org/dyn/closer.lua/spark/spark-3.1.2/spark-3.1.2-bin-hadoop3.2.tgz) is stable. 
 
 
 ## Errors:
