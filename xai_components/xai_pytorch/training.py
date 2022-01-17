@@ -1,4 +1,4 @@
-from xai_components.base import InArg, OutArg, Component
+from xai_components.base import InArg, OutArg, Component, xai_component
 from typing import Tuple, Dict
 from xai_components.xai_pytorch.unet_train import CvSaveImage, UNet, UNetDataset, EarlyStopping, TimeLapse
 from xai_components.xai_pytorch.unet_train import ImageCountNotEqual, ModelNotFound
@@ -15,6 +15,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 
+@xai_component
 class ConvertTorchModelToOnnx(Component):
     model: InArg[UNet]
     device_name: InArg[UNet]
@@ -56,6 +57,7 @@ class ConvertTorchModelToOnnx(Component):
         self.done = True
     
 
+@xai_component
 class CreateUnetModel(Component):
     train_data: InArg[torch.utils.data.DataLoader]
     test_data: InArg[torch.utils.data.DataLoader]
@@ -107,7 +109,8 @@ class CreateUnetModel(Component):
 
         self.done = True
     
-    
+
+@xai_component
 class ImageTrainTestSplit(Component):
     input_str: InArg[Tuple[str,str]]
     split_ratio: InArg[float]
@@ -190,8 +193,9 @@ class ImageTrainTestSplit(Component):
 
         except Exception as e:
             print(e)
-        
-        
+
+
+@xai_component
 class PrepareUnetDataLoader(Component):
     train_image_folder: InArg[Tuple[str, str]]
     test_image_folder: InArg[Tuple[str, str]]
@@ -247,6 +251,7 @@ class PrepareUnetDataLoader(Component):
         self.done = True
 
 
+@xai_component
 class TrainUnet(Component):
     train_data: InArg[torch.utils.data.DataLoader]
     test_data: InArg[torch.utils.data.DataLoader]
@@ -436,7 +441,8 @@ class TrainUnet(Component):
 
         self.done = True
 
-        
+
+@xai_component
 class UNetModel(Component):
     gpu: InArg[int]
     
@@ -467,8 +473,9 @@ class UNetModel(Component):
         self.device_name.value = device_name
         self.model.value = model
         self.done = True
-        
 
+
+@xai_component
 class UnetPredict(Component):
     model_path: InArg[str]
     image_path: InArg[str]

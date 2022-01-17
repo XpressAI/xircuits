@@ -36,6 +36,18 @@ class InCompArg(Generic[T]):
         return InCompArg(None)
 
 
+def xai_component(*args, **kwargs):
+    # Passthrough element without any changes.
+    # This is used for parser metadata only.
+    if len(args) == 1 and callable(args[0]):
+        # @xai_components form
+        return args[0]
+    else:
+        # @xai_components(...) form
+        def passthrough(f):
+            return f
+        return passthrough
+
 class ExecutionContext:
     args: Namespace
 

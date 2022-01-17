@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import datasets, layers, models
 import numpy as np
-from xai_components.base import InArg, OutArg, Component
+from xai_components.base import InArg, OutArg, Component, xai_component
 from sklearn.model_selection import train_test_split
 import json
 import os
@@ -13,6 +13,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 
+@xai_component
 class ReadDataSet(Component):
     dataset_name: InArg[str]
     dataset: OutArg[Tuple[np.array, np.array]]
@@ -123,6 +124,7 @@ class ReadDataSet(Component):
 
         self.done = True
 
+@xai_component
 class ReadMaskDataSet(Component):
     dataset_name: InArg[str]
     mask_dataset_name: InArg[str]
@@ -149,6 +151,7 @@ class ReadMaskDataSet(Component):
         self.done = True
 
 
+@xai_component
 class FlattenImageData(Component):
 
     dataset: InArg[Tuple[np.array, np.array]]
@@ -170,6 +173,7 @@ class FlattenImageData(Component):
         self.done = True
 
 
+@xai_component
 class TrainTestSplit(Component):
     dataset: InArg[Tuple[np.array, np.array]]
     train_split: InArg[float]
@@ -207,6 +211,7 @@ class TrainTestSplit(Component):
         self.test.value = test
         self.done = True
 
+@xai_component
 class Create1DInputModel(Component):
     training_data: InArg[Tuple[np.array, np.array]]
 
@@ -237,6 +242,7 @@ class Create1DInputModel(Component):
 
         self.done = True
 
+@xai_component
 class Create2DInputModel(Component):
     training_data: InArg[Tuple[np.array, np.array]]
 
@@ -277,6 +283,7 @@ class Create2DInputModel(Component):
         self.done = True
 
 
+@xai_component
 class TrainImageClassifier(Component):
     training_data: InArg[Tuple[np.array, np.array]]
     training_epochs: InArg[int]
@@ -304,6 +311,7 @@ class TrainImageClassifier(Component):
         self.done = True
 
 
+@xai_component
 class EvaluateAccuracy(Component):
     model: InArg[keras.Sequential]
     eval_dataset: InArg[Tuple[np.array, np.array]]
@@ -329,6 +337,7 @@ class EvaluateAccuracy(Component):
         self.done = True
 
 
+@xai_component
 class ShouldStop(Component):
     target_accuracy: InArg[float]
     max_retries: InArg[int]
@@ -362,6 +371,7 @@ class ShouldStop(Component):
             self.should_retrain.value = False
         self.done = True
 
+@xai_component
 class SaveKerasModel(Component):
 
     model: InArg[any]
@@ -385,6 +395,7 @@ class SaveKerasModel(Component):
         self.done = True
 
 
+@xai_component
 class SaveKerasModelInModelStash(Component):
     model: InArg[keras.Sequential]
     experiment_name: InArg[str]

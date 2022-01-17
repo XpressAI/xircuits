@@ -85,7 +85,7 @@ class ComponentsRouteHandler(APIHandler):
             components.append({
                 "task": c["name"],
                 "header": GROUP_GENERAL,
-                "rootFile": GROUP_GENERAL,
+                "category": GROUP_GENERAL,
                 "path": "", # Default Components do not have a python-file backed implementation
                 "variables": [],
                 "type": c["returnType"]
@@ -105,7 +105,8 @@ class ComponentsRouteHandler(APIHandler):
 
         # Set up component colors according to palette
         for idx, c in enumerate(components):
-            c["color"] = COLOR_PALETTE[idx % len(COLOR_PALETTE)]
+            if c.get("color") is None:
+                c["color"] = COLOR_PALETTE[idx % len(COLOR_PALETTE)]
 
         self.finish(json.dumps(components))
         
@@ -116,19 +117,24 @@ class ComponentsRouteHandler(APIHandler):
 
     def extract_components(self, file_path, base_dir):
         parse_tree = ast.parse(file_path.read_text(), file_path)
-        # TODO: Make this more robust to renamed imports, e.g. from "xai_components.base import Component as C"
-        # Look for top level class definitions that inherit from "Component"
+        # Look for top level class definitions that are decorated with "@xai_component"
         is_xai_component = lambda node: isinstance(node, ast.ClassDef) and \
-                                        any(isinstance(base, ast.Name) and base.id == 'Component' for base in node.bases)
+                                        any((isinstance(decorator, ast.Call) and decorator.func.id == "xai_component") or \
+                                            (isinstance(decorator, ast.Name) and decorator.id == "xai_component")
+                                            for decorator in node.decorator_list)
 
         return [self.extract_component(node, file_path.relative_to(base_dir.parent))
                 for node in parse_tree.body if is_xai_component(node)]
 
-    def extract_component(self, node, file_path):
+    def extract_component(self, node: ast.ClassDef, file_path):
         name = node.name
 
+        keywords = {kw.arg: kw.value.value for kw in chain.from_iterable(decorator.keywords
+                        for decorator in node.decorator_list
+                        if isinstance(decorator, ast.Call) and decorator.func.id == "xai_component")}
+
         # Group Name for Display
-        root_file = file_path.parent.name.removeprefix("xai_").upper()
+        category = file_path.parent.name.removeprefix("xai_").upper()
 
         is_arg = lambda n: isinstance(n, ast.AnnAssign) and \
                                            isinstance(n.annotation, ast.Subscript) and \
@@ -144,11 +150,14 @@ class ComponentsRouteHandler(APIHandler):
 
         output_type = COMPONENT_OUTPUT_TYPE_MAPPING.get(name) or "debug"
 
-        return {
+        output = {
             "path": file_path.as_posix(),
             "task": name,
             "header": GROUP_ADVANCED,
-            "rootFile": root_file,
+            "category": category,
             "type": output_type,
             "variables": variables
         }
+        output.update(keywords)
+
+        return output

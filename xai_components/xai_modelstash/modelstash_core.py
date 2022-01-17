@@ -1,4 +1,4 @@
-from xai_components.base import InArg, OutArg, Component
+from xai_components.base import InArg, OutArg, Component, xai_component
 
 import modelstash
 import modelstash_cli
@@ -14,7 +14,7 @@ from pathlib import Path
 # ms = modelstash.ModelStash(url=client_url, username=username, password=password)
 # ms_cli = modelstash_cli.ModelStashCli(url=client_url, username=username, password=password)
 
-
+@xai_component
 class StartModelStashSession(Component):
 
     client_url: InArg[str]
@@ -47,6 +47,7 @@ class StartModelStashSession(Component):
         self.done = True
 
 
+@xai_component
 class ListModels(Component):
 
     def __init__(self):
@@ -57,6 +58,7 @@ class ListModels(Component):
         self.done = True
 
 
+@xai_component
 class ListSkills(Component):
 
     def __init__(self):
@@ -67,6 +69,7 @@ class ListSkills(Component):
         self.done = True
 
 
+@xai_component
 class UploadToModelStash(Component):
 
     model_file_path: InArg[any] #should be a str
@@ -120,6 +123,7 @@ class UploadToModelStash(Component):
         self.ms_model.value = model
         self.done = True
 
+@xai_component
 class DeleteModelfromModelStash(Component):
 
     model_name: InArg[str]
@@ -150,6 +154,7 @@ class DeleteModelfromModelStash(Component):
         ms_cli.delete_model(model_id)
 
 
+@xai_component
 class DownloadLinkfromModelStash(Component):
 
     model_name: InArg[str]
@@ -176,6 +181,7 @@ class DownloadLinkfromModelStash(Component):
             print(f"Model {model_name} not found in model stash!")
 
 
+@xai_component
 class LoadfromModelStash(Component):
 
     model_name: InArg[str]

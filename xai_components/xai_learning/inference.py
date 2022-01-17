@@ -1,11 +1,12 @@
 from typing import Tuple, Dict
 from tensorflow import keras
 import numpy as np
-from xai_components.base import InArg, OutArg, Component
+from xai_components.base import InArg, OutArg, Component, xai_component
 import json
 import os
 
 
+@xai_component
 class LoadImage(Component):
     dataset_name: InArg[str]
     dataset: OutArg[Tuple[np.array, np.array]]
@@ -33,6 +34,7 @@ class LoadImage(Component):
         self.done = True
 
 
+@xai_component
 class ResizeImageData(Component):
     dataset: InArg[Tuple[np.array, np.array]]
     resized_dataset: OutArg[Tuple[np.array, np.array]]
