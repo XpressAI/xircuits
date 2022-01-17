@@ -85,7 +85,7 @@ class ComponentsRouteHandler(APIHandler):
             components.append({
                 "task": c["name"],
                 "header": GROUP_GENERAL,
-                "rootFile": GROUP_GENERAL,
+                "category": GROUP_GENERAL,
                 "path": "", # Default Components do not have a python-file backed implementation
                 "variables": [],
                 "type": c["returnType"]
@@ -134,7 +134,7 @@ class ComponentsRouteHandler(APIHandler):
                         if isinstance(decorator, ast.Call) and decorator.func.id == "xai_component")}
 
         # Group Name for Display
-        root_file = file_path.parent.name.removeprefix("xai_").upper()
+        category = file_path.parent.name.removeprefix("xai_").upper()
 
         is_arg = lambda n: isinstance(n, ast.AnnAssign) and \
                                            isinstance(n.annotation, ast.Subscript) and \
@@ -154,7 +154,7 @@ class ComponentsRouteHandler(APIHandler):
             "path": file_path.as_posix(),
             "task": name,
             "header": GROUP_ADVANCED,
-            "rootFile": root_file,
+            "category": category,
             "type": output_type,
             "variables": variables
         }

@@ -75,7 +75,7 @@ export interface SidebarProps {
 }
 
 async function fetchComponent(componentList: string[]) {
-    let component_root = componentList.map(x => x["rootFile"]);
+    let component_root = componentList.map(x => x["category"]);
 
     let headers = Array.from(new Set(component_root));
     let headerList: any[] = [];
@@ -106,7 +106,7 @@ async function fetchComponent(componentList: string[]) {
 
 export default function Sidebar(props: SidebarProps) {
     const [componentList, setComponentList] = React.useState([]);
-    const [rootFile, setRootFile] = React.useState([]);
+    const [category, setCategory] = React.useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [runOnce, setRunOnce] = useState(false);
 
@@ -151,11 +151,11 @@ export default function Sidebar(props: SidebarProps) {
         // to ensure the component list is empty before setting the component list
         if (response_1.length > 0) {
             setComponentList([]);
-            setRootFile([]);
+            setCategory([]);
         }
 
         setComponentList(response_1);
-        setRootFile(response_2);
+        setCategory(response_2);
     }
 
     useEffect(() => {
@@ -164,7 +164,7 @@ export default function Sidebar(props: SidebarProps) {
             setRunOnce(true);
         }
 
-    }, [rootFile, componentList]);
+    }, [category, componentList]);
 
     function handleRefreshOnClick() {
         fetchComponentList();
@@ -175,7 +175,7 @@ export default function Sidebar(props: SidebarProps) {
             fetchComponentList();
         }, 600000); // every 10 minutes should re-fetch the component list
         return () => clearInterval(intervalId);
-    }, [rootFile, componentList]);
+    }, [category, componentList]);
 
     return (
         <Body>
@@ -190,7 +190,7 @@ export default function Sidebar(props: SidebarProps) {
 
                         <Accordion allowZeroExpanded>
                             {
-                                rootFile.filter((val) => {
+                                category.filter((val) => {
                                     if (searchTerm == "") {
                                         return val;
                                     }
@@ -207,7 +207,7 @@ export default function Sidebar(props: SidebarProps) {
                                                             return componentVal;
                                                         }
                                                     }).map((componentVal, i2) => {
-                                                        if (componentVal["rootFile"].toString().toUpperCase() == val["task"].toString()) {
+                                                        if (componentVal["category"].toString().toUpperCase() == val["task"].toString()) {
                                                             return (
                                                                 <div key={`index-1-${i2}`}>
                                                                     <TrayItemWidget
