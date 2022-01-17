@@ -126,7 +126,7 @@
         "signature": "ecf78e637f710f340ec08d5d92b3f31b134a46a4fcf2e758690d8c46ce62cba6",
         "affectsGlobalScope": true
       },
-      "./node_modules/csstype/index.d.ts": {
+      "./node_modules/@types/react/node_modules/csstype/index.d.ts": {
         "version": "381899b8d1d4c1be716f18cb5242ba39f66f4b1e31d45af62a32a99f8edcb39d",
         "signature": "381899b8d1d4c1be716f18cb5242ba39f66f4b1e31d45af62a32a99f8edcb39d",
         "affectsGlobalScope": false
@@ -161,24 +161,34 @@
         "signature": "a57ee34edf8791c8c4395ada1fb459df7aad714838555ab306729b66db795840",
         "affectsGlobalScope": false
       },
-      "./node_modules/@lumino/coreutils/types/random.d.ts": {
-        "version": "615e4d11ecad76f74ca65a175f3c3b3f7c82be6abe41436c61505d6bf700fab5",
-        "signature": "615e4d11ecad76f74ca65a175f3c3b3f7c82be6abe41436c61505d6bf700fab5",
-        "affectsGlobalScope": false
-      },
       "./node_modules/@lumino/coreutils/types/token.d.ts": {
         "version": "facc62a0c8748f37d6c85d3e5a6eb4cd1d40a899d4ee2c360c9ec4756513931c",
         "signature": "facc62a0c8748f37d6c85d3e5a6eb4cd1d40a899d4ee2c360c9ec4756513931c",
         "affectsGlobalScope": false
       },
-      "./node_modules/@lumino/coreutils/types/uuid.d.ts": {
-        "version": "912f540154a35a5c589e394710cf2472e7fd005893f3aed8353e3ff1c6cc7509",
-        "signature": "912f540154a35a5c589e394710cf2472e7fd005893f3aed8353e3ff1c6cc7509",
+      "./node_modules/@lumino/coreutils/types/index.common.d.ts": {
+        "version": "d59884537fee2053545586c2ea66e27ae54fa0e59e9fec4ef58b9bb3eb3a676c",
+        "signature": "d59884537fee2053545586c2ea66e27ae54fa0e59e9fec4ef58b9bb3eb3a676c",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@lumino/coreutils/types/random.d.ts": {
+        "version": "f58caa451ccf0cdc2834698380fa13f964033178d0cb73cce5d2fd2ba0cfbade",
+        "signature": "f58caa451ccf0cdc2834698380fa13f964033178d0cb73cce5d2fd2ba0cfbade",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@lumino/coreutils/types/random.browser.d.ts": {
+        "version": "42b37508de20026ecfb53ad4293a3fb1d5ceac85d03f4d831c999db3f2d942cc",
+        "signature": "42b37508de20026ecfb53ad4293a3fb1d5ceac85d03f4d831c999db3f2d942cc",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@lumino/coreutils/types/uuid.browser.d.ts": {
+        "version": "6bb2babdac69f5089b8e5d645977aa18301e6c9ddd8e80fdd5996149235ffe35",
+        "signature": "6bb2babdac69f5089b8e5d645977aa18301e6c9ddd8e80fdd5996149235ffe35",
         "affectsGlobalScope": false
       },
       "./node_modules/@lumino/coreutils/types/index.d.ts": {
-        "version": "14291b5cf9f3318a8aec9e856b6563cc1aaf8b0fc4b7a87117f29ecac8e7b803",
-        "signature": "14291b5cf9f3318a8aec9e856b6563cc1aaf8b0fc4b7a87117f29ecac8e7b803",
+        "version": "741e32002f767357ff950d74855ea336e51409738f861e6d5a163cd4b0450bd2",
+        "signature": "741e32002f767357ff950d74855ea336e51409738f861e6d5a163cd4b0450bd2",
         "affectsGlobalScope": false
       },
       "./node_modules/@jupyterlab/services/lib/config/index.d.ts": {
@@ -697,18 +707,18 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@lumino/widgets/types/tabbar.d.ts": {
-        "version": "79187f49bd3934bcec4cb65b390c50cde42b20cef85133a69fcbf57524d974a5",
-        "signature": "79187f49bd3934bcec4cb65b390c50cde42b20cef85133a69fcbf57524d974a5",
+        "version": "8e6a1619fb5e821c9682264696871b55f1ab21903477d6272b44d6824fc511c2",
+        "signature": "8e6a1619fb5e821c9682264696871b55f1ab21903477d6272b44d6824fc511c2",
         "affectsGlobalScope": false
       },
       "./node_modules/@lumino/widgets/types/docklayout.d.ts": {
-        "version": "875c294e71da569c918f495d6bb48b2cdb73d3404c65c54deaa9d3762f2df6ed",
-        "signature": "875c294e71da569c918f495d6bb48b2cdb73d3404c65c54deaa9d3762f2df6ed",
+        "version": "c2d6545069db68b471ce68ef45ed33327663dc9c832c0bee2a72cd360a08f7fe",
+        "signature": "c2d6545069db68b471ce68ef45ed33327663dc9c832c0bee2a72cd360a08f7fe",
         "affectsGlobalScope": false
       },
       "./node_modules/@lumino/widgets/types/dockpanel.d.ts": {
-        "version": "f5245f4a56ace77aa2b77a9a6078688557b49fecbfbb1e8354f95da8c9aced73",
-        "signature": "f5245f4a56ace77aa2b77a9a6078688557b49fecbfbb1e8354f95da8c9aced73",
+        "version": "1d4df0f49549c39bc09a70dc267f5d0022f4cab181750f4d50d61ee30edd5a07",
+        "signature": "1d4df0f49549c39bc09a70dc267f5d0022f4cab181750f4d50d61ee30edd5a07",
         "affectsGlobalScope": false
       },
       "./node_modules/@lumino/widgets/types/focustracker.d.ts": {
@@ -747,8 +757,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@lumino/widgets/types/tabpanel.d.ts": {
-        "version": "782b97111ead965ce8ea465f96d94b181a830f70d41223f89fb8361f69418edb",
-        "signature": "782b97111ead965ce8ea465f96d94b181a830f70d41223f89fb8361f69418edb",
+        "version": "c172f46cd9c655653f116d3707ef6c84aa3e924514685e78ac5dababe2986313",
+        "signature": "c172f46cd9c655653f116d3707ef6c84aa3e924514685e78ac5dababe2986313",
         "affectsGlobalScope": false
       },
       "./node_modules/@lumino/widgets/types/index.d.ts": {
@@ -777,8 +787,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@jupyterlab/apputils/lib/dialog.d.ts": {
-        "version": "f1e099f59452350f2532972bba0063a5239c371cd222317b4f79914da52b9059",
-        "signature": "f1e099f59452350f2532972bba0063a5239c371cd222317b4f79914da52b9059",
+        "version": "598e1b8b0ad2029f52c4379913757ba91f0c88846fe9b43f4965c195cb810ffa",
+        "signature": "598e1b8b0ad2029f52c4379913757ba91f0c88846fe9b43f4965c195cb810ffa",
         "affectsGlobalScope": false
       },
       "./node_modules/@jupyterlab/apputils/lib/domutils.d.ts": {
@@ -1822,8 +1832,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/yjs/dist/src/types/abstracttype.d.ts": {
-        "version": "15d5e08509641a32cd2a678b1753f2164c6a12bcaea14d63f02352f997ed4ae5",
-        "signature": "15d5e08509641a32cd2a678b1753f2164c6a12bcaea14d63f02352f997ed4ae5",
+        "version": "6e0d76bdf6432ecb3ee5b028c732f06087983541ccf4ae7ac0268a65741c472c",
+        "signature": "6e0d76bdf6432ecb3ee5b028c732f06087983541ccf4ae7ac0268a65741c472c",
         "affectsGlobalScope": false
       },
       "./node_modules/yjs/dist/src/utils/id.d.ts": {
@@ -1852,8 +1862,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/yjs/dist/src/types/yarray.d.ts": {
-        "version": "e53997284dc9306b029b78ca40b62b3e23a04527a4a397e539a40efa25e2192a",
-        "signature": "e53997284dc9306b029b78ca40b62b3e23a04527a4a397e539a40efa25e2192a",
+        "version": "dabf3c67bf8e311b89a0167905620af6daf4068a81d9334e6b281406485d4ad7",
+        "signature": "dabf3c67bf8e311b89a0167905620af6daf4068a81d9334e6b281406485d4ad7",
         "affectsGlobalScope": false
       },
       "./node_modules/yjs/dist/src/types/ytext.d.ts": {
@@ -2257,8 +2267,8 @@
         "affectsGlobalScope": false
       },
       "./node_modules/@lumino/dragdrop/types/index.d.ts": {
-        "version": "44bea2e3e593302c135e212a579922a84d963254e2610c1bae625514930a0f33",
-        "signature": "44bea2e3e593302c135e212a579922a84d963254e2610c1bae625514930a0f33",
+        "version": "460e94384e29adb3efc76364e2cd6b1396d2dce83ee45ff372c75882d34539fb",
+        "signature": "460e94384e29adb3efc76364e2cd6b1396d2dce83ee45ff372c75882d34539fb",
         "affectsGlobalScope": false
       },
       "./node_modules/@jupyterlab/filebrowser/lib/listing.d.ts": {
@@ -2504,6 +2514,11 @@
       "./node_modules/@emotion/react/node_modules/@emotion/cache/types/index.d.ts": {
         "version": "03d59e612afdc3039a83b12d45b026306b291cfc8e2fc72859f7902b8a857caf",
         "signature": "03d59e612afdc3039a83b12d45b026306b291cfc8e2fc72859f7902b8a857caf",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@emotion/react/node_modules/csstype/index.d.ts": {
+        "version": "381899b8d1d4c1be716f18cb5242ba39f66f4b1e31d45af62a32a99f8edcb39d",
+        "signature": "381899b8d1d4c1be716f18cb5242ba39f66f4b1e31d45af62a32a99f8edcb39d",
         "affectsGlobalScope": false
       },
       "./node_modules/@emotion/react/node_modules/@emotion/serialize/types/index.d.ts": {
@@ -4062,7 +4077,7 @@
       ],
       "./node_modules/@emotion/react/node_modules/@emotion/serialize/types/index.d.ts": [
         "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts",
-        "./node_modules/csstype/index.d.ts"
+        "./node_modules/@types/react/node_modules/csstype/index.d.ts"
       ],
       "./node_modules/@emotion/react/types/helper.d.ts": [
         "./node_modules/@types/react/index.d.ts"
@@ -4087,7 +4102,7 @@
       ],
       "./node_modules/@emotion/styled/node_modules/@emotion/serialize/types/index.d.ts": [
         "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts",
-        "./node_modules/csstype/index.d.ts"
+        "./node_modules/@types/react/node_modules/csstype/index.d.ts"
       ],
       "./node_modules/@emotion/styled/types/base.d.ts": [
         "./node_modules/@emotion/react/node_modules/@emotion/serialize/types/index.d.ts",
@@ -5580,13 +5595,19 @@
         "./node_modules/@lumino/signaling/types/index.d.ts",
         "./node_modules/@lumino/virtualdom/types/index.d.ts"
       ],
-      "./node_modules/@lumino/coreutils/types/index.d.ts": [
+      "./node_modules/@lumino/coreutils/types/index.common.d.ts": [
         "./node_modules/@lumino/coreutils/types/json.d.ts",
         "./node_modules/@lumino/coreutils/types/mime.d.ts",
         "./node_modules/@lumino/coreutils/types/promise.d.ts",
-        "./node_modules/@lumino/coreutils/types/random.d.ts",
-        "./node_modules/@lumino/coreutils/types/token.d.ts",
-        "./node_modules/@lumino/coreutils/types/uuid.d.ts"
+        "./node_modules/@lumino/coreutils/types/token.d.ts"
+      ],
+      "./node_modules/@lumino/coreutils/types/index.d.ts": [
+        "./node_modules/@lumino/coreutils/types/index.common.d.ts",
+        "./node_modules/@lumino/coreutils/types/random.browser.d.ts",
+        "./node_modules/@lumino/coreutils/types/uuid.browser.d.ts"
+      ],
+      "./node_modules/@lumino/coreutils/types/random.browser.d.ts": [
+        "./node_modules/@lumino/coreutils/types/random.d.ts"
       ],
       "./node_modules/@lumino/disposable/types/index.d.ts": [
         "./node_modules/@lumino/algorithm/types/index.d.ts",
@@ -6338,8 +6359,8 @@
       "./node_modules/@types/react/index.d.ts": [
         "./node_modules/@types/prop-types/index.d.ts",
         "./node_modules/@types/react/global.d.ts",
-        "./node_modules/@types/scheduler/tracing.d.ts",
-        "./node_modules/csstype/index.d.ts"
+        "./node_modules/@types/react/node_modules/csstype/index.d.ts",
+        "./node_modules/@types/scheduler/tracing.d.ts"
       ],
       "./node_modules/react-accessible-accordion/dist/types/components/accordion.d.ts": [
         "./node_modules/@types/react/index.d.ts",
@@ -7600,7 +7621,7 @@
       ],
       "./node_modules/@emotion/react/node_modules/@emotion/serialize/types/index.d.ts": [
         "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts",
-        "./node_modules/csstype/index.d.ts"
+        "./node_modules/@types/react/node_modules/csstype/index.d.ts"
       ],
       "./node_modules/@emotion/react/types/helper.d.ts": [
         "./node_modules/@types/react/index.d.ts"
@@ -7625,7 +7646,7 @@
       ],
       "./node_modules/@emotion/styled/node_modules/@emotion/serialize/types/index.d.ts": [
         "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts",
-        "./node_modules/csstype/index.d.ts"
+        "./node_modules/@types/react/node_modules/csstype/index.d.ts"
       ],
       "./node_modules/@emotion/styled/types/base.d.ts": [
         "./node_modules/@emotion/react/node_modules/@emotion/serialize/types/index.d.ts",
@@ -9118,13 +9139,19 @@
         "./node_modules/@lumino/signaling/types/index.d.ts",
         "./node_modules/@lumino/virtualdom/types/index.d.ts"
       ],
-      "./node_modules/@lumino/coreutils/types/index.d.ts": [
+      "./node_modules/@lumino/coreutils/types/index.common.d.ts": [
         "./node_modules/@lumino/coreutils/types/json.d.ts",
         "./node_modules/@lumino/coreutils/types/mime.d.ts",
         "./node_modules/@lumino/coreutils/types/promise.d.ts",
-        "./node_modules/@lumino/coreutils/types/random.d.ts",
-        "./node_modules/@lumino/coreutils/types/token.d.ts",
-        "./node_modules/@lumino/coreutils/types/uuid.d.ts"
+        "./node_modules/@lumino/coreutils/types/token.d.ts"
+      ],
+      "./node_modules/@lumino/coreutils/types/index.d.ts": [
+        "./node_modules/@lumino/coreutils/types/index.common.d.ts",
+        "./node_modules/@lumino/coreutils/types/random.browser.d.ts",
+        "./node_modules/@lumino/coreutils/types/uuid.browser.d.ts"
+      ],
+      "./node_modules/@lumino/coreutils/types/random.browser.d.ts": [
+        "./node_modules/@lumino/coreutils/types/random.d.ts"
       ],
       "./node_modules/@lumino/disposable/types/index.d.ts": [
         "./node_modules/@lumino/algorithm/types/index.d.ts",
@@ -9815,8 +9842,8 @@
       "./node_modules/@types/react/index.d.ts": [
         "./node_modules/@types/prop-types/index.d.ts",
         "./node_modules/@types/react/global.d.ts",
-        "./node_modules/@types/scheduler/tracing.d.ts",
-        "./node_modules/csstype/index.d.ts"
+        "./node_modules/@types/react/node_modules/csstype/index.d.ts",
+        "./node_modules/@types/scheduler/tracing.d.ts"
       ],
       "./node_modules/react-accessible-accordion/dist/types/components/accordion.d.ts": [
         "./node_modules/@types/react/index.d.ts",
@@ -10477,6 +10504,7 @@
       "./node_modules/@emotion/react/node_modules/@emotion/cache/types/index.d.ts",
       "./node_modules/@emotion/react/node_modules/@emotion/serialize/types/index.d.ts",
       "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts",
+      "./node_modules/@emotion/react/node_modules/csstype/index.d.ts",
       "./node_modules/@emotion/react/types/helper.d.ts",
       "./node_modules/@emotion/react/types/index.d.ts",
       "./node_modules/@emotion/react/types/jsx-namespace.d.ts",
@@ -10733,13 +10761,15 @@
       "./node_modules/@lumino/algorithm/types/zip.d.ts",
       "./node_modules/@lumino/application/types/index.d.ts",
       "./node_modules/@lumino/commands/types/index.d.ts",
+      "./node_modules/@lumino/coreutils/types/index.common.d.ts",
       "./node_modules/@lumino/coreutils/types/index.d.ts",
       "./node_modules/@lumino/coreutils/types/json.d.ts",
       "./node_modules/@lumino/coreutils/types/mime.d.ts",
       "./node_modules/@lumino/coreutils/types/promise.d.ts",
+      "./node_modules/@lumino/coreutils/types/random.browser.d.ts",
       "./node_modules/@lumino/coreutils/types/random.d.ts",
       "./node_modules/@lumino/coreutils/types/token.d.ts",
-      "./node_modules/@lumino/coreutils/types/uuid.d.ts",
+      "./node_modules/@lumino/coreutils/types/uuid.browser.d.ts",
       "./node_modules/@lumino/disposable/types/index.d.ts",
       "./node_modules/@lumino/dragdrop/types/index.d.ts",
       "./node_modules/@lumino/messaging/types/index.d.ts",
@@ -10872,8 +10902,8 @@
       "./node_modules/@types/prop-types/index.d.ts",
       "./node_modules/@types/react/global.d.ts",
       "./node_modules/@types/react/index.d.ts",
+      "./node_modules/@types/react/node_modules/csstype/index.d.ts",
       "./node_modules/@types/scheduler/tracing.d.ts",
-      "./node_modules/csstype/index.d.ts",
       "./node_modules/lib0/decoding.d.ts",
       "./node_modules/lib0/encoding.d.ts",
       "./node_modules/lib0/mutex.d.ts",
