@@ -9,7 +9,7 @@ from configparser import ConfigParser
 def get_config():
     config = ConfigParser()
     config.read([
-        os.path.join(os.path.dirname(__file__), "..", "..", ".xpipes", "config.ini"),
+        os.path.join(os.path.dirname(__file__), "..", "..", "xai_components", ".xpipes", "config.ini"),
         os.path.expanduser("~/.xpipes/config.ini"),
         ".xpipes/config.ini"])
     return config
