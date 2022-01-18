@@ -103,6 +103,8 @@ class ComponentsRouteHandler(APIHandler):
                     components.extend(chain.from_iterable(self.extract_components(f, directory) for f in python_files))
 
 
+        components = list({(c["header"], c["task"]): c for c in components}.values())
+
         # Set up component colors according to palette
         for idx, c in enumerate(components):
             if c.get("color") is None:
