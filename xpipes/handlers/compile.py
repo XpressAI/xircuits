@@ -3,8 +3,12 @@ import json
 import tornado
 from jupyter_server.base.handlers import APIHandler
 
+from pathlib import Path
 
 class CompileFileRouteHandler(APIHandler):
+    def __get_notebook_absolute_path__(self, path):
+        return (Path(self.application.settings['server_root_dir']) / path).expanduser().resolve()
+
     @tornado.web.authenticated
     def get(self):
         self.finish(json.dumps({"data": "This is file/generate endpoint!"}))
@@ -18,7 +22,7 @@ class CompileFileRouteHandler(APIHandler):
         except:
             python_script = ""
 
-        f = open(input_data["currentPath"], "w")
+        f = open(self.__get_notebook_absolute_path__(input_data["currentPath"]), "w")
         f.write(python_script)
         f.close()
         data = {"message": "completed"}
