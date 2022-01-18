@@ -9,6 +9,7 @@ class CompileFileRouteHandler(APIHandler):
     def __get_notebook_absolute_path__(self, path):
         return Path(self.application.settings['server_root_dir']) / path
 
+    @tornado.web.authenticated
     def get(self):
         self.finish(json.dumps({"data": "This is file/generate endpoint!"}))
 
