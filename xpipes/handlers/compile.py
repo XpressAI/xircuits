@@ -7,7 +7,7 @@ from pathlib import Path
 
 class CompileFileRouteHandler(APIHandler):
     def __get_notebook_absolute_path__(self, path):
-        return (Path(self.application.settings['server_root_dir']) / path).resolve()
+        return (Path(self.application.settings['server_root_dir']) / path).expanduser().resolve()
 
     @tornado.web.authenticated
     def get(self):
