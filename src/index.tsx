@@ -212,8 +212,8 @@ const xpipes: JupyterFrontEndPlugin<void> = {
       return outputPanel;
     }
 
-    async function requestToSparkSubmit(path: string) {
-      const dataToSend = { "currentPath": path };
+    async function requestToSparkSubmit(path: string, addArgs: string) {
+      const dataToSend = { "currentPath": path, "addArgs": addArgs };
 
       try {
         const server_reply = await requestAPI<any>('spark/submit', {
@@ -238,6 +238,7 @@ const xpipes: JupyterFrontEndPlugin<void> = {
         const message = typeof args['runCommand'] === 'undefined' ? '' : (args['runCommand'] as string);
         const debug_mode = typeof args['debug_mode'] === 'undefined' ? '' : (args['debug_mode'] as string);
         const runType = typeof args['runType'] === 'undefined' ? '' : (args['runType'] as string);
+        const addArgs = typeof args['addArgsSparkSubmit'] === 'undefined' ? '' : (args['addArgsSparkSubmit'] as string);
 
         // Create the panel if it does not exist
         if (!outputPanel || outputPanel.isDisposed) {
@@ -252,7 +253,7 @@ const xpipes: JupyterFrontEndPlugin<void> = {
 
           // Run spark submit when run type is Spark Submit
           if (runType == 'spark-submit') {
-            const request = await requestToSparkSubmit(model_path);
+            const request = await requestToSparkSubmit(model_path, addArgs);
             const errorMsg = request["stderr"];
             const outputMsg = request["stdout"];
             let msg = "";

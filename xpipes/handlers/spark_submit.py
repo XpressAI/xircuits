@@ -14,8 +14,7 @@ class SparkSubmitRouteHandler(APIHandler):
     def post(self):
         input_data = self.get_json_body()
 
-        cfg = get_config()
-        addArguments = str(cfg['SPARK']['ADD_ARGS'])
+        addArguments = input_data["addArgs"]
         currentPath = input_data["currentPath"]
 
         if platform.system() == "Windows": 
@@ -23,7 +22,7 @@ class SparkSubmitRouteHandler(APIHandler):
         else: 
             spark_submit_cmd = "spark-submit "
 
-        spark_submit_str= spark_submit_cmd + addArguments + currentPath
+        spark_submit_str= spark_submit_cmd + addArguments + " " + currentPath
         process=subprocess.Popen(spark_submit_str,stdout=subprocess.PIPE,stderr=subprocess.PIPE, universal_newlines=True, shell=True)
         stdout,stderr = process.communicate()
 

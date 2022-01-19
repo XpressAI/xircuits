@@ -144,6 +144,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [displaySavedAndCompiled, setDisplaySavedAndCompiled] = useState(false);
 	const [displayDebug, setDisplayDebug] = useState(false);
 	const [displayHyperparameter, setDisplayHyperparameter] = useState(false);
+	const [sparkSubmitNodes, setSparkSubmitkNodes] = useState<string>("");
 	const [stringNodes, setStringNodes] = useState<string[]>(["experiment name"]);
 	const [intNodes, setIntNodes] = useState<string[]>([]);
 	const [floatNodes, setFloatNodes] = useState<string[]>([]);
@@ -774,10 +775,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		// Run Mode
-		const runCommand = await handleRunDialog();
+		let runArgs = await handleRunDialog();
+		let runCommand = runArgs["commandStr"];
+		let addArgsSparkSubmit = runArgs["addArgs"];
 
-		if (runCommand) {
-			commands.execute(commandIDs.executeToOutputPanel, { runCommand, runType });
+		if (runArgs) {
+			commands.execute(commandIDs.executeToOutputPanel, { runCommand, runType, addArgsSparkSubmit });
 		}
 	}
 
@@ -1239,6 +1242,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	useEffect(() => {
+		// Only enable added arguments when in 'Spark Submit' mode
+		if (runType == 'spark-submit') {
+			setSparkSubmitkNodes("Added Arguments")
+		} else {
+			setSparkSubmitkNodes("")
+		}
+
 		if (initialize) {
 
 			try {
@@ -1281,7 +1291,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			setFloatNodes([]);
 			setBoolNodes([]);
 		}
-	}, [initialize]);
+	}, [initialize, runType]);
 
 	const handleRunDialog = async () => {
 		let title = 'Run';
@@ -1289,6 +1299,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			title,
 			body: formDialogWidget(
 				<RunDialog
+					childSparkSubmitNodes={sparkSubmitNodes}
 					childStringNodes={stringNodes}
 					childBoolNodes={boolNodes}
 					childIntNodes={intNodes}
@@ -1307,6 +1318,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		let commandStr = ' ';
+		// Added arguments for spark submit
+		let addArgs = dialogResult["value"][sparkSubmitNodes] ?? "";
 
 		stringNodes.forEach((param) => {
 			if (param == 'experiment name') {
@@ -1360,7 +1373,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			});
 		}
 
-		return commandStr;
+		return {commandStr, addArgs};
 	};
 
 
