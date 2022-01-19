@@ -1,4 +1,4 @@
-from xai_components.base import InArg, OutArg, Component, xai_component
+from xai_components.base import InArg, OutArg, InCompArg, Component, xai_component
 
 import modelstash
 import modelstash_cli
@@ -7,26 +7,22 @@ import sys
 from pathlib import Path
 
 
-# uncomment if you would like to use modelstash without using StartModelStashSession
-# client_url = "http://localhost:8080"
-# username = ""
-# password = ""
-# ms = modelstash.ModelStash(url=client_url, username=username, password=password)
-# ms_cli = modelstash_cli.ModelStashCli(url=client_url, username=username, password=password)
+ms = modelstash.ModelStash()
+ms_cli = modelstash_cli.ModelStashCli()
 
 @xai_component
-class StartModelStashSession(Component):
+class StartLocalModelStashSession(Component):
 
     client_url: InArg[str]
-    username: InArg[str] 
-    password: InArg[str]
+    username: InCompArg[str] 
+    password: InCompArg[str]
 
     def __init__(self):
         self.done = False
 
         self.client_url = InArg.empty()
-        self.username = InArg.empty()
-        self.password = InArg.empty() 
+        self.username = InCompArg.empty()
+        self.password = InCompArg.empty() 
 
 
     def execute(self) -> None:
@@ -72,56 +68,118 @@ class ListSkills(Component):
 @xai_component
 class UploadToModelStash(Component):
 
-    model_file_path: InArg[any] #should be a str
-    model_name: InArg[str] 
+    model_file_path: InCompArg[str] 
+    model_name: InArg[str]
     creator_name: InArg[str] 
     training_dataset_name: InArg[str]
     input_names: InArg[any]  #should be a list
     output_names: InArg[any] #should be a list
+    model_config: InArg[any]
+    training_metric: InArg[any]
+    evaluation_metric: InArg[any]
+
+    skill: InArg[str]
     ms_model: OutArg[any] #should be a list
 
 
     def __init__(self):
         self.done = False
 
-        self.model_file_path = InArg.empty()
+        self.model_file_path = InCompArg.empty()
         self.model_name = InArg.empty() 
         self.creator_name = InArg.empty() 
         self.training_dataset_name = InArg.empty()
         self.input_names = InArg.empty()  
         self.output_names = InArg.empty()
+        
+        self.model_config = InArg.empty()
+        self.training_metric = InArg.empty()
+        self.evaluation_metric = InArg.empty()
+        
+        self.skill = InArg.empty()
         self.ms_model = OutArg.empty() 
 
 
     def execute(self) -> None:
 
+        import getpass
+
         model_file_path = self.model_file_path.value if self.model_file_path.value else ""
 
         filename = Path(sys.argv[0]).stem
-        #filepath = Path.splitext(sys.argv[0])[0]
-
+                
         model_name = self.model_name.value if self.model_name.value else filename
-        creator_name = self.creator_name.value if self.creator_name.value else os.getlogin()
+        creator_name = self.creator_name.value if self.creator_name.value else getpass.getuser()
         training_dataset_name = self.training_dataset_name.value if self.training_dataset_name.value else filename + "_dataset"
         input_names = self.input_names.value if self.input_names.value else [filename + "_input"]
         output_names = self.output_names.value if self.output_names.value else [filename + "_output"]
-
+        
+        model_config = self.model_config.value if self.model_config.value else {}
+        training_metric = self.training_metric.value if self.training_metric.value else {}
+        evaluation_metric = self.evaluation_metric.value if self.evaluation_metric.value else {}
+        skill_name = self.skill.value if self.skill.value else filename + "_skill"
+        
+        print("MODELSTASH UPLOAD PARAMETERS:")
         print(f"{model_file_path=}")
         print(f"{model_name=}")
         print(f"{creator_name=}")
         print(f"{training_dataset_name=}")
         print(f"{input_names=}")
         print(f"{output_names=}")
+        print(f"{model_config=}")
+        print(f"{training_metric=}")
+        print(f"{evaluation_metric=}")
+        
 
-        model = ms.create_model(file_path=model_file_path, 
-                                        model_name=model_name, 
-                                        created_by=creator_name, 
-                                        training_dataset=training_dataset_name, 
-                                        input_names=input_names, 
-                                        output_names=output_names)
+        #handler if base model does not have skill
+        if not ms.find_skills(skill_name=skill_name):
+            print(f"{skill_name=} not found! Creating...")
+            ms.create_skill(skill_name = skill_name, benchmark_dataset = training_dataset_name)
+            
+        skill = ms.find_skills(skill_name=skill_name)[0]
 
-        self.ms_model.value = model
+
+        print(f"\nSearching for existing {model_name} in modelstash...")
+
+        base_model = ms.find_model(model_name)
+        
+        if base_model:
+            print(f"Base model {model_name} found!")
+            model_versions = len(ms.list_model_versions(base_model.id))
+            VERSION_NAME = "Model v" + str(model_versions + 1)
+            model_version = ms.upload_model_version(file_path=model_file_path, 
+                                                            model=base_model, 
+                                                            training_dataset=training_dataset_name, 
+                                                            training_metric=training_metric,
+                                                            model_config=model_config, 
+                                                            version_name=VERSION_NAME)
+            
+
+            
+            # Set model version 2 benchmark
+            ms.create_model_version_benchmark(model_version=model_version, 
+                                                      skill=skill, 
+                                                      evaluation_metric=evaluation_metric)
+
+
+        else:
+
+            base_model = ms.create_model(file_path=model_file_path, 
+                                            model_name=model_name, 
+                                            created_by=creator_name, 
+                                            training_dataset=training_dataset_name, 
+                                            input_names=input_names, 
+                                            output_names=output_names,
+                                            model_config=model_config, 
+                                            training_metric=training_metric)
+
+            # Set base model version benchmark
+            model_version = ms.list_model_versions(model_id=base_model.id)[0]
+            ms.create_model_version_benchmark(model_version=model_version, skill=skill, evaluation_metric=evaluation_metric)        
+
+        self.ms_model.value = base_model
         self.done = True
+
 
 @xai_component
 class DeleteModelfromModelStash(Component):
@@ -138,8 +196,7 @@ class DeleteModelfromModelStash(Component):
         filename = Path(sys.argv[0]).stem
         model_name = self.model_name.value if self.model_name.value else filename
 
-        #assert not supposed in xpipes yet
-        #assert ms.find_model(model_name), f'{model_name} not found!'
+        assert ms.find_model(model_name), f'{model_name} not found!'
 
         model_id = ms.find_model(model_name).id
         model_versions = ms.list_model_versions(model_id)
