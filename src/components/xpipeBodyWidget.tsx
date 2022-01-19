@@ -1391,9 +1391,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	signalConnections.forEach(connectSignal);
 
 	const fetchComponentList = async () => {
-		const base_path = await getConfig("BASE_PATH");
-		const base_path_cfg = base_path["cfg"];
-		const response = await ComponentList(serviceManager, base_path_cfg);
+		const response = await ComponentList(serviceManager);
 
 		if (response.length > 0) {
 			setComponentList([]);

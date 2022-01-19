@@ -138,12 +138,8 @@ export default function Sidebar(props: SidebarProps) {
     };
 
     const fetchComponentList = async () => {
-        // get the base path configuration 
-        const base_path = await getConfig("BASE_PATH");
-        const base_path_cfg = base_path["cfg"];
-
-        // get the component list by sending the jupyterlab frontend and base path
-        const response_1 = await ComponentList(props.lab.serviceManager, base_path_cfg);
+          // get the component list by sending the jupyterlab frontend and base path
+        const response_1 = await ComponentList(props.lab.serviceManager);
 
         // get the header from the components
         const response_2 = await fetchComponent(response_1);
