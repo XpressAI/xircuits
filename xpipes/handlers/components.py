@@ -76,6 +76,29 @@ COMPONENT_OUTPUT_TYPE_MAPPING = {
     "CreateModel": "model"
 }
 
+def remove_prefix(input_str, prefix):
+    prefix_len = len(prefix)
+    if input_str[0:prefix_len] == prefix:
+        return input_str[prefix_len:]
+    else:
+        return input_str
+
+def read_orig_code(node: ast.AST, lines):
+    line_from = node.lineno - 1
+    col_from = node.col_offset
+
+    line_to = node.end_lineno - 1
+    col_to = node.end_col_offset
+
+    if line_from == line_to:
+        line = lines[line_from]
+        return line[col_from:col_to]
+    else:
+        start_line = lines[line_from][col_from:]
+        between_lines = lines[(line_from+1):line_to]
+        end_line = lines[line_to][col_to]
+        return "\n".join(chain([start_line], between_lines, [end_line]))
+
 class ComponentsRouteHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
@@ -118,6 +141,9 @@ class ComponentsRouteHandler(APIHandler):
         return paths
 
     def extract_components(self, file_path, base_dir):
+        with open(file_path) as f:
+            lines = f.readlines()
+
         parse_tree = ast.parse(file_path.read_text(), file_path)
         # Look for top level class definitions that are decorated with "@xai_component"
         is_xai_component = lambda node: isinstance(node, ast.ClassDef) and \
@@ -125,10 +151,10 @@ class ComponentsRouteHandler(APIHandler):
                                             (isinstance(decorator, ast.Name) and decorator.id == "xai_component")
                                             for decorator in node.decorator_list)
 
-        return [self.extract_component(node, file_path.relative_to(base_dir.parent))
+        return [self.extract_component(node, file_path.relative_to(base_dir.parent), lines)
                 for node in parse_tree.body if is_xai_component(node)]
 
-    def extract_component(self, node: ast.ClassDef, file_path):
+    def extract_component(self, node: ast.ClassDef, file_path, file_lines):
         name = node.name
 
         keywords = {kw.arg: kw.value.value for kw in chain.from_iterable(decorator.keywords
@@ -136,7 +162,7 @@ class ComponentsRouteHandler(APIHandler):
                         if isinstance(decorator, ast.Call) and decorator.func.id == "xai_component")}
 
         # Group Name for Display
-        category = file_path.parent.name.removeprefix("xai_").upper()
+        category = remove_prefix(file_path.parent.name, "xai_").upper()
 
         is_arg = lambda n: isinstance(n, ast.AnnAssign) and \
                                            isinstance(n.annotation, ast.Subscript) and \
@@ -145,7 +171,7 @@ class ComponentsRouteHandler(APIHandler):
             {
                 "name": v.target.id,
                 "kind": v.annotation.value.id,
-                "type": ast.unparse(v.annotation.slice)
+                "type": read_orig_code(v.annotation.slice, file_lines)
             }
             for v in node.body if is_arg(v)
         ]
