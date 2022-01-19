@@ -13,7 +13,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 
-@xai_component
+@xai_component(type="in")
 class ReadDataSet(Component):
     dataset_name: InArg[str]
     dataset: OutArg[Tuple[np.array, np.array]]
@@ -124,7 +124,7 @@ class ReadDataSet(Component):
 
         self.done = True
 
-@xai_component
+@xai_component(type="in")
 class ReadMaskDataSet(Component):
     dataset_name: InArg[str]
     mask_dataset_name: InArg[str]
@@ -173,7 +173,7 @@ class FlattenImageData(Component):
         self.done = True
 
 
-@xai_component
+@xai_component(type="split")
 class TrainTestSplit(Component):
     dataset: InArg[Tuple[np.array, np.array]]
     train_split: InArg[float]
@@ -211,7 +211,7 @@ class TrainTestSplit(Component):
         self.test.value = test
         self.done = True
 
-@xai_component
+@xai_component(type="model")
 class Create1DInputModel(Component):
     training_data: InArg[Tuple[np.array, np.array]]
 
@@ -242,7 +242,7 @@ class Create1DInputModel(Component):
 
         self.done = True
 
-@xai_component
+@xai_component(type="model")
 class Create2DInputModel(Component):
     training_data: InArg[Tuple[np.array, np.array]]
 
@@ -283,7 +283,7 @@ class Create2DInputModel(Component):
         self.done = True
 
 
-@xai_component
+@xai_component(type="train")
 class TrainImageClassifier(Component):
     training_data: InArg[Tuple[np.array, np.array]]
     training_epochs: InArg[int]
@@ -311,7 +311,7 @@ class TrainImageClassifier(Component):
         self.done = True
 
 
-@xai_component
+@xai_component(type="eval")
 class EvaluateAccuracy(Component):
     model: InArg[keras.Sequential]
     eval_dataset: InArg[Tuple[np.array, np.array]]
@@ -337,7 +337,7 @@ class EvaluateAccuracy(Component):
         self.done = True
 
 
-@xai_component
+@xai_component(type="enough")
 class ShouldStop(Component):
     target_accuracy: InArg[float]
     max_retries: InArg[int]
@@ -395,7 +395,7 @@ class SaveKerasModel(Component):
         self.done = True
 
 
-@xai_component
+@xai_component(type="convert")
 class SaveKerasModelInModelStash(Component):
     model: InArg[keras.Sequential]
     experiment_name: InArg[str]

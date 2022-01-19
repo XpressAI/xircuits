@@ -34,7 +34,7 @@ class LoadImage(Component):
         self.done = True
 
 
-@xai_component
+@xai_component(type="out")
 class ResizeImageData(Component):
     dataset: InArg[Tuple[np.array, np.array]]
     resized_dataset: OutArg[Tuple[np.array, np.array]]

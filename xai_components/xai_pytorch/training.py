@@ -57,7 +57,7 @@ class ConvertTorchModelToOnnx(Component):
         self.done = True
     
 
-@xai_component
+@xai_component(type="model")
 class CreateUnetModel(Component):
     train_data: InArg[torch.utils.data.DataLoader]
     test_data: InArg[torch.utils.data.DataLoader]
@@ -110,7 +110,7 @@ class CreateUnetModel(Component):
         self.done = True
     
 
-@xai_component
+@xai_component(type="split")
 class ImageTrainTestSplit(Component):
     input_str: InArg[Tuple[str,str]]
     split_ratio: InArg[float]
