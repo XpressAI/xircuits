@@ -303,6 +303,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const getPythonCompiler = (): string => {
+		let componentDB = new Map(componentList.map( x => [x["task"], x]))
 		let component_task = componentList.map(x => x["task"]);
 		let model = xpipesApp.getDiagramEngine().getModel();
 		let nodeModels = model.getNodes();
@@ -334,6 +335,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			}
 		}
 
+		let python_paths = new Set();
+		for (let key in uniqueComponents) {
+			let component = componentDB.get(key) || {"python_path": null};
+			if(component["python_path"] != null) python_paths.add(component["python_path"]);
+		}
+		if(python_paths.size > 0){
+			pythonCode += "import sys\n"
+		}
+		python_paths.forEach((path: string) => {
+			pythonCode += `sys.path.append("${path.replace(/\\/gi, "\\\\")}")\n`
+		})
+
 		for (let componentName in uniqueComponents) {
 			let component_exist = component_task.indexOf(componentName);
 			let current_node: any;
@@ -341,15 +354,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 			if (component_exist != -1) {
 				current_node = componentList[component_exist];
-				if (current_node["path"] != "") {
-					if (current_node["path"].indexOf("/") != -1) {
-						package_name = current_node["path"].substring(0, current_node["path"].length - 3).split("/").join(".");
-					} else {
-						package_name = "." + current_node["path"].substring(0, current_node["path"].length - 3);
-					}
-				}
+				package_name = current_node["package_name"];
 			}
 			pythonCode += "from " + package_name + " import " + componentName + "\n";
+
 		}
 
 		pythonCode += "\napp = Flask(__name__)\n";

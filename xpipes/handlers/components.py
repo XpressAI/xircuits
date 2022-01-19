@@ -1,6 +1,7 @@
 import json
 import os
 import pathlib
+import sys
 import ast
 from itertools import chain
 
@@ -86,10 +87,11 @@ class ComponentsRouteHandler(APIHandler):
                 "task": c["name"],
                 "header": GROUP_GENERAL,
                 "category": GROUP_GENERAL,
-                "path": "", # Default Components do not have a python-file backed implementation
                 "variables": [],
                 "type": c["returnType"]
             })
+
+        default_paths = set(pathlib.Path(p).expanduser().resolve() for p in sys.path)
 
         visited_directories = []
         for directory_string in self.get_component_directories():
@@ -100,7 +102,13 @@ class ComponentsRouteHandler(APIHandler):
                         and not any(pathlib.Path.samefile(directory, d) for d in visited_directories):
                     visited_directories.append(directory)
                     python_files = directory.rglob("xai_*/*.py")
-                    components.extend(chain.from_iterable(self.extract_components(f, directory) for f in python_files))
+
+                    python_path = directory.expanduser().resolve()
+
+                    if python_path.parent in default_paths:
+                        python_path = None
+
+                    components.extend(chain.from_iterable(self.extract_components(f, directory, python_path) for f in python_files))
 
 
         components = list({(c["header"], c["task"]): c for c in components}.values())
@@ -117,7 +125,7 @@ class ComponentsRouteHandler(APIHandler):
         paths.append(get_config().get("DEV", "BASE_PATH"))
         return paths
 
-    def extract_components(self, file_path, base_dir):
+    def extract_components(self, file_path, base_dir, python_path):
         parse_tree = ast.parse(file_path.read_text(), file_path)
         # Look for top level class definitions that are decorated with "@xai_component"
         is_xai_component = lambda node: isinstance(node, ast.ClassDef) and \
@@ -125,10 +133,10 @@ class ComponentsRouteHandler(APIHandler):
                                             (isinstance(decorator, ast.Name) and decorator.id == "xai_component")
                                             for decorator in node.decorator_list)
 
-        return [self.extract_component(node, file_path.relative_to(base_dir.parent))
+        return [self.extract_component(node, file_path.relative_to(base_dir), python_path)
                 for node in parse_tree.body if is_xai_component(node)]
 
-    def extract_component(self, node: ast.ClassDef, file_path):
+    def extract_component(self, node: ast.ClassDef, file_path, python_path):
         name = node.name
 
         keywords = {kw.arg: kw.value.value for kw in chain.from_iterable(decorator.keywords
@@ -153,7 +161,9 @@ class ComponentsRouteHandler(APIHandler):
         output_type = COMPONENT_OUTPUT_TYPE_MAPPING.get(name) or "debug"
 
         output = {
-            "path": file_path.as_posix(),
+            "class": name,
+            "package_name": ("xai_components." if python_path is None else "") + file_path.as_posix().replace("/", ".")[:-3],
+            "python_path": str(python_path) if python_path is not None else None,
             "task": name,
             "header": GROUP_ADVANCED,
             "category": category,
