@@ -94,6 +94,7 @@ class BranchComponent(BaseComponent):
             return self.when_false
 
 
+@xai_component(type="if")
 class LoopComponent(Component):
     body: Component
 

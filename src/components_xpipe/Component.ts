@@ -7,7 +7,7 @@ async function get_all_components_method() {
     return components;
 }
 
-export default async function ComponentList(serviceManager: ServiceManager, basePath: string) {
+export default async function ComponentList(serviceManager: ServiceManager) {
     let component_list_result: string[] = await get_all_components_method();
     
     return component_list_result;
