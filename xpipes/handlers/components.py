@@ -62,20 +62,6 @@ COLOR_PALETTE = [
 GROUP_GENERAL = "GENERAL"
 GROUP_ADVANCED = "ADVANCED"
 
-# TODO: attach this data to the actual model
-COMPONENT_OUTPUT_TYPE_MAPPING = {
-    "TrainTestSplit": "split",
-    "RotateCounterClockWiseComponent": "out",
-    "LoopComponent": "if",
-    "ReadDataSet": "in",
-    "ResizeImageData": "out",
-    "ShouldStop": "enough",
-    "SaveKerasModelInModelStash": "convert",
-    "EvaluateAccuracy": "eval",
-    "TrainImageClassifier": "train",
-    "CreateModel": "model"
-}
-
 class ComponentsRouteHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
@@ -148,14 +134,12 @@ class ComponentsRouteHandler(APIHandler):
             for v in node.body if is_arg(v)
         ]
 
-        output_type = COMPONENT_OUTPUT_TYPE_MAPPING.get(name) or "debug"
-
         output = {
             "path": file_path.as_posix(),
             "task": name,
             "header": GROUP_ADVANCED,
             "category": category,
-            "type": output_type,
+            "type": "debug",
             "variables": variables
         }
         output.update(keywords)
