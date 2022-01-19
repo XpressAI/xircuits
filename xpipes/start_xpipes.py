@@ -26,7 +26,7 @@ def start_xpipes():
     
     # the current handler assumes that the user uses venv to install xpipes
     
-    lif platform == "win32":
+    if platform == "win32":
         xai_component_path = Path(sys.executable).parents[1] / "Lib" / "site-packages" / "xai_components"
         config_path = Path(sys.executable).parents[1] / "Lib" / "site-packages" / "xai_components" / ".xpipes"
     
