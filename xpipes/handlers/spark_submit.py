@@ -2,7 +2,6 @@ import json
 import tornado
 import subprocess
 from jupyter_server.base.handlers import APIHandler
-from .config import get_config
 import platform
 
 class SparkSubmitRouteHandler(APIHandler):
