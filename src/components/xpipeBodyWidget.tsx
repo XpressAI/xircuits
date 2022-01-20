@@ -455,7 +455,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + sourcePortLabel + "\n";
 											}
 										  // Make sure the node id match between connected link and source node
-										} else if (linkSourceNodeId == sourceNodeId) {
+										  // Skip Hyperparameter Components
+										} else if (linkSourceNodeId == sourceNodeId && !sourceNodeName.startsWith("Hyperparameter")) {
 											pythonCode += '    ' + bindingName + '.' + label + ' = ' + preBindingName + '.' + sourcePortLabel + '\n';
 										} else {
 											sourcePortLabel = sourcePortLabel.replace(/\s+/g, "_");
