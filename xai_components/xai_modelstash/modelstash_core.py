@@ -163,7 +163,7 @@ class UploadToModelStash(Component):
 
 
         else:
-
+            print(f"Base model {model_name} not found! Creating base model...")
             base_model = ms.create_model(file_path=model_file_path, 
                                             model_name=model_name, 
                                             created_by=creator_name, 

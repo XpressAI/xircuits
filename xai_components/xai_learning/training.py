@@ -13,7 +13,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 
-@xai_component
+@xai_component(type="in")
 class ReadDataSet(Component):
     dataset_name: InArg[str]
     dataset: OutArg[Tuple[np.array, np.array]]
@@ -124,7 +124,7 @@ class ReadDataSet(Component):
 
         self.done = True
 
-@xai_component
+@xai_component(type="in")
 class ReadMaskDataSet(Component):
     dataset_name: InArg[str]
     mask_dataset_name: InArg[str]
@@ -173,7 +173,7 @@ class FlattenImageData(Component):
         self.done = True
 
 
-@xai_component
+@xai_component(type="split")
 class TrainTestSplit(Component):
     dataset: InArg[Tuple[np.array, np.array]]
     train_split: InArg[float]
@@ -211,7 +211,8 @@ class TrainTestSplit(Component):
         self.test.value = test
         self.done = True
 
-@xai_component
+
+@xai_component(type="model")
 class Create1DInputModel(Component):
     training_data: InArg[Tuple[np.array, np.array]]
 
@@ -242,16 +243,20 @@ class Create1DInputModel(Component):
 
         self.done = True
 
-@xai_component
+@xai_component(type="model")
 class Create2DInputModel(Component):
     training_data: InArg[Tuple[np.array, np.array]]
 
     model: OutArg[keras.Sequential]
+    model_config: OutArg[dict]
+
 
     def __init__(self):
         self.done = False
         self.training_data = InArg.empty()
         self.model = OutArg.empty()
+        self.model_config = OutArg.empty()
+
 
     def execute(self) -> None:
 
@@ -279,39 +284,59 @@ class Create2DInputModel(Component):
             metrics=['accuracy']
         )
 
+        model_config = {
+            'lr': model.optimizer.lr.numpy().item(),
+            'optimizer_name': model.optimizer._name,
+            'loss': model.loss,
+        }
+
         self.model.value = model
+        self.model_config.value = model_config
+
         self.done = True
 
 
-@xai_component
+@xai_component(type="train")
 class TrainImageClassifier(Component):
+    model: InArg[keras.Sequential]
     training_data: InArg[Tuple[np.array, np.array]]
     training_epochs: InArg[int]
-    model: InArg[keras.Sequential]
 
     trained_model: OutArg[keras.Sequential]
+    training_metrics: OutArg[dict]
 
     def __init__(self):
         self.done = False
+
+        self.model = InArg.empty()
         self.training_data = InArg.empty()
         self.training_epochs = InArg.empty()
-        self.model = InArg.empty()
         self.trained_model = OutArg.empty()
+        self.training_metrics = OutArg.empty()
 
     def execute(self) -> None:
 
-        self.model.value.fit(
+        model = self.model.value
+
+        train = model.fit(
             self.training_data.value[0],
             self.training_data.value[1],
             batch_size=32,
             epochs=self.training_epochs.value
         )
 
-        self.trained_model.value = self.model.value
+        # Set training metrics
+        training_metrics = {}
+        for key in train.history.keys():
+            training_metrics[key] = {}
+            [training_metrics[key].update({i + 1: v}) for i, v in enumerate(train.history[key])]
+
+        self.trained_model.value = model
+        self.training_metrics.value = training_metrics
         self.done = True
 
 
-@xai_component
+@xai_component(type="eval")
 class EvaluateAccuracy(Component):
     model: InArg[keras.Sequential]
     eval_dataset: InArg[Tuple[np.array, np.array]]
@@ -337,7 +362,7 @@ class EvaluateAccuracy(Component):
         self.done = True
 
 
-@xai_component
+@xai_component(type="enough")
 class ShouldStop(Component):
     target_accuracy: InArg[float]
     max_retries: InArg[int]
@@ -395,7 +420,7 @@ class SaveKerasModel(Component):
         self.done = True
 
 
-@xai_component
+@xai_component(type="convert")
 class SaveKerasModelInModelStash(Component):
     model: InArg[keras.Sequential]
     experiment_name: InArg[str]
