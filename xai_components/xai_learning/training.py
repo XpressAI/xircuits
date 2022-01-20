@@ -400,21 +400,21 @@ class SaveKerasModel(Component):
 
     model: InArg[any]
     model_name: InArg[str]
-    model_h5: OutArg[str]
+    model_h5_path: OutArg[str]
 
     def __init__(self):
         self.done = False
         self.model = InArg.empty()
         self.model_name = InArg.empty()
 
-        self.model_h5 = OutArg.empty()
+        self.model_h5_path = OutArg.empty()
 
     def execute(self) -> None:
         model = self.model.value
         model_name = self.model_name.value if self.model_name.value else os.path.splitext(sys.argv[0])[0] + ".h5"
         model.save(model_name)
         print(f"Saving Keras h5 model at: {model_name}")
-        self.model_h5.value = model_name
+        self.model_h5_path.value = model_name
 
         self.done = True
 
