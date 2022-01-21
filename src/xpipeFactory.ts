@@ -23,6 +23,7 @@ import { ToolbarButton } from '@jupyterlab/apputils';
 import { commandIDs } from './components/xpipeBodyWidget';
 import { CommandIDs } from './log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
+import { RunSwitcher } from './components/RunSwitcher';
 
 const XPIPE_CLASS = 'xpipes-editor';
 
@@ -35,6 +36,7 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
   saveXpipeSignal: Signal<this, any>;
   compileXpipeSignal: Signal<this, any>;
   runXpipeSignal: Signal<this, any>;
+  runTypeXpipeSignal: Signal<this, any>;
   debugXpipeSignal: Signal<this, any>;
   lockNodeSignal: Signal<this, any>;
   breakpointXpipeSignal: Signal<this, any>;
@@ -58,6 +60,7 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
     this.saveXpipeSignal = new Signal<this, any>(this);
     this.compileXpipeSignal = new Signal<this, any>(this);
     this.runXpipeSignal = new Signal<this, any>(this);
+    this.runTypeXpipeSignal = new Signal<this, any>(this);
     this.debugXpipeSignal = new Signal<this, any>(this);
     this.lockNodeSignal = new Signal<this, any>(this);
     this.breakpointXpipeSignal = new Signal<this, any>(this);
@@ -84,6 +87,7 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
       saveXpipeSignal: this.saveXpipeSignal,
       compileXpipeSignal: this.compileXpipeSignal,
       runXpipeSignal: this.runXpipeSignal,
+      runTypeXpipeSignal: this.runTypeXpipeSignal,
       debugXpipeSignal: this.debugXpipeSignal,
       lockNodeSignal: this.lockNodeSignal,
       breakpointXpipeSignal: this.breakpointXpipeSignal,
@@ -213,6 +217,10 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.insertItem(6,'xpipes-add-lock', lockButton);
     widget.toolbar.insertItem(7,'xpipes-add-log', logButton);
     widget.toolbar.insertItem(8,'xpipes-add-test', testButton);
+    widget.toolbar.insertItem(9,
+      'xpipes-run-type',
+      new RunSwitcher(this)
+    );
 
     return widget;
   }

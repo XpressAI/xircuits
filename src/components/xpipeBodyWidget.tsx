@@ -33,6 +33,7 @@ export interface BodyWidgetProps {
 	saveXpipeSignal: Signal<XPipePanel, any>;
 	compileXpipeSignal: Signal<XPipePanel, any>;
 	runXpipeSignal: Signal<XPipePanel, any>;
+	runTypeXpipeSignal: Signal<XPipePanel, any>;
 	debugXpipeSignal: Signal<XPipePanel, any>;
 	lockNodeSignal: Signal<XPipePanel, any>;
 	breakpointXpipeSignal: Signal<XPipePanel, any>;
@@ -118,6 +119,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	saveXpipeSignal,
 	compileXpipeSignal,
 	runXpipeSignal,
+	runTypeXpipeSignal,
 	debugXpipeSignal,
 	lockNodeSignal,
 	breakpointXpipeSignal,
@@ -142,6 +144,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [displaySavedAndCompiled, setDisplaySavedAndCompiled] = useState(false);
 	const [displayDebug, setDisplayDebug] = useState(false);
 	const [displayHyperparameter, setDisplayHyperparameter] = useState(false);
+	const [sparkSubmitNodes, setSparkSubmitkNodes] = useState<string>("");
 	const [stringNodes, setStringNodes] = useState<string[]>(["experiment name"]);
 	const [intNodes, setIntNodes] = useState<string[]>([]);
 	const [floatNodes, setFloatNodes] = useState<string[]>([]);
@@ -157,6 +160,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [debugMode, setDebugMode] = useState<boolean>(false);
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
+	const [runType, setRunType] = useState<string>("run");
 	const xpipeLogger = new Log(app);
 	const contextRef = useRef(context);
 
@@ -756,8 +760,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		let pythonCode = getPythonCompiler();
 		let showOutput = false;
-		setCompiled(true);
-		commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
+		
+		// Don't compile if 'Run w/o compile' is chosen
+		if(runType != 'run-dont-compile'){
+			commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
+			setCompiled(true);
+		}
 
 		// Compile Mode
 		if (compileMode) {
@@ -781,10 +789,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		// Run Mode
-		const runCommand = await handleRunDialog();
+		let runArgs = await handleRunDialog();
+		let runCommand = runArgs["commandStr"];
+		let addArgsSparkSubmit = runArgs["addArgs"];
 
-		if (runCommand) {
-			commands.execute(commandIDs.executeToOutputPanel, { runCommand });
+		if (runArgs) {
+			commands.execute(commandIDs.executeToOutputPanel, { runCommand, runType, addArgsSparkSubmit });
 		}
 	}
 
@@ -1246,6 +1256,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	useEffect(() => {
+		// Only enable added arguments when in 'Spark Submit' mode
+		if (runType == 'spark-submit') {
+			setSparkSubmitkNodes("Added Arguments")
+		} else {
+			setSparkSubmitkNodes("")
+		}
+
 		if (initialize) {
 
 			try {
@@ -1288,7 +1305,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			setFloatNodes([]);
 			setBoolNodes([]);
 		}
-	}, [initialize]);
+	}, [initialize, runType]);
 
 	const handleRunDialog = async () => {
 		let title = 'Run';
@@ -1296,6 +1313,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			title,
 			body: formDialogWidget(
 				<RunDialog
+					childSparkSubmitNodes={sparkSubmitNodes}
 					childStringNodes={stringNodes}
 					childBoolNodes={boolNodes}
 					childIntNodes={intNodes}
@@ -1314,6 +1332,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		let commandStr = ' ';
+		// Added arguments for spark submit
+		let addArgs = dialogResult["value"][sparkSubmitNodes] ?? "";
 
 		stringNodes.forEach((param) => {
 			if (param == 'experiment name') {
@@ -1367,7 +1387,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			});
 		}
 
-		return commandStr;
+		return {commandStr, addArgs};
 	};
 
 
@@ -1407,6 +1427,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 		setComponentList(response);
 	}
+
+	useEffect(() => {
+		let runType;
+		runTypeXpipeSignal.connect((_, args) => {
+			runType = args["runType"];
+			setRunType(runType)
+		});
+	}, [runTypeXpipeSignal])
 
 	useEffect(() => {
 		debugModeSignal.emit({

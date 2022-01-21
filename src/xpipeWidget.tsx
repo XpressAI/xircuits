@@ -23,6 +23,7 @@ export class XPipePanel extends ReactWidget {
   saveXpipeSignal: Signal<this, any>;
   compileXpipeSignal: Signal<this, any>;
   runXpipeSignal: Signal<this, any>;
+  runTypeXpipeSignal: Signal<this, any>;
   debugXpipeSignal: Signal<this, any>;
   lockNodeSignal: Signal<this, any>;
   breakpointXpipeSignal: Signal<this, any>;
@@ -47,6 +48,7 @@ export class XPipePanel extends ReactWidget {
     this.saveXpipeSignal = options.saveXpipeSignal;
     this.compileXpipeSignal = options.compileXpipeSignal;
     this.runXpipeSignal = options.runXpipeSignal;
+    this.runTypeXpipeSignal = options.runTypeXpipeSignal;
     this.debugXpipeSignal = options.debugXpipeSignal;
     this.lockNodeSignal = options.lockNodeSignal;
     this.breakpointXpipeSignal = options.breakpointXpipeSignal;
@@ -101,6 +103,7 @@ export class XPipePanel extends ReactWidget {
         saveXpipeSignal={this.saveXpipeSignal}
         compileXpipeSignal={this.compileXpipeSignal}
         runXpipeSignal={this.runXpipeSignal}
+        runTypeXpipeSignal={this.runTypeXpipeSignal}
         debugXpipeSignal={this.debugXpipeSignal}
         lockNodeSignal={this.lockNodeSignal}
         breakpointXpipeSignal={this.breakpointXpipeSignal}
