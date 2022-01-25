@@ -2311,730 +2311,9 @@
         "signature": "03e7621b1f3c5410e2609230683ec81d537b679ad1d12e3c6d22b3d1f1e76e23",
         "affectsGlobalScope": false
       },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/baseobserver.d.ts": {
-        "version": "0176dfb9f1e92c346484b61ea703190def5a1c0679cffdae0abfc0b14e11dad4",
-        "signature": "0176dfb9f1e92c346484b61ea703190def5a1c0679cffdae0abfc0b14e11dad4",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basemodel.d.ts": {
-        "version": "844bfd608a1c5849b975d49bcb22877b43f66db1bd97c7f139d158af1c9c3684",
-        "signature": "844bfd608a1c5849b975d49bcb22877b43f66db1bd97c7f139d158af1c9c3684",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/baseentity.d.ts": {
-        "version": "75e29ba1b99df969b0292dbe8e2e0bc4baa6c2d09d19e68349a99f510eb0d267",
-        "signature": "75e29ba1b99df969b0292dbe8e2e0bc4baa6c2d09d19e68349a99f510eb0d267",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/abstractfactory.d.ts": {
-        "version": "3b0b6c9f8ff600614d6b3cd24681021eaa19700682f59a643cc47eecf980c6cd",
-        "signature": "3b0b6c9f8ff600614d6b3cd24681021eaa19700682f59a643cc47eecf980c6cd",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/factorybank.d.ts": {
-        "version": "3e48fb63c503aa858a37742c492442bebed4c93af5ae6b3717c71fd6bc8233ed",
-        "signature": "3e48fb63c503aa858a37742c492442bebed4c93af5ae6b3717c71fd6bc8233ed",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/abstractmodelfactory.d.ts": {
-        "version": "7e8eb55493d5b8a73c3802926b96f1d44dd840d6dccce30d68a678d8bd14f97d",
-        "signature": "7e8eb55493d5b8a73c3802926b96f1d44dd840d6dccce30d68a678d8bd14f97d",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/layermodel.d.ts": {
-        "version": "f694bdfea231fb5264664b64dd61a7dc287d328dc45f3572ea74ad474bbe1ea9",
-        "signature": "f694bdfea231fb5264664b64dd61a7dc287d328dc45f3572ea74ad474bbe1ea9",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/canvasmodel.d.ts": {
-        "version": "4954e5fc8374d667969e0effdbee02176cdbbcfe292a947a981232d46c488047",
-        "signature": "4954e5fc8374d667969e0effdbee02176cdbbcfe292a947a981232d46c488047",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/abstractreactfactory.d.ts": {
-        "version": "51126ab661868e1a7e7bfd066a085a5b71c7c68852668f98b08102193e8f7345",
-        "signature": "51126ab661868e1a7e7bfd066a085a5b71c7c68852668f98b08102193e8f7345",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts": {
-        "version": "8d1f632e39ba70a80a603db30716170c616fb580877fff4e826900573117b86f",
-        "signature": "8d1f632e39ba70a80a603db30716170c616fb580877fff4e826900573117b86f",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts": {
-        "version": "968d20d4b75a4bf2dcf6ede9af2e90a9d8c22fa2492d3ccdca07d0bf3ededa9b",
-        "signature": "968d20d4b75a4bf2dcf6ede9af2e90a9d8c22fa2492d3ccdca07d0bf3ededa9b",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts": {
-        "version": "13b261b1450d21c5d993de74522fe8d7a3a9f8d4ade2ef68b5e030f04b2a6fd1",
-        "signature": "13b261b1450d21c5d993de74522fe8d7a3a9f8d4ade2ef68b5e030f04b2a6fd1",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts": {
-        "version": "b3e81b6bd5b7250ce078be9431064a4cab5208755c9fe8ac641a1467be23d3d4",
-        "signature": "b3e81b6bd5b7250ce078be9431064a4cab5208755c9fe8ac641a1467be23d3d4",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts": {
-        "version": "1257e87945f1e930b9ccf3e646b8577dc62ab454e642d26afdae6a5aebe41b2d",
-        "signature": "1257e87945f1e930b9ccf3e646b8577dc62ab454e642d26afdae6a5aebe41b2d",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts": {
-        "version": "dc222f826ae8d67d5cabed4ac6725b7051344f159ee3fa7daeee67eb0a74768c",
-        "signature": "dc222f826ae8d67d5cabed4ac6725b7051344f159ee3fa7daeee67eb0a74768c",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/action.d.ts": {
-        "version": "2d7cb9bec22d6029ef0ab2d7f576a91b4eea6a30503a01f0013b2375920418bb",
-        "signature": "2d7cb9bec22d6029ef0ab2d7f576a91b4eea6a30503a01f0013b2375920418bb",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/actioneventbus.d.ts": {
-        "version": "bb75b028b3caf6200c3d5754b1c4c45f2b9d57e3298414bf8a6b94bfdc417c79",
-        "signature": "bb75b028b3caf6200c3d5754b1c4c45f2b9d57e3298414bf8a6b94bfdc417c79",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/state.d.ts": {
-        "version": "23a729f9d2d11e90428426d465763d3999a6895df98f6c14283a8b8bd67420c1",
-        "signature": "23a729f9d2d11e90428426d465763d3999a6895df98f6c14283a8b8bd67420c1",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/statemachine.d.ts": {
-        "version": "92c8e22e6e2068d2c07809a885f9bfcdd11df6e7f770e4504ff65464759576ed",
-        "signature": "92c8e22e6e2068d2c07809a885f9bfcdd11df6e7f770e4504ff65464759576ed",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/canvasengine.d.ts": {
-        "version": "e04f12f5f97ae8f555291c190845a664543e516936cc42d5e2fef85715ba0439",
-        "signature": "e04f12f5f97ae8f555291c190845a664543e516936cc42d5e2fef85715ba0439",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/toolkit.d.ts": {
-        "version": "47ddb5c4ac1a0f83ed7e1316286f04c38825a179cff8fcb0cb6a0a6b069352fb",
-        "signature": "47ddb5c4ac1a0f83ed7e1316286f04c38825a179cff8fcb0cb6a0a6b069352fb",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/modelgeometryinterface.d.ts": {
-        "version": "bb928dc1096520138fd1ce96807c14cd245ab922c576c9a87ad7828c3f3bf845",
-        "signature": "bb928dc1096520138fd1ce96807c14cd245ab922c576c9a87ad7828c3f3bf845",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basepositionmodel.d.ts": {
-        "version": "94a76915c5d9d6657a607c5c675c8d95bfdf32a24532a994422cb10347bb14a5",
-        "signature": "94a76915c5d9d6657a607c5c675c8d95bfdf32a24532a994422cb10347bb14a5",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/canvaswidget.d.ts": {
-        "version": "32644fd39e4bc1426d881db1a4603d383d4e8d0f685022877cb0675216f25f66",
-        "signature": "32644fd39e4bc1426d881db1a4603d383d4e8d0f685022877cb0675216f25f66",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/transformlayerwidget.d.ts": {
-        "version": "a9476d0455491d0e6dcb14d2cd0245f8bce52e727a8f9c923f61fdaa94de317c",
-        "signature": "a9476d0455491d0e6dcb14d2cd0245f8bce52e727a8f9c923f61fdaa94de317c",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/smartlayerwidget.d.ts": {
-        "version": "011b09d59d690e9254778fefe0b804408d9f232987c10b1858b8e79141b990d2",
-        "signature": "011b09d59d690e9254778fefe0b804408d9f232987c10b1858b8e79141b990d2",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/selection/selectionlayermodel.d.ts": {
-        "version": "9c30973712ac0772365c8989105745a959ed058c7cf7e262312390ee516cbefe",
-        "signature": "9c30973712ac0772365c8989105745a959ed058c7cf7e262312390ee516cbefe",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/selection/selectionboxlayerfactory.d.ts": {
-        "version": "eab2e88f804c0b26d5c3ba5ef9a8f6cec66e4ef4d0455c93bcc87bbbef62d8b3",
-        "signature": "eab2e88f804c0b26d5c3ba5ef9a8f6cec66e4ef4d0455c93bcc87bbbef62d8b3",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/selection/selectionboxwidget.d.ts": {
-        "version": "cf0ac01b4805e04fd933bede724b362aeda8aa614c6b0e78bb15e19cf094df5c",
-        "signature": "cf0ac01b4805e04fd933bede724b362aeda8aa614c6b0e78bb15e19cf094df5c",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/widgets/peformancewidget.d.ts": {
-        "version": "18d6b285e226889fcc7995f71738c4c8bc54cc1b407cabd138fbde9712da065d",
-        "signature": "18d6b285e226889fcc7995f71738c4c8bc54cc1b407cabd138fbde9712da065d",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/abstractdisplacementstate.d.ts": {
-        "version": "99dfe91a6a2aa87e42c5b67885b213f3c6178aff0259b7f8a67e0ecb034c2d34",
-        "signature": "99dfe91a6a2aa87e42c5b67885b213f3c6178aff0259b7f8a67e0ecb034c2d34",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/defaultstate.d.ts": {
-        "version": "0c907df70939d4ae6feb6a7ce84ca8bdb520bf4454ed500fd45b1d3e59c6dd66",
-        "signature": "0c907df70939d4ae6feb6a7ce84ca8bdb520bf4454ed500fd45b1d3e59c6dd66",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/dragcanvasstate.d.ts": {
-        "version": "d6840a9dfebe3071b1774c95d5efb9571e6768d8f940b8755a4d21190f878087",
-        "signature": "d6840a9dfebe3071b1774c95d5efb9571e6768d8f940b8755a4d21190f878087",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/selectingstate.d.ts": {
-        "version": "11eb9480348eba100064a55b1dc24a3e4a0bdec477b097e920060f904a5b5dc7",
-        "signature": "11eb9480348eba100064a55b1dc24a3e4a0bdec477b097e920060f904a5b5dc7",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/selectionboxstate.d.ts": {
-        "version": "c3a8022721a49e1615950042c2ad22d26ac7b0c5d95dab4a0870f8a37316c788",
-        "signature": "c3a8022721a49e1615950042c2ad22d26ac7b0c5d95dab4a0870f8a37316c788",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/moveitemsstate.d.ts": {
-        "version": "d27f6d6c2e48a908840f946b774250d344dadf20d9924a0f3028b8c45e2a8902",
-        "signature": "d27f6d6c2e48a908840f946b774250d344dadf20d9924a0f3028b8c45e2a8902",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/actions/deleteitemsaction.d.ts": {
-        "version": "24d70592b8cf65d4ef01db06c08511434aee7079577f94d5f96b9e4a57c7a23d",
-        "signature": "24d70592b8cf65d4ef01db06c08511434aee7079577f94d5f96b9e4a57c7a23d",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/actions/zoomcanvasaction.d.ts": {
-        "version": "0fe442beecd68d0e8bf0cbec8ba928f5fa78d51c69f589b8dae3701995135a4f",
-        "signature": "0fe442beecd68d0e8bf0cbec8ba928f5fa78d51c69f589b8dae3701995135a4f",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts": {
-        "version": "21fcc1e22048a0eb591f389722909bb0e858a1a726553fcfac3d592924658918",
-        "signature": "21fcc1e22048a0eb591f389722909bb0e858a1a726553fcfac3d592924658918",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts": {
-        "version": "4b46f4712ae966996b2cc81949d482063887c55478706e25d942482a44b99b71",
-        "signature": "4b46f4712ae966996b2cc81949d482063887c55478706e25d942482a44b99b71",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@emotion/react/node_modules/@emotion/cache/types/index.d.ts": {
-        "version": "03d59e612afdc3039a83b12d45b026306b291cfc8e2fc72859f7902b8a857caf",
-        "signature": "03d59e612afdc3039a83b12d45b026306b291cfc8e2fc72859f7902b8a857caf",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@emotion/react/node_modules/csstype/index.d.ts": {
-        "version": "381899b8d1d4c1be716f18cb5242ba39f66f4b1e31d45af62a32a99f8edcb39d",
-        "signature": "381899b8d1d4c1be716f18cb5242ba39f66f4b1e31d45af62a32a99f8edcb39d",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@emotion/react/node_modules/@emotion/serialize/types/index.d.ts": {
-        "version": "93b24ca76698e62732d72800da132367639a4426363c821338bbbd7cf6b64443",
-        "signature": "93b24ca76698e62732d72800da132367639a4426363c821338bbbd7cf6b64443",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@emotion/react/types/jsx-namespace.d.ts": {
-        "version": "ecfa9ce3a5a37d15b813065e8a7cdf677a0f493018e47ce59815443dfbb9c910",
-        "signature": "ecfa9ce3a5a37d15b813065e8a7cdf677a0f493018e47ce59815443dfbb9c910",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@emotion/react/types/helper.d.ts": {
-        "version": "83e56d3337e1a6dbafdbe5a2502a84c330b1a328ed2860d689b2ded82b1f5c95",
-        "signature": "83e56d3337e1a6dbafdbe5a2502a84c330b1a328ed2860d689b2ded82b1f5c95",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@emotion/react/types/theming.d.ts": {
-        "version": "e630f8a3c49d5db0a8af774799abdb8f19675b940a6cfa25eca35e5280709f28",
-        "signature": "e630f8a3c49d5db0a8af774799abdb8f19675b940a6cfa25eca35e5280709f28",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@emotion/react/types/index.d.ts": {
-        "version": "909bac92983e542dd29efcf9eedf4ab5a330767c70c505a52326f7f5ee4b288d",
-        "signature": "909bac92983e542dd29efcf9eedf4ab5a330767c70c505a52326f7f5ee4b288d",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@emotion/styled/node_modules/@emotion/serialize/types/index.d.ts": {
-        "version": "93b24ca76698e62732d72800da132367639a4426363c821338bbbd7cf6b64443",
-        "signature": "93b24ca76698e62732d72800da132367639a4426363c821338bbbd7cf6b64443",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@emotion/styled/types/base.d.ts": {
-        "version": "a10d9cbca387b94d7d31330e44b9af8035331a8c5a9388ff7bea6ac6c547d5ea",
-        "signature": "a10d9cbca387b94d7d31330e44b9af8035331a8c5a9388ff7bea6ac6c547d5ea",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@emotion/styled/types/index.d.ts": {
-        "version": "137a44f0f62468569f6cb54ec0ee289b9694bf6acf872c749f20a80bf9e5b991",
-        "signature": "137a44f0f62468569f6cb54ec0ee289b9694bf6acf872c749f20a80bf9e5b991",
-        "affectsGlobalScope": false
-      },
-      "./src/helpers/democanvaswidget.tsx": {
-        "version": "027dcf08814265db8dad68789bacb307908fe65f9e75a8f5338d38b89cf3a022",
-        "signature": "60355783565bcc6c9874db5150e18fa6b7b0562e1170d61b6e889a8a0fde24af",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/nodemodel.d.ts": {
-        "version": "eb9079fc2826e3c51ba3003db20d158e276888e71175966cbb00e93a4bc2b304",
-        "signature": "eb9079fc2826e3c51ba3003db20d158e276888e71175966cbb00e93a4bc2b304",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portmodel.d.ts": {
-        "version": "312a79bae39656138ef308214b6dac0c2952671454c29791a3fe43604c730abb",
-        "signature": "312a79bae39656138ef308214b6dac0c2952671454c29791a3fe43604c730abb",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/pointmodel.d.ts": {
-        "version": "c031302e47b3fe00c8dcd99fde052ec914248f49b508effbaabf5801fd6611a7",
-        "signature": "c031302e47b3fe00c8dcd99fde052ec914248f49b508effbaabf5801fd6611a7",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/label/labelmodel.d.ts": {
-        "version": "f113497d275b1a813d6e6d913eafb60ea28c57c205bfcf04e727e4ac20cb495d",
-        "signature": "f113497d275b1a813d6e6d913eafb60ea28c57c205bfcf04e727e4ac20cb495d",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkmodel.d.ts": {
-        "version": "8c63d5ec95f3e6778400bdf158783466805771eab4babe3d53e01bf95b3563ff",
-        "signature": "8c63d5ec95f3e6778400bdf158783466805771eab4babe3d53e01bf95b3563ff",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/diagramengine.d.ts": {
-        "version": "d03bd2575fa9e7eb00811ff55b364c436d3811cf2876feb9b37f783bedbba6ea",
-        "signature": "d03bd2575fa9e7eb00811ff55b364c436d3811cf2876feb9b37f783bedbba6ea",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node-layer/nodelayermodel.d.ts": {
-        "version": "342eb007f66bb551de68b515ea0e58e4fca3dfbcf8bd70bd7af618d0a2e166b4",
-        "signature": "342eb007f66bb551de68b515ea0e58e4fca3dfbcf8bd70bd7af618d0a2e166b4",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/linklayermodel.d.ts": {
-        "version": "81fb11f356c86d2b86535c5f118e2c8a3b793953169136d8d7cfe1fb93144341",
-        "signature": "81fb11f356c86d2b86535c5f118e2c8a3b793953169136d8d7cfe1fb93144341",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/models/diagrammodel.d.ts": {
-        "version": "fa798b6efe1a01cd81eda52020e49970297978e8c68762dc4fc541fa9fd14f69",
-        "signature": "fa798b6efe1a01cd81eda52020e49970297978e8c68762dc4fc541fa9fd14f69",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkwidget.d.ts": {
-        "version": "290309ba34e22776a56c20cc8862c1c76cdee8b483f218cbedc01bdeb605b250",
-        "signature": "290309ba34e22776a56c20cc8862c1c76cdee8b483f218cbedc01bdeb605b250",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/linklayerwidget.d.ts": {
-        "version": "302c11029e9fa0e7ddda5e6b348482c560544e9599f364e4d133661091f8808f",
-        "signature": "302c11029e9fa0e7ddda5e6b348482c560544e9599f364e4d133661091f8808f",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/linklayerfactory.d.ts": {
-        "version": "141aec657848481185db687551d566008b0b9abf530d1ab9707dd2a3a8ee56d7",
-        "signature": "141aec657848481185db687551d566008b0b9abf530d1ab9707dd2a3a8ee56d7",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node-layer/nodelayerwidget.d.ts": {
-        "version": "5b8d99d48f2767e76cb279a902ff968b4b2d1236a190e6b01280ae7847cac29e",
-        "signature": "5b8d99d48f2767e76cb279a902ff968b4b2d1236a190e6b01280ae7847cac29e",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node-layer/nodelayerfactory.d.ts": {
-        "version": "cfa4ed0fe946f6d3f4e9982584ce0adbc7852bc2a3d4cbdb59b658a6277c6612",
-        "signature": "cfa4ed0fe946f6d3f4e9982584ce0adbc7852bc2a3d4cbdb59b658a6277c6612",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/nodewidget.d.ts": {
-        "version": "245be5914f2503eceeeacba3a16963e04fe5ff3c4059fa6ca15b78cf4136b3e7",
-        "signature": "245be5914f2503eceeeacba3a16963e04fe5ff3c4059fa6ca15b78cf4136b3e7",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portwidget.d.ts": {
-        "version": "75ed4f53b8fe92a3c933ca63dc15e60c51a555c0aae41ed5edda30ce3eb24f73",
-        "signature": "75ed4f53b8fe92a3c933ca63dc15e60c51a555c0aae41ed5edda30ce3eb24f73",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/dragnewlinkstate.d.ts": {
-        "version": "e46fd7a874164337f36f1fe72835c835314e03c5eab99a898e331a735fc4e291",
-        "signature": "e46fd7a874164337f36f1fe72835c835314e03c5eab99a898e331a735fc4e291",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/dragdiagramitemsstate.d.ts": {
-        "version": "30bf05010587f395b7402628f43dd811fe3da0415cf1f78015717bfd1ca3cb67",
-        "signature": "30bf05010587f395b7402628f43dd811fe3da0415cf1f78015717bfd1ca3cb67",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/defaultdiagramstate.d.ts": {
-        "version": "77b7e38bb52b60de2039fb0c151a108d204ed62669d2795ee85f3c9f335aa73a",
-        "signature": "77b7e38bb52b60de2039fb0c151a108d204ed62669d2795ee85f3c9f335aa73a",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/index.d.ts": {
-        "version": "e2f32c0e605c8d374e6ecdfcb4de011f3061b013eadb53fb01eba492a78bc0d7",
-        "signature": "e2f32c0e605c8d374e6ecdfcb4de011f3061b013eadb53fb01eba492a78bc0d7",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/defaultlabelmodel.d.ts": {
-        "version": "30e97589a191f7352f294ebde0beacdd9442a159134d4d35ecf7778a1f7d74c8",
-        "signature": "30e97589a191f7352f294ebde0beacdd9442a159134d4d35ecf7778a1f7d74c8",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/defaultlabelfactory.d.ts": {
-        "version": "8d864a3f0262f547888b821ea168f7aea4db1e871cf0c4f9a873364d5c953b91",
-        "signature": "8d864a3f0262f547888b821ea168f7aea4db1e871cf0c4f9a873364d5c953b91",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/defaultlabelwidget.d.ts": {
-        "version": "b07970a5c48044630ab12d5b45c786d2227f4e5deb5b9dbef5b847a37e932ac4",
-        "signature": "b07970a5c48044630ab12d5b45c786d2227f4e5deb5b9dbef5b847a37e932ac4",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkmodel.d.ts": {
-        "version": "acd4336e6d586e8ea812ffa9e6b9fc291752da2a28cbc7916eb694a970490a19",
-        "signature": "acd4336e6d586e8ea812ffa9e6b9fc291752da2a28cbc7916eb694a970490a19",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkfactory.d.ts": {
-        "version": "cd1f7e872b0a195c91c2a43626c8290df52912b4e38152079d564b666e346f22",
-        "signature": "cd1f7e872b0a195c91c2a43626c8290df52912b4e38152079d564b666e346f22",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkwidget.d.ts": {
-        "version": "06ea303a973541700b89d926b7d9dbf1580670a60f9b30ed131e633bf4854e85",
-        "signature": "06ea303a973541700b89d926b7d9dbf1580670a60f9b30ed131e633bf4854e85",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinksegmentwidget.d.ts": {
-        "version": "b6c77d97aca2c7d728f2f256cc8b70933af3960d550e2a87660cd97d7adfe98e",
-        "signature": "b6c77d97aca2c7d728f2f256cc8b70933af3960d550e2a87660cd97d7adfe98e",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkpointwidget.d.ts": {
-        "version": "00c3399e66c1da03860de2e7e774f1588cd2c5b49afe4cc3bc6aa4f37af21228",
-        "signature": "00c3399e66c1da03860de2e7e774f1588cd2c5b49afe4cc3bc6aa4f37af21228",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/port/defaultportmodel.d.ts": {
-        "version": "c9427f40c366f070a423952ec6ae8dbfdb3e06c8cae49f95876ebd144bbe3715",
-        "signature": "c9427f40c366f070a423952ec6ae8dbfdb3e06c8cae49f95876ebd144bbe3715",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/node/defaultnodemodel.d.ts": {
-        "version": "af03c5fb50ba4be441b0eeae8d0e8021e41cc017b5f84a037fc45b6277551d72",
-        "signature": "af03c5fb50ba4be441b0eeae8d0e8021e41cc017b5f84a037fc45b6277551d72",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/node/defaultnodefactory.d.ts": {
-        "version": "91d0fbdc37f1984f4edb0a64bad9fd638005a9fbf27a941d1f87d50be2ea617a",
-        "signature": "91d0fbdc37f1984f4edb0a64bad9fd638005a9fbf27a941d1f87d50be2ea617a",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/node/defaultnodewidget.d.ts": {
-        "version": "5a88f324f096552005f1be55c1784ef31d477adf5c8a0f962bb81d3c033f5b76",
-        "signature": "5a88f324f096552005f1be55c1784ef31d477adf5c8a0f962bb81d3c033f5b76",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/port/defaultportfactory.d.ts": {
-        "version": "e6e7bee1a0c84d67aecb2335dbfdc8d7fd24f3e5e19d25c78fdaf29831eb25ff",
-        "signature": "e6e7bee1a0c84d67aecb2335dbfdc8d7fd24f3e5e19d25c78fdaf29831eb25ff",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/port/defaultportlabelwidget.d.ts": {
-        "version": "229eb877fc175cab8b9b1c51add20a6d7cd4f00d18aa032e1eef995dea4a1de6",
-        "signature": "229eb877fc175cab8b9b1c51add20a6d7cd4f00d18aa032e1eef995dea4a1de6",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/index.d.ts": {
-        "version": "2ea568a6c0ba1c2d6c962a758290bd0829537b8ce11db860f92ac170179c006e",
-        "signature": "2ea568a6c0ba1c2d6c962a758290bd0829537b8ce11db860f92ac170179c006e",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/pathfindinglinkmodel.d.ts": {
-        "version": "f6c126951592b8032f08b7c39f9948bb19d8d9737411e85f55175c4efac159c0",
-        "signature": "f6c126951592b8032f08b7c39f9948bb19d8d9737411e85f55175c4efac159c0",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/pathfindinglinkfactory.d.ts": {
-        "version": "1014b886da4cb57878835e492095fcbf0c3ffc8554bdfbda56e88afee668204b",
-        "signature": "1014b886da4cb57878835e492095fcbf0c3ffc8554bdfbda56e88afee668204b",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/engine/pathfinding.d.ts": {
-        "version": "7256551108d445a6c97dc9f3e712f10b782ad80009c124b5e4ed720e2886569f",
-        "signature": "7256551108d445a6c97dc9f3e712f10b782ad80009c124b5e4ed720e2886569f",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/pathfindinglinkwidget.d.ts": {
-        "version": "2a0c8c8845a0cb5eac19b0c79661a2affbd4500403a46f436829c9f95daac9b3",
-        "signature": "2a0c8c8845a0cb5eac19b0c79661a2affbd4500403a46f436829c9f95daac9b3",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/rightanglelinkmodel.d.ts": {
-        "version": "ceb6fea0cb82c3656d5f353850454dedbc24b9c5f0c44c496c1dcead1b8822d0",
-        "signature": "ceb6fea0cb82c3656d5f353850454dedbc24b9c5f0c44c496c1dcead1b8822d0",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/rightanglelinkfactory.d.ts": {
-        "version": "2238e8516f742c3ac134f90f132e6091e1764230ce3318b653cf433a5400cdad",
-        "signature": "2238e8516f742c3ac134f90f132e6091e1764230ce3318b653cf433a5400cdad",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/rightanglelinkwidget.d.ts": {
-        "version": "4476aacbe07456d7841f60656387407b7c5cc417b291379197a0abf613c9c6dc",
-        "signature": "4476aacbe07456d7841f60656387407b7c5cc417b291379197a0abf613c9c6dc",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@types/dagre/index.d.ts": {
-        "version": "c38f82bf012ee71ad84b9ce0602d4a97d1a957e41276c3eaaadb7a97de5adf4f",
-        "signature": "c38f82bf012ee71ad84b9ce0602d4a97d1a957e41276c3eaaadb7a97de5adf4f",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/dagre/dagreengine.d.ts": {
-        "version": "cc7d499e942bca888614d3a85f6a068a49cd73b3f09131b71239441bdc02a888",
-        "signature": "cc7d499e942bca888614d3a85f6a068a49cd73b3f09131b71239441bdc02a888",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/index.d.ts": {
-        "version": "bec4dec2f25adb335623750dec08de2b3c1c5a6606572c68157d182c15e84053",
-        "signature": "bec4dec2f25adb335623750dec08de2b3c1c5a6606572c68157d182c15e84053",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams/dist/@types/index.d.ts": {
-        "version": "73d22928376a201705fa8c3a44fe463d4c13512bb3b8a74e92bdb622ce823f04",
-        "signature": "73d22928376a201705fa8c3a44fe463d4c13512bb3b8a74e92bdb622ce823f04",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/src/entities/port/portmodel.ts": {
-        "version": "42bfe913d04cb257bdb02a7a455811a3b5051d46490ae326709c67aae438f96c",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/src/entities/link/pointmodel.ts": {
-        "version": "ac45316c4fb2341d12a0b83053322fbb2ccc225c98bab119c6f1011967daf329",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/src/diagramengine.ts": {
-        "version": "c265fc7367184d030a062ba0306d64e2dde75f4b3606d17f6cbc41ba393ff684",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/src/entities/label/labelmodel.ts": {
-        "version": "2d8d756c851c69be3c693c8fe3d79384ccbaef105b8ef8e80835208200a84bba",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/src/entities/link/linkmodel.ts": {
-        "version": "5a2c330cb11b19e3d3453c2744581acdc0a164b04088708b83422e5ce8528057",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/src/entities/node-layer/nodelayermodel.ts": {
-        "version": "cc27d41eff6b5b18c44d0448dde9b04340c94f7ec1b34fafd74a9ce288798922",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/src/entities/link-layer/linklayermodel.ts": {
-        "version": "0d22e4a4cede4be6c601bea5a152e52c033db902e8d985379ced49fbb158c0e5",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/src/models/diagrammodel.ts": {
-        "version": "f3ba98685110567d99537d4b06da6def725c77d842e623203b1f58187215aa0c",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@projectstorm/react-diagrams-core/src/entities/node/nodemodel.ts": {
-        "version": "823d72170f201f5e73c6595d5cce2111e01af9934bb5f696d178951ca40ff70a",
-        "affectsGlobalScope": false
-      },
-      "./src/components/customportmodel.ts": {
-        "version": "14c8442e414fa72cddd18b79b6d335c2e1cb554ae6e038d04147dbfe4de487e2",
-        "signature": "a6fa13b64a7a7d02192f1100b678bde90ac0d50bed16d6ae2a5511c0e9db745b",
-        "affectsGlobalScope": false
-      },
-      "./src/components/customnodemodel.ts": {
-        "version": "6eeb22f9425cffd3203de028ce26e896f34b147471d7b5e62a3658968d9a276f",
-        "signature": "dc4a8a7d7d9e06087e9655c2eb26523bfa916ac884215078d7e7ee5e3b85d7fb",
-        "affectsGlobalScope": false
-      },
-      "./src/components/customnodewidget.tsx": {
-        "version": "c3f2f6f730ed809a2ce9156b9cd6b446e78c94b6c8e4dd0b930bb1deb099fb18",
-        "signature": "ecd0accc545857740588776356afcdac216690a48b09a98ef4ef2cc1c57ace5f",
-        "affectsGlobalScope": false
-      },
-      "./src/components/customnodefactory.tsx": {
-        "version": "a42974f58b44505022fecd44a2b18b3fcb89ce7ac6a940b12d11c9dc1d8883be",
-        "signature": "6db01826037126d65dca3623837d42a388bbacded63b243ef7834e26dda709bc",
-        "affectsGlobalScope": false
-      },
-      "./src/components/xircuitsapp.ts": {
-        "version": "504eef708425b5fd8cf9f2b4bb12c38649d32af228b2808e3fea8e1e054612b9",
-        "signature": "115ed700af602e0015e29de97b5010d856a894a67c4a74005d94af8d78d5308f",
-        "affectsGlobalScope": false
-      },
-      "./src/xircuitwidget.tsx": {
-        "version": "c126b129756868c588fff5ac159b7798a7cc3f26736fc829bcc89e19e8c6b75c",
-        "signature": "ee3949ba10d33179e807ac83f2f0b80864fa0de61c9aa17206b2adcceeeaed9b",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@jupyterlab/outputarea/lib/model.d.ts": {
-        "version": "d650e233e653a0952826564dc5912e5eb9bca7bf34a4b520142e90c609309955",
-        "signature": "d650e233e653a0952826564dc5912e5eb9bca7bf34a4b520142e90c609309955",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@jupyterlab/outputarea/lib/widget.d.ts": {
-        "version": "99a1b9c462b90eb01c9bef3db38d97579cc705715303df26f25e0e1a7a48174b",
-        "signature": "99a1b9c462b90eb01c9bef3db38d97579cc705715303df26f25e0e1a7a48174b",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@jupyterlab/outputarea/lib/index.d.ts": {
-        "version": "3878eacacf7345bac706e02b26f0a8e073217a7558da6f57af1658261a2660c8",
-        "signature": "3878eacacf7345bac706e02b26f0a8e073217a7558da6f57af1658261a2660c8",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@jupyterlab/logconsole/lib/tokens.d.ts": {
-        "version": "13202cf0594c49461ce8583e5b3e4f508f173c2679a6ad639b6b8fe11922151e",
-        "signature": "13202cf0594c49461ce8583e5b3e4f508f173c2679a6ad639b6b8fe11922151e",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@jupyterlab/logconsole/lib/logger.d.ts": {
-        "version": "8787cf97d4b28d2e7c99de0f7073b2623d35cc9f46454c5a238dfe03557ab515",
-        "signature": "8787cf97d4b28d2e7c99de0f7073b2623d35cc9f46454c5a238dfe03557ab515",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@jupyterlab/logconsole/lib/registry.d.ts": {
-        "version": "9b0354733722b05094a4c743bd8afff5c66adb679e97cdb20d3154c925450829",
-        "signature": "9b0354733722b05094a4c743bd8afff5c66adb679e97cdb20d3154c925450829",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@jupyterlab/logconsole/lib/widget.d.ts": {
-        "version": "4e0092edfec406862334fd87d484f75013b242493abc60335e75f4ed087874c7",
-        "signature": "4e0092edfec406862334fd87d484f75013b242493abc60335e75f4ed087874c7",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/@jupyterlab/logconsole/lib/index.d.ts": {
-        "version": "863a04ac595e26a9009d81e6f2ca9f225f71f2e0837b3a5c2abee6bf0270fb02",
-        "signature": "863a04ac595e26a9009d81e6f2ca9f225f71f2e0837b3a5c2abee6bf0270fb02",
-        "affectsGlobalScope": false
-      },
-      "./src/log/loglevelswitcher.tsx": {
-        "version": "a47af3f8e78af6b4bc5d7375a4eca2c3194051033683fb23890a4c836efbc6c4",
-        "signature": "be1dda04a05d040f8800479e898a330d528ebe4a9e382b5b9c4c3b673ae97b8b",
-        "affectsGlobalScope": false
-      },
-      "./src/log/logplugin.ts": {
-        "version": "841bcf797d88eb004aef5897c0caf5bb78aa507da5b2cc70afcb9a3a2f056574",
-        "signature": "7a7590e512cc102113fbe870213cefb4db7b693b6070a514acc8fcc92e2265d4",
-        "affectsGlobalScope": false
-      },
-      "./src/server/handler.ts": {
-        "version": "4faeaf41d81e6f1b64f0da365e30e6446cd50b8c7a5b9c7704be0caad7990968",
-        "signature": "7f6037fa8d3da3ab5b173e089bd9d6eaf4e04e663844a9822b0463636b6ac816",
-        "affectsGlobalScope": false
-      },
-      "./src/components_xircuit/component.ts": {
-        "version": "588d70552464dbffc643fc98d62ee49f6a78a8e841aa47dedb121be685ab4716",
-        "signature": "342a44f8d4fe4190ff84cc5ce2e42395a39301830bf99b710191a2f92564a2e1",
-        "affectsGlobalScope": false
-      },
-      "./src/dialog/formdialogwidget.tsx": {
-        "version": "581fc3373fc3b16c1699b6a0b1e89bdf05b62b964680dd47f3cb1f5cb9b14496",
-        "signature": "17d02539645481bb22c3cad5ec6c222a8257744e07a80ae0e375da80c36be0e9",
-        "affectsGlobalScope": false
-      },
-      "./src/dialog/formdialog.tsx": {
-        "version": "2dc4ebe9501c9035c539e301836806ba980618f41b13bb4f5e9e0498d61d036d",
-        "signature": "5a622ee137b374d6c00842e40129e5f5b6f57ca2be91445fe5c12924113d27b9",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/react-switch/index.d.ts": {
-        "version": "7e6233fc17a00f06e59fa7b73274689084b378204271428b0c7cd33343d02006",
-        "signature": "7e6233fc17a00f06e59fa7b73274689084b378204271428b0c7cd33343d02006",
-        "affectsGlobalScope": false
-      },
-      "./src/dialog/rundialog.tsx": {
-        "version": "350fa6bdac7fb3a412d27c1d3d18577fecd56ba8c8c307784ee5bb5f8aecf89b",
-        "signature": "3b480aa012c625ea377c072f8fb486710f01e16e7e4152af26fee2ae98eb0cc4",
-        "affectsGlobalScope": false
-      },
-      "./src/components/xircuitbodywidget.tsx": {
-        "version": "ccf4826d7b6e805cc987ea0b30579d399b940fabadf4ab4b38d5c55c9502425a",
-        "signature": "99e84a6fa7f1fb0979898a4631ccd9ff8605da0e2dff3289bf8778a211de2ec7",
-        "affectsGlobalScope": false
-      },
       "./node_modules/@jupyterlab/launcher/lib/index.d.ts": {
         "version": "468bfd0bfa92326929128ba584b515944d58035229d396ef9264882de91ad0ee",
         "signature": "468bfd0bfa92326929128ba584b515944d58035229d396ef9264882de91ad0ee",
-        "affectsGlobalScope": false
-      },
-      "./src/xircuitfactory.ts": {
-        "version": "34a1c995fb0ac83bd071e631b61aaa925ce34d6f7dae45d32d5c4624cc0dc652",
-        "signature": "73a55db9f33425ab267a4857b846855a31f21e73462fa3d8ed93db85d538821b",
-        "affectsGlobalScope": false
-      },
-      "./src/components_xircuit/trayitemwidget.tsx": {
-        "version": "5799996732e031cebf1b73dd61ad1805a0d73d88326c229d8b5b5054d68179ae",
-        "signature": "6752a85e12f87dba0134b8039f45ed9594f1fcbc85986594d61bb90515e08717",
-        "affectsGlobalScope": false
-      },
-      "./src/components_xircuit/traywidget.tsx": {
-        "version": "397e1b6652723f5a0aa068c2c92381fa64d39090e0c6aad63c60483722a1f7ee",
-        "signature": "f0c8671c322f4d80020c6d9f21a4a5763cbf73bfb811eb9b266d162b2a7b53be",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/react-accessible-accordion/dist/types/helpers/types.d.ts": {
-        "version": "93217de96f4ef940aff3bdd9beb804fca48e109f129f62e3550e473525729efb",
-        "signature": "93217de96f4ef940aff3bdd9beb804fca48e109f129f62e3550e473525729efb",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/react-accessible-accordion/dist/types/helpers/accordionstore.d.ts": {
-        "version": "196974561bd55b256db73930bbf7141b7c530e272fa646bad6ede77bf819cb8b",
-        "signature": "196974561bd55b256db73930bbf7141b7c530e272fa646bad6ede77bf819cb8b",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/react-accessible-accordion/dist/types/components/accordioncontext.d.ts": {
-        "version": "404420663017750348f03cecb664e2432f16563c4a2c7cd955442242331d3530",
-        "signature": "404420663017750348f03cecb664e2432f16563c4a2c7cd955442242331d3530",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/react-accessible-accordion/dist/types/components/itemcontext.d.ts": {
-        "version": "261f3d69ed557d6eb67d81ae339b93998cbb9daab3dec3a4bb3a5ece433e8d6d",
-        "signature": "261f3d69ed557d6eb67d81ae339b93998cbb9daab3dec3a4bb3a5ece433e8d6d",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/react-accessible-accordion/dist/types/components/accordion.d.ts": {
-        "version": "59b42840d2ac79b39008e2e5ea98ba25f8b07dc7726288f2dcfbdd06ab8be132",
-        "signature": "59b42840d2ac79b39008e2e5ea98ba25f8b07dc7726288f2dcfbdd06ab8be132",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/react-accessible-accordion/dist/types/helpers/displayname.d.ts": {
-        "version": "33380f6d30434ca4633f7e6e65a26cfb02d3ec91c154c57f1afa612c84aef9e5",
-        "signature": "33380f6d30434ca4633f7e6e65a26cfb02d3ec91c154c57f1afa612c84aef9e5",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/react-accessible-accordion/dist/types/components/accordionitem.d.ts": {
-        "version": "60d9823316ee6bcfde4a71c96c52ed61a90580933d8026f9d77a234e1e22f017",
-        "signature": "60d9823316ee6bcfde4a71c96c52ed61a90580933d8026f9d77a234e1e22f017",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/react-accessible-accordion/dist/types/components/accordionitembutton.d.ts": {
-        "version": "8a2929724cac7bf50b0044764cd242af0aca6bf9752091f40c503e2551fb6a4c",
-        "signature": "8a2929724cac7bf50b0044764cd242af0aca6bf9752091f40c503e2551fb6a4c",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/react-accessible-accordion/dist/types/components/accordionitemheading.d.ts": {
-        "version": "f3124eb255febc0c8ae9ea45eaf667da926cbf9411e26a54b8b1682fe43f511c",
-        "signature": "f3124eb255febc0c8ae9ea45eaf667da926cbf9411e26a54b8b1682fe43f511c",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/react-accessible-accordion/dist/types/components/accordionitempanel.d.ts": {
-        "version": "4b3e0e04a1a40f4a5d6739d311ab4d2db893831d06bbab217d07790c69e29125",
-        "signature": "4b3e0e04a1a40f4a5d6739d311ab4d2db893831d06bbab217d07790c69e29125",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/react-accessible-accordion/dist/types/components/accordionitemstate.d.ts": {
-        "version": "cd3cacdc82eada91419725ce93b728c032a76711b8e7e1f7824994e54f3c312b",
-        "signature": "cd3cacdc82eada91419725ce93b728c032a76711b8e7e1f7824994e54f3c312b",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/react-accessible-accordion/dist/types/helpers/uuid.d.ts": {
-        "version": "371bddfce0ce229831acbed92d0e6e0915e916c085c1bc4da0ef38ac772ea7e3",
-        "signature": "371bddfce0ce229831acbed92d0e6e0915e916c085c1bc4da0ef38ac772ea7e3",
-        "affectsGlobalScope": false
-      },
-      "./node_modules/react-accessible-accordion/dist/types/index.d.ts": {
-        "version": "997fd898f304bcc90494e7d04610484e25e3454b3d8e7149bdf3c359cad0104d",
-        "signature": "997fd898f304bcc90494e7d04610484e25e3454b3d8e7149bdf3c359cad0104d",
-        "affectsGlobalScope": false
-      },
-      "./src/components_xircuit/sidebar.tsx": {
-        "version": "d3a717d7b9402956c208831da835afc923c874d66a54714f9ae2f2b617ad0abc",
-        "signature": "af7e9e65dcd8de5702424e0155018512b82fffc62b3a8ea7baf2d384168931a2",
         "affectsGlobalScope": false
       },
       "./node_modules/vscode-debugprotocol/lib/debugprotocol.d.ts": {
@@ -3065,6 +2344,21 @@
       "./node_modules/@jupyterlab/debugger/lib/factory.d.ts": {
         "version": "2b35ce6d184640f713415fb81e4f9112e2d64c7d5c10836e52c77ba063c84b31",
         "signature": "2b35ce6d184640f713415fb81e4f9112e2d64c7d5c10836e52c77ba063c84b31",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/outputarea/lib/model.d.ts": {
+        "version": "d650e233e653a0952826564dc5912e5eb9bca7bf34a4b520142e90c609309955",
+        "signature": "d650e233e653a0952826564dc5912e5eb9bca7bf34a4b520142e90c609309955",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/outputarea/lib/widget.d.ts": {
+        "version": "99a1b9c462b90eb01c9bef3db38d97579cc705715303df26f25e0e1a7a48174b",
+        "signature": "99a1b9c462b90eb01c9bef3db38d97579cc705715303df26f25e0e1a7a48174b",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/outputarea/lib/index.d.ts": {
+        "version": "3878eacacf7345bac706e02b26f0a8e073217a7558da6f57af1658261a2660c8",
+        "signature": "3878eacacf7345bac706e02b26f0a8e073217a7558da6f57af1658261a2660c8",
         "affectsGlobalScope": false
       },
       "./node_modules/@jupyterlab/cells/lib/headerfooter.d.ts": {
@@ -3333,23 +2627,744 @@
         "affectsGlobalScope": false
       },
       "./src/debugger/debuggerwidget.tsx": {
-        "version": "c387b1f15a7fccb6b4ee170d7af1b391017414c8293aa45545d154dda4881155",
-        "signature": "585c5bedb8d3f284c3d7b197ee96328a21f6187cd746a6db8bbe08506a532685",
+        "version": "d66009e34f719aa63f019fd7b05f966c170ddc718cf0c995190c12b99826aa3f",
+        "signature": "7ea1b1e23dc2a1cc63d010225757c49e85032e1fff35c40c177ea5ad18469132",
         "affectsGlobalScope": false
       },
       "./src/debugger/sidebardebugger.ts": {
-        "version": "49cec06772a6940fbbd87581d6f97aa5c9c47b1950f4a41383cf5f12fe330f70",
-        "signature": "0d4c7ef3304720d7c8de5210ae88ae1a23fe60c8cfd3eea21438156de8146033",
+        "version": "bc42a683e279b3d82f3619c61f940a61f4b60793543e91c20b74eeaf626ddce4",
+        "signature": "601841e83368101fe3df7538a2a8a9475a2b7a751b46d81198ad350774adc06e",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/logconsole/lib/tokens.d.ts": {
+        "version": "13202cf0594c49461ce8583e5b3e4f508f173c2679a6ad639b6b8fe11922151e",
+        "signature": "13202cf0594c49461ce8583e5b3e4f508f173c2679a6ad639b6b8fe11922151e",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/logconsole/lib/logger.d.ts": {
+        "version": "8787cf97d4b28d2e7c99de0f7073b2623d35cc9f46454c5a238dfe03557ab515",
+        "signature": "8787cf97d4b28d2e7c99de0f7073b2623d35cc9f46454c5a238dfe03557ab515",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/logconsole/lib/registry.d.ts": {
+        "version": "9b0354733722b05094a4c743bd8afff5c66adb679e97cdb20d3154c925450829",
+        "signature": "9b0354733722b05094a4c743bd8afff5c66adb679e97cdb20d3154c925450829",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/logconsole/lib/widget.d.ts": {
+        "version": "4e0092edfec406862334fd87d484f75013b242493abc60335e75f4ed087874c7",
+        "signature": "4e0092edfec406862334fd87d484f75013b242493abc60335e75f4ed087874c7",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jupyterlab/logconsole/lib/index.d.ts": {
+        "version": "863a04ac595e26a9009d81e6f2ca9f225f71f2e0837b3a5c2abee6bf0270fb02",
+        "signature": "863a04ac595e26a9009d81e6f2ca9f225f71f2e0837b3a5c2abee6bf0270fb02",
+        "affectsGlobalScope": false
+      },
+      "./src/log/loglevelswitcher.tsx": {
+        "version": "a47af3f8e78af6b4bc5d7375a4eca2c3194051033683fb23890a4c836efbc6c4",
+        "signature": "be1dda04a05d040f8800479e898a330d528ebe4a9e382b5b9c4c3b673ae97b8b",
+        "affectsGlobalScope": false
+      },
+      "./src/log/logplugin.ts": {
+        "version": "bb91016d95f692980df1eae945d06bd66052e7acedbe664a557679e16cda18bb",
+        "signature": "32de23335daa7d60d836b1e4b4067f0bc88581e255de37ad033ed5b6bfe4a87c",
+        "affectsGlobalScope": false
+      },
+      "./src/server/handler.ts": {
+        "version": "82dad5294c88c2b81d6b4150ebf40da29db1f731a1f974bf1f207bdb7d0f34b0",
+        "signature": "7f6037fa8d3da3ab5b173e089bd9d6eaf4e04e663844a9822b0463636b6ac816",
         "affectsGlobalScope": false
       },
       "./src/kernel/panel.ts": {
-        "version": "90544112e8e647b3a9e0f209a3c894c9973f22d0073ad5ebbb4a3067dfaa29cc",
-        "signature": "134a41714981afdb460d1d965356a87e9034866a6e42d09fe785b638d59ad442",
+        "version": "34ec0e5bab55be6d76f1ac373661b4b37501f32ef1c6c39007817a5d64dd6622",
+        "signature": "e5ea28ee85154c78ce4463846fe95b49a87f9c4e937beda5f2cf22ab2499d2f5",
         "affectsGlobalScope": false
       },
       "./src/index.tsx": {
-        "version": "19343d981bc37a752ebc786fcf4df407817a261851f7650c5b0d32b0dfdc47da",
+        "version": "c2cc65534b869fb294fb2c6f1e8e2799f45a8bd84723227674ab9b1e39ae075a",
         "signature": "2906fe70f083c770d391afd2310753f74063b874711f4152b9347960472f157f",
+        "affectsGlobalScope": false
+      },
+      "./src/components/runswitcher.tsx": {
+        "version": "087ef4332747bbfb8bfec5d620e1bb0d7ef13133f85d1718e8898fd6d4ae707e",
+        "signature": "046ad93f5d2b0c6652e63ed73cb5635a7bd82243fa1ffb31737be2c3b54d3556",
+        "affectsGlobalScope": false
+      },
+      "./src/xircuitfactory.ts": {
+        "version": "d5566df8d571f06a59e596a377ced161de6396e15dece135e4fe4907bf864055",
+        "signature": "06329241f4e955a74657b9806cb483984302e71729f1ef1dc6a7d9788e4d6e4f",
+        "affectsGlobalScope": false
+      },
+      "./src/xircuitwidget.tsx": {
+        "version": "2d23b56289d3c50f31263d1ceb4fee096f06179b419e0c1640f8e46a1920b847",
+        "signature": "084ba0c7085741431525d3348b2c73bd5fb1c991046259867a80e442ddb11421",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts": {
+        "version": "8d1f632e39ba70a80a603db30716170c616fb580877fff4e826900573117b86f",
+        "signature": "8d1f632e39ba70a80a603db30716170c616fb580877fff4e826900573117b86f",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts": {
+        "version": "968d20d4b75a4bf2dcf6ede9af2e90a9d8c22fa2492d3ccdca07d0bf3ededa9b",
+        "signature": "968d20d4b75a4bf2dcf6ede9af2e90a9d8c22fa2492d3ccdca07d0bf3ededa9b",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts": {
+        "version": "13b261b1450d21c5d993de74522fe8d7a3a9f8d4ade2ef68b5e030f04b2a6fd1",
+        "signature": "13b261b1450d21c5d993de74522fe8d7a3a9f8d4ade2ef68b5e030f04b2a6fd1",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts": {
+        "version": "b3e81b6bd5b7250ce078be9431064a4cab5208755c9fe8ac641a1467be23d3d4",
+        "signature": "b3e81b6bd5b7250ce078be9431064a4cab5208755c9fe8ac641a1467be23d3d4",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts": {
+        "version": "1257e87945f1e930b9ccf3e646b8577dc62ab454e642d26afdae6a5aebe41b2d",
+        "signature": "1257e87945f1e930b9ccf3e646b8577dc62ab454e642d26afdae6a5aebe41b2d",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts": {
+        "version": "dc222f826ae8d67d5cabed4ac6725b7051344f159ee3fa7daeee67eb0a74768c",
+        "signature": "dc222f826ae8d67d5cabed4ac6725b7051344f159ee3fa7daeee67eb0a74768c",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/baseobserver.d.ts": {
+        "version": "0176dfb9f1e92c346484b61ea703190def5a1c0679cffdae0abfc0b14e11dad4",
+        "signature": "0176dfb9f1e92c346484b61ea703190def5a1c0679cffdae0abfc0b14e11dad4",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basemodel.d.ts": {
+        "version": "844bfd608a1c5849b975d49bcb22877b43f66db1bd97c7f139d158af1c9c3684",
+        "signature": "844bfd608a1c5849b975d49bcb22877b43f66db1bd97c7f139d158af1c9c3684",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/baseentity.d.ts": {
+        "version": "75e29ba1b99df969b0292dbe8e2e0bc4baa6c2d09d19e68349a99f510eb0d267",
+        "signature": "75e29ba1b99df969b0292dbe8e2e0bc4baa6c2d09d19e68349a99f510eb0d267",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/abstractfactory.d.ts": {
+        "version": "3b0b6c9f8ff600614d6b3cd24681021eaa19700682f59a643cc47eecf980c6cd",
+        "signature": "3b0b6c9f8ff600614d6b3cd24681021eaa19700682f59a643cc47eecf980c6cd",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/factorybank.d.ts": {
+        "version": "3e48fb63c503aa858a37742c492442bebed4c93af5ae6b3717c71fd6bc8233ed",
+        "signature": "3e48fb63c503aa858a37742c492442bebed4c93af5ae6b3717c71fd6bc8233ed",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/abstractmodelfactory.d.ts": {
+        "version": "7e8eb55493d5b8a73c3802926b96f1d44dd840d6dccce30d68a678d8bd14f97d",
+        "signature": "7e8eb55493d5b8a73c3802926b96f1d44dd840d6dccce30d68a678d8bd14f97d",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/layermodel.d.ts": {
+        "version": "f694bdfea231fb5264664b64dd61a7dc287d328dc45f3572ea74ad474bbe1ea9",
+        "signature": "f694bdfea231fb5264664b64dd61a7dc287d328dc45f3572ea74ad474bbe1ea9",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/canvasmodel.d.ts": {
+        "version": "4954e5fc8374d667969e0effdbee02176cdbbcfe292a947a981232d46c488047",
+        "signature": "4954e5fc8374d667969e0effdbee02176cdbbcfe292a947a981232d46c488047",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/abstractreactfactory.d.ts": {
+        "version": "51126ab661868e1a7e7bfd066a085a5b71c7c68852668f98b08102193e8f7345",
+        "signature": "51126ab661868e1a7e7bfd066a085a5b71c7c68852668f98b08102193e8f7345",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/action.d.ts": {
+        "version": "2d7cb9bec22d6029ef0ab2d7f576a91b4eea6a30503a01f0013b2375920418bb",
+        "signature": "2d7cb9bec22d6029ef0ab2d7f576a91b4eea6a30503a01f0013b2375920418bb",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/actioneventbus.d.ts": {
+        "version": "bb75b028b3caf6200c3d5754b1c4c45f2b9d57e3298414bf8a6b94bfdc417c79",
+        "signature": "bb75b028b3caf6200c3d5754b1c4c45f2b9d57e3298414bf8a6b94bfdc417c79",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/state.d.ts": {
+        "version": "23a729f9d2d11e90428426d465763d3999a6895df98f6c14283a8b8bd67420c1",
+        "signature": "23a729f9d2d11e90428426d465763d3999a6895df98f6c14283a8b8bd67420c1",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/statemachine.d.ts": {
+        "version": "92c8e22e6e2068d2c07809a885f9bfcdd11df6e7f770e4504ff65464759576ed",
+        "signature": "92c8e22e6e2068d2c07809a885f9bfcdd11df6e7f770e4504ff65464759576ed",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/canvasengine.d.ts": {
+        "version": "e04f12f5f97ae8f555291c190845a664543e516936cc42d5e2fef85715ba0439",
+        "signature": "e04f12f5f97ae8f555291c190845a664543e516936cc42d5e2fef85715ba0439",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/toolkit.d.ts": {
+        "version": "47ddb5c4ac1a0f83ed7e1316286f04c38825a179cff8fcb0cb6a0a6b069352fb",
+        "signature": "47ddb5c4ac1a0f83ed7e1316286f04c38825a179cff8fcb0cb6a0a6b069352fb",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/modelgeometryinterface.d.ts": {
+        "version": "bb928dc1096520138fd1ce96807c14cd245ab922c576c9a87ad7828c3f3bf845",
+        "signature": "bb928dc1096520138fd1ce96807c14cd245ab922c576c9a87ad7828c3f3bf845",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basepositionmodel.d.ts": {
+        "version": "94a76915c5d9d6657a607c5c675c8d95bfdf32a24532a994422cb10347bb14a5",
+        "signature": "94a76915c5d9d6657a607c5c675c8d95bfdf32a24532a994422cb10347bb14a5",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/canvaswidget.d.ts": {
+        "version": "32644fd39e4bc1426d881db1a4603d383d4e8d0f685022877cb0675216f25f66",
+        "signature": "32644fd39e4bc1426d881db1a4603d383d4e8d0f685022877cb0675216f25f66",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/transformlayerwidget.d.ts": {
+        "version": "a9476d0455491d0e6dcb14d2cd0245f8bce52e727a8f9c923f61fdaa94de317c",
+        "signature": "a9476d0455491d0e6dcb14d2cd0245f8bce52e727a8f9c923f61fdaa94de317c",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/smartlayerwidget.d.ts": {
+        "version": "011b09d59d690e9254778fefe0b804408d9f232987c10b1858b8e79141b990d2",
+        "signature": "011b09d59d690e9254778fefe0b804408d9f232987c10b1858b8e79141b990d2",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/selection/selectionlayermodel.d.ts": {
+        "version": "9c30973712ac0772365c8989105745a959ed058c7cf7e262312390ee516cbefe",
+        "signature": "9c30973712ac0772365c8989105745a959ed058c7cf7e262312390ee516cbefe",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/selection/selectionboxlayerfactory.d.ts": {
+        "version": "eab2e88f804c0b26d5c3ba5ef9a8f6cec66e4ef4d0455c93bcc87bbbef62d8b3",
+        "signature": "eab2e88f804c0b26d5c3ba5ef9a8f6cec66e4ef4d0455c93bcc87bbbef62d8b3",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/selection/selectionboxwidget.d.ts": {
+        "version": "cf0ac01b4805e04fd933bede724b362aeda8aa614c6b0e78bb15e19cf094df5c",
+        "signature": "cf0ac01b4805e04fd933bede724b362aeda8aa614c6b0e78bb15e19cf094df5c",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/widgets/peformancewidget.d.ts": {
+        "version": "18d6b285e226889fcc7995f71738c4c8bc54cc1b407cabd138fbde9712da065d",
+        "signature": "18d6b285e226889fcc7995f71738c4c8bc54cc1b407cabd138fbde9712da065d",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/abstractdisplacementstate.d.ts": {
+        "version": "99dfe91a6a2aa87e42c5b67885b213f3c6178aff0259b7f8a67e0ecb034c2d34",
+        "signature": "99dfe91a6a2aa87e42c5b67885b213f3c6178aff0259b7f8a67e0ecb034c2d34",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/defaultstate.d.ts": {
+        "version": "0c907df70939d4ae6feb6a7ce84ca8bdb520bf4454ed500fd45b1d3e59c6dd66",
+        "signature": "0c907df70939d4ae6feb6a7ce84ca8bdb520bf4454ed500fd45b1d3e59c6dd66",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/dragcanvasstate.d.ts": {
+        "version": "d6840a9dfebe3071b1774c95d5efb9571e6768d8f940b8755a4d21190f878087",
+        "signature": "d6840a9dfebe3071b1774c95d5efb9571e6768d8f940b8755a4d21190f878087",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/selectingstate.d.ts": {
+        "version": "11eb9480348eba100064a55b1dc24a3e4a0bdec477b097e920060f904a5b5dc7",
+        "signature": "11eb9480348eba100064a55b1dc24a3e4a0bdec477b097e920060f904a5b5dc7",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/selectionboxstate.d.ts": {
+        "version": "c3a8022721a49e1615950042c2ad22d26ac7b0c5d95dab4a0870f8a37316c788",
+        "signature": "c3a8022721a49e1615950042c2ad22d26ac7b0c5d95dab4a0870f8a37316c788",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/moveitemsstate.d.ts": {
+        "version": "d27f6d6c2e48a908840f946b774250d344dadf20d9924a0f3028b8c45e2a8902",
+        "signature": "d27f6d6c2e48a908840f946b774250d344dadf20d9924a0f3028b8c45e2a8902",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/actions/deleteitemsaction.d.ts": {
+        "version": "24d70592b8cf65d4ef01db06c08511434aee7079577f94d5f96b9e4a57c7a23d",
+        "signature": "24d70592b8cf65d4ef01db06c08511434aee7079577f94d5f96b9e4a57c7a23d",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/actions/zoomcanvasaction.d.ts": {
+        "version": "0fe442beecd68d0e8bf0cbec8ba928f5fa78d51c69f589b8dae3701995135a4f",
+        "signature": "0fe442beecd68d0e8bf0cbec8ba928f5fa78d51c69f589b8dae3701995135a4f",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts": {
+        "version": "21fcc1e22048a0eb591f389722909bb0e858a1a726553fcfac3d592924658918",
+        "signature": "21fcc1e22048a0eb591f389722909bb0e858a1a726553fcfac3d592924658918",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/nodemodel.d.ts": {
+        "version": "eb9079fc2826e3c51ba3003db20d158e276888e71175966cbb00e93a4bc2b304",
+        "signature": "eb9079fc2826e3c51ba3003db20d158e276888e71175966cbb00e93a4bc2b304",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portmodel.d.ts": {
+        "version": "312a79bae39656138ef308214b6dac0c2952671454c29791a3fe43604c730abb",
+        "signature": "312a79bae39656138ef308214b6dac0c2952671454c29791a3fe43604c730abb",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/pointmodel.d.ts": {
+        "version": "c031302e47b3fe00c8dcd99fde052ec914248f49b508effbaabf5801fd6611a7",
+        "signature": "c031302e47b3fe00c8dcd99fde052ec914248f49b508effbaabf5801fd6611a7",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/label/labelmodel.d.ts": {
+        "version": "f113497d275b1a813d6e6d913eafb60ea28c57c205bfcf04e727e4ac20cb495d",
+        "signature": "f113497d275b1a813d6e6d913eafb60ea28c57c205bfcf04e727e4ac20cb495d",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkmodel.d.ts": {
+        "version": "8c63d5ec95f3e6778400bdf158783466805771eab4babe3d53e01bf95b3563ff",
+        "signature": "8c63d5ec95f3e6778400bdf158783466805771eab4babe3d53e01bf95b3563ff",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/diagramengine.d.ts": {
+        "version": "d03bd2575fa9e7eb00811ff55b364c436d3811cf2876feb9b37f783bedbba6ea",
+        "signature": "d03bd2575fa9e7eb00811ff55b364c436d3811cf2876feb9b37f783bedbba6ea",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node-layer/nodelayermodel.d.ts": {
+        "version": "342eb007f66bb551de68b515ea0e58e4fca3dfbcf8bd70bd7af618d0a2e166b4",
+        "signature": "342eb007f66bb551de68b515ea0e58e4fca3dfbcf8bd70bd7af618d0a2e166b4",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/linklayermodel.d.ts": {
+        "version": "81fb11f356c86d2b86535c5f118e2c8a3b793953169136d8d7cfe1fb93144341",
+        "signature": "81fb11f356c86d2b86535c5f118e2c8a3b793953169136d8d7cfe1fb93144341",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/models/diagrammodel.d.ts": {
+        "version": "fa798b6efe1a01cd81eda52020e49970297978e8c68762dc4fc541fa9fd14f69",
+        "signature": "fa798b6efe1a01cd81eda52020e49970297978e8c68762dc4fc541fa9fd14f69",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkwidget.d.ts": {
+        "version": "290309ba34e22776a56c20cc8862c1c76cdee8b483f218cbedc01bdeb605b250",
+        "signature": "290309ba34e22776a56c20cc8862c1c76cdee8b483f218cbedc01bdeb605b250",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/linklayerwidget.d.ts": {
+        "version": "302c11029e9fa0e7ddda5e6b348482c560544e9599f364e4d133661091f8808f",
+        "signature": "302c11029e9fa0e7ddda5e6b348482c560544e9599f364e4d133661091f8808f",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/linklayerfactory.d.ts": {
+        "version": "141aec657848481185db687551d566008b0b9abf530d1ab9707dd2a3a8ee56d7",
+        "signature": "141aec657848481185db687551d566008b0b9abf530d1ab9707dd2a3a8ee56d7",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node-layer/nodelayerwidget.d.ts": {
+        "version": "5b8d99d48f2767e76cb279a902ff968b4b2d1236a190e6b01280ae7847cac29e",
+        "signature": "5b8d99d48f2767e76cb279a902ff968b4b2d1236a190e6b01280ae7847cac29e",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node-layer/nodelayerfactory.d.ts": {
+        "version": "cfa4ed0fe946f6d3f4e9982584ce0adbc7852bc2a3d4cbdb59b658a6277c6612",
+        "signature": "cfa4ed0fe946f6d3f4e9982584ce0adbc7852bc2a3d4cbdb59b658a6277c6612",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/nodewidget.d.ts": {
+        "version": "245be5914f2503eceeeacba3a16963e04fe5ff3c4059fa6ca15b78cf4136b3e7",
+        "signature": "245be5914f2503eceeeacba3a16963e04fe5ff3c4059fa6ca15b78cf4136b3e7",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portwidget.d.ts": {
+        "version": "75ed4f53b8fe92a3c933ca63dc15e60c51a555c0aae41ed5edda30ce3eb24f73",
+        "signature": "75ed4f53b8fe92a3c933ca63dc15e60c51a555c0aae41ed5edda30ce3eb24f73",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/dragnewlinkstate.d.ts": {
+        "version": "e46fd7a874164337f36f1fe72835c835314e03c5eab99a898e331a735fc4e291",
+        "signature": "e46fd7a874164337f36f1fe72835c835314e03c5eab99a898e331a735fc4e291",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/dragdiagramitemsstate.d.ts": {
+        "version": "30bf05010587f395b7402628f43dd811fe3da0415cf1f78015717bfd1ca3cb67",
+        "signature": "30bf05010587f395b7402628f43dd811fe3da0415cf1f78015717bfd1ca3cb67",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/defaultdiagramstate.d.ts": {
+        "version": "77b7e38bb52b60de2039fb0c151a108d204ed62669d2795ee85f3c9f335aa73a",
+        "signature": "77b7e38bb52b60de2039fb0c151a108d204ed62669d2795ee85f3c9f335aa73a",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/dist/@types/index.d.ts": {
+        "version": "e2f32c0e605c8d374e6ecdfcb4de011f3061b013eadb53fb01eba492a78bc0d7",
+        "signature": "e2f32c0e605c8d374e6ecdfcb4de011f3061b013eadb53fb01eba492a78bc0d7",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/defaultlabelmodel.d.ts": {
+        "version": "30e97589a191f7352f294ebde0beacdd9442a159134d4d35ecf7778a1f7d74c8",
+        "signature": "30e97589a191f7352f294ebde0beacdd9442a159134d4d35ecf7778a1f7d74c8",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/defaultlabelfactory.d.ts": {
+        "version": "8d864a3f0262f547888b821ea168f7aea4db1e871cf0c4f9a873364d5c953b91",
+        "signature": "8d864a3f0262f547888b821ea168f7aea4db1e871cf0c4f9a873364d5c953b91",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/defaultlabelwidget.d.ts": {
+        "version": "b07970a5c48044630ab12d5b45c786d2227f4e5deb5b9dbef5b847a37e932ac4",
+        "signature": "b07970a5c48044630ab12d5b45c786d2227f4e5deb5b9dbef5b847a37e932ac4",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkmodel.d.ts": {
+        "version": "acd4336e6d586e8ea812ffa9e6b9fc291752da2a28cbc7916eb694a970490a19",
+        "signature": "acd4336e6d586e8ea812ffa9e6b9fc291752da2a28cbc7916eb694a970490a19",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkfactory.d.ts": {
+        "version": "cd1f7e872b0a195c91c2a43626c8290df52912b4e38152079d564b666e346f22",
+        "signature": "cd1f7e872b0a195c91c2a43626c8290df52912b4e38152079d564b666e346f22",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkwidget.d.ts": {
+        "version": "06ea303a973541700b89d926b7d9dbf1580670a60f9b30ed131e633bf4854e85",
+        "signature": "06ea303a973541700b89d926b7d9dbf1580670a60f9b30ed131e633bf4854e85",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinksegmentwidget.d.ts": {
+        "version": "b6c77d97aca2c7d728f2f256cc8b70933af3960d550e2a87660cd97d7adfe98e",
+        "signature": "b6c77d97aca2c7d728f2f256cc8b70933af3960d550e2a87660cd97d7adfe98e",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkpointwidget.d.ts": {
+        "version": "00c3399e66c1da03860de2e7e774f1588cd2c5b49afe4cc3bc6aa4f37af21228",
+        "signature": "00c3399e66c1da03860de2e7e774f1588cd2c5b49afe4cc3bc6aa4f37af21228",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/port/defaultportmodel.d.ts": {
+        "version": "c9427f40c366f070a423952ec6ae8dbfdb3e06c8cae49f95876ebd144bbe3715",
+        "signature": "c9427f40c366f070a423952ec6ae8dbfdb3e06c8cae49f95876ebd144bbe3715",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/node/defaultnodemodel.d.ts": {
+        "version": "af03c5fb50ba4be441b0eeae8d0e8021e41cc017b5f84a037fc45b6277551d72",
+        "signature": "af03c5fb50ba4be441b0eeae8d0e8021e41cc017b5f84a037fc45b6277551d72",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/node/defaultnodefactory.d.ts": {
+        "version": "91d0fbdc37f1984f4edb0a64bad9fd638005a9fbf27a941d1f87d50be2ea617a",
+        "signature": "91d0fbdc37f1984f4edb0a64bad9fd638005a9fbf27a941d1f87d50be2ea617a",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/node/defaultnodewidget.d.ts": {
+        "version": "5a88f324f096552005f1be55c1784ef31d477adf5c8a0f962bb81d3c033f5b76",
+        "signature": "5a88f324f096552005f1be55c1784ef31d477adf5c8a0f962bb81d3c033f5b76",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/port/defaultportfactory.d.ts": {
+        "version": "e6e7bee1a0c84d67aecb2335dbfdc8d7fd24f3e5e19d25c78fdaf29831eb25ff",
+        "signature": "e6e7bee1a0c84d67aecb2335dbfdc8d7fd24f3e5e19d25c78fdaf29831eb25ff",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/port/defaultportlabelwidget.d.ts": {
+        "version": "229eb877fc175cab8b9b1c51add20a6d7cd4f00d18aa032e1eef995dea4a1de6",
+        "signature": "229eb877fc175cab8b9b1c51add20a6d7cd4f00d18aa032e1eef995dea4a1de6",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/index.d.ts": {
+        "version": "2ea568a6c0ba1c2d6c962a758290bd0829537b8ce11db860f92ac170179c006e",
+        "signature": "2ea568a6c0ba1c2d6c962a758290bd0829537b8ce11db860f92ac170179c006e",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/pathfindinglinkmodel.d.ts": {
+        "version": "f6c126951592b8032f08b7c39f9948bb19d8d9737411e85f55175c4efac159c0",
+        "signature": "f6c126951592b8032f08b7c39f9948bb19d8d9737411e85f55175c4efac159c0",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/pathfindinglinkfactory.d.ts": {
+        "version": "1014b886da4cb57878835e492095fcbf0c3ffc8554bdfbda56e88afee668204b",
+        "signature": "1014b886da4cb57878835e492095fcbf0c3ffc8554bdfbda56e88afee668204b",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/engine/pathfinding.d.ts": {
+        "version": "7256551108d445a6c97dc9f3e712f10b782ad80009c124b5e4ed720e2886569f",
+        "signature": "7256551108d445a6c97dc9f3e712f10b782ad80009c124b5e4ed720e2886569f",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/pathfindinglinkwidget.d.ts": {
+        "version": "2a0c8c8845a0cb5eac19b0c79661a2affbd4500403a46f436829c9f95daac9b3",
+        "signature": "2a0c8c8845a0cb5eac19b0c79661a2affbd4500403a46f436829c9f95daac9b3",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/rightanglelinkmodel.d.ts": {
+        "version": "ceb6fea0cb82c3656d5f353850454dedbc24b9c5f0c44c496c1dcead1b8822d0",
+        "signature": "ceb6fea0cb82c3656d5f353850454dedbc24b9c5f0c44c496c1dcead1b8822d0",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/rightanglelinkfactory.d.ts": {
+        "version": "2238e8516f742c3ac134f90f132e6091e1764230ce3318b653cf433a5400cdad",
+        "signature": "2238e8516f742c3ac134f90f132e6091e1764230ce3318b653cf433a5400cdad",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/rightanglelinkwidget.d.ts": {
+        "version": "4476aacbe07456d7841f60656387407b7c5cc417b291379197a0abf613c9c6dc",
+        "signature": "4476aacbe07456d7841f60656387407b7c5cc417b291379197a0abf613c9c6dc",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/dagre/index.d.ts": {
+        "version": "c38f82bf012ee71ad84b9ce0602d4a97d1a957e41276c3eaaadb7a97de5adf4f",
+        "signature": "c38f82bf012ee71ad84b9ce0602d4a97d1a957e41276c3eaaadb7a97de5adf4f",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/dagre/dagreengine.d.ts": {
+        "version": "cc7d499e942bca888614d3a85f6a068a49cd73b3f09131b71239441bdc02a888",
+        "signature": "cc7d499e942bca888614d3a85f6a068a49cd73b3f09131b71239441bdc02a888",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/index.d.ts": {
+        "version": "bec4dec2f25adb335623750dec08de2b3c1c5a6606572c68157d182c15e84053",
+        "signature": "bec4dec2f25adb335623750dec08de2b3c1c5a6606572c68157d182c15e84053",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams/dist/@types/index.d.ts": {
+        "version": "73d22928376a201705fa8c3a44fe463d4c13512bb3b8a74e92bdb622ce823f04",
+        "signature": "73d22928376a201705fa8c3a44fe463d4c13512bb3b8a74e92bdb622ce823f04",
+        "affectsGlobalScope": false
+      },
+      "./src/components/customportmodel.ts": {
+        "version": "14c8442e414fa72cddd18b79b6d335c2e1cb554ae6e038d04147dbfe4de487e2",
+        "signature": "a6fa13b64a7a7d02192f1100b678bde90ac0d50bed16d6ae2a5511c0e9db745b",
+        "affectsGlobalScope": false
+      },
+      "./src/components/customnodemodel.ts": {
+        "version": "6eeb22f9425cffd3203de028ce26e896f34b147471d7b5e62a3658968d9a276f",
+        "signature": "dc4a8a7d7d9e06087e9655c2eb26523bfa916ac884215078d7e7ee5e3b85d7fb",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts": {
+        "version": "4b46f4712ae966996b2cc81949d482063887c55478706e25d942482a44b99b71",
+        "signature": "4b46f4712ae966996b2cc81949d482063887c55478706e25d942482a44b99b71",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@emotion/react/node_modules/@emotion/cache/types/index.d.ts": {
+        "version": "03d59e612afdc3039a83b12d45b026306b291cfc8e2fc72859f7902b8a857caf",
+        "signature": "03d59e612afdc3039a83b12d45b026306b291cfc8e2fc72859f7902b8a857caf",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@emotion/react/node_modules/csstype/index.d.ts": {
+        "version": "381899b8d1d4c1be716f18cb5242ba39f66f4b1e31d45af62a32a99f8edcb39d",
+        "signature": "381899b8d1d4c1be716f18cb5242ba39f66f4b1e31d45af62a32a99f8edcb39d",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@emotion/react/node_modules/@emotion/serialize/types/index.d.ts": {
+        "version": "93b24ca76698e62732d72800da132367639a4426363c821338bbbd7cf6b64443",
+        "signature": "93b24ca76698e62732d72800da132367639a4426363c821338bbbd7cf6b64443",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@emotion/react/types/jsx-namespace.d.ts": {
+        "version": "ecfa9ce3a5a37d15b813065e8a7cdf677a0f493018e47ce59815443dfbb9c910",
+        "signature": "ecfa9ce3a5a37d15b813065e8a7cdf677a0f493018e47ce59815443dfbb9c910",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@emotion/react/types/helper.d.ts": {
+        "version": "83e56d3337e1a6dbafdbe5a2502a84c330b1a328ed2860d689b2ded82b1f5c95",
+        "signature": "83e56d3337e1a6dbafdbe5a2502a84c330b1a328ed2860d689b2ded82b1f5c95",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@emotion/react/types/theming.d.ts": {
+        "version": "e630f8a3c49d5db0a8af774799abdb8f19675b940a6cfa25eca35e5280709f28",
+        "signature": "e630f8a3c49d5db0a8af774799abdb8f19675b940a6cfa25eca35e5280709f28",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@emotion/react/types/index.d.ts": {
+        "version": "909bac92983e542dd29efcf9eedf4ab5a330767c70c505a52326f7f5ee4b288d",
+        "signature": "909bac92983e542dd29efcf9eedf4ab5a330767c70c505a52326f7f5ee4b288d",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@emotion/styled/node_modules/@emotion/serialize/types/index.d.ts": {
+        "version": "93b24ca76698e62732d72800da132367639a4426363c821338bbbd7cf6b64443",
+        "signature": "93b24ca76698e62732d72800da132367639a4426363c821338bbbd7cf6b64443",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@emotion/styled/types/base.d.ts": {
+        "version": "a10d9cbca387b94d7d31330e44b9af8035331a8c5a9388ff7bea6ac6c547d5ea",
+        "signature": "a10d9cbca387b94d7d31330e44b9af8035331a8c5a9388ff7bea6ac6c547d5ea",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@emotion/styled/types/index.d.ts": {
+        "version": "137a44f0f62468569f6cb54ec0ee289b9694bf6acf872c749f20a80bf9e5b991",
+        "signature": "137a44f0f62468569f6cb54ec0ee289b9694bf6acf872c749f20a80bf9e5b991",
+        "affectsGlobalScope": false
+      },
+      "./src/components/customnodewidget.tsx": {
+        "version": "c3f2f6f730ed809a2ce9156b9cd6b446e78c94b6c8e4dd0b930bb1deb099fb18",
+        "signature": "ecd0accc545857740588776356afcdac216690a48b09a98ef4ef2cc1c57ace5f",
+        "affectsGlobalScope": false
+      },
+      "./src/components/customnodefactory.tsx": {
+        "version": "a42974f58b44505022fecd44a2b18b3fcb89ce7ac6a940b12d11c9dc1d8883be",
+        "signature": "6db01826037126d65dca3623837d42a388bbacded63b243ef7834e26dda709bc",
+        "affectsGlobalScope": false
+      },
+      "./src/components/xircuitsapp.ts": {
+        "version": "8b1ac7eacbaaa502d62b061b1d51885c3e2c5054e78b3fd67f7c95f1eae17781",
+        "signature": "c48f77530fa8b5a1e6ab9dde437e55928de34f14ef2565c33523feb54b90bdda",
+        "affectsGlobalScope": false
+      },
+      "./src/helpers/democanvaswidget.tsx": {
+        "version": "027dcf08814265db8dad68789bacb307908fe65f9e75a8f5338d38b89cf3a022",
+        "signature": "60355783565bcc6c9874db5150e18fa6b7b0562e1170d61b6e889a8a0fde24af",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/src/entities/port/portmodel.ts": {
+        "version": "42bfe913d04cb257bdb02a7a455811a3b5051d46490ae326709c67aae438f96c",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/src/entities/link/pointmodel.ts": {
+        "version": "ac45316c4fb2341d12a0b83053322fbb2ccc225c98bab119c6f1011967daf329",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/src/diagramengine.ts": {
+        "version": "c265fc7367184d030a062ba0306d64e2dde75f4b3606d17f6cbc41ba393ff684",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/src/entities/label/labelmodel.ts": {
+        "version": "2d8d756c851c69be3c693c8fe3d79384ccbaef105b8ef8e80835208200a84bba",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/src/entities/link/linkmodel.ts": {
+        "version": "5a2c330cb11b19e3d3453c2744581acdc0a164b04088708b83422e5ce8528057",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/src/entities/node-layer/nodelayermodel.ts": {
+        "version": "cc27d41eff6b5b18c44d0448dde9b04340c94f7ec1b34fafd74a9ce288798922",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/src/entities/link-layer/linklayermodel.ts": {
+        "version": "0d22e4a4cede4be6c601bea5a152e52c033db902e8d985379ced49fbb158c0e5",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/src/models/diagrammodel.ts": {
+        "version": "f3ba98685110567d99537d4b06da6def725c77d842e623203b1f58187215aa0c",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@projectstorm/react-diagrams-core/src/entities/node/nodemodel.ts": {
+        "version": "823d72170f201f5e73c6595d5cce2111e01af9934bb5f696d178951ca40ff70a",
+        "affectsGlobalScope": false
+      },
+      "./src/dialog/formdialogwidget.tsx": {
+        "version": "581fc3373fc3b16c1699b6a0b1e89bdf05b62b964680dd47f3cb1f5cb9b14496",
+        "signature": "17d02539645481bb22c3cad5ec6c222a8257744e07a80ae0e375da80c36be0e9",
+        "affectsGlobalScope": false
+      },
+      "./src/dialog/formdialog.tsx": {
+        "version": "2dc4ebe9501c9035c539e301836806ba980618f41b13bb4f5e9e0498d61d036d",
+        "signature": "5a622ee137b374d6c00842e40129e5f5b6f57ca2be91445fe5c12924113d27b9",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-textarea-autosize/dist/declarations/src/index.d.ts": {
+        "version": "d4990b42f1ac9307bffb12d35f57d89dbc7cf617c7eb01a791fcaa4a4069eaa6",
+        "signature": "d4990b42f1ac9307bffb12d35f57d89dbc7cf617c7eb01a791fcaa4a4069eaa6",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-textarea-autosize/dist/react-textarea-autosize.cjs.d.ts": {
+        "version": "e38d5bb0f0d07c2105b55ae8845df8c8271822186005469796be48c68058ef33",
+        "signature": "e38d5bb0f0d07c2105b55ae8845df8c8271822186005469796be48c68058ef33",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-switch/index.d.ts": {
+        "version": "7e6233fc17a00f06e59fa7b73274689084b378204271428b0c7cd33343d02006",
+        "signature": "7e6233fc17a00f06e59fa7b73274689084b378204271428b0c7cd33343d02006",
+        "affectsGlobalScope": false
+      },
+      "./src/dialog/rundialog.tsx": {
+        "version": "db4ec25b68c8a7a88a95ba8aaabd4bdd1d7989a6f06928249565767ec4466f9a",
+        "signature": "cffd41c9e8569d654eebce731f241edc7a00e8f300eaaa84109438731b69a568",
+        "affectsGlobalScope": false
+      },
+      "./src/components/xircuitbodywidget.tsx": {
+        "version": "2a2d2998a3a0c1d71723ee3a47afa3f69d67ab65eee5cdfc26b157d165f9c0de",
+        "signature": "054297af321a647e015083e6a2e7cf805e600373c7ed2844c465a63041c12628",
+        "affectsGlobalScope": false
+      },
+      "./src/components_xircuit/component.ts": {
+        "version": "c55ebbe5fc6340cc7163c7ebba53bb3475a65674bc32b66bbfc10eb5eba10327",
+        "signature": "78060dd110b91ca84455b577401578065566d31557fc1ee42737faf9cbd9d281",
+        "affectsGlobalScope": false
+      },
+      "./src/components_xircuit/trayitemwidget.tsx": {
+        "version": "5799996732e031cebf1b73dd61ad1805a0d73d88326c229d8b5b5054d68179ae",
+        "signature": "6752a85e12f87dba0134b8039f45ed9594f1fcbc85986594d61bb90515e08717",
+        "affectsGlobalScope": false
+      },
+      "./src/components_xircuit/traywidget.tsx": {
+        "version": "397e1b6652723f5a0aa068c2c92381fa64d39090e0c6aad63c60483722a1f7ee",
+        "signature": "f0c8671c322f4d80020c6d9f21a4a5763cbf73bfb811eb9b266d162b2a7b53be",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-accessible-accordion/dist/types/helpers/types.d.ts": {
+        "version": "93217de96f4ef940aff3bdd9beb804fca48e109f129f62e3550e473525729efb",
+        "signature": "93217de96f4ef940aff3bdd9beb804fca48e109f129f62e3550e473525729efb",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-accessible-accordion/dist/types/helpers/accordionstore.d.ts": {
+        "version": "196974561bd55b256db73930bbf7141b7c530e272fa646bad6ede77bf819cb8b",
+        "signature": "196974561bd55b256db73930bbf7141b7c530e272fa646bad6ede77bf819cb8b",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-accessible-accordion/dist/types/components/accordioncontext.d.ts": {
+        "version": "404420663017750348f03cecb664e2432f16563c4a2c7cd955442242331d3530",
+        "signature": "404420663017750348f03cecb664e2432f16563c4a2c7cd955442242331d3530",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-accessible-accordion/dist/types/components/itemcontext.d.ts": {
+        "version": "261f3d69ed557d6eb67d81ae339b93998cbb9daab3dec3a4bb3a5ece433e8d6d",
+        "signature": "261f3d69ed557d6eb67d81ae339b93998cbb9daab3dec3a4bb3a5ece433e8d6d",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-accessible-accordion/dist/types/components/accordion.d.ts": {
+        "version": "59b42840d2ac79b39008e2e5ea98ba25f8b07dc7726288f2dcfbdd06ab8be132",
+        "signature": "59b42840d2ac79b39008e2e5ea98ba25f8b07dc7726288f2dcfbdd06ab8be132",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-accessible-accordion/dist/types/helpers/displayname.d.ts": {
+        "version": "33380f6d30434ca4633f7e6e65a26cfb02d3ec91c154c57f1afa612c84aef9e5",
+        "signature": "33380f6d30434ca4633f7e6e65a26cfb02d3ec91c154c57f1afa612c84aef9e5",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-accessible-accordion/dist/types/components/accordionitem.d.ts": {
+        "version": "60d9823316ee6bcfde4a71c96c52ed61a90580933d8026f9d77a234e1e22f017",
+        "signature": "60d9823316ee6bcfde4a71c96c52ed61a90580933d8026f9d77a234e1e22f017",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-accessible-accordion/dist/types/components/accordionitembutton.d.ts": {
+        "version": "8a2929724cac7bf50b0044764cd242af0aca6bf9752091f40c503e2551fb6a4c",
+        "signature": "8a2929724cac7bf50b0044764cd242af0aca6bf9752091f40c503e2551fb6a4c",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-accessible-accordion/dist/types/components/accordionitemheading.d.ts": {
+        "version": "f3124eb255febc0c8ae9ea45eaf667da926cbf9411e26a54b8b1682fe43f511c",
+        "signature": "f3124eb255febc0c8ae9ea45eaf667da926cbf9411e26a54b8b1682fe43f511c",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-accessible-accordion/dist/types/components/accordionitempanel.d.ts": {
+        "version": "4b3e0e04a1a40f4a5d6739d311ab4d2db893831d06bbab217d07790c69e29125",
+        "signature": "4b3e0e04a1a40f4a5d6739d311ab4d2db893831d06bbab217d07790c69e29125",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-accessible-accordion/dist/types/components/accordionitemstate.d.ts": {
+        "version": "cd3cacdc82eada91419725ce93b728c032a76711b8e7e1f7824994e54f3c312b",
+        "signature": "cd3cacdc82eada91419725ce93b728c032a76711b8e7e1f7824994e54f3c312b",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-accessible-accordion/dist/types/helpers/uuid.d.ts": {
+        "version": "371bddfce0ce229831acbed92d0e6e0915e916c085c1bc4da0ef38ac772ea7e3",
+        "signature": "371bddfce0ce229831acbed92d0e6e0915e916c085c1bc4da0ef38ac772ea7e3",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/react-accessible-accordion/dist/types/index.d.ts": {
+        "version": "997fd898f304bcc90494e7d04610484e25e3454b3d8e7149bdf3c359cad0104d",
+        "signature": "997fd898f304bcc90494e7d04610484e25e3454b3d8e7149bdf3c359cad0104d",
+        "affectsGlobalScope": false
+      },
+      "./src/components_xircuit/sidebar.tsx": {
+        "version": "ab9eac1a2aad0a539033536341561a1142eefb6741c4fda59c6447ffc82405ae",
+        "signature": "af7e9e65dcd8de5702424e0155018512b82fffc62b3a8ea7baf2d384168931a2",
         "affectsGlobalScope": false
       },
       "./src/helpers/demoworkspacewidget.tsx": {
@@ -6421,6 +6436,12 @@
       "./node_modules/react-switch/index.d.ts": [
         "./node_modules/@types/react/index.d.ts"
       ],
+      "./node_modules/react-textarea-autosize/dist/declarations/src/index.d.ts": [
+        "./node_modules/@types/react/index.d.ts"
+      ],
+      "./node_modules/react-textarea-autosize/dist/react-textarea-autosize.cjs.d.ts": [
+        "./node_modules/react-textarea-autosize/dist/declarations/src/index.d.ts"
+      ],
       "./node_modules/typestyle/lib/types.d.ts": [
         "./node_modules/typestyle/node_modules/csstype/index.d.ts"
       ],
@@ -6770,6 +6791,11 @@
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams/dist/@types/index.d.ts"
       ],
+      "./src/components/runswitcher.tsx": [
+        "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
+        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
+        "./node_modules/@types/react/index.d.ts"
+      ],
       "./src/components/xircuitbodywidget.tsx": [
         "./node_modules/@emotion/styled/types/index.d.ts",
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
@@ -6782,15 +6808,12 @@
         "./node_modules/@projectstorm/react-diagrams/dist/@types/index.d.ts",
         "./node_modules/@types/react/index.d.ts",
         "./src/components/customnodemodel.ts",
-        "./src/components/xircuitsapp.ts",
-        "./src/components_xircuit/component.ts",
         "./src/dialog/formdialog.tsx",
         "./src/dialog/formdialogwidget.tsx",
         "./src/dialog/rundialog.tsx",
         "./src/helpers/democanvaswidget.tsx",
         "./src/log/logplugin.ts",
-        "./src/server/handler.ts",
-        "./src/xircuitwidget.tsx"
+        "./src/server/handler.ts"
       ],
       "./src/components/xircuitsapp.ts": [
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
@@ -6824,8 +6847,7 @@
       ],
       "./src/debugger/debuggerwidget.tsx": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
-        "./node_modules/@types/react/index.d.ts",
-        "./src/xircuitfactory.ts"
+        "./node_modules/@types/react/index.d.ts"
       ],
       "./src/debugger/sidebardebugger.ts": [
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
@@ -6833,9 +6855,7 @@
         "./node_modules/@jupyterlab/debugger/lib/index.d.ts",
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts",
-        "./src/components/xircuitbodywidget.tsx",
-        "./src/debugger/debuggerwidget.tsx",
-        "./src/xircuitfactory.ts"
+        "./src/debugger/debuggerwidget.tsx"
       ],
       "./src/dialog/formdialog.tsx": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
@@ -6848,7 +6868,8 @@
       ],
       "./src/dialog/rundialog.tsx": [
         "./node_modules/@types/react/index.d.ts",
-        "./node_modules/react-switch/index.d.ts"
+        "./node_modules/react-switch/index.d.ts",
+        "./node_modules/react-textarea-autosize/dist/react-textarea-autosize.cjs.d.ts"
       ],
       "./src/helpers/democanvaswidget.tsx": [
         "./node_modules/@emotion/styled/types/index.d.ts",
@@ -6868,13 +6889,10 @@
         "./node_modules/@jupyterlab/rendermime/lib/index.d.ts",
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
         "./node_modules/@types/react/index.d.ts",
-        "./src/components/xircuitbodywidget.tsx",
-        "./src/components_xircuit/sidebar.tsx",
         "./src/debugger/sidebardebugger.ts",
         "./src/kernel/panel.ts",
         "./src/log/logplugin.ts",
-        "./src/server/handler.ts",
-        "./src/xircuitfactory.ts"
+        "./src/server/handler.ts"
       ],
       "./src/kernel/panel.ts": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
@@ -6884,8 +6902,7 @@
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
         "./node_modules/@lumino/messaging/types/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts",
-        "./src/log/logplugin.ts",
-        "./src/xircuitfactory.ts"
+        "./src/log/logplugin.ts"
       ],
       "./src/log/loglevelswitcher.tsx": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
@@ -6902,7 +6919,6 @@
         "./node_modules/@jupyterlab/nbformat/lib/index.d.ts",
         "./node_modules/@jupyterlab/rendermime/lib/index.d.ts",
         "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
-        "./src/components/xircuitbodywidget.tsx",
         "./src/log/loglevelswitcher.tsx"
       ],
       "./src/server/handler.ts": [
@@ -6916,9 +6932,8 @@
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
         "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/signaling/types/index.d.ts",
-        "./src/components/xircuitbodywidget.tsx",
-        "./src/log/logplugin.ts",
-        "./src/xircuitwidget.tsx"
+        "./src/components/runswitcher.tsx",
+        "./src/log/logplugin.ts"
       ],
       "./src/xircuitwidget.tsx": [
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
@@ -6926,9 +6941,7 @@
         "./node_modules/@jupyterlab/docregistry/lib/index.d.ts",
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
         "./node_modules/@lumino/signaling/types/index.d.ts",
-        "./node_modules/@types/react/index.d.ts",
-        "./src/components/xircuitbodywidget.tsx",
-        "./src/components/xircuitsapp.ts"
+        "./node_modules/@types/react/index.d.ts"
       ]
     },
     "exportedModulesMap": {
@@ -9904,6 +9917,12 @@
       "./node_modules/react-switch/index.d.ts": [
         "./node_modules/@types/react/index.d.ts"
       ],
+      "./node_modules/react-textarea-autosize/dist/declarations/src/index.d.ts": [
+        "./node_modules/@types/react/index.d.ts"
+      ],
+      "./node_modules/react-textarea-autosize/dist/react-textarea-autosize.cjs.d.ts": [
+        "./node_modules/react-textarea-autosize/dist/declarations/src/index.d.ts"
+      ],
       "./node_modules/typestyle/lib/types.d.ts": [
         "./node_modules/typestyle/node_modules/csstype/index.d.ts"
       ],
@@ -10250,6 +10269,10 @@
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams/dist/@types/index.d.ts"
       ],
+      "./src/components/runswitcher.tsx": [
+        "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
+        "./node_modules/@types/react/index.d.ts"
+      ],
       "./src/components/xircuitbodywidget.tsx": [
         "./node_modules/@emotion/react/types/index.d.ts",
         "./node_modules/@emotion/styled/types/index.d.ts",
@@ -10257,9 +10280,7 @@
         "./node_modules/@jupyterlab/docregistry/lib/index.d.ts",
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
         "./node_modules/@lumino/signaling/types/index.d.ts",
-        "./node_modules/@types/react/index.d.ts",
-        "./src/components/xircuitsapp.ts",
-        "./src/xircuitwidget.tsx"
+        "./node_modules/@types/react/index.d.ts"
       ],
       "./src/components/xircuitsapp.ts": [
         "./node_modules/@projectstorm/react-diagrams/dist/@types/index.d.ts"
@@ -10285,15 +10306,13 @@
         "./node_modules/@types/react/index.d.ts"
       ],
       "./src/debugger/debuggerwidget.tsx": [
-        "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
-        "./src/xircuitfactory.ts"
+        "./node_modules/@jupyterlab/apputils/lib/index.d.ts"
       ],
       "./src/debugger/sidebardebugger.ts": [
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
-        "./node_modules/@lumino/widgets/types/index.d.ts",
-        "./src/xircuitfactory.ts"
+        "./node_modules/@lumino/widgets/types/index.d.ts"
       ],
       "./src/dialog/formdialog.tsx": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts"
@@ -10319,8 +10338,7 @@
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
         "./node_modules/@lumino/messaging/types/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts",
-        "./src/log/logplugin.ts",
-        "./src/xircuitfactory.ts"
+        "./src/log/logplugin.ts"
       ],
       "./src/log/loglevelswitcher.tsx": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
@@ -10341,8 +10359,7 @@
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
         "./node_modules/@jupyterlab/docregistry/lib/index.d.ts",
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
-        "./node_modules/@lumino/signaling/types/index.d.ts",
-        "./src/components/xircuitsapp.ts"
+        "./node_modules/@lumino/signaling/types/index.d.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [
@@ -10924,6 +10941,8 @@
       "./node_modules/react-accessible-accordion/dist/types/helpers/uuid.d.ts",
       "./node_modules/react-accessible-accordion/dist/types/index.d.ts",
       "./node_modules/react-switch/index.d.ts",
+      "./node_modules/react-textarea-autosize/dist/declarations/src/index.d.ts",
+      "./node_modules/react-textarea-autosize/dist/react-textarea-autosize.cjs.d.ts",
       "./node_modules/typescript/lib/lib.dom.d.ts",
       "./node_modules/typescript/lib/lib.dom.iterable.d.ts",
       "./node_modules/typescript/lib/lib.es2015.collection.d.ts",
@@ -10999,27 +11018,2822 @@
       "./src/components/customnodemodel.ts",
       "./src/components/customnodewidget.tsx",
       "./src/components/customportmodel.ts",
-      "./src/components/xircuitbodywidget.tsx",
+      [
+        "./src/components/runswitcher.tsx",
+        [
+          {
+            "file": "./src/components/runswitcher.tsx",
+            "start": 180,
+            "length": 19,
+            "messageText": "Cannot find module '../xircuitFactory' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      [
+        "./src/components/xircuitbodywidget.tsx",
+        [
+          {
+            "file": "./src/components/xircuitbodywidget.tsx",
+            "start": 733,
+            "length": 18,
+            "messageText": "Cannot find module '../xircuitWidget' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/components/xircuitbodywidget.tsx",
+            "start": 877,
+            "length": 33,
+            "messageText": "Cannot find module '../components_xircuit/Component' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/components/xircuitbodywidget.tsx",
+            "start": 1210,
+            "length": 15,
+            "messageText": "Cannot find module './XircuitsApp' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
       "./src/components/xircuitsapp.ts",
       "./src/components_xircuit/component.ts",
       "./src/components_xircuit/sidebar.tsx",
       "./src/components_xircuit/trayitemwidget.tsx",
       "./src/components_xircuit/traywidget.tsx",
-      "./src/debugger/debuggerwidget.tsx",
-      "./src/debugger/sidebardebugger.ts",
+      [
+        "./src/debugger/debuggerwidget.tsx",
+        [
+          {
+            "file": "./src/debugger/debuggerwidget.tsx",
+            "start": 160,
+            "length": 19,
+            "messageText": "Cannot find module '../xircuitFactory' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      [
+        "./src/debugger/sidebardebugger.ts",
+        [
+          {
+            "file": "./src/debugger/sidebardebugger.ts",
+            "start": 284,
+            "length": 33,
+            "messageText": "Cannot find module '../components/xircuitBodyWidget' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/debugger/sidebardebugger.ts",
+            "start": 403,
+            "length": 19,
+            "messageText": "Cannot find module '../xircuitFactory' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
       "./src/dialog/formdialog.tsx",
       "./src/dialog/formdialogwidget.tsx",
       "./src/dialog/rundialog.tsx",
       "./src/helpers/democanvaswidget.tsx",
       "./src/helpers/demoworkspacewidget.tsx",
       "./src/helpers/helper.tsx",
-      "./src/index.tsx",
-      "./src/kernel/panel.ts",
+      [
+        "./src/index.tsx",
+        [
+          {
+            "file": "./src/index.tsx",
+            "start": 229,
+            "length": 32,
+            "messageText": "Cannot find module './components/xircuitBodyWidget' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/index.tsx",
+            "start": 421,
+            "length": 18,
+            "messageText": "Cannot find module './xircuitFactory' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/index.tsx",
+            "start": 462,
+            "length": 30,
+            "messageText": "Cannot find module './components_xircuit/Sidebar' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      [
+        "./src/kernel/panel.ts",
+        [
+          {
+            "file": "./src/kernel/panel.ts",
+            "start": 617,
+            "length": 19,
+            "messageText": "Cannot find module '../xircuitFactory' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
       "./src/log/loglevelswitcher.tsx",
-      "./src/log/logplugin.ts",
+      [
+        "./src/log/logplugin.ts",
+        [
+          {
+            "file": "./src/log/logplugin.ts",
+            "start": 665,
+            "length": 33,
+            "messageText": "Cannot find module '../components/xircuitBodyWidget' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
       "./src/server/handler.ts",
-      "./src/xircuitfactory.ts",
-      "./src/xircuitwidget.tsx"
+      [
+        "./src/xircuitfactory.ts",
+        [
+          {
+            "file": "./src/xircuitfactory.ts",
+            "start": 262,
+            "length": 17,
+            "messageText": "Cannot find module './xircuitWidget' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/xircuitfactory.ts",
+            "start": 525,
+            "length": 32,
+            "messageText": "Cannot find module './components/xircuitBodyWidget' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      [
+        "./src/xircuitwidget.tsx",
+        [
+          {
+            "file": "./src/xircuitwidget.tsx",
+            "start": 252,
+            "length": 32,
+            "messageText": "Cannot find module './components/xircuitBodyWidget' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/xircuitwidget.tsx",
+            "start": 443,
+            "length": 26,
+            "messageText": "Cannot find module './components/XircuitsApp' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ]
+    ],
+    "affectedFilesPendingEmit": [
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/abstractcomponent.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/abstractcomponent2.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/abstractpurecomponent.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/abstractpurecomponent2.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/alignment.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/boundary.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/classes.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/colors.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/configuredom4.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/constructor.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/elevation.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/intent.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/keys.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/position.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/props.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/refs.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/compareutils.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/domutils.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/functionutils.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/isdarktheme.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/jsutils.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/reactutils.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/safeinvokemember.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/components/button/abstractbutton.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/components/button/buttons.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/components/collapse/collapse.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/components/forms/controls.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/components/forms/inputgroup.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/cjs/components/icon/icon.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/accessibility/focusstylemanager.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/accessibility/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/abstractcomponent.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/abstractcomponent2.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/abstractpurecomponent.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/abstractpurecomponent2.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/alignment.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/boundary.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/classes.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/colors.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/configuredom4.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/constructor.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/context.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/elevation.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/intent.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/keys.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/position.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/props.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/refs.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/utils/compareutils.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/utils/domutils.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/utils/functionutils.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/utils/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/utils/isdarktheme.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/utils/jsutils.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/utils/reactutils.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/common/utils/safeinvokemember.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/alert/alert.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/breadcrumbs/breadcrumb.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/breadcrumbs/breadcrumbs.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/button/abstractbutton.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/button/buttongroup.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/button/buttons.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/callout/callout.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/card/card.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/collapse/collapse.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/collapsible-list/collapsiblelist.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/context-menu/contextmenu.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/context-menu/contextmenutarget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/dialog/dialog.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/dialog/dialogstep.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/dialog/multistepdialog.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/divider/divider.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/drawer/drawer.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/editable-text/editabletext.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/forms/controlgroup.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/forms/controls.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/forms/fileinput.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/forms/formgroup.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/forms/inputgroup.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/forms/numericinput.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/forms/radiogroup.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/forms/textarea.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkey.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeyparser.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeys.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeysdialog.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeysdialog2.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeysevents.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeystarget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeystarget2.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeystypes.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/keycombo.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/html-select/htmlselect.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/html-table/htmltable.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/html/html.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/icon/icon.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/menu/menu.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/menu/menudivider.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/menu/menuitem.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbar.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbardivider.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbargroup.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbarheading.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/non-ideal-state/nonidealstate.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/overflow-list/overflowlist.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/overlay/overlay.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/panel-stack/panelprops.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/panel-stack/panelstack.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/panel-stack2/panelstack2.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/panel-stack2/paneltypes.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/popover/popover.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/popover/popoversharedprops.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/portal/portal.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/progress-bar/progressbar.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/resize-sensor/resizeobservertypes.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/resize-sensor/resizesensor.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/slider/handleprops.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/slider/multislider.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/slider/rangeslider.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/slider/slider.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/spinner/spinner.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/tabs/tab.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/tabs/tabs.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/tag-input/taginput.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/tag/tag.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/text/text.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/toast/toast.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/toast/toaster.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/tooltip/tooltip.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/tree/tree.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/components/tree/treenode.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/context/hotkeys/hotkeysprovider.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/context/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/hooks/hotkeys/hotkeyconfig.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/hooks/hotkeys/usehotkeys.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/hooks/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/core/lib/esm/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/icons/lib/esm/generated/iconcontents.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/icons/lib/esm/generated/iconnames.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/icons/lib/esm/generated/iconsvgpaths.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/icons/lib/esm/iconname.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/icons/lib/esm/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/select/lib/cjs/common/classes.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/select/lib/cjs/common/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/select/lib/cjs/common/itemlistrenderer.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/select/lib/cjs/common/itemrenderer.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/select/lib/cjs/common/listitemsprops.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/select/lib/cjs/common/listitemsutils.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/select/lib/cjs/common/predicate.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@blueprintjs/select/lib/cjs/components/select/select.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@emotion/react/node_modules/@emotion/cache/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@emotion/react/node_modules/@emotion/serialize/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@emotion/react/node_modules/@emotion/utils/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@emotion/react/node_modules/csstype/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@emotion/react/types/helper.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@emotion/react/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@emotion/react/types/jsx-namespace.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@emotion/react/types/theming.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@emotion/styled/node_modules/@emotion/serialize/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@emotion/styled/types/base.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@emotion/styled/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/application/lib/connectionlost.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/application/lib/frontend.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/application/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/application/lib/lab.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/application/lib/layoutrestorer.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/application/lib/mimerenderers.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/application/lib/router.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/application/lib/shell.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/application/lib/status.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/application/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/application/lib/treepathupdater.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/clipboard.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/collapse.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/commandlinker.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/commandpalette.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/dialog.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/domutils.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/hoverbox.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/iframe.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/inputdialog.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/mainareawidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/menufactory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/printing.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/sanitizer.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/sessioncontext.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/spinner.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/splash.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/styling.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/thememanager.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/toolbar.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/vdom.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/widgettracker.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/apputils/lib/windowresolver.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/attachments/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/attachments/lib/model.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/cells/lib/celldragutils.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/cells/lib/collapser.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/cells/lib/headerfooter.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/cells/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/cells/lib/inputarea.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/cells/lib/model.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/cells/lib/placeholder.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/cells/lib/widget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/codeeditor/lib/editor.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/codeeditor/lib/factory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/codeeditor/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/codeeditor/lib/jsoneditor.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/codeeditor/lib/mimetype.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/codeeditor/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/codeeditor/lib/widget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/console/lib/foreign.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/console/lib/history.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/console/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/console/lib/panel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/console/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/console/lib/widget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/coreutils/lib/activitymonitor.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/coreutils/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/coreutils/lib/interfaces.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/coreutils/lib/markdowncodeblocks.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/coreutils/lib/pageconfig.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/coreutils/lib/path.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/coreutils/lib/text.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/coreutils/lib/time.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/coreutils/lib/url.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/config.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/debugger.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/dialogs/evaluate.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/factory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/handler.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/handlers/console.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/handlers/editor.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/handlers/file.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/handlers/notebook.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/model.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/panels/breakpoints/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/panels/breakpoints/model.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/panels/callstack/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/panels/callstack/model.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/panels/sources/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/panels/sources/model.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/panels/variables/grid.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/panels/variables/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/panels/variables/model.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/service.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/session.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/sidebar.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/sources.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/debugger/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docmanager/lib/dialogs.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docmanager/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docmanager/lib/manager.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docmanager/lib/pathstatus.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docmanager/lib/savehandler.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docmanager/lib/savingstatus.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docmanager/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docmanager/lib/widgetmanager.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docprovider/lib/awareness.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docprovider/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docprovider/lib/mock.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docprovider/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docprovider/lib/yprovider.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docregistry/lib/context.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docregistry/lib/default.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docregistry/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docregistry/lib/mimedocument.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/docregistry/lib/registry.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/filebrowser/lib/browser.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/filebrowser/lib/crumbs.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/filebrowser/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/filebrowser/lib/listing.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/filebrowser/lib/model.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/filebrowser/lib/opendialog.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/filebrowser/lib/search.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/filebrowser/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/filebrowser/lib/upload.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/filebrowser/lib/uploadstatus.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/fileeditor/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/fileeditor/lib/tabspacestatus.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/fileeditor/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/fileeditor/lib/widget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/launcher/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/logconsole/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/logconsole/lib/logger.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/logconsole/lib/registry.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/logconsole/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/logconsole/lib/widget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/nbformat/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/notebook/lib/actions.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/notebook/lib/default-toolbar.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/notebook/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/notebook/lib/model.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/notebook/lib/modelfactory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/notebook/lib/modestatus.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/notebook/lib/notebooktools.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/notebook/lib/panel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/notebook/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/notebook/lib/tracker.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/notebook/lib/truststatus.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/notebook/lib/widget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/notebook/lib/widgetfactory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/observables/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/observables/lib/modeldb.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/observables/lib/observablejson.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/observables/lib/observablelist.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/observables/lib/observablemap.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/observables/lib/observablestring.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/observables/lib/undoablelist.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/outputarea/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/outputarea/lib/model.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/outputarea/lib/widget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/rendermime-interfaces/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/rendermime/lib/attachmentmodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/rendermime/lib/factories.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/rendermime/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/rendermime/lib/latex.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/rendermime/lib/mimemodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/rendermime/lib/outputmodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/rendermime/lib/registry.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/rendermime/lib/renderers.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/rendermime/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/rendermime/lib/widgets.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/basemanager.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/builder/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/config/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/contents/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/kernel/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/kernel/kernel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/kernel/manager.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/kernel/messages.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/kernel/restapi.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/kernelspec/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/kernelspec/kernelspec.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/kernelspec/manager.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/kernelspec/restapi.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/manager.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/nbconvert/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/serverconnection.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/session/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/session/manager.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/session/restapi.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/session/session.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/setting/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/terminal/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/terminal/manager.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/terminal/restapi.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/terminal/terminal.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/services/lib/workspace/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/settingregistry/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/settingregistry/lib/settingregistry.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/settingregistry/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/shared-models/lib/api.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/shared-models/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/shared-models/lib/utils.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/shared-models/lib/ymodels.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/statedb/lib/dataconnector.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/statedb/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/statedb/lib/interfaces.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/statedb/lib/restorablepool.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/statedb/lib/statedb.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/statedb/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/translation/lib/base.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/translation/lib/gettext.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/translation/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/translation/lib/manager.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/translation/lib/server.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/translation/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/blueprint.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/components/htmlselect.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/components/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/components/interface.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/components/menu.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/components/switch.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/icon/iconimports.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/icon/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/icon/labicon.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/icon/widgets/commandpalettesvg.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/icon/widgets/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/icon/widgets/menusvg.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/icon/widgets/tabbarsvg.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/style/icon.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/style/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/tokens.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@jupyterlab/ui-components/lib/utils.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/array.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/chain.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/empty.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/enumerate.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/filter.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/find.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/iter.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/map.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/range.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/reduce.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/repeat.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/retro.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/sort.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/stride.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/string.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/take.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/algorithm/types/zip.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/application/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/commands/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/coreutils/types/index.common.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/coreutils/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/coreutils/types/json.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/coreutils/types/mime.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/coreutils/types/promise.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/coreutils/types/random.browser.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/coreutils/types/random.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/coreutils/types/token.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/coreutils/types/uuid.browser.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/disposable/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/dragdrop/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/messaging/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/polling/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/polling/types/poll.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/polling/types/ratelimiter.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/signaling/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/virtualdom/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/accordionlayout.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/accordionpanel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/boxengine.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/boxlayout.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/boxpanel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/commandpalette.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/contextmenu.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/docklayout.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/dockpanel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/focustracker.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/gridlayout.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/layout.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/menu.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/menubar.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/panel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/panellayout.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/scrollbar.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/singletonlayout.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/splitlayout.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/splitpanel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/stackedlayout.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/stackedpanel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/tabbar.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/tabpanel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/title.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@lumino/widgets/types/widget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/actions/deleteitemsaction.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/actions/zoomcanvasaction.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/canvasengine.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/action.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/actioneventbus.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/baseentity.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basemodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basepositionmodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/abstractdisplacementstate.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/state.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/statemachine.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/abstractfactory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/abstractmodelfactory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/abstractreactfactory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/baseobserver.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/factorybank.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/modelgeometryinterface.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/canvasmodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/canvaswidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/layermodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/smartlayerwidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/transformlayerwidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/selection/selectionboxlayerfactory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/selection/selectionboxwidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/selection/selectionlayermodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/defaultstate.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/dragcanvasstate.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/moveitemsstate.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/selectingstate.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/selectionboxstate.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/toolkit.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/widgets/peformancewidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/diagramengine.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/label/labelmodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/linklayerfactory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/linklayermodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/linklayerwidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkmodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkwidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/pointmodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node-layer/nodelayerfactory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node-layer/nodelayermodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node-layer/nodelayerwidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/nodemodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/nodewidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portmodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portwidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/models/diagrammodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/defaultdiagramstate.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/dragdiagramitemsstate.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/dragnewlinkstate.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/src/diagramengine.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/src/entities/label/labelmodel.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/src/entities/link-layer/linklayermodel.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/src/entities/link/linkmodel.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/src/entities/link/pointmodel.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/src/entities/node-layer/nodelayermodel.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/src/entities/node/nodemodel.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/src/entities/port/portmodel.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-core/src/models/diagrammodel.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/defaultlabelfactory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/defaultlabelmodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/defaultlabelwidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkfactory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkmodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkpointwidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinksegmentwidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkwidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/node/defaultnodefactory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/node/defaultnodemodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/node/defaultnodewidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/port/defaultportfactory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/port/defaultportlabelwidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/port/defaultportmodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/dagre/dagreengine.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/engine/pathfinding.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/pathfindinglinkfactory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/pathfindinglinkmodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/pathfindinglinkwidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/rightanglelinkfactory.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/rightanglelinkmodel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/rightanglelinkwidget.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@projectstorm/react-diagrams/dist/@types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@types/dagre/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@types/prop-types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@types/react/global.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@types/react/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@types/react/node_modules/csstype/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/@types/scheduler/tracing.d.ts",
+        1
+      ],
+      [
+        "./node_modules/lib0/decoding.d.ts",
+        1
+      ],
+      [
+        "./node_modules/lib0/encoding.d.ts",
+        1
+      ],
+      [
+        "./node_modules/lib0/mutex.d.ts",
+        1
+      ],
+      [
+        "./node_modules/lib0/observable.d.ts",
+        1
+      ],
+      [
+        "./node_modules/lib0/random.d.ts",
+        1
+      ],
+      [
+        "./node_modules/popper.js/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-accessible-accordion/dist/types/components/accordion.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-accessible-accordion/dist/types/components/accordioncontext.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-accessible-accordion/dist/types/components/accordionitem.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-accessible-accordion/dist/types/components/accordionitembutton.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-accessible-accordion/dist/types/components/accordionitemheading.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-accessible-accordion/dist/types/components/accordionitempanel.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-accessible-accordion/dist/types/components/accordionitemstate.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-accessible-accordion/dist/types/components/itemcontext.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-accessible-accordion/dist/types/helpers/accordionstore.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-accessible-accordion/dist/types/helpers/displayname.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-accessible-accordion/dist/types/helpers/types.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-accessible-accordion/dist/types/helpers/uuid.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-accessible-accordion/dist/types/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-switch/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-textarea-autosize/dist/declarations/src/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/react-textarea-autosize/dist/react-textarea-autosize.cjs.d.ts",
+        1
+      ],
+      [
+        "./node_modules/typescript/lib/lib.es2015.d.ts",
+        1
+      ],
+      [
+        "./node_modules/typescript/lib/lib.es2016.d.ts",
+        1
+      ],
+      [
+        "./node_modules/typescript/lib/lib.es2017.d.ts",
+        1
+      ],
+      [
+        "./node_modules/typescript/lib/lib.es2017.full.d.ts",
+        1
+      ],
+      [
+        "./node_modules/typestyle/lib/types.d.ts",
+        1
+      ],
+      [
+        "./node_modules/typestyle/node_modules/csstype/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/vscode-debugprotocol/lib/debugprotocol.d.ts",
+        1
+      ],
+      [
+        "./node_modules/y-protocols/awareness.d.ts",
+        1
+      ],
+      [
+        "./node_modules/y-websocket/dist/src/y-websocket.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/index.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/internals.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/structs/abstractstruct.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/structs/contentany.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/structs/contentbinary.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/structs/contentdeleted.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/structs/contentdoc.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/structs/contentembed.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/structs/contentformat.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/structs/contentjson.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/structs/contentstring.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/structs/contenttype.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/structs/gc.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/structs/item.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/structs/skip.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/types/abstracttype.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/types/yarray.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/types/ymap.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/types/ytext.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/types/yxmlelement.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/types/yxmlevent.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/types/yxmlfragment.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/types/yxmlhook.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/types/yxmltext.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/abstractconnector.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/deleteset.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/doc.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/encoding.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/eventhandler.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/id.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/isparentof.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/logging.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/permanentuserdata.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/relativeposition.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/snapshot.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/structstore.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/transaction.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/undomanager.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/updatedecoder.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/updateencoder.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/updates.d.ts",
+        1
+      ],
+      [
+        "./node_modules/yjs/dist/src/utils/yevent.d.ts",
+        1
+      ],
+      [
+        "./src/components/customnodefactory.tsx",
+        1
+      ],
+      [
+        "./src/components/customnodemodel.ts",
+        1
+      ],
+      [
+        "./src/components/customnodewidget.tsx",
+        1
+      ],
+      [
+        "./src/components/customportmodel.ts",
+        1
+      ],
+      [
+        "./src/components/runswitcher.tsx",
+        1
+      ],
+      [
+        "./src/components/xircuitbodywidget.tsx",
+        1
+      ],
+      [
+        "./src/components/xircuitsapp.ts",
+        1
+      ],
+      [
+        "./src/components_xircuit/component.ts",
+        1
+      ],
+      [
+        "./src/components_xircuit/sidebar.tsx",
+        1
+      ],
+      [
+        "./src/components_xircuit/trayitemwidget.tsx",
+        1
+      ],
+      [
+        "./src/components_xircuit/traywidget.tsx",
+        1
+      ],
+      [
+        "./src/debugger/debuggerwidget.tsx",
+        1
+      ],
+      [
+        "./src/debugger/sidebardebugger.ts",
+        1
+      ],
+      [
+        "./src/dialog/formdialog.tsx",
+        1
+      ],
+      [
+        "./src/dialog/formdialogwidget.tsx",
+        1
+      ],
+      [
+        "./src/dialog/rundialog.tsx",
+        1
+      ],
+      [
+        "./src/helpers/democanvaswidget.tsx",
+        1
+      ],
+      [
+        "./src/helpers/demoworkspacewidget.tsx",
+        1
+      ],
+      [
+        "./src/helpers/helper.tsx",
+        1
+      ],
+      [
+        "./src/index.tsx",
+        1
+      ],
+      [
+        "./src/kernel/panel.ts",
+        1
+      ],
+      [
+        "./src/log/loglevelswitcher.tsx",
+        1
+      ],
+      [
+        "./src/log/logplugin.ts",
+        1
+      ],
+      [
+        "./src/server/handler.ts",
+        1
+      ],
+      [
+        "./src/xircuitfactory.ts",
+        1
+      ],
+      [
+        "./src/xircuitwidget.tsx",
+        1
+      ]
     ]
   },
   "version": "4.1.6"
