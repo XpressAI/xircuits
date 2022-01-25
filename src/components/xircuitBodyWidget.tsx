@@ -14,7 +14,7 @@ import { CustomNodeModel } from "./CustomNodeModel";
 import { XPipePanel } from '../xircuitWidget';
 import { Log } from '../log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
-import ComponentList from '../components_xircuit/Component';
+import ComponentList from '../tray_library/Component';
 import { formDialogWidget } from '../dialog/formDialogwidget';
 import { showFormDialog } from '../dialog/FormDialog';
 import { RunDialog } from '../dialog/RunDialog';

@@ -12,7 +12,7 @@ import {
 } from '@jupyterlab/apputils';
 import { ILauncher } from '@jupyterlab/launcher';
 import { XircuitFactory } from './xircuitFactory';
-import Sidebar from './components_xircuit/Sidebar';
+import Sidebar from './tray_library/Sidebar';
 import { IDocumentManager } from '@jupyterlab/docmanager';
 import { XircuitsDebugger } from './debugger/SidebarDebugger';
 import { ITranslator } from '@jupyterlab/translation';

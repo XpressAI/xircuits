@@ -2917,7 +2917,7 @@
         "signature": "7f6037fa8d3da3ab5b173e089bd9d6eaf4e04e663844a9822b0463636b6ac816",
         "affectsGlobalScope": false
       },
-      "./src/components_xircuit/component.ts": {
+      "./src/tray_library/component.ts": {
         "version": "c55ebbe5fc6340cc7163c7ebba53bb3475a65674bc32b66bbfc10eb5eba10327",
         "signature": "78060dd110b91ca84455b577401578065566d31557fc1ee42737faf9cbd9d281",
         "affectsGlobalScope": false
@@ -2972,12 +2972,12 @@
         "signature": "06329241f4e955a74657b9806cb483984302e71729f1ef1dc6a7d9788e4d6e4f",
         "affectsGlobalScope": false
       },
-      "./src/components_xircuit/trayitemwidget.tsx": {
+      "./src/tray_library/trayitemwidget.tsx": {
         "version": "5799996732e031cebf1b73dd61ad1805a0d73d88326c229d8b5b5054d68179ae",
         "signature": "6752a85e12f87dba0134b8039f45ed9594f1fcbc85986594d61bb90515e08717",
         "affectsGlobalScope": false
       },
-      "./src/components_xircuit/traywidget.tsx": {
+      "./src/tray_library/traywidget.tsx": {
         "version": "397e1b6652723f5a0aa068c2c92381fa64d39090e0c6aad63c60483722a1f7ee",
         "signature": "f0c8671c322f4d80020c6d9f21a4a5763cbf73bfb811eb9b266d162b2a7b53be",
         "affectsGlobalScope": false
@@ -3047,7 +3047,7 @@
         "signature": "997fd898f304bcc90494e7d04610484e25e3454b3d8e7149bdf3c359cad0104d",
         "affectsGlobalScope": false
       },
-      "./src/components_xircuit/sidebar.tsx": {
+      "./src/tray_library/sidebar.tsx": {
         "version": "ab9eac1a2aad0a539033536341561a1142eefb6741c4fda59c6447ffc82405ae",
         "signature": "af7e9e65dcd8de5702424e0155018512b82fffc62b3a8ea7baf2d384168931a2",
         "affectsGlobalScope": false
@@ -6810,7 +6810,7 @@
         "./node_modules/@types/react/index.d.ts",
         "./src/components/customnodemodel.ts",
         "./src/components/xircuitsapp.ts",
-        "./src/components_xircuit/component.ts",
+        "./src/tray_library/component.ts",
         "./src/dialog/formdialog.tsx",
         "./src/dialog/formdialogwidget.tsx",
         "./src/dialog/rundialog.tsx",
@@ -6826,26 +6826,26 @@
         "./src/components/customnodemodel.ts",
         "./src/components/customnodewidget.tsx"
       ],
-      "./src/components_xircuit/component.ts": [
+      "./src/tray_library/component.ts": [
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
         "./src/server/handler.ts"
       ],
-      "./src/components_xircuit/sidebar.tsx": [
+      "./src/tray_library/sidebar.tsx": [
         "./node_modules/@emotion/styled/types/index.d.ts",
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@types/react/index.d.ts",
         "./node_modules/react-accessible-accordion/dist/types/index.d.ts",
-        "./src/components_xircuit/component.ts",
-        "./src/components_xircuit/trayitemwidget.tsx",
-        "./src/components_xircuit/traywidget.tsx",
+        "./src/tray_library/component.ts",
+        "./src/tray_library/trayitemwidget.tsx",
+        "./src/tray_library/traywidget.tsx",
         "./src/server/handler.ts"
       ],
-      "./src/components_xircuit/trayitemwidget.tsx": [
+      "./src/tray_library/trayitemwidget.tsx": [
         "./node_modules/@emotion/styled/types/index.d.ts",
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
-      "./src/components_xircuit/traywidget.tsx": [
+      "./src/tray_library/traywidget.tsx": [
         "./node_modules/@emotion/styled/types/index.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
@@ -6897,7 +6897,7 @@
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
         "./node_modules/@types/react/index.d.ts",
         "./src/components/xircuitbodywidget.tsx",
-        "./src/components_xircuit/sidebar.tsx",
+        "./src/tray_library/sidebar.tsx",
         "./src/debugger/sidebardebugger.ts",
         "./src/kernel/panel.ts",
         "./src/log/logplugin.ts",
@@ -10304,22 +10304,22 @@
       "./src/components/xircuitsapp.ts": [
         "./node_modules/@projectstorm/react-diagrams/dist/@types/index.d.ts"
       ],
-      "./src/components_xircuit/component.ts": [
+      "./src/tray_library/component.ts": [
         "./node_modules/@jupyterlab/services/lib/index.d.ts"
       ],
-      "./src/components_xircuit/sidebar.tsx": [
+      "./src/tray_library/sidebar.tsx": [
         "./node_modules/@emotion/react/types/index.d.ts",
         "./node_modules/@emotion/styled/types/index.d.ts",
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
-      "./src/components_xircuit/trayitemwidget.tsx": [
+      "./src/tray_library/trayitemwidget.tsx": [
         "./node_modules/@emotion/react/types/index.d.ts",
         "./node_modules/@emotion/styled/types/index.d.ts",
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
-      "./src/components_xircuit/traywidget.tsx": [
+      "./src/tray_library/traywidget.tsx": [
         "./node_modules/@emotion/react/types/index.d.ts",
         "./node_modules/@emotion/styled/types/index.d.ts",
         "./node_modules/@types/react/index.d.ts"
@@ -11044,10 +11044,10 @@
       "./src/components/runswitcher.tsx",
       "./src/components/xircuitbodywidget.tsx",
       "./src/components/xircuitsapp.ts",
-      "./src/components_xircuit/component.ts",
-      "./src/components_xircuit/sidebar.tsx",
-      "./src/components_xircuit/trayitemwidget.tsx",
-      "./src/components_xircuit/traywidget.tsx",
+      "./src/tray_library/component.ts",
+      "./src/tray_library/sidebar.tsx",
+      "./src/tray_library/trayitemwidget.tsx",
+      "./src/tray_library/traywidget.tsx",
       "./src/debugger/debuggerwidget.tsx",
       "./src/debugger/sidebardebugger.ts",
       "./src/dialog/formdialog.tsx",
