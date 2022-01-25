@@ -247,11 +247,15 @@ class Create2DInputModel(Component):
     training_data: InArg[Tuple[np.array, np.array]]
 
     model: OutArg[keras.Sequential]
+    model_config: OutArg[dict]
+
 
     def __init__(self):
         self.done = False
         self.training_data = InArg.empty()
         self.model = OutArg.empty()
+        self.model_config = OutArg.empty()
+
 
     def execute(self) -> None:
 
@@ -279,35 +283,55 @@ class Create2DInputModel(Component):
             metrics=['accuracy']
         )
 
+        model_config = {
+            'lr': model.optimizer.lr.numpy().item(),
+            'optimizer_name': model.optimizer._name,
+            'loss': model.loss,
+        }
+
         self.model.value = model
+        self.model_config.value = model_config
+
         self.done = True
 
 
 @xai_component(type="train")
 class TrainImageClassifier(Component):
+    model: InArg[keras.Sequential]
     training_data: InArg[Tuple[np.array, np.array]]
     training_epochs: InArg[int]
-    model: InArg[keras.Sequential]
 
     trained_model: OutArg[keras.Sequential]
+    training_metrics: OutArg[dict]
 
     def __init__(self):
         self.done = False
+
+        self.model = InArg.empty()
         self.training_data = InArg.empty()
         self.training_epochs = InArg.empty()
-        self.model = InArg.empty()
         self.trained_model = OutArg.empty()
+        self.training_metrics = OutArg.empty()
 
     def execute(self) -> None:
 
-        self.model.value.fit(
+        model = self.model.value
+
+        train = model.fit(
             self.training_data.value[0],
             self.training_data.value[1],
             batch_size=32,
             epochs=self.training_epochs.value
         )
 
-        self.trained_model.value = self.model.value
+        # Set training metrics
+        training_metrics = {}
+        for key in train.history.keys():
+            training_metrics[key] = {}
+            [training_metrics[key].update({i + 1: v}) for i, v in enumerate(train.history[key])]
+
+        self.trained_model.value = model
+        self.training_metrics.value = training_metrics
         self.done = True
 
 
@@ -376,21 +400,21 @@ class SaveKerasModel(Component):
 
     model: InArg[any]
     model_name: InArg[str]
-    model_h5: OutArg[str]
+    model_h5_path: OutArg[str]
 
     def __init__(self):
         self.done = False
         self.model = InArg.empty()
         self.model_name = InArg.empty()
 
-        self.model_h5 = OutArg.empty()
+        self.model_h5_path = OutArg.empty()
 
     def execute(self) -> None:
         model = self.model.value
         model_name = self.model_name.value if self.model_name.value else os.path.splitext(sys.argv[0])[0] + ".h5"
         model.save(model_name)
         print(f"Saving Keras h5 model at: {model_name}")
-        self.model_h5.value = model_name
+        self.model_h5_path.value = model_name
 
         self.done = True
 
