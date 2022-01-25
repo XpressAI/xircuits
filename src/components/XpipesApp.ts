@@ -4,7 +4,7 @@ import { CustomNodeModel } from './CustomNodeModel';
 import { ZoomCanvasAction } from '@projectstorm/react-canvas-core';
 import { CustomDeleteItemsAction } from './CustomNodeWidget';
 
-export class XpipesApplication {
+export class XircuitsApplication {
 
 	protected activeModel: SRD.DiagramModel;
 

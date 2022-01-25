@@ -2,18 +2,18 @@ import { ReactWidget, UseSignal } from "@jupyterlab/apputils";
 
 import React, { useEffect, useRef, useState } from "react";
 
-import { XpipeFactory } from "../xpipeFactory";
+import { XircuitFactory } from "../xircuitFactory";
 
 /**
- * React component for a xpipes debugger.
+ * React component for a xircuits debugger.
  *
  * @returns The Debugger component
  */
 const DebuggerComponent = ({
-  xpipeFactory,
+  xircuitFactory,
   currentNode
 }: {
-  xpipeFactory: XpipeFactory;
+  xircuitFactory: XircuitFactory;
   currentNode: any;
 }): JSX.Element => {
   const [names, setNames] = useState("");
@@ -128,19 +128,19 @@ export class DebuggerWidget extends ReactWidget {
   /**
    * Constructs a new DebuggerWidget.
    */
-  constructor(xpipeFactory: XpipeFactory) {
+  constructor(xircuitFactory: XircuitFactory) {
     super();
-    this._xpipeFactory = xpipeFactory;
+    this._xircuitFactory = xircuitFactory;
     this.addClass("jp-DebuggerWidget");
   }
 
   render(): JSX.Element {
     return (
-      <UseSignal signal={this._xpipeFactory.currentNodeSignal}>
+      <UseSignal signal={this._xircuitFactory.currentNodeSignal}>
         {(_, args) => {
           return (
             <DebuggerComponent
-              xpipeFactory={this._xpipeFactory}
+              xircuitFactory={this._xircuitFactory}
               currentNode={args}
             />
           );
@@ -148,5 +148,5 @@ export class DebuggerWidget extends ReactWidget {
       </UseSignal>
     );
   }
-  private _xpipeFactory: XpipeFactory;
+  private _xircuitFactory: XircuitFactory;
 }

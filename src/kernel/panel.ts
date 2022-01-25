@@ -21,7 +21,7 @@ import { Message } from '@lumino/messaging';
 import { StackedPanel } from '@lumino/widgets';
 
 import { Log } from '../log/LogPlugin';
-import { XpipeFactory } from '../xpipeFactory';
+import { XircuitFactory } from '../xircuitFactory';
 
 /**
  * The class name added to the output panel.
@@ -35,23 +35,23 @@ export class OutputPanel extends StackedPanel {
     constructor(
         manager: ServiceManager.IManager,
         rendermime: IRenderMimeRegistry,
-        xpipeFactory: XpipeFactory,
+        xircuitFactory: XircuitFactory,
         translator?: ITranslator
     ) {
         super();
         this._translator = translator || nullTranslator;
         this._trans = this._translator.load('jupyterlab');
-        this._xpipeFactory = xpipeFactory;
+        this._xircuitFactory = xircuitFactory;
         this.addClass(PANEL_CLASS);
-        this.id = 'xpipe-output-panel';
-        this.title.label = this._trans.__('Xpipe Output');
+        this.id = 'xircuit-output-panel';
+        this.title.label = this._trans.__('Xircuit Output');
         this.title.closable = true;
-        this.title.iconClass = 'jp-XpipeLogo';
+        this.title.iconClass = 'jp-XircuitLogo';
 
         this._sessionContext = new SessionContext({
             sessionManager: manager.sessions,
             specsManager: manager.kernelspecs,
-            name: 'Xpipe Output Process',
+            name: 'Xircuit Output Process',
         });
 
         this._outputareamodel = new OutputAreaModel();
@@ -71,7 +71,7 @@ export class OutputPanel extends StackedPanel {
             })
             .catch((reason) => {
                 console.error(
-                    `Failed to initialize the session in Xpipe Output.\n${reason}`
+                    `Failed to initialize the session in Xircuit Output.\n${reason}`
                 );
             });
     }
@@ -83,12 +83,12 @@ export class OutputPanel extends StackedPanel {
     dispose(): void {
         this._sessionContext.sessionManager.shutdown(this._sessionContext.session.id);
         this._sessionContext.dispose();
-        this._xpipeFactory.terminateDebugSignal.emit(this);
+        this._xircuitFactory.terminateDebugSignal.emit(this);
         this._sessionContext.sessionManager.refreshRunning();
         super.dispose();
     }
 
-    execute(code: string, xpipeLogger: Log): void {
+    execute(code: string, xircuitLogger: Log): void {
         SimplifiedOutputArea.execute(code, this._outputarea, this._sessionContext)
             .then((msg: KernelMessage.IExecuteReplyMsg) => {
                 if (this._outputarea.model.toJSON().length > 0) {
@@ -102,13 +102,13 @@ export class OutputPanel extends StackedPanel {
 
                             if (evalue.includes("File") && evalue.includes("not found")) {
                                 alert(ename + ": " + evalue + " Please compile first!");
-                                xpipeLogger.error(ename + ": " + evalue);
+                                xircuitLogger.error(ename + ": " + evalue);
                                 console.log(evalue + " Please compile first!");
                                 return;
                             }
 
                             for (let data of traceback) {
-                                xpipeLogger.error(data);
+                                xircuitLogger.error(data);
                             }
 
                             return;
@@ -117,7 +117,7 @@ export class OutputPanel extends StackedPanel {
                         let text = this._outputarea.model.toJSON()[index]["text"] as string;
                         for (let text_index = 0; text_index < text.split("\n").length; text_index++) {
                             if (text.split("\n")[text_index].trim() != "") {
-                                xpipeLogger.info(text.split("\n")[text_index]);
+                                xircuitLogger.info(text.split("\n")[text_index]);
                             }
                         }
                     }
@@ -134,7 +134,7 @@ export class OutputPanel extends StackedPanel {
     private _sessionContext: SessionContext;
     private _outputarea: SimplifiedOutputArea;
     private _outputareamodel: OutputAreaModel;
-    private _xpipeFactory: XpipeFactory;
+    private _xircuitFactory: XircuitFactory;
 
     private _translator: ITranslator;
     private _trans: TranslationBundle;

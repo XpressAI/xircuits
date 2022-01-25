@@ -15,7 +15,7 @@ def _jupyter_labextension_paths():
 
 
 def _jupyter_server_extension_points():
-    return [{"module": "xpipes"}]
+    return [{"module": "xircuits"}]
 
 
 def _load_jupyter_server_extension(server_app):
@@ -25,10 +25,10 @@ def _load_jupyter_server_extension(server_app):
     server_app: jupyterlab.labapp.LabApp
         JupyterLab application instance
     """
-    url_path = "xpipes"
+    url_path = "xircuits"
     setup_handlers(server_app.web_app, url_path)
     server_app.log.info(
-        f"Registered xpipes extension at URL path /{url_path}"
+        f"Registered xircuits extension at URL path /{url_path}"
     )
 
 # For backward compatibility with the classical notebook

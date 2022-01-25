@@ -1,15 +1,15 @@
 {
-  "name": "xpipes",
+  "name": "xircuits",
   "version": "0.1.0",
-  "description": "A JupyterLab extension for rendering xpipeline files.",
+  "description": "A JupyterLab extension for rendering xircuitline files.",
   "keywords": [
     "jupyter",
     "jupyterlab",
     "jupyterlab-extension"
   ],
-  "homepage": "https://github.com/XpressAI/xpipes",
+  "homepage": "https://github.com/XpressAI/xircuits",
   "bugs": {
-    "url": "https://github.com/XpressAI/xpipes/issues"
+    "url": "https://github.com/XpressAI/xircuits/issues"
   },
   "license": "BSD-3-Clause",
   "author": {
@@ -26,7 +26,7 @@
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/XpressAI/xpipes.git"
+    "url": "https://github.com/XpressAI/xircuits.git"
   },
   "scripts": {
     "build": "jlpm run build:lib && jlpm run build:labextension:dev",
@@ -37,7 +37,7 @@
     "build:prod": "jlpm run clean && jlpm run build:lib && jlpm run build:labextension",
     "clean": "jlpm run clean:lib",
     "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
-    "clean:labextension": "rimraf xpipes/labextension",
+    "clean:labextension": "rimraf xircuits/labextension",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
     "eslint": "eslint . --ext .ts,.tsx --fix",
     "eslint:check": "eslint . --ext .ts,.tsx",
@@ -110,12 +110,12 @@
           "pip"
         ],
         "base": {
-          "name": "xpipes"
+          "name": "xircuits"
         }
       }
     },
     "extension": true,
-    "outputDir": "xpipes/labextension"
+    "outputDir": "xircuits/labextension"
   },
   "styleModule": "style/index.js"
 }

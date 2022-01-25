@@ -8,7 +8,7 @@ import {
   JupyterFrontEnd 
 } from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
-import { XPipePanel } from './xpipeWidget';
+import { XPipePanel } from './xircuitWidget';
 import { 
   bugIcon, 
   checkIcon, 
@@ -20,28 +20,28 @@ import {
   undoIcon 
 } from '@jupyterlab/ui-components';
 import { ToolbarButton } from '@jupyterlab/apputils';
-import { commandIDs } from './components/xpipeBodyWidget';
+import { commandIDs } from './components/xircuitBodyWidget';
 import { CommandIDs } from './log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
 import { RunSwitcher } from './components/RunSwitcher';
 
-const XPIPE_CLASS = 'xpipes-editor';
+const XPIPE_CLASS = 'xircuits-editor';
 
-export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
+export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
 
   app: JupyterFrontEnd;
   shell: ILabShell;
   commands: any;
   serviceManager: ServiceManager;
-  saveXpipeSignal: Signal<this, any>;
-  compileXpipeSignal: Signal<this, any>;
-  runXpipeSignal: Signal<this, any>;
-  runTypeXpipeSignal: Signal<this, any>;
-  debugXpipeSignal: Signal<this, any>;
+  saveXircuitSignal: Signal<this, any>;
+  compileXircuitSignal: Signal<this, any>;
+  runXircuitSignal: Signal<this, any>;
+  runTypeXircuitSignal: Signal<this, any>;
+  debugXircuitSignal: Signal<this, any>;
   lockNodeSignal: Signal<this, any>;
-  breakpointXpipeSignal: Signal<this, any>;
+  breakpointXircuitSignal: Signal<this, any>;
   currentNodeSignal: Signal<this, any>;
-  testXpipeSignal: Signal<this, any>;
+  testXircuitSignal: Signal<this, any>;
   continueDebugSignal: Signal<this, any>;
   nextNodeDebugSignal: Signal<this, any>;
   stepOverDebugSignal: Signal<this, any>;
@@ -57,15 +57,15 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
     this.shell = options.shell;
     this.commands = options.commands;
     this.serviceManager = options.serviceManager;
-    this.saveXpipeSignal = new Signal<this, any>(this);
-    this.compileXpipeSignal = new Signal<this, any>(this);
-    this.runXpipeSignal = new Signal<this, any>(this);
-    this.runTypeXpipeSignal = new Signal<this, any>(this);
-    this.debugXpipeSignal = new Signal<this, any>(this);
+    this.saveXircuitSignal = new Signal<this, any>(this);
+    this.compileXircuitSignal = new Signal<this, any>(this);
+    this.runXircuitSignal = new Signal<this, any>(this);
+    this.runTypeXircuitSignal = new Signal<this, any>(this);
+    this.debugXircuitSignal = new Signal<this, any>(this);
     this.lockNodeSignal = new Signal<this, any>(this);
-    this.breakpointXpipeSignal = new Signal<this, any>(this);
+    this.breakpointXircuitSignal = new Signal<this, any>(this);
     this.currentNodeSignal = new Signal<this, any>(this);
-    this.testXpipeSignal = new Signal<this, any>(this);
+    this.testXircuitSignal = new Signal<this, any>(this);
     this.continueDebugSignal = new Signal<this, any>(this);
     this.nextNodeDebugSignal = new Signal<this, any>(this);
     this.stepOverDebugSignal = new Signal<this, any>(this);
@@ -84,15 +84,15 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
       commands: this.commands,
       context: context,
       serviceManager: this.serviceManager,
-      saveXpipeSignal: this.saveXpipeSignal,
-      compileXpipeSignal: this.compileXpipeSignal,
-      runXpipeSignal: this.runXpipeSignal,
-      runTypeXpipeSignal: this.runTypeXpipeSignal,
-      debugXpipeSignal: this.debugXpipeSignal,
+      saveXircuitSignal: this.saveXircuitSignal,
+      compileXircuitSignal: this.compileXircuitSignal,
+      runXircuitSignal: this.runXircuitSignal,
+      runTypeXircuitSignal: this.runTypeXircuitSignal,
+      debugXircuitSignal: this.debugXircuitSignal,
       lockNodeSignal: this.lockNodeSignal,
-      breakpointXpipeSignal: this.breakpointXpipeSignal,
+      breakpointXircuitSignal: this.breakpointXircuitSignal,
       currentNodeSignal: this.currentNodeSignal,
-      testXpipeSignal: this.testXpipeSignal,
+      testXircuitSignal: this.testXircuitSignal,
       continueDebugSignal: this.continueDebugSignal,
       nextNodeDebugSignal: this.nextNodeDebugSignal,
       stepOverDebugSignal: this.stepOverDebugSignal,
@@ -107,16 +107,16 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
 
     const widget = new DocumentWidget({ content, context });
     widget.addClass(XPIPE_CLASS);
-    widget.title.iconClass = 'jp-XpipeLogo';
+    widget.title.iconClass = 'jp-XircuitLogo';
 
     /**
      * Create a save button toolbar item.
      */
     let saveButton = new ToolbarButton({
       icon: saveIcon,
-      tooltip: 'Save Xpipes',
+      tooltip: 'Save Xircuits',
       onClick: (): void => {
-        this.commands.execute(commandIDs.saveXpipe);
+        this.commands.execute(commandIDs.saveXircuit);
       }
     });
 
@@ -125,7 +125,7 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
      */
     let reloadButton = new ToolbarButton({
       icon: refreshIcon,
-      tooltip: 'Reload Xpipes from Disk',
+      tooltip: 'Reload Xircuits from Disk',
       onClick: (): void => {
         this.commands.execute(commandIDs.reloadDocManager);
       }
@@ -136,7 +136,7 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
      */
     let revertButton = new ToolbarButton({
       icon: undoIcon,
-      tooltip: 'Revert Xpipes to Checkpoint',
+      tooltip: 'Revert Xircuits to Checkpoint',
       onClick: (): void => {
         this.commands.execute(commandIDs.revertDocManager);
       }
@@ -147,9 +147,9 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
      */
     let compileButton = new ToolbarButton({
       icon: checkIcon,
-      tooltip: 'Compile Xpipes',
+      tooltip: 'Compile Xircuits',
       onClick: (): void => {
-        this.commands.execute(commandIDs.compileXpipe);
+        this.commands.execute(commandIDs.compileXircuit);
       }
     });
 
@@ -158,9 +158,9 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
      */
     let runButton = new ToolbarButton({
       icon: runIcon,
-      tooltip: 'Run Xpipes',
+      tooltip: 'Run Xircuits',
       onClick: (): void => {
-        this.commands.execute(commandIDs.runXpipe);
+        this.commands.execute(commandIDs.runXircuit);
       }
     });
 
@@ -169,9 +169,9 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
      */
     let debugButton = new ToolbarButton({
       icon:bugIcon,
-      tooltip: 'Open Xpipes Debugger and enable Image Viewer',
+      tooltip: 'Open Xircuits Debugger and enable Image Viewer',
       onClick: (): void => {
-        this.commands.execute(commandIDs.debugXpipe);
+        this.commands.execute(commandIDs.debugXircuit);
       }
     });
 
@@ -193,7 +193,7 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
       iconClass: 'jp-LockLogo',
       tooltip: "Lock all non-general nodes connected from start node",
       onClick: (): void => {
-        this.commands.execute(commandIDs.lockXpipe);
+        this.commands.execute(commandIDs.lockXircuit);
       }
     });
 
@@ -204,21 +204,21 @@ export class XpipeFactory extends ABCWidgetFactory<DocumentWidget> {
       icon: editIcon,
       tooltip: 'For testing purpose',
       onClick: (): void => {
-        this.commands.execute(commandIDs.testXpipe)
+        this.commands.execute(commandIDs.testXircuit)
       }
     });
   
-    widget.toolbar.insertItem(0,'xpipes-add-save', saveButton);
-    widget.toolbar.insertItem(1,'xpipes-add-reload', reloadButton);
-    widget.toolbar.insertItem(2,'xpipes-add-revert', revertButton);
-    widget.toolbar.insertItem(3,'xpipes-add-compile', compileButton);
-    widget.toolbar.insertItem(4,'xpipes-add-run', runButton);
-    widget.toolbar.insertItem(5,'xpipes-add-debug', debugButton);
-    widget.toolbar.insertItem(6,'xpipes-add-lock', lockButton);
-    widget.toolbar.insertItem(7,'xpipes-add-log', logButton);
-    widget.toolbar.insertItem(8,'xpipes-add-test', testButton);
+    widget.toolbar.insertItem(0,'xircuits-add-save', saveButton);
+    widget.toolbar.insertItem(1,'xircuits-add-reload', reloadButton);
+    widget.toolbar.insertItem(2,'xircuits-add-revert', revertButton);
+    widget.toolbar.insertItem(3,'xircuits-add-compile', compileButton);
+    widget.toolbar.insertItem(4,'xircuits-add-run', runButton);
+    widget.toolbar.insertItem(5,'xircuits-add-debug', debugButton);
+    widget.toolbar.insertItem(6,'xircuits-add-lock', lockButton);
+    widget.toolbar.insertItem(7,'xircuits-add-log', logButton);
+    widget.toolbar.insertItem(8,'xircuits-add-test', testButton);
     widget.toolbar.insertItem(9,
-      'xpipes-run-type',
+      'xircuits-run-type',
       new RunSwitcher(this)
     );
 

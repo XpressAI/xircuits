@@ -5,16 +5,16 @@ import {
   ILayoutRestorer
 } from '@jupyterlab/application';
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
-import { commandIDs } from './components/xpipeBodyWidget';
+import { commandIDs } from './components/xircuitBodyWidget';
 import {
   WidgetTracker,
   ReactWidget
 } from '@jupyterlab/apputils';
 import { ILauncher } from '@jupyterlab/launcher';
-import { XpipeFactory } from './xpipeFactory';
-import Sidebar from './components_xpipe/Sidebar';
+import { XircuitFactory } from './xircuitFactory';
+import Sidebar from './components_xircuit/Sidebar';
 import { IDocumentManager } from '@jupyterlab/docmanager';
-import { XpipesDebugger } from './debugger/SidebarDebugger';
+import { XircuitsDebugger } from './debugger/SidebarDebugger';
 import { ITranslator } from '@jupyterlab/translation';
 import { Log, logPlugin } from './log/LogPlugin';
 import { requestAPI } from './server/handler';
@@ -22,13 +22,13 @@ import { OutputPanel } from './kernel/panel';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 
-const FACTORY = 'Xpipes editor';
+const FACTORY = 'Xircuits editor';
 
 /**
  * Initialization data for the documents extension.
  */
-const xpipes: JupyterFrontEndPlugin<void> = {
-  id: 'xpipes',
+const xircuits: JupyterFrontEndPlugin<void> = {
+  id: 'xircuits',
   autoStart: true,
   requires: [
     ILauncher,
@@ -49,14 +49,14 @@ const xpipes: JupyterFrontEndPlugin<void> = {
     translator?: ITranslator
   ) => {
 
-    console.log('Xpipes is activated!');
+    console.log('Xircuits is activated!');
 
     // Creating the widget factory to register it so the document manager knows about
     // our new DocumentWidget
-    const widgetFactory = new XpipeFactory({
+    const widgetFactory = new XircuitFactory({
       name: FACTORY,
-      fileTypes: ['xpipes'],
-      defaultFor: ['xpipes'],
+      fileTypes: ['xircuits'],
+      defaultFor: ['xircuits'],
       app: app,
       shell: app.shell,
       commands: app.commands,
@@ -65,17 +65,17 @@ const xpipes: JupyterFrontEndPlugin<void> = {
 
     // register the filetype
     app.docRegistry.addFileType({
-      name: 'xpipes',
-      displayName: 'Xpipes',
-      extensions: ['.xpipes'],
-      iconClass: 'jp-XpipeLogo'
+      name: 'xircuits',
+      displayName: 'Xircuits',
+      extensions: ['.xircuits'],
+      iconClass: 'jp-XircuitLogo'
     });
 
     // Registering the widget factory
     app.docRegistry.addWidgetFactory(widgetFactory);
 
     const tracker = new WidgetTracker<DocumentWidget>({
-      namespace: "Xpipes Tracker"
+      namespace: "Xircuits Tracker"
     });
 
 
@@ -102,22 +102,22 @@ const xpipes: JupyterFrontEndPlugin<void> = {
     
     // Creating the sidebar widget for the xai components
     const sidebarWidget = ReactWidget.create(<Sidebar lab={app}/>);
-    sidebarWidget.id = 'xpipes-component-sidebar';
+    sidebarWidget.id = 'xircuits-component-sidebar';
     sidebarWidget.title.iconClass = 'jp-ComponentLibraryLogo';
-    sidebarWidget.title.caption = "Xpipes Component Library";
+    sidebarWidget.title.caption = "Xircuits Component Library";
 
     restorer.add(sidebarWidget, sidebarWidget.id);
     app.shell.add(sidebarWidget, "left");
 
     // Creating the sidebar debugger
-    const sidebarDebugger = new XpipesDebugger.Sidebar({ app, translator, widgetFactory })
-    sidebarDebugger.id = 'xpipes-debugger-sidebar';
+    const sidebarDebugger = new XircuitsDebugger.Sidebar({ app, translator, widgetFactory })
+    sidebarDebugger.id = 'xircuits-debugger-sidebar';
     sidebarDebugger.title.iconClass = 'jp-DebuggerLogo';
-    sidebarDebugger.title.caption = "Xpipes Debugger";
+    sidebarDebugger.title.caption = "Xircuits Debugger";
     restorer.add(sidebarDebugger, sidebarDebugger.id);
     app.shell.add(sidebarDebugger, 'right', { rank: 1001 });
 
-    // Add a command to open xpipes sidebar debugger
+    // Add a command to open xircuits sidebar debugger
     app.commands.addCommand(commandIDs.openDebugger, {
       execute: () => {
         if (sidebarDebugger.isHidden) {
@@ -126,17 +126,17 @@ const xpipes: JupyterFrontEndPlugin<void> = {
       },
     });
 
-    // Add a command for creating a new xpipes file.
-    app.commands.addCommand(commandIDs.createNewXpipe, {
-      label: 'Xpipes File',
-      iconClass: 'jp-XpipeLogo',
-      caption: 'Create a new xpipes file',
+    // Add a command for creating a new xircuits file.
+    app.commands.addCommand(commandIDs.createNewXircuit, {
+      label: 'Xircuits File',
+      iconClass: 'jp-XircuitLogo',
+      caption: 'Create a new xircuits file',
       execute: () => {
         app.commands
           .execute(commandIDs.newDocManager, {
             path: browserFactory.defaultBrowser.model.path,
             type: 'file',
-            ext: '.xpipes'
+            ext: '.xircuits'
           })
           .then(async model => {
             const newWidget = await app.commands.execute(
@@ -147,7 +147,7 @@ const xpipes: JupyterFrontEndPlugin<void> = {
               }
             );
             newWidget.context.ready.then(() => {
-              app.commands.execute(commandIDs.saveXpipe, {
+              app.commands.execute(commandIDs.saveXircuit, {
                 path: model.path
               });
             });
@@ -156,7 +156,7 @@ const xpipes: JupyterFrontEndPlugin<void> = {
     });
 
     async function requestToGenerateArbitraryFile(path: string, pythonScript: string) {
-      const dataToSend = { "currentPath": path.split(".xpipes")[0] + ".py", "compilePythonScript": pythonScript };
+      const dataToSend = { "currentPath": path.split(".xircuits")[0] + ".py", "compilePythonScript": pythonScript };
 
       try {
         const server_reply = await requestAPI<any>('file/generate', {
@@ -167,7 +167,7 @@ const xpipes: JupyterFrontEndPlugin<void> = {
         return server_reply;
       } catch (reason) {
         console.error(
-          `Error on POST /xpipes/file/generate ${dataToSend}.\n${reason}`
+          `Error on POST /xircuits/file/generate ${dataToSend}.\n${reason}`
         );
       }
     };
@@ -181,7 +181,7 @@ const xpipes: JupyterFrontEndPlugin<void> = {
         const request = await requestToGenerateArbitraryFile(path, message); // send this file and create new file
 
         if (request["message"] == "completed") {
-          const model_path = current_path.split(".xpipes")[0] + ".py";
+          const model_path = current_path.split(".xircuits")[0] + ".py";
           await app.commands.execute(
             commandIDs.openDocManager,
             {
@@ -224,17 +224,17 @@ const xpipes: JupyterFrontEndPlugin<void> = {
         return server_reply;
       } catch (reason) {
         console.error(
-          `Error on POST /xpipes/spark/submit ${dataToSend}.\n${reason}`
+          `Error on POST /xircuits/spark/submit ${dataToSend}.\n${reason}`
         );
       }
     };
 
-    // Execute xpipes python script and display at output panel
+    // Execute xircuits python script and display at output panel
     app.commands.addCommand(commandIDs.executeToOutputPanel, {
       execute: async args => {
-        const xpipesLogger = new Log(app);
+        const xircuitsLogger = new Log(app);
         const current_path = tracker.currentWidget.context.path;
-        const model_path = current_path.split(".xpipes")[0] + ".py";
+        const model_path = current_path.split(".xircuits")[0] + ".py";
         const message = typeof args['runCommand'] === 'undefined' ? '' : (args['runCommand'] as string);
         const debug_mode = typeof args['debug_mode'] === 'undefined' ? '' : (args['debug_mode'] as string);
         const runType = typeof args['runType'] === 'undefined' ? '' : (args['runType'] as string);
@@ -270,57 +270,57 @@ const xpipes: JupyterFrontEndPlugin<void> = {
             code = `print(${outputCode})`;
           }
 
-          outputPanel.execute(code, xpipesLogger);
+          outputPanel.execute(code, xircuitsLogger);
         });
       },
     });
 
-    // Add command signal to save xpipes
-    app.commands.addCommand(commandIDs.saveXpipe, {
+    // Add command signal to save xircuits
+    app.commands.addCommand(commandIDs.saveXircuit, {
       execute: args => {
-        widgetFactory.saveXpipeSignal.emit(args);
+        widgetFactory.saveXircuitSignal.emit(args);
       }
     });
 
-    // Add command signal to compile xpipes
-    app.commands.addCommand(commandIDs.compileXpipe, {
+    // Add command signal to compile xircuits
+    app.commands.addCommand(commandIDs.compileXircuit, {
       execute: args => {
-        widgetFactory.compileXpipeSignal.emit(args);
+        widgetFactory.compileXircuitSignal.emit(args);
       }
     });
 
-    // Add command signal to run xpipes
-    app.commands.addCommand(commandIDs.runXpipe, {
+    // Add command signal to run xircuits
+    app.commands.addCommand(commandIDs.runXircuit, {
       execute: args => {
-        widgetFactory.runXpipeSignal.emit(args);
+        widgetFactory.runXircuitSignal.emit(args);
       }
     });
 
-    // Add command signal to debug xpipes
-    app.commands.addCommand(commandIDs.debugXpipe, {
+    // Add command signal to debug xircuits
+    app.commands.addCommand(commandIDs.debugXircuit, {
       execute: args => {
-        widgetFactory.debugXpipeSignal.emit(args);
+        widgetFactory.debugXircuitSignal.emit(args);
       }
     });
 
-    // Add command signal to lock xpipes
-    app.commands.addCommand(commandIDs.lockXpipe, {
+    // Add command signal to lock xircuits
+    app.commands.addCommand(commandIDs.lockXircuit, {
       execute: args => {
         widgetFactory.lockNodeSignal.emit(args);
       }
     });
 
-    // Add command signal to test xpipes
-    app.commands.addCommand(commandIDs.testXpipe, {
+    // Add command signal to test xircuits
+    app.commands.addCommand(commandIDs.testXircuit, {
       execute: args => {
-        widgetFactory.testXpipeSignal.emit(args);
+        widgetFactory.testXircuitSignal.emit(args);
       }
     });
 
     // Add a launcher item if the launcher is available.
     if (launcher) {
       launcher.add({
-        command: commandIDs.createNewXpipe,
+        command: commandIDs.createNewXircuit,
         rank: 1,
         category: 'Other'
       });
@@ -332,7 +332,7 @@ const xpipes: JupyterFrontEndPlugin<void> = {
  * Export the plugins as default.
  */
 const plugins: JupyterFrontEndPlugin<any>[] = [
-  xpipes,
+  xircuits,
   logPlugin
 ];
 

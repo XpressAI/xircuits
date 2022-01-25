@@ -2852,12 +2852,12 @@
         "signature": "6db01826037126d65dca3623837d42a388bbacded63b243ef7834e26dda709bc",
         "affectsGlobalScope": false
       },
-      "./src/components/xpipesapp.ts": {
+      "./src/components/xircuitsapp.ts": {
         "version": "504eef708425b5fd8cf9f2b4bb12c38649d32af228b2808e3fea8e1e054612b9",
         "signature": "115ed700af602e0015e29de97b5010d856a894a67c4a74005d94af8d78d5308f",
         "affectsGlobalScope": false
       },
-      "./src/xpipewidget.tsx": {
+      "./src/xircuitwidget.tsx": {
         "version": "c126b129756868c588fff5ac159b7798a7cc3f26736fc829bcc89e19e8c6b75c",
         "signature": "ee3949ba10d33179e807ac83f2f0b80864fa0de61c9aa17206b2adcceeeaed9b",
         "affectsGlobalScope": false
@@ -2917,7 +2917,7 @@
         "signature": "7f6037fa8d3da3ab5b173e089bd9d6eaf4e04e663844a9822b0463636b6ac816",
         "affectsGlobalScope": false
       },
-      "./src/components_xpipe/component.ts": {
+      "./src/components_xircuit/component.ts": {
         "version": "588d70552464dbffc643fc98d62ee49f6a78a8e841aa47dedb121be685ab4716",
         "signature": "342a44f8d4fe4190ff84cc5ce2e42395a39301830bf99b710191a2f92564a2e1",
         "affectsGlobalScope": false
@@ -2942,7 +2942,7 @@
         "signature": "3b480aa012c625ea377c072f8fb486710f01e16e7e4152af26fee2ae98eb0cc4",
         "affectsGlobalScope": false
       },
-      "./src/components/xpipebodywidget.tsx": {
+      "./src/components/xircuitbodywidget.tsx": {
         "version": "ccf4826d7b6e805cc987ea0b30579d399b940fabadf4ab4b38d5c55c9502425a",
         "signature": "99e84a6fa7f1fb0979898a4631ccd9ff8605da0e2dff3289bf8778a211de2ec7",
         "affectsGlobalScope": false
@@ -2952,17 +2952,17 @@
         "signature": "468bfd0bfa92326929128ba584b515944d58035229d396ef9264882de91ad0ee",
         "affectsGlobalScope": false
       },
-      "./src/xpipefactory.ts": {
+      "./src/xircuitfactory.ts": {
         "version": "34a1c995fb0ac83bd071e631b61aaa925ce34d6f7dae45d32d5c4624cc0dc652",
         "signature": "73a55db9f33425ab267a4857b846855a31f21e73462fa3d8ed93db85d538821b",
         "affectsGlobalScope": false
       },
-      "./src/components_xpipe/trayitemwidget.tsx": {
+      "./src/components_xircuit/trayitemwidget.tsx": {
         "version": "5799996732e031cebf1b73dd61ad1805a0d73d88326c229d8b5b5054d68179ae",
         "signature": "6752a85e12f87dba0134b8039f45ed9594f1fcbc85986594d61bb90515e08717",
         "affectsGlobalScope": false
       },
-      "./src/components_xpipe/traywidget.tsx": {
+      "./src/components_xircuit/traywidget.tsx": {
         "version": "397e1b6652723f5a0aa068c2c92381fa64d39090e0c6aad63c60483722a1f7ee",
         "signature": "f0c8671c322f4d80020c6d9f21a4a5763cbf73bfb811eb9b266d162b2a7b53be",
         "affectsGlobalScope": false
@@ -3032,7 +3032,7 @@
         "signature": "997fd898f304bcc90494e7d04610484e25e3454b3d8e7149bdf3c359cad0104d",
         "affectsGlobalScope": false
       },
-      "./src/components_xpipe/sidebar.tsx": {
+      "./src/components_xircuit/sidebar.tsx": {
         "version": "d3a717d7b9402956c208831da835afc923c874d66a54714f9ae2f2b617ad0abc",
         "signature": "af7e9e65dcd8de5702424e0155018512b82fffc62b3a8ea7baf2d384168931a2",
         "affectsGlobalScope": false
@@ -6770,7 +6770,7 @@
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams/dist/@types/index.d.ts"
       ],
-      "./src/components/xpipebodywidget.tsx": [
+      "./src/components/xircuitbodywidget.tsx": [
         "./node_modules/@emotion/styled/types/index.d.ts",
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
@@ -6782,50 +6782,50 @@
         "./node_modules/@projectstorm/react-diagrams/dist/@types/index.d.ts",
         "./node_modules/@types/react/index.d.ts",
         "./src/components/customnodemodel.ts",
-        "./src/components/xpipesapp.ts",
-        "./src/components_xpipe/component.ts",
+        "./src/components/xircuitsapp.ts",
+        "./src/components_xircuit/component.ts",
         "./src/dialog/formdialog.tsx",
         "./src/dialog/formdialogwidget.tsx",
         "./src/dialog/rundialog.tsx",
         "./src/helpers/democanvaswidget.tsx",
         "./src/log/logplugin.ts",
         "./src/server/handler.ts",
-        "./src/xpipewidget.tsx"
+        "./src/xircuitwidget.tsx"
       ],
-      "./src/components/xpipesapp.ts": [
+      "./src/components/xircuitsapp.ts": [
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams/dist/@types/index.d.ts",
         "./src/components/customnodefactory.tsx",
         "./src/components/customnodemodel.ts",
         "./src/components/customnodewidget.tsx"
       ],
-      "./src/components_xpipe/component.ts": [
+      "./src/components_xircuit/component.ts": [
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
         "./src/server/handler.ts"
       ],
-      "./src/components_xpipe/sidebar.tsx": [
+      "./src/components_xircuit/sidebar.tsx": [
         "./node_modules/@emotion/styled/types/index.d.ts",
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@types/react/index.d.ts",
         "./node_modules/react-accessible-accordion/dist/types/index.d.ts",
-        "./src/components_xpipe/component.ts",
-        "./src/components_xpipe/trayitemwidget.tsx",
-        "./src/components_xpipe/traywidget.tsx",
+        "./src/components_xircuit/component.ts",
+        "./src/components_xircuit/trayitemwidget.tsx",
+        "./src/components_xircuit/traywidget.tsx",
         "./src/server/handler.ts"
       ],
-      "./src/components_xpipe/trayitemwidget.tsx": [
+      "./src/components_xircuit/trayitemwidget.tsx": [
         "./node_modules/@emotion/styled/types/index.d.ts",
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
-      "./src/components_xpipe/traywidget.tsx": [
+      "./src/components_xircuit/traywidget.tsx": [
         "./node_modules/@emotion/styled/types/index.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
       "./src/debugger/debuggerwidget.tsx": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
         "./node_modules/@types/react/index.d.ts",
-        "./src/xpipefactory.ts"
+        "./src/xircuitfactory.ts"
       ],
       "./src/debugger/sidebardebugger.ts": [
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
@@ -6833,9 +6833,9 @@
         "./node_modules/@jupyterlab/debugger/lib/index.d.ts",
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts",
-        "./src/components/xpipebodywidget.tsx",
+        "./src/components/xircuitbodywidget.tsx",
         "./src/debugger/debuggerwidget.tsx",
-        "./src/xpipefactory.ts"
+        "./src/xircuitfactory.ts"
       ],
       "./src/dialog/formdialog.tsx": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
@@ -6868,13 +6868,13 @@
         "./node_modules/@jupyterlab/rendermime/lib/index.d.ts",
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
         "./node_modules/@types/react/index.d.ts",
-        "./src/components/xpipebodywidget.tsx",
-        "./src/components_xpipe/sidebar.tsx",
+        "./src/components/xircuitbodywidget.tsx",
+        "./src/components_xircuit/sidebar.tsx",
         "./src/debugger/sidebardebugger.ts",
         "./src/kernel/panel.ts",
         "./src/log/logplugin.ts",
         "./src/server/handler.ts",
-        "./src/xpipefactory.ts"
+        "./src/xircuitfactory.ts"
       ],
       "./src/kernel/panel.ts": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
@@ -6885,7 +6885,7 @@
         "./node_modules/@lumino/messaging/types/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts",
         "./src/log/logplugin.ts",
-        "./src/xpipefactory.ts"
+        "./src/xircuitfactory.ts"
       ],
       "./src/log/loglevelswitcher.tsx": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
@@ -6902,33 +6902,33 @@
         "./node_modules/@jupyterlab/nbformat/lib/index.d.ts",
         "./node_modules/@jupyterlab/rendermime/lib/index.d.ts",
         "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
-        "./src/components/xpipebodywidget.tsx",
+        "./src/components/xircuitbodywidget.tsx",
         "./src/log/loglevelswitcher.tsx"
       ],
       "./src/server/handler.ts": [
         "./node_modules/@jupyterlab/coreutils/lib/index.d.ts",
         "./node_modules/@jupyterlab/services/lib/index.d.ts"
       ],
-      "./src/xpipefactory.ts": [
+      "./src/xircuitfactory.ts": [
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
         "./node_modules/@jupyterlab/docregistry/lib/index.d.ts",
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
         "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
         "./node_modules/@lumino/signaling/types/index.d.ts",
-        "./src/components/xpipebodywidget.tsx",
+        "./src/components/xircuitbodywidget.tsx",
         "./src/log/logplugin.ts",
-        "./src/xpipewidget.tsx"
+        "./src/xircuitwidget.tsx"
       ],
-      "./src/xpipewidget.tsx": [
+      "./src/xircuitwidget.tsx": [
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
         "./node_modules/@jupyterlab/docregistry/lib/index.d.ts",
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
         "./node_modules/@lumino/signaling/types/index.d.ts",
         "./node_modules/@types/react/index.d.ts",
-        "./src/components/xpipebodywidget.tsx",
-        "./src/components/xpipesapp.ts"
+        "./src/components/xircuitbodywidget.tsx",
+        "./src/components/xircuitsapp.ts"
       ]
     },
     "exportedModulesMap": {
@@ -10250,7 +10250,7 @@
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/index.d.ts",
         "./node_modules/@projectstorm/react-diagrams/dist/@types/index.d.ts"
       ],
-      "./src/components/xpipebodywidget.tsx": [
+      "./src/components/xircuitbodywidget.tsx": [
         "./node_modules/@emotion/react/types/index.d.ts",
         "./node_modules/@emotion/styled/types/index.d.ts",
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
@@ -10258,42 +10258,42 @@
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
         "./node_modules/@lumino/signaling/types/index.d.ts",
         "./node_modules/@types/react/index.d.ts",
-        "./src/components/xpipesapp.ts",
-        "./src/xpipewidget.tsx"
+        "./src/components/xircuitsapp.ts",
+        "./src/xircuitwidget.tsx"
       ],
-      "./src/components/xpipesapp.ts": [
+      "./src/components/xircuitsapp.ts": [
         "./node_modules/@projectstorm/react-diagrams/dist/@types/index.d.ts"
       ],
-      "./src/components_xpipe/component.ts": [
+      "./src/components_xircuit/component.ts": [
         "./node_modules/@jupyterlab/services/lib/index.d.ts"
       ],
-      "./src/components_xpipe/sidebar.tsx": [
+      "./src/components_xircuit/sidebar.tsx": [
         "./node_modules/@emotion/react/types/index.d.ts",
         "./node_modules/@emotion/styled/types/index.d.ts",
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
-      "./src/components_xpipe/trayitemwidget.tsx": [
+      "./src/components_xircuit/trayitemwidget.tsx": [
         "./node_modules/@emotion/react/types/index.d.ts",
         "./node_modules/@emotion/styled/types/index.d.ts",
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
-      "./src/components_xpipe/traywidget.tsx": [
+      "./src/components_xircuit/traywidget.tsx": [
         "./node_modules/@emotion/react/types/index.d.ts",
         "./node_modules/@emotion/styled/types/index.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
       "./src/debugger/debuggerwidget.tsx": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
-        "./src/xpipefactory.ts"
+        "./src/xircuitfactory.ts"
       ],
       "./src/debugger/sidebardebugger.ts": [
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts",
-        "./src/xpipefactory.ts"
+        "./src/xircuitfactory.ts"
       ],
       "./src/dialog/formdialog.tsx": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts"
@@ -10320,7 +10320,7 @@
         "./node_modules/@lumino/messaging/types/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts",
         "./src/log/logplugin.ts",
-        "./src/xpipefactory.ts"
+        "./src/xircuitfactory.ts"
       ],
       "./src/log/loglevelswitcher.tsx": [
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
@@ -10330,19 +10330,19 @@
       "./src/log/logplugin.ts": [
         "./node_modules/@jupyterlab/application/lib/index.d.ts"
       ],
-      "./src/xpipefactory.ts": [
+      "./src/xircuitfactory.ts": [
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@jupyterlab/docregistry/lib/index.d.ts",
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
         "./node_modules/@lumino/signaling/types/index.d.ts"
       ],
-      "./src/xpipewidget.tsx": [
+      "./src/xircuitwidget.tsx": [
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
         "./node_modules/@jupyterlab/docregistry/lib/index.d.ts",
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
         "./node_modules/@lumino/signaling/types/index.d.ts",
-        "./src/components/xpipesapp.ts"
+        "./src/components/xircuitsapp.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [
@@ -10999,12 +10999,12 @@
       "./src/components/customnodemodel.ts",
       "./src/components/customnodewidget.tsx",
       "./src/components/customportmodel.ts",
-      "./src/components/xpipebodywidget.tsx",
-      "./src/components/xpipesapp.ts",
-      "./src/components_xpipe/component.ts",
-      "./src/components_xpipe/sidebar.tsx",
-      "./src/components_xpipe/trayitemwidget.tsx",
-      "./src/components_xpipe/traywidget.tsx",
+      "./src/components/xircuitbodywidget.tsx",
+      "./src/components/xircuitsapp.ts",
+      "./src/components_xircuit/component.ts",
+      "./src/components_xircuit/sidebar.tsx",
+      "./src/components_xircuit/trayitemwidget.tsx",
+      "./src/components_xircuit/traywidget.tsx",
       "./src/debugger/debuggerwidget.tsx",
       "./src/debugger/sidebardebugger.ts",
       "./src/dialog/formdialog.tsx",
@@ -11018,8 +11018,8 @@
       "./src/log/loglevelswitcher.tsx",
       "./src/log/logplugin.ts",
       "./src/server/handler.ts",
-      "./src/xpipefactory.ts",
-      "./src/xpipewidget.tsx"
+      "./src/xircuitfactory.ts",
+      "./src/xircuitwidget.tsx"
     ]
   },
   "version": "4.1.6"

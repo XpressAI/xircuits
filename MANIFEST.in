@@ -8,7 +8,7 @@ include install.json
 include ts*.json
 include yarn.lock
 
-graft xpipes/labextension
+graft xircuits/labextension
 
 # Javascript files
 graft src

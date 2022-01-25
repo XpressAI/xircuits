@@ -1,7 +1,7 @@
 import { ReactWidget, UseSignal } from '@jupyterlab/apputils';
 import { HTMLSelect } from '@jupyterlab/ui-components';
 import React from 'react';
-import { XpipeFactory } from '../xpipeFactory';
+import { XircuitFactory } from '../xircuitFactory';
 
 /**
  * A toolbar widget that switches output types.
@@ -10,7 +10,7 @@ export class RunSwitcher extends ReactWidget {
     /**
      * Construct a new output type switcher.
      */
-    constructor(widget: XpipeFactory) {
+    constructor(widget: XircuitFactory) {
         super();
         this._output = widget;
     }
@@ -20,7 +20,7 @@ export class RunSwitcher extends ReactWidget {
      */
     handleChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
         let runType = event.target.value;
-        this._output.runTypeXpipeSignal.emit({ runType })
+        this._output.runTypeXircuitSignal.emit({ runType })
 
         this.update();
     };
@@ -28,7 +28,7 @@ export class RunSwitcher extends ReactWidget {
     render() {
         let value;
         return (
-            <UseSignal signal={this._output.runTypeXpipeSignal}>
+            <UseSignal signal={this._output.runTypeXircuitSignal}>
                 {(_, args) => {
                     if (args !== undefined) {
                         let runType = args["runType"] as any;
@@ -62,5 +62,5 @@ export class RunSwitcher extends ReactWidget {
             </UseSignal>
         );
     }
-    private _output: XpipeFactory;
+    private _output: XircuitFactory;
 }
