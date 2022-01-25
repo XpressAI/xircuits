@@ -11,34 +11,34 @@ import {
 } from '@jupyterlab/docregistry';
 import styled from '@emotion/styled';
 import { CustomNodeModel } from "./CustomNodeModel";
-import { XPipePanel } from '../xpipeWidget';
+import { XPipePanel } from '../xircuitWidget';
 import { Log } from '../log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
-import ComponentList from '../components_xpipe/Component';
+import ComponentList from '../tray_library/Component';
 import { formDialogWidget } from '../dialog/formDialogwidget';
 import { showFormDialog } from '../dialog/FormDialog';
 import { RunDialog } from '../dialog/RunDialog';
 import 'rc-dialog/assets/bootstrap.css';
 import { requestAPI } from '../server/handler';
-import { XpipesApplication } from './XpipesApp';
+import { XircuitsApplication } from './XircuitsApp';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
-	xpipesApp: XpipesApplication;
+	xircuitsApp: XircuitsApplication;
 	app: JupyterFrontEnd;
 	shell: ILabShell;
 	commands: any;
 	widgetId?: string;
 	serviceManager: ServiceManager;
-	saveXpipeSignal: Signal<XPipePanel, any>;
-	compileXpipeSignal: Signal<XPipePanel, any>;
-	runXpipeSignal: Signal<XPipePanel, any>;
-	runTypeXpipeSignal: Signal<XPipePanel, any>;
-	debugXpipeSignal: Signal<XPipePanel, any>;
+	saveXircuitSignal: Signal<XPipePanel, any>;
+	compileXircuitSignal: Signal<XPipePanel, any>;
+	runXircuitSignal: Signal<XPipePanel, any>;
+	runTypeXircuitSignal: Signal<XPipePanel, any>;
+	debugXircuitSignal: Signal<XPipePanel, any>;
 	lockNodeSignal: Signal<XPipePanel, any>;
-	breakpointXpipeSignal: Signal<XPipePanel, any>;
+	breakpointXircuitSignal: Signal<XPipePanel, any>;
 	currentNodeSignal: Signal<XPipePanel, any>;
-	testXpipeSignal: Signal<XPipePanel, any>;
+	testXircuitSignal: Signal<XPipePanel, any>;
 	continueDebugSignal: Signal<XPipePanel, any>;
 	nextNodeDebugSignal: Signal<XPipePanel, any>;
 	stepOverDebugSignal: Signal<XPipePanel, any>;
@@ -79,25 +79,25 @@ export const Layer = styled.div`
 	`;
 
 export const commandIDs = {
-	openXpipeEditor: 'Xpipe-editor:open',
+	openXircuitEditor: 'Xircuit-editor:open',
 	openDocManager: 'docmanager:open',
 	newDocManager: 'docmanager:new-untitled',
 	saveDocManager: 'docmanager:save',
 	reloadDocManager: 'docmanager:reload',
 	revertDocManager: 'docmanager:restore-checkpoint',
-	createNewXpipe: 'Xpipe-editor:create-new',
-	saveXpipe: 'Xpipe-editor:save-node',
-	compileXpipe: 'Xpipe-editor:compile-node',
-	runXpipe: 'Xpipe-editor:run-node',
-	debugXpipe: 'Xpipe-editor:debug-node',
-	lockXpipe: 'Xpipe-editor:lock-node',
-	createArbitraryFile: 'Xpipe-editor:create-arbitrary-file',
-	openDebugger: 'Xpipe-debugger:open',
-	breakpointXpipe: 'Xpipe-editor:breakpoint-node',
-	nextNode: 'Xpipe-editor:next-node',
-	testXpipe: 'Xpipe-editor:test-node',
-	outputMsg: 'Xpipe-log:logOutputMessage',
-	executeToOutputPanel: 'Xpipe-output-panel:execute'
+	createNewXircuit: 'Xircuit-editor:create-new',
+	saveXircuit: 'Xircuit-editor:save-node',
+	compileXircuit: 'Xircuit-editor:compile-node',
+	runXircuit: 'Xircuit-editor:run-node',
+	debugXircuit: 'Xircuit-editor:debug-node',
+	lockXircuit: 'Xircuit-editor:lock-node',
+	createArbitraryFile: 'Xircuit-editor:create-arbitrary-file',
+	openDebugger: 'Xircuit-debugger:open',
+	breakpointXircuit: 'Xircuit-editor:breakpoint-node',
+	nextNode: 'Xircuit-editor:next-node',
+	testXircuit: 'Xircuit-editor:test-node',
+	outputMsg: 'Xircuit-log:logOutputMessage',
+	executeToOutputPanel: 'Xircuit-output-panel:execute'
 };
 
 
@@ -110,21 +110,21 @@ function useForceUpdate() {
 
 export const BodyWidget: FC<BodyWidgetProps> = ({
 	context,
-	xpipesApp,
+	xircuitsApp,
 	app,
 	shell,
 	commands,
 	widgetId,
 	serviceManager,
-	saveXpipeSignal,
-	compileXpipeSignal,
-	runXpipeSignal,
-	runTypeXpipeSignal,
-	debugXpipeSignal,
+	saveXircuitSignal,
+	compileXircuitSignal,
+	runXircuitSignal,
+	runTypeXircuitSignal,
+	debugXircuitSignal,
 	lockNodeSignal,
-	breakpointXpipeSignal,
+	breakpointXircuitSignal,
 	currentNodeSignal,
-	testXpipeSignal,
+	testXircuitSignal,
 	continueDebugSignal,
 	nextNodeDebugSignal,
 	stepOverDebugSignal,
@@ -161,13 +161,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const [runType, setRunType] = useState<string>("run");
-	const xpipeLogger = new Log(app);
+	const xircuitLogger = new Log(app);
 	const contextRef = useRef(context);
 
 	const onChange = useCallback(
 		(): void => {
 			if (contextRef.current.isReady) {
-				let currentModel = xpipesApp.getDiagramEngine().getModel().serialize();
+				let currentModel = xircuitsApp.getDiagramEngine().getModel().serialize();
 				contextRef.current.model.fromString(
 					JSON.stringify(currentModel, null, 4)
 				);
@@ -218,8 +218,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						});
 					}
 				});
-				newModel.deserializeModel(model, xpipesApp.getDiagramEngine())
-				xpipesApp.getDiagramEngine().setModel(newModel);
+				newModel.deserializeModel(model, xircuitsApp.getDiagramEngine())
+				xircuitsApp.getDiagramEngine().setModel(newModel);
 			}
 		};
 
@@ -276,7 +276,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const getAllNodesFromStartToFinish = (): NodeModel[] | null => {
-		let model = xpipesApp.getDiagramEngine().getModel();
+		let model = xircuitsApp.getDiagramEngine().getModel();
 		let nodeModels = model.getNodes();
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 		if (startNodeModel == null) {
@@ -309,7 +309,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const getPythonCompiler = (): string => {
 		let componentDB = new Map(componentList.map( x => [x["task"], x]))
 		let component_task = componentList.map(x => x["task"]);
-		let model = xpipesApp.getDiagramEngine().getModel();
+		let model = xircuitsApp.getDiagramEngine().getModel();
 		let nodeModels = model.getNodes();
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 		let pythonCode = 'from argparse import ArgumentParser\n';
@@ -640,7 +640,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const checkAllNodesConnected = (): boolean | null => {
-		let nodeModels = xpipesApp.getDiagramEngine().getModel().getNodes();
+		let nodeModels = xircuitsApp.getDiagramEngine().getModel().getNodes();
 
 		for (let i = 0; i < nodeModels.length; i++) {
 			let inPorts = nodeModels[i]["portsIn"];
@@ -676,7 +676,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const handleSaveClick = () => {
-		// Only save xpipe if it is currently in focus
+		// Only save xircuit if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
@@ -688,7 +688,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const handleCompileClick = () => {
-		// Only compile xpipe if it is currently in focus
+		// Only compile xircuit if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
@@ -721,13 +721,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	const saveAndCompileAndRun = async (compileMode: boolean) => {
 
-		//This is to avoid running xpipes while in dirty state
+		//This is to avoid running xircuits while in dirty state
 		if (contextRef.current.model.dirty) {
 			const dialogResult = await showDialog({
 				title:
-					'This xpipes contains unsaved changes.',
+					'This xircuits contains unsaved changes.',
 				body:
-					'To run the xpipes the changes need to be saved.',
+					'To run the xircuits the changes need to be saved.',
 				buttons: [
 					Dialog.cancelButton(),
 					Dialog.okButton({ label: 'Save and Run' })
@@ -799,7 +799,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const handleRunClick = async () => {
-		// Only run xpipe if it is currently in focus
+		// Only run xircuit if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
@@ -809,7 +809,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const handleDebugClick = async () => {
-		// Only debug xpipe if it is currently in focus
+		// Only debug xircuit if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
@@ -824,7 +824,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const handleLockClick = () => {
-		// Only lock node if xpipes is currently in focus
+		// Only lock node if xircuits is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
@@ -849,7 +849,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		xpipesApp.getDiagramEngine().getModel().getNodes().forEach((item) => {
+		xircuitsApp.getDiagramEngine().getModel().getNodes().forEach((item) => {
 			if (item.getOptions()["selected"] == true) {
 				let name = item.getOptions()["name"];
 
@@ -893,7 +893,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return server_reply;
 		} catch (reason) {
 			console.error(
-				`Error on POST /xpipe/debug/enable ${dataToSend}.\n${reason}`
+				`Error on POST /xircuit/debug/enable ${dataToSend}.\n${reason}`
 			);
 		}
 	};
@@ -1242,7 +1242,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const handleTestClick = () => {
-		// Only test xpipe if it is currently in focus
+		// Only test xircuit if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
@@ -1266,7 +1266,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (initialize) {
 
 			try {
-				let allNodes = xpipesApp.getDiagramEngine().getModel().getNodes();
+				let allNodes = xircuitsApp.getDiagramEngine().getModel().getNodes();
 				let nodesCount = allNodes.length;
 				let nodeProperty = [];
 
@@ -1342,11 +1342,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				let dateTime = `${dt.getFullYear().toString().padStart(4, '0')}-${(
 					dt.getMonth() + 1).toString().padStart(2, '0')}-${dt.getDate().toString().padStart(2, '0')} ${dt.getHours().toString().padStart(2, '0')}:${dt.getMinutes().toString().padStart(2, '0')}:${dt.getSeconds().toString().padStart(2, '0')}`
 
-				xpipeLogger.info(param + ": " + dateTime);
+				xircuitLogger.info(param + ": " + dateTime);
 			}
 			else {
 				if (dialogResult["value"][param]) {
-					xpipeLogger.info(param + ": " + dialogResult["value"][param]);
+					xircuitLogger.info(param + ": " + dialogResult["value"][param]);
 					let filteredParam = param.replace(/\s+/g, "_");
 					filteredParam = filteredParam.toLowerCase();
 					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] + ' ';
@@ -1356,7 +1356,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		if (boolNodes) {
 			boolNodes.forEach((param) => {
-				xpipeLogger.info(param + ": " + dialogResult["value"][param]);
+				xircuitLogger.info(param + ": " + dialogResult["value"][param]);
 				if (dialogResult["value"][param]) {
 					let filteredParam = param.replace(/\s+/g, "_");
 					filteredParam = filteredParam.toLowerCase();
@@ -1367,7 +1367,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		if (intNodes) {
 			intNodes.forEach((param) => {
-				xpipeLogger.info(param + ": " + dialogResult["value"][param]);
+				xircuitLogger.info(param + ": " + dialogResult["value"][param]);
 				if (dialogResult["value"][param]) {
 					let filteredParam = param.replace(/\s+/g, "_");
 					filteredParam = filteredParam.toLowerCase();
@@ -1378,7 +1378,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		if (floatNodes) {
 			floatNodes.forEach((param) => {
-				xpipeLogger.info(param + ": " + dialogResult["value"][param]);
+				xircuitLogger.info(param + ": " + dialogResult["value"][param]);
 				if (dialogResult["value"][param]) {
 					let filteredParam = param.replace(/\s+/g, "_");
 					filteredParam = filteredParam.toLowerCase();
@@ -1401,13 +1401,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const signalConnections = [
-		[saveXpipeSignal, handleSaveClick],
-		[compileXpipeSignal, handleCompileClick],
-		[runXpipeSignal, handleRunClick],
-		[debugXpipeSignal, handleDebugClick],
+		[saveXircuitSignal, handleSaveClick],
+		[compileXircuitSignal, handleCompileClick],
+		[runXircuitSignal, handleRunClick],
+		[debugXircuitSignal, handleDebugClick],
 		[lockNodeSignal, handleLockClick],
-		[breakpointXpipeSignal, handleToggleBreakpoint],
-		[testXpipeSignal, handleTestClick],
+		[breakpointXircuitSignal, handleToggleBreakpoint],
+		[testXircuitSignal, handleTestClick],
 		[continueDebugSignal, handleToggleContinueDebug],
 		[nextNodeDebugSignal, handleToggleNextNode],
 		[stepOverDebugSignal, handleToggleStepOverDebug],
@@ -1430,11 +1430,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	useEffect(() => {
 		let runType;
-		runTypeXpipeSignal.connect((_, args) => {
+		runTypeXircuitSignal.connect((_, args) => {
 			runType = args["runType"];
 			setRunType(runType)
 		});
-	}, [runTypeXpipeSignal])
+	}, [runTypeXircuitSignal])
 
 	useEffect(() => {
 		debugModeSignal.emit({
@@ -1716,9 +1716,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						// note:  can not use the same port name in the same node,or the same name port can not link to other ports
 						// you can use shift + click and then use delete to delete link
 						if (node != null) {
-							let point = xpipesApp.getDiagramEngine().getRelativeMousePoint(event);
+							let point = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
 							node.setPosition(point);
-							xpipesApp.getDiagramEngine().getModel().addNode(node);
+							xircuitsApp.getDiagramEngine().getModel().addNode(node);
 							console.log("Updating doc context due to drop event!")
 							setInitialize(false);
 							setSaved(false);
@@ -1744,7 +1744,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					}}>
 
 					<DemoCanvasWidget>
-						<CanvasWidget engine={xpipesApp.getDiagramEngine()} />
+						<CanvasWidget engine={xircuitsApp.getDiagramEngine()} />
 					</DemoCanvasWidget>
 				</Layer>
 			</Content>

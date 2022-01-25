@@ -21,23 +21,23 @@ import {
   ITextLog,
   IOutputLog,
 } from '@jupyterlab/logconsole';
-import { commandIDs } from '../components/xpipeBodyWidget';
+import { commandIDs } from '../components/xircuitBodyWidget';
 
 /**
  * The command IDs used by the log plugin.
  */
 export namespace CommandIDs {
-  export const addCheckpoint = 'Xpipe-log:add-checkpoint';
-  export const clear = 'Xpipe-log:clear';
-  export const openLog = 'Xpipe-log:open';
-  export const setLevel = 'Xpipe-log:set-level';
+  export const addCheckpoint = 'Xircuit-log:add-checkpoint';
+  export const clear = 'Xircuit-log:clear';
+  export const openLog = 'Xircuit-log:open';
+  export const setLevel = 'Xircuit-log:set-level';
 }
 
 /**
  * Initialization data for the log plugin.
  */
 export const logPlugin: JupyterFrontEndPlugin<void> = {
-  id: 'xpipe-log',
+  id: 'xircuit-log',
   autoStart: true,
   requires: [
     ICommandPalette,
@@ -51,19 +51,19 @@ export const logPlugin: JupyterFrontEndPlugin<void> = {
     rendermime: IRenderMimeRegistry
   ) => {
 
-    console.log('Xpipe-Log is activated!');
+    console.log('Xircuit-Log is activated!');
 
     let logConsolePanel: LogConsolePanel = null;
     let logConsoleWidget: MainAreaWidget<LogConsolePanel> = null;
 
     const loggertracker = new WidgetTracker<MainAreaWidget<LogConsolePanel>>({
-      namespace: 'Xpipe-log',
+      namespace: 'Xircuit-log',
     });
 
     if (restorer) {
       void restorer.restore(loggertracker, {
         command: CommandIDs.openLog,
-        name: () => 'Xpipe-log'
+        name: () => 'Xircuit-log'
       });
     }
   
@@ -97,14 +97,14 @@ export const logPlugin: JupyterFrontEndPlugin<void> = {
         })
       );
 
-      logConsolePanel.source = 'xpipe';
+      logConsolePanel.source = 'xircuit';
 
       logConsoleWidget = new MainAreaWidget<LogConsolePanel>({
         content: logConsolePanel,
       });
       
       logConsoleWidget.addClass('jp-LogConsole');
-      logConsoleWidget.title.label = 'Xpipe Log console';
+      logConsoleWidget.title.label = 'Xircuit Log console';
       logConsoleWidget.title.icon = listIcon;
 
       logConsoleWidget.toolbar.addItem(
@@ -140,8 +140,8 @@ export const logPlugin: JupyterFrontEndPlugin<void> = {
     };
 
     app.commands.addCommand(CommandIDs.openLog, {
-      label: 'Xpipe Log Console',
-      caption: 'Xpipe log console',
+      label: 'Xircuit Log Console',
+      caption: 'Xircuit log console',
       isToggled: () => logConsoleWidget !== null,
       execute: () => {
         if (logConsoleWidget) {
@@ -187,7 +187,7 @@ export const logPlugin: JupyterFrontEndPlugin<void> = {
 
     app.commands.addCommand(commandIDs.outputMsg, {
       label: 'Output log message',
-      caption: 'Output xpipe log message.',
+      caption: 'Output xircuit log message.',
       execute: args => {
         const outputMsg = typeof args['outputMsg'] === 'undefined' ? '' : (args['outputMsg'] as string);
         const setLevel = args['level'] as any;
@@ -243,7 +243,7 @@ export interface LogInterface {
 }
 
 /**
- * Emit output message to xpipe log based on severity level
+ * Emit output message to xircuit log based on severity level
  */
 export class Log implements LogInterface {
   private app: JupyterFrontEnd;

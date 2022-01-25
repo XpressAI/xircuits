@@ -2,34 +2,34 @@ import { JupyterFrontEnd } from '@jupyterlab/application';
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 import { Debugger } from '@jupyterlab/debugger';
 import { Panel, SplitPanel, Widget, PanelLayout } from '@lumino/widgets';
-import { commandIDs } from '../components/xpipeBodyWidget';
+import { commandIDs } from '../components/xircuitBodyWidget';
 import { DebuggerWidget } from './DebuggerWidget';
-import { XpipeFactory } from '../xpipeFactory';
+import { XircuitFactory } from '../xircuitFactory';
 import { Toolbar, CommandToolbarButton } from '@jupyterlab/apputils';
 
 export const DebuggerCommandIDs = {
-  continue: 'Xpipes-debugger:continue',
-  terminate: 'Xpipes-debugger:terminate',
-  stepOver: 'Xpipes-debugger:next',
-  stepIn: 'Xpipes-debugger:step-in',
-  stepOut: 'Xpipes-debugger:step-out',
-  evaluate: 'Xpipes-debugger:evaluate-code',
+  continue: 'Xircuits-debugger:continue',
+  terminate: 'Xircuits-debugger:terminate',
+  stepOver: 'Xircuits-debugger:next',
+  stepIn: 'Xircuits-debugger:step-in',
+  stepOut: 'Xircuits-debugger:step-out',
+  evaluate: 'Xircuits-debugger:evaluate-code',
 }
 
 /**
- * A Xpipes Debugger sidebar.
+ * A Xircuits Debugger sidebar.
  */
- export class XpipesDebuggerSidebar extends Panel {
+ export class XircuitsDebuggerSidebar extends Panel {
     /**
-     * Instantiate a new XpipeDebugger.Sidebar
+     * Instantiate a new XircuitDebugger.Sidebar
      *
-     * @param options The instantiation options for a XpipeDebugger.Sidebar
+     * @param options The instantiation options for a XircuitDebugger.Sidebar
      */
-    constructor(options: XpipeDebugger.IOptions) {
+    constructor(options: XircuitDebugger.IOptions) {
       super();
       const translator = options.translator || nullTranslator;
       const app = options.app;
-      const xpipeFactory = options.widgetFactory;
+      const xircuitFactory = options.widgetFactory;
       const trans = translator.load('jupyterlab');
       this.id = 'jp-debugger-sidebar';
       this.addClass('jp-DebuggerSidebar');
@@ -38,13 +38,13 @@ export const DebuggerCommandIDs = {
       this._body.orientation = 'vertical';
     //   this._body.addClass('jp-DebuggerSidebar-body');
       this.addWidget(this._body);
-      const content = new DebuggerWidget( xpipeFactory );
+      const content = new DebuggerWidget( xircuitFactory );
       const header = new DebuggerHeader(translator);
       const toolbarPanel = new DebuggerToolbar();
       let debugMode;
       let inDebugMode;
 
-      xpipeFactory.debugModeSignal.connect((_, args) => {
+      xircuitFactory.debugModeSignal.connect((_, args) => {
         debugMode = args["debugMode"];
         inDebugMode = args["inDebugMode"];
         app.commands.notifyCommandChanged();
@@ -54,7 +54,7 @@ export const DebuggerCommandIDs = {
        * Create a continue button toolbar item.
        */
       toolbarPanel.toolbar.addItem(
-        'xpipes-debugger-continue',
+        'xircuits-debugger-continue',
         new CommandToolbarButton({
           commands: app.commands,
           id: DebuggerCommandIDs.continue
@@ -64,7 +64,7 @@ export const DebuggerCommandIDs = {
        * Create a next node button toolbar item.
        */
       toolbarPanel.toolbar.addItem(
-        'xpipes-debugger-next',
+        'xircuits-debugger-next',
         new CommandToolbarButton({
           commands: app.commands,
           id: commandIDs.nextNode
@@ -74,7 +74,7 @@ export const DebuggerCommandIDs = {
        * Create a step over button toolbar item.
        */
       toolbarPanel.toolbar.addItem(
-        'xpipes-debugger-step-over',
+        'xircuits-debugger-step-over',
         new CommandToolbarButton({
           commands: app.commands,
           id: DebuggerCommandIDs.stepOver
@@ -84,17 +84,17 @@ export const DebuggerCommandIDs = {
        * Create a breakpoint button toolbar item.
        */
        toolbarPanel.toolbar.addItem(
-        'xpipes-debugger-breakpoint',
+        'xircuits-debugger-breakpoint',
         new CommandToolbarButton({
           commands: app.commands,
-          id: commandIDs.breakpointXpipe
+          id: commandIDs.breakpointXircuit
         })
       );
       /**
        * Create a terminate button toolbar item.
        */
       toolbarPanel.toolbar.addItem(
-        'xpipes-debugger-terminate',
+        'xircuits-debugger-terminate',
         new CommandToolbarButton({
           commands: app.commands,
           id: DebuggerCommandIDs.terminate
@@ -104,7 +104,7 @@ export const DebuggerCommandIDs = {
        * Create a step in button toolbar item.
        */
       toolbarPanel.toolbar.addItem(
-        'xpipes-debugger-step-in',
+        'xircuits-debugger-step-in',
         new CommandToolbarButton({
           commands: app.commands,
           id: DebuggerCommandIDs.stepIn
@@ -114,7 +114,7 @@ export const DebuggerCommandIDs = {
        * Create a step out button toolbar item.
        */
       toolbarPanel.toolbar.addItem(
-        'xpipes-debugger-step-out',
+        'xircuits-debugger-step-out',
         new CommandToolbarButton({
           commands: app.commands,
           id: DebuggerCommandIDs.stepOut
@@ -124,14 +124,14 @@ export const DebuggerCommandIDs = {
        * Create a evaluate code button toolbar item.
        */
       toolbarPanel.toolbar.addItem(
-        'xpipes-debugger-evaluate-code',
+        'xircuits-debugger-evaluate-code',
         new CommandToolbarButton({
           commands: app.commands,
           id: DebuggerCommandIDs.evaluate
         })
       );
 
-      // Add command signal to continue debugging xpipe
+      // Add command signal to continue debugging xircuit
       app.commands.addCommand(DebuggerCommandIDs.continue, {
         caption: trans.__('Continue'),
         icon: Debugger.Icons.continueIcon,
@@ -139,7 +139,7 @@ export const DebuggerCommandIDs = {
           return debugMode ?? false;
         },
         execute: args => {
-          xpipeFactory.continueDebugSignal.emit(args);
+          xircuitFactory.continueDebugSignal.emit(args);
         }
       });
       // Add command signal to toggle next node
@@ -150,7 +150,7 @@ export const DebuggerCommandIDs = {
           return inDebugMode ?? false;
         },
         execute: args => {
-          xpipeFactory.nextNodeDebugSignal.emit(args);
+          xircuitFactory.nextNodeDebugSignal.emit(args);
         }
       });
       // Add command signal to toggle step over 
@@ -160,21 +160,21 @@ export const DebuggerCommandIDs = {
         isEnabled: () => {
           return inDebugMode ?? false;
         },execute: args => {
-          xpipeFactory.stepOverDebugSignal.emit(args);
+          xircuitFactory.stepOverDebugSignal.emit(args);
         }
       });
       // Add command signal to toggle breakpoint
-      app.commands.addCommand(commandIDs.breakpointXpipe, {
+      app.commands.addCommand(commandIDs.breakpointXircuit, {
         caption: trans.__('Toggle Breakpoint'),
         iconClass: 'jp-BreakpointLogo',
         isEnabled: () => {
           return debugMode ?? false;
         },
         execute: args => {
-          xpipeFactory.breakpointXpipeSignal.emit(args);
+          xircuitFactory.breakpointXircuitSignal.emit(args);
         }
       });
-      // Add command signal to terminate debugging xpipe
+      // Add command signal to terminate debugging xircuit
       app.commands.addCommand(DebuggerCommandIDs.terminate, {
         caption: trans.__('Terminate'),
         icon: Debugger.Icons.terminateIcon,
@@ -182,7 +182,7 @@ export const DebuggerCommandIDs = {
           return debugMode ?? false;
         },
         execute: args => {
-          xpipeFactory.terminateDebugSignal.emit(args);
+          xircuitFactory.terminateDebugSignal.emit(args);
         }
       });
       // // Add command signal to toggle step in
@@ -193,7 +193,7 @@ export const DebuggerCommandIDs = {
       //     return inDebugMode ?? false;
       //   },
       //   execute: args => {
-      //     xpipeFactory.stepInDebugSignal.emit(args);
+      //     xircuitFactory.stepInDebugSignal.emit(args);
       //   }
       // });
       // // Add command signal to toggle step out
@@ -204,10 +204,10 @@ export const DebuggerCommandIDs = {
       //     return inDebugMode ?? false;
       //   },
       //   execute: args => {
-      //     xpipeFactory.stepOutDebugSignal.emit(args);
+      //     xircuitFactory.stepOutDebugSignal.emit(args);
       //   }
       // });
-      // // Add command signal to evaluate debugging xpipe
+      // // Add command signal to evaluate debugging xircuit
       // app.commands.addCommand(DebuggerCommandIDs.evaluate, {
       //   caption: trans.__('Evaluate Code'),
       //   icon: Debugger.Icons.evaluateIcon,
@@ -215,7 +215,7 @@ export const DebuggerCommandIDs = {
       //     return inDebugMode ?? false;
       //   },
       //   execute: args => {
-      //     xpipeFactory.evaluateDebugSignal.emit(args);
+      //     xircuitFactory.evaluateDebugSignal.emit(args);
       //   }
       // });
 
@@ -282,7 +282,7 @@ export const DebuggerCommandIDs = {
 }
 
 /**
- * The header for the Xpipes Debugger Panel.
+ * The header for the Xircuits Debugger Panel.
  */
  export class DebuggerHeader extends Widget {
     /**
@@ -296,7 +296,7 @@ export const DebuggerCommandIDs = {
       const trans = translator.load('jupyterlab');
   
       const title = new Widget({ node: document.createElement('h2') });
-      title.node.textContent = trans.__('Xpipes Debugger');
+      title.node.textContent = trans.__('Xircuits Debugger');
   
       const layout = new PanelLayout();
       layout.addWidget(title);
@@ -305,7 +305,7 @@ export const DebuggerCommandIDs = {
 }
 
 /**
- * The toolbar for the XpipesDebugger Panel.
+ * The toolbar for the XircuitsDebugger Panel.
  */
 export class DebuggerToolbar extends Widget {
   /**
@@ -320,17 +320,17 @@ export class DebuggerToolbar extends Widget {
   }
 
   /**
-   * The toolbar for the xpipes debugger.
+   * The toolbar for the xircuits debugger.
    */
   readonly toolbar = new Toolbar();
 }
 
 /**
- * A namespace for XpipeDebugger `statics`.
+ * A namespace for XircuitDebugger `statics`.
  */
-export namespace XpipeDebugger {
+export namespace XircuitDebugger {
   /**
-   * Instantiation options for `XpipesDebugger`.
+   * Instantiation options for `XircuitsDebugger`.
    */
   export interface IOptions extends Panel.IOptions {
     /**
@@ -342,18 +342,18 @@ export namespace XpipeDebugger {
      */
     translator?: ITranslator;
     /**
-     * The xpipe factory..
+     * The xircuit factory..
      */
-    widgetFactory?: XpipeFactory;
+    widgetFactory?: XircuitFactory;
   }
 }
 
 /**
- * A namespace for `XpipesDebugger` statics.
+ * A namespace for `XircuitsDebugger` statics.
  */
-export namespace XpipesDebugger {
+export namespace XircuitsDebugger {
 /**
  * The debugger sidebar UI.
  */
-  export class Sidebar extends XpipesDebuggerSidebar {}
+  export class Sidebar extends XircuitsDebuggerSidebar {}
 }

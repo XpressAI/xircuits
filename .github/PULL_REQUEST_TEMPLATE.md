@@ -1,4 +1,4 @@
-Welcome to Xpipes! Thank you for making a pull request. Please ensure that your pull request follows the template.
+Welcome to Xircuits! Thank you for making a pull request. Please ensure that your pull request follows the template.
 
 # Description
 
@@ -10,9 +10,9 @@ If applicable, note issue numbers this pull request addresses. You can also note
 
 ## Pull Request Type
 
-- [ ] Xpipes Core (Jupyterlab Related changes)
-- [ ] Xpipes Canvas (Custom RD Related changes)
-- [ ] Xpipes Component Library
+- [ ] Xircuits Core (Jupyterlab Related changes)
+- [ ] Xircuits Canvas (Custom RD Related changes)
+- [ ] Xircuits Component Library
 - [ ] Documentation
 - [ ] Others (Please Specify)
 

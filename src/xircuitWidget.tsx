@@ -4,11 +4,11 @@ import { Signal } from '@lumino/signaling';
 import {
   Context
 } from '@jupyterlab/docregistry';
-import { BodyWidget } from './components/xpipeBodyWidget';
+import { BodyWidget } from './components/xircuitBodyWidget';
 import React, {  } from 'react';
 import * as _ from 'lodash';
 import { ServiceManager } from '@jupyterlab/services';
-import { XpipesApplication } from './components/XpipesApp'
+import { XircuitsApplication } from './components/XircuitsApp'
 
 /**
  * DocumentWidget: widget that represents the view or editor for a file type.
@@ -18,17 +18,17 @@ export class XPipePanel extends ReactWidget {
   shell: ILabShell;
   commands: any;
   context: Context;
-  xpipesApp: XpipesApplication;
+  xircuitsApp: XircuitsApplication;
   serviceManager: ServiceManager;
-  saveXpipeSignal: Signal<this, any>;
-  compileXpipeSignal: Signal<this, any>;
-  runXpipeSignal: Signal<this, any>;
-  runTypeXpipeSignal: Signal<this, any>;
-  debugXpipeSignal: Signal<this, any>;
+  saveXircuitSignal: Signal<this, any>;
+  compileXircuitSignal: Signal<this, any>;
+  runXircuitSignal: Signal<this, any>;
+  runTypeXircuitSignal: Signal<this, any>;
+  debugXircuitSignal: Signal<this, any>;
   lockNodeSignal: Signal<this, any>;
-  breakpointXpipeSignal: Signal<this, any>;
+  breakpointXircuitSignal: Signal<this, any>;
   currentNodeSignal: Signal<this, any>;
-  testXpipeSignal: Signal<this, any>;
+  testXircuitSignal: Signal<this, any>;
   continueDebugSignal: Signal<this, any>;
   nextNodeDebugSignal: Signal<this, any>;
   stepOverDebugSignal: Signal<this, any>;
@@ -45,15 +45,15 @@ export class XPipePanel extends ReactWidget {
     this.commands = options.commands;
     this.context = options.context;
     this.serviceManager = options.serviceManager;
-    this.saveXpipeSignal = options.saveXpipeSignal;
-    this.compileXpipeSignal = options.compileXpipeSignal;
-    this.runXpipeSignal = options.runXpipeSignal;
-    this.runTypeXpipeSignal = options.runTypeXpipeSignal;
-    this.debugXpipeSignal = options.debugXpipeSignal;
+    this.saveXircuitSignal = options.saveXircuitSignal;
+    this.compileXircuitSignal = options.compileXircuitSignal;
+    this.runXircuitSignal = options.runXircuitSignal;
+    this.runTypeXircuitSignal = options.runTypeXircuitSignal;
+    this.debugXircuitSignal = options.debugXircuitSignal;
     this.lockNodeSignal = options.lockNodeSignal;
-    this.breakpointXpipeSignal = options.breakpointXpipeSignal;
+    this.breakpointXircuitSignal = options.breakpointXircuitSignal;
     this.currentNodeSignal = options.currentNodeSignal;
-    this.testXpipeSignal = options.testXpipeSignal;
+    this.testXircuitSignal = options.testXircuitSignal;
     this.continueDebugSignal = options.continueDebugSignal;
     this.nextNodeDebugSignal = options.nextNodeDebugSignal;
     this.stepOverDebugSignal = options.stepOverDebugSignal;
@@ -62,8 +62,8 @@ export class XPipePanel extends ReactWidget {
     this.stepOutDebugSignal = options.stepOutDebugSignal;
     this.evaluateDebugSignal = options.evaluateDebugSignal;
     this.debugModeSignal = options.debugModeSignal;
-    var xpipesApp = new XpipesApplication();
-    this.xpipesApp = xpipesApp;
+    var xircuitsApp = new XircuitsApplication();
+    this.xircuitsApp = xircuitsApp;
   }
 
   handleEvent(event: Event): void {
@@ -74,7 +74,7 @@ export class XPipePanel extends ReactWidget {
     }else if(event.type === 'blur'){
       // Unselect any selected nodes when the editor loses focus
       const deactivate = x => x.setSelected(false);
-      const model = this.xpipesApp.getDiagramEngine().getModel();
+      const model = this.xircuitsApp.getDiagramEngine().getModel();
       model.getNodes().forEach(deactivate);
       model.getLinks().forEach(deactivate);
     }
@@ -94,21 +94,21 @@ export class XPipePanel extends ReactWidget {
     return (
       <BodyWidget
         context={this.context}
-        xpipesApp={this.xpipesApp}
+        xircuitsApp={this.xircuitsApp}
         app={this.app}
         shell={this.shell}
         commands={this.commands}
         widgetId={this.parent?.id}
         serviceManager={this.serviceManager}
-        saveXpipeSignal={this.saveXpipeSignal}
-        compileXpipeSignal={this.compileXpipeSignal}
-        runXpipeSignal={this.runXpipeSignal}
-        runTypeXpipeSignal={this.runTypeXpipeSignal}
-        debugXpipeSignal={this.debugXpipeSignal}
+        saveXircuitSignal={this.saveXircuitSignal}
+        compileXircuitSignal={this.compileXircuitSignal}
+        runXircuitSignal={this.runXircuitSignal}
+        runTypeXircuitSignal={this.runTypeXircuitSignal}
+        debugXircuitSignal={this.debugXircuitSignal}
         lockNodeSignal={this.lockNodeSignal}
-        breakpointXpipeSignal={this.breakpointXpipeSignal}
+        breakpointXircuitSignal={this.breakpointXircuitSignal}
         currentNodeSignal={this.currentNodeSignal}
-        testXpipeSignal={this.testXpipeSignal}
+        testXircuitSignal={this.testXircuitSignal}
         continueDebugSignal={this.continueDebugSignal}
         nextNodeDebugSignal={this.nextNodeDebugSignal}
         stepOverDebugSignal={this.stepOverDebugSignal}
