@@ -80,7 +80,7 @@ setup_args = dict(
         "idna==2.10",
         "importlib-metadata==3.3.0",
         "ipykernel==6.4.1",
-        "ipython==7.27.0",
+        "ipython>=7.31.1",
         "ipython-genutils==0.2.0",
         "itsdangerous==2.0.1",
         "jedi==0.18.0",
