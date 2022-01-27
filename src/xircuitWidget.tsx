@@ -62,8 +62,7 @@ export class XPipePanel extends ReactWidget {
     this.stepOutDebugSignal = options.stepOutDebugSignal;
     this.evaluateDebugSignal = options.evaluateDebugSignal;
     this.debugModeSignal = options.debugModeSignal;
-    var xircuitsApp = new XircuitsApplication();
-    this.xircuitsApp = xircuitsApp;
+    this.xircuitsApp = new XircuitsApplication();
   }
 
   handleEvent(event: Event): void {
