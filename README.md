@@ -1,12 +1,20 @@
 | **[Documentation](https://xircuits.io/docs/index)** |
 **[Dev Discord](https://discord.gg/vgEg2ZtxCw)** |
 
-
-![Asset 13400x](https://user-images.githubusercontent.com/68586800/144788478-2de08f79-cb0a-4d5b-bde5-90412abc11b0.png)
+![Xircuits](https://user-images.githubusercontent.com/68586800/151280601-7ff2b7b2-10e5-4544-b3df-aa6a5a654dae.png)
 
 Xircuits is a Jupyterlab-based extension that enables visual, low-code, training workflows. It allows anyone to easily create executable python code in seconds.
 
 
+## Installation
+We recommend installing xircuits in a virtual environment. 
+```
+$ pip install xircuits
+```
+### Launch
+```
+$ xircuits
+```
 ## Development
 
 
@@ -61,12 +69,15 @@ jlpm run watch
 jupyter lab --watch
 ```
 
-By running jupyter lab, you should be able to load the Xircuit Panel by selecting a .xircuit file in the file browser or launch the xircuit from Launcher > Xircuit File
 
-![image](https://user-images.githubusercontent.com/23378929/133190662-61e71e75-88a4-4fca-8b9c-c1f7ed1fac55.png)
+## Preview
+
+### Normal Workflow
+![HelloXircuits](https://user-images.githubusercontent.com/68586800/151285391-1d4f477c-4f82-44c8-8d4f-729e52f32c3e.gif)
+
+### Machine Learning
+![XircuitKeras](https://user-images.githubusercontent.com/68586800/151285439-28a1ad93-4585-4fdb-8d73-41b5b7ba2044.gif)
 
 
-The current extension looks like this.
 
-![02-components](https://user-images.githubusercontent.com/68586800/147523242-f549f9f3-edba-492b-9ebe-a2c3fdfb8a86.gif)
 
