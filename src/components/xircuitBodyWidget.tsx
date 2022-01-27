@@ -139,7 +139,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const forceUpdate = useCallback(() => updateState(prevState => prevState + 1), []);
 	const [saved, setSaved] = useState(false);
 	const [compiled, setCompiled] = useState(false);
-	const [initialize, setInitialize] = useState(false);
+	const [initialize, setInitialize] = useState(true);
 	const [nodesColor, setNodesColor] = useState([]);
 	const [displaySavedAndCompiled, setDisplaySavedAndCompiled] = useState(false);
 	const [displayDebug, setDisplayDebug] = useState(false);
@@ -171,7 +171,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				contextRef.current.model.fromString(
 					JSON.stringify(currentModel, null, 4)
 				);
-				setInitialize(false);
 				setSaved(false);
 			}
 		}, []);
@@ -181,7 +180,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	
 		const changeHandler = (): void => {
 		  const model: any = currentContext.model.toJSON();
-			if (model != undefined) {
+			if (context.isReady) {
 				var newModel = new DiagramModel();
 				newModel.registerListener({
 					// Detect changes when node is dropped or deleted
@@ -189,6 +188,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						// Add delay for links to disappear 
 						const timeout = setTimeout(() => {
 							onChange();
+							setInitialize(false);
 						}, 10)
 						return () => clearTimeout(timeout)
 					},
@@ -789,13 +789,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		// Run Mode
-		let runArgs = await handleRunDialog();
-		let runCommand = runArgs["commandStr"];
-		let addArgsSparkSubmit = runArgs["addArgs"];
+		context.ready.then(async () => {
+			let runArgs = await handleRunDialog();
+			let runCommand = runArgs["commandStr"];
+			let addArgsSparkSubmit = runArgs["addArgs"];
 
-		if (runArgs) {
-			commands.execute(commandIDs.executeToOutputPanel, { runCommand, runType, addArgsSparkSubmit });
-		}
+			if (runArgs) {
+				commands.execute(commandIDs.executeToOutputPanel, { runCommand, runType, addArgsSparkSubmit });
+			}
+		})
 	}
 
 	const handleRunClick = async () => {
@@ -804,7 +806,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-
 	 	saveAndCompileAndRun(false);
 	}
 
@@ -1263,12 +1264,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			setSparkSubmitkNodes("")
 		}
 
-		if (initialize) {
-
-			try {
+		context.ready.then(() => {
+			if (initialize) {
 				let allNodes = xircuitsApp.getDiagramEngine().getModel().getNodes();
 				let nodesCount = allNodes.length;
-				let nodeProperty = [];
 
 				for (let i = 0; i < nodesCount; i++) {
 					let nodeName = allNodes[i].getOptions()["name"];
@@ -1286,25 +1285,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							setBoolNodes(boolNodes => ([...boolNodes, nodeText[nodeText.length - 1]].sort()));
 						}
 					}
-
-					let nodeType, nodeColor, nodeObject;
-					nodeType = allNodes[i].getOptions()["extras"]["type"];
-					nodeColor = allNodes[i].getOptions()["color"];
-					nodeObject = {
-						type: nodeType,
-						color: nodeColor
-					}
-					nodeProperty.push(nodeObject)
 				}
-				setNodesColor(nodeProperty);
-			} catch (err) { }
-
-		} else {
-			setStringNodes(["experiment name"]);
-			setIntNodes([]);
-			setFloatNodes([]);
-			setBoolNodes([]);
-		}
+			}
+			else {
+				setStringNodes(["experiment name"]);
+				setIntNodes([]);
+				setFloatNodes([]);
+				setBoolNodes([]);
+			}
+		})
 	}, [initialize, runType]);
 
 	const handleRunDialog = async () => {
@@ -1719,8 +1708,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							let point = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
 							node.setPosition(point);
 							xircuitsApp.getDiagramEngine().getModel().addNode(node);
-							console.log("Updating doc context due to drop event!")
-							setInitialize(false);
+							if(node["name"].startsWith("Hyperparameter")){
+								setInitialize(true);
+							}
 							setSaved(false);
 							setCompiled(false);
 							forceUpdate();
