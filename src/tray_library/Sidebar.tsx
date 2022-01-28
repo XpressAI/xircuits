@@ -214,7 +214,7 @@ export default function Sidebar(props: SidebarProps) {
                                                                         name={componentVal.task}
                                                                         color={componentVal.color}
                                                                         app={props.lab}
-                                                                        path={componentVal.path} />
+                                                                        path={componentVal.package_name} />
                                                                 </div>
                                                             );
                                                         }
@@ -240,7 +240,7 @@ export default function Sidebar(props: SidebarProps) {
                                             name={val.task}
                                             color={val.color}
                                             app={props.lab}
-                                            path={val.path} />
+                                            path={val.package_name} />
                                     </div>
                                 );
                             })

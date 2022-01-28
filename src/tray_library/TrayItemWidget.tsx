@@ -40,19 +40,21 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 				}}
 				onClick={(event) => {
 					if (event.ctrlKey || event.metaKey) {
+						let path = this.props.path.replace(/\./g,"/") + ".py";
 						const { commands } = this.props.app;
 						commands.execute('docmanager:open', {
-							path: this.props.path,
+							path: path,
 							factory: 'Editor',
 						});
 					}
 					this.forceUpdate();
 				}}
 				onDoubleClick={(event) => {
-					if (this.props.path != "") {
+					let path = this.props.path.replace(/\./g,"/") + ".py";
+					if (path != "") {
 						const { commands } = this.props.app;
 						commands.execute('docmanager:open', {
-							path: this.props.path,
+							path: path,
 							factory: 'Editor',
 						});
 					}
