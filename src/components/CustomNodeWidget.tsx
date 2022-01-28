@@ -11,6 +11,7 @@ import { Pagination } from "krc-pagination";
 import 'krc-pagination/styles.css';
 import { Action, ActionEvent, InputType } from '@projectstorm/react-canvas-core';
 import Toggle from 'react-toggle'
+import { CustomNodeModel } from './CustomNodeModel';
 
 
 var S;
@@ -169,6 +170,31 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                 : this.props.node.setLocked(false),
         })
     }
+
+    /**
+     * Allow to edit Literal Component
+     */
+    handleEditLiteral() {
+        if(!this.props.node.getOptions()["name"].startsWith("Literal")){
+            return;
+        }
+
+        let node = null;
+        var data = this.props.node;
+
+        // Prompt the user to enter new value
+        let theResponse = window.prompt('Enter New Value (Without Quotes):');
+        node = new CustomNodeModel({ name: data["name"], color: data["color"], extras: { "type": data["extras"]["type"] } });
+        node.addOutPortEnhance(theResponse, 'out-0');
+
+        // Set new node to old node position
+        let position = this.props.node.getPosition();
+        node.setPosition(position);
+        this.props.engine.getModel().addNode(node);
+
+        // Remove old node
+        this.props.node.remove();
+    }
     
     render() {
 
@@ -245,7 +271,8 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                     borderColor={this.props.node.getOptions().extras["borderColor"]}
                     data-default-node-name={this.props.node.getOptions().name}
                     selected={this.props.node.isSelected()}
-                    background={this.props.node.getOptions().color}>
+                    background={this.props.node.getOptions().color}
+                    onDoubleClick={this.handleEditLiteral.bind(this)}>
                     <S.Title>
                         <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
                         <label>
