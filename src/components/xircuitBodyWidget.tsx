@@ -1,7 +1,7 @@
 import React, { FC, useState, useCallback, useEffect, useRef } from 'react';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
-import { LinkModel, DiagramModel } from '@projectstorm/react-diagrams';
+import { LinkModel, DiagramModel, DiagramEngine, DefaultLinkModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
 import { Dialog, showDialog } from '@jupyterlab/apputils';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
@@ -174,6 +174,98 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				setSaved(false);
 			}
 		}, []);
+	
+	const customDeserializeModel = (modelContext: any, diagramEngine: DiagramEngine) => {
+
+		let tempModel = new DiagramModel();
+		let links = modelContext["layers"][0]["models"];
+		let nodes = modelContext["layers"][1]["models"];
+		let offsetX = modelContext["offsetX"];
+		let offsetY = modelContext["offsetY"];
+		let zoom = modelContext["zoom"];
+	
+		for (let nodeID in nodes) {
+	
+		  let node = nodes[nodeID];
+		  let newNode = new CustomNodeModel({
+			id: node.id, type: node.type, name: node.name, locked: node.locked,
+			color: node.color, extras: node.extras
+		  });
+		  newNode.setPosition(node.x, node.y);
+	
+		  for (let portID in node.ports) {
+	
+			let port = node.ports[portID];
+			if (port.alignment == "right") newNode.addOutPortEnhance(port.label, port.name, true, port.id);
+			if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name, true, port.id);
+	
+		  }
+		  tempModel.addAll(newNode);
+		  diagramEngine.setModel(tempModel);
+		}
+	
+		for (let linkID in links) {
+	
+	
+		  let link = links[linkID];
+	
+		  if (link.sourcePort && link.targetPort) {
+	
+			let newLink = new DefaultLinkModel();
+	
+			let sourcePort = tempModel.getNode(link.source).getPortFromID(link.sourcePort);
+			newLink.setSourcePort(sourcePort);
+	
+			let targetPort = tempModel.getNode(link.target).getPortFromID(link.targetPort);
+			newLink.setTargetPort(targetPort);
+	
+			tempModel.addAll(newLink);
+			diagramEngine.setModel(tempModel);
+		  }
+		}
+
+		tempModel.registerListener({
+			// Detect changes when node is dropped or deleted
+			nodesUpdated: () => {
+				// Add delay for links to disappear 
+				const timeout = setTimeout(() => {
+					onChange();
+					setInitialize(false);
+				}, 10)
+				return () => clearTimeout(timeout)
+			},
+			linksUpdated: function (event) {
+				event.link.registerListener({
+					/**
+					 * sourcePortChanged
+					 * Detect changes when link is connected
+					 */
+					sourcePortChanged: e => {
+						onChange();
+					},
+					/**
+					 * targetPortChanged
+					 * Detect changes when link is connected
+					 */
+					targetPortChanged: e => {
+						onChange();
+					},
+					/**
+					 * entityRemoved
+					 * Detect changes when new link is removed
+					 */
+					entityRemoved: e => {
+						onChange();
+					}
+				});
+			}
+		});
+
+		tempModel.setOffsetX(offsetX);
+		tempModel.setOffsetY(offsetY);
+		tempModel.setZoomLevel(zoom);
+		return tempModel;
+	  }
 
 	useEffect(() => {
 		const currentContext = contextRef.current;
@@ -181,45 +273,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		const changeHandler = (): void => {
 		  const model: any = currentContext.model.toJSON();
 			if (context.isReady) {
-				var newModel = new DiagramModel();
-				newModel.registerListener({
-					// Detect changes when node is dropped or deleted
-					nodesUpdated: () => {
-						// Add delay for links to disappear 
-						const timeout = setTimeout(() => {
-							onChange();
-							setInitialize(false);
-						}, 10)
-						return () => clearTimeout(timeout)
-					},
-					linksUpdated: function (event) {
-						event.link.registerListener({
-							/**
-							 * sourcePortChanged
-							 * Detect changes when link is connected
-							 */
-							sourcePortChanged: e => {
-								onChange();
-							},
-							/**
-							 * targetPortChanged
-							 * Detect changes when link is connected
-							 */
-							targetPortChanged: e => {
-								onChange();
-							},
-							/**
-							 * entityRemoved
-							 * Detect changes when new link is removed
-							 */
-							entityRemoved: e => {
-								onChange();
-							}
-						});
-					}
-				});
-				newModel.deserializeModel(model, xircuitsApp.getDiagramEngine())
-				xircuitsApp.getDiagramEngine().setModel(newModel);
+				let deserializedModel = customDeserializeModel(model, xircuitsApp.getDiagramEngine());
+				xircuitsApp.getDiagramEngine().setModel(deserializedModel);
 			}
 		};
 
