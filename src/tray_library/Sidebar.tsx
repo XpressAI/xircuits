@@ -203,6 +203,11 @@ export default function Sidebar(props: SidebarProps) {
                                                             return componentVal;
                                                         }
                                                     }).map((componentVal, i2) => {
+                                                        let packagePath = componentVal["package_name"];
+                                                        let path = "";
+                                                        if (packagePath != undefined) {
+                                                            path = packagePath.replace(/\./g, "/") + ".py";
+                                                        }
                                                         if (componentVal["category"].toString().toUpperCase() == val["task"].toString()) {
                                                             return (
                                                                 <div key={`index-1-${i2}`}>
@@ -214,7 +219,7 @@ export default function Sidebar(props: SidebarProps) {
                                                                         name={componentVal.task}
                                                                         color={componentVal.color}
                                                                         app={props.lab}
-                                                                        path={componentVal.package_name} />
+                                                                        path={componentVal.abs_file_path ?? path} />
                                                                 </div>
                                                             );
                                                         }
@@ -233,6 +238,11 @@ export default function Sidebar(props: SidebarProps) {
                                     return val
                                 }
                             }).map((val, i) => {
+                                let packagePath = val["package_name"];
+                                let path = "";
+                                if (packagePath != undefined) {
+                                    path = packagePath.replace(/\./g, "/") + ".py";
+                                }
                                 return (
                                     <div key={`index-3-${i}`}>
                                         <TrayItemWidget
@@ -240,7 +250,7 @@ export default function Sidebar(props: SidebarProps) {
                                             name={val.task}
                                             color={val.color}
                                             app={props.lab}
-                                            path={val.package_name} />
+                                            path={val.abs_file_path ?? path} />
                                     </div>
                                 );
                             })
