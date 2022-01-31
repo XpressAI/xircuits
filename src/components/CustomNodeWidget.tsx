@@ -213,6 +213,13 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                     </ToolTip>
                     <S.Title>
                         <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
+                        <label>
+                            <Toggle
+                                className='lock'
+                                checked={this.props.node.isLocked()}
+                                onChange={this.handleDeletableNode.bind(this, 'nodeDeletable')}
+                            />
+                        </label>
                     </S.Title>
                     <S.Ports>
                         <S.PortsContainer>{_.map(this.props.node.getInPorts(), this.generatePort)}</S.PortsContainer>
@@ -280,7 +287,6 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                                 className='lock'
                                 checked={this.props.node.isLocked()}
                                 onChange={this.handleDeletableNode.bind(this, 'nodeDeletable')}
-                                
                             />
                         </label>
                     </S.Title>
