@@ -74,6 +74,9 @@ class Component(BaseComponent):
     def do(self) -> BaseComponent:
         print(f"\nExecuting: {self.__class__.__name__}")
         self.execute()
+        
+        if self.next == None:
+            print("\nFinish Executing")
 
         return self.done, self.next
 
