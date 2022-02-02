@@ -1,0 +1,49 @@
+name: Publish to PyPI
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+
+    - name: Setup Build Env
+      run: |
+        curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | sh
+        . ~/.nvm/nvm.sh
+        nvm install 14.15.3
+        nvm use 14.15.3
+        npm install --global yarn
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Build Wheel
+      run: |
+        python -m pip install --upgrade build &&
+        python -m build
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: xircuits-wheel
+        path: dist
+
+    - name: Publish to PyPI
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_TEST_API_KEY }}
+      run: |
+        twine upload --repository testpypi dist/*
