@@ -47,4 +47,4 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_TEST_API_KEY }}
       run: |
         pip install twine
-        twine upload --repository testpypi dist/*
+        twine upload --repository testpypi --verbose dist/*
