@@ -633,7 +633,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			pythonCode += '        ' + 'thread = Thread(target=app.run, daemon=True)\n';
 			pythonCode += '        ' + 'thread.start()\n\n';
 
-			pythonCode += '    ' + 'main(parser.parse_args())';
+			pythonCode += '    ' + 'main(parser.parse_args())\n';
+			pythonCode += '    ' + 'print("\\nFinish Executing")';
 		}
 
 		return pythonCode;
