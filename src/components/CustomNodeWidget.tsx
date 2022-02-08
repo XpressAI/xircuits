@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import { DiagramEngine } from '@projectstorm/react-diagrams-core';
 
-import { DefaultNodeModel ,DefaultPortLabel} from '@projectstorm/react-diagrams';
+import { DefaultLinkModel, DefaultNodeModel ,DefaultPortLabel} from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from 'react-image-gallery';
@@ -175,12 +175,13 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
      * Allow to edit Literal Component
      */
     handleEditLiteral() {
-        if(!this.props.node.getOptions()["name"].startsWith("Literal")){
+        if (!this.props.node.getOptions()["name"].startsWith("Literal")) {
             return;
         }
 
         let node = null;
         var data = this.props.node;
+        let links = this.props.engine.getModel()["layers"][0]["models"]
 
         // Prompt the user to enter new value
         let theResponse = window.prompt('Enter New Value (Without Quotes):');
@@ -191,6 +192,29 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         let position = this.props.node.getPosition();
         node.setPosition(position);
         this.props.engine.getModel().addNode(node);
+        
+        // Update the links
+        for (let linkID in links) {
+
+            let link = links[linkID];
+
+            if (link["sourcePort"] && link["targetPort"]) {
+
+                let newLink = new DefaultLinkModel();
+
+                let sourcePort = node.getPorts()["out-0"];
+                newLink.setSourcePort(sourcePort);
+
+                // This to make sure the new link came from the same literal node as previous link
+                let sourceLinkNodeId = link["sourcePort"].getParent().getID()
+                let sourceNodeId = data.getOptions()["id"]
+                if (sourceLinkNodeId == sourceNodeId) {
+                    newLink.setTargetPort(link["targetPort"]);
+                }
+
+                this.props.engine.getModel().addLink(newLink)
+            }
+        }
 
         // Remove old node
         this.props.node.remove();
