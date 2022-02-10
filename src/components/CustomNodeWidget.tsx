@@ -12,6 +12,7 @@ import 'krc-pagination/styles.css';
 import { Action, ActionEvent, InputType } from '@projectstorm/react-canvas-core';
 import Toggle from 'react-toggle'
 import { CustomNodeModel } from './CustomNodeModel';
+import { JupyterFrontEnd } from '@jupyterlab/application';
 
 
 var S;
@@ -66,15 +67,17 @@ var S;
 export interface DefaultNodeProps {
     node: DefaultNodeModel;
     engine: DiagramEngine;
+    app: JupyterFrontEnd;
 }
 
 interface CustomDeleteItemsActionOptions {
 	keyCodes?: number[];
     customDelete?: CustomNodeWidget;
+    app: JupyterFrontEnd;
 }
 
 export class CustomDeleteItemsAction extends Action {
-    constructor(options: CustomDeleteItemsActionOptions = {}) {
+    constructor(options: CustomDeleteItemsActionOptions) {
         options = {
             keyCodes: [46, 8],
             ...options
