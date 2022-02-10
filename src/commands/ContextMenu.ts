@@ -28,4 +28,93 @@ export function addContextMenuCommands(
         );
     }
 
+    //Add command to edit literal component
+    commands.addCommand(commandIDs.editNode, {
+        execute: editLiteral,
+        label: trans.__('Edit'),
+        isEnabled: () => {
+            const widget = tracker.currentWidget?.content as XPipePanel;
+            const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
+            let isNodeSelected: boolean;
+            _.forEach(selectedEntities, (model) => {
+                if (model.getOptions()["name"].startsWith("Literal")) {
+                    isNodeSelected = true;
+                }
+            });
+            return isNodeSelected ?? false;
+        }
+    });
+
+    //Add command to delete node
+    commands.addCommand(commandIDs.deleteNode, {
+        execute: deleteNode,
+        label: "Delete",
+        isEnabled: () => {
+            const widget = tracker.currentWidget?.content as XPipePanel;
+            const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
+            let isNodeSelected: boolean
+            if (selectedEntities.length > 0) {
+                isNodeSelected = true
+            }
+            return isNodeSelected ?? false;
+        }
+    });
+
+    function editLiteral(): void {
+        const widget = tracker.currentWidget?.content as XPipePanel;
+
+        if (widget) {
+            const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
+            _.forEach(selectedEntities, (model) => {
+
+                let node = null;
+
+                // Prompt the user to enter new value
+                let theResponse = window.prompt('Enter New Value (Without Quotes):');
+                node = new CustomNodeModel({ name: model["name"], color: model["color"], extras: { "type": model["extras"]["type"] } });
+                node.addOutPortEnhance(theResponse, 'out-0');
+
+                // Set new node to old node position
+                let position = model.getPosition();
+                node.setPosition(position);
+                widget.xircuitsApp.getDiagramEngine().getModel().addNode(node);
+
+                // Remove old node
+                model.remove();
+            });
+        }
+    }
+
+    function deleteNode(): void {
+        const widget = tracker.currentWidget?.content as XPipePanel;
+
+        if (widget) {
+            const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
+            _.forEach(selectedEntities, (model) => {
+                if (model.getOptions()["name"] !== "undefined") {
+                    let modelName = model.getOptions()["name"];
+                    const errorMsg = `${modelName} node cannot be deleted!`
+                    if (modelName !== 'Start' && modelName !== 'Finish') {
+                        if (!model.isLocked()) {
+                            model.remove()
+                        } else {
+                            showDialog({
+                                title: 'Locked Node',
+                                body: errorMsg,
+                                buttons: [Dialog.warnButton({ label: 'OK' })]
+                            });
+                        }
+                    }
+                    else {
+                        showDialog({
+                            title: 'Undeletable Node',
+                            body: errorMsg,
+                            buttons: [Dialog.warnButton({ label: 'OK' })]
+                        });
+                    }
+                }
+            });
+            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+        }
+    }
 }

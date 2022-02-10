@@ -91,6 +91,8 @@ export const commandIDs = {
 	runXircuit: 'Xircuit-editor:run-node',
 	debugXircuit: 'Xircuit-editor:debug-node',
 	lockXircuit: 'Xircuit-editor:lock-node',
+	editNode: 'Xircuit-editor:edit-node',
+	deleteNode: 'Xircuit-editor:delete-node',
 	createArbitraryFile: 'Xircuit-editor:create-arbitrary-file',
 	openDebugger: 'Xircuit-debugger:open',
 	breakpointXircuit: 'Xircuit-editor:breakpoint-node',
