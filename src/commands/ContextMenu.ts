@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import { CustomNodeModel } from '../components/CustomNodeModel';
 import { XPipePanel } from '../xircuitWidget';
 import { Dialog, showDialog } from '@jupyterlab/apputils';
+import { DefaultLinkModel } from '@projectstorm/react-diagrams';
 
 /**
  * Add the commands for the xircuits's context menu.
@@ -68,6 +69,7 @@ export function addContextMenuCommands(
             _.forEach(selectedEntities, (model) => {
 
                 let node = null;
+                let links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"]
 
                 // Prompt the user to enter new value
                 let theResponse = window.prompt('Enter New Value (Without Quotes):');
@@ -78,6 +80,29 @@ export function addContextMenuCommands(
                 let position = model.getPosition();
                 node.setPosition(position);
                 widget.xircuitsApp.getDiagramEngine().getModel().addNode(node);
+
+                // Update the links
+                for (let linkID in links) {
+
+                    let link = links[linkID];
+
+                    if (link["sourcePort"] && link["targetPort"]) {
+
+                        let newLink = new DefaultLinkModel();
+
+                        let sourcePort = node.getPorts()["out-0"];
+                        newLink.setSourcePort(sourcePort);
+
+                        // This to make sure the new link came from the same literal node as previous link
+                        let sourceLinkNodeId = link["sourcePort"].getParent().getID()
+                        let sourceNodeId = model.getOptions()["id"]
+                        if (sourceLinkNodeId == sourceNodeId) {
+                            newLink.setTargetPort(link["targetPort"]);
+                        }
+
+                        widget.xircuitsApp.getDiagramEngine().getModel().addLink(newLink)
+                    }
+                }
 
                 // Remove old node
                 model.remove();
