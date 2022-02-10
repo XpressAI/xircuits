@@ -8,7 +8,8 @@ import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { commandIDs } from './components/xircuitBodyWidget';
 import {
   WidgetTracker,
-  ReactWidget
+  ReactWidget,
+  IWidgetTracker
 } from '@jupyterlab/apputils';
 import { ILauncher } from '@jupyterlab/launcher';
 import { XircuitFactory } from './xircuitFactory';
@@ -22,8 +23,21 @@ import { OutputPanel } from './kernel/panel';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { runIcon, saveIcon } from '@jupyterlab/ui-components';
+import { addContextMenuCommands } from './commands/ContextMenu';
+import { Token } from '@lumino/coreutils';
 
 const FACTORY = 'Xircuits editor';
+
+// Export a token so other extensions can require it
+export const IXircuitsDocTracker = new Token<IWidgetTracker<DocumentWidget>>(
+  'xircuitsDocTracker'
+);
+
+/**
+ * A class that tracks xircuits widgets.
+ */
+ export interface IXircuitsDocTracker
+ extends IWidgetTracker<DocumentWidget> {}
 
 /**
  * Initialization data for the documents extension.
@@ -39,7 +53,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     IDocumentManager,
     ITranslator
   ],
-
+  provides: IXircuitsDocTracker,
   activate: async (
     app: JupyterFrontEnd,
     launcher: ILauncher,
