@@ -72,7 +72,11 @@ export function addContextMenuCommands(
                 let links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"]
 
                 // Prompt the user to enter new value
-                let theResponse = window.prompt('Enter New Value (Without Quotes):');
+                let theResponse = window.prompt('Enter New Value (Without Quotes):', "");
+                if(theResponse == null || theResponse == ""){
+                    // When Cancel is clicked or no input provided, just return
+                    return
+                }
                 node = new CustomNodeModel({ name: model["name"], color: model["color"], extras: { "type": model["extras"]["type"] } });
                 node.addOutPortEnhance(theResponse, 'out-0');
 
