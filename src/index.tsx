@@ -132,6 +132,9 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     restorer.add(sidebarDebugger, sidebarDebugger.id);
     app.shell.add(sidebarDebugger, 'right', { rank: 1001 });
 
+    // Additional commands for context menu
+    addContextMenuCommands(app, tracker, translator);
+
     // Add a command to open xircuits sidebar debugger
     app.commands.addCommand(commandIDs.openDebugger, {
       execute: () => {
