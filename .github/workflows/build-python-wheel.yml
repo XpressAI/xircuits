@@ -26,7 +26,7 @@ jobs:
       
     - name: Setup Build Env
       run: |
-        curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | sh 
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
         . ~/.nvm/nvm.sh
         nvm install 14.15.3
         nvm use 14.15.3
