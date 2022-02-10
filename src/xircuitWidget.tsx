@@ -1,14 +1,12 @@
 import { ReactWidget } from '@jupyterlab/apputils';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
-import {
-  Context
-} from '@jupyterlab/docregistry';
+import { Context } from '@jupyterlab/docregistry';
 import { BodyWidget } from './components/xircuitBodyWidget';
 import React, {  } from 'react';
 import * as _ from 'lodash';
 import { ServiceManager } from '@jupyterlab/services';
-import { XircuitsApplication } from './components/XircuitsApp'
+import { XircuitsApplication } from './components/XircuitsApp';
 
 /**
  * DocumentWidget: widget that represents the view or editor for a file type.

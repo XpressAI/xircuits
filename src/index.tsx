@@ -21,6 +21,7 @@ import { requestAPI } from './server/handler';
 import { OutputPanel } from './kernel/panel';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { DocumentWidget } from '@jupyterlab/docregistry';
+import { runIcon, saveIcon } from '@jupyterlab/ui-components';
 
 const FACTORY = 'Xircuits editor';
 
@@ -128,7 +129,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     // Add a command for creating a new xircuits file.
     app.commands.addCommand(commandIDs.createNewXircuit, {
-      label: 'Xircuits File',
+      label: 'Create New Xircuits',
       iconClass: 'jp-XircuitLogo',
       caption: 'Create a new xircuits file',
       execute: () => {
@@ -277,6 +278,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     // Add command signal to save xircuits
     app.commands.addCommand(commandIDs.saveXircuit, {
+      label: "Save",
+      icon: saveIcon,
       execute: args => {
         widgetFactory.saveXircuitSignal.emit(args);
       }
@@ -291,6 +294,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     // Add command signal to run xircuits
     app.commands.addCommand(commandIDs.runXircuit, {
+      label: "Run Xircuits",
+      icon: runIcon,
       execute: args => {
         widgetFactory.runXircuitSignal.emit(args);
       }
