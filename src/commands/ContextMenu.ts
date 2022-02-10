@@ -74,7 +74,7 @@ export function addContextMenuCommands(
 
                 // Prompt the user to enter new value
                 let theResponse = window.prompt('Enter New Value (Without Quotes):', oldValue);
-                if(theResponse == null || theResponse == ""){
+                if(theResponse == null || theResponse == "" || theResponse == oldValue){
                     // When Cancel is clicked or no input provided, just return
                     return
                 }
