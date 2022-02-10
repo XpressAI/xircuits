@@ -68,23 +68,30 @@ export class XPipePanel extends ReactWidget {
       // force focus on the editor in order stop key event propagation (e.g. "Delete" key) into unintended
       // parts of jupyter lab.
       this.node.focus();
+      // Just to enable back the loses focus event
+      this.node.addEventListener('blur', this, true);
     }else if(event.type === 'blur'){
       // Unselect any selected nodes when the editor loses focus
       const deactivate = x => x.setSelected(false);
       const model = this.xircuitsApp.getDiagramEngine().getModel();
       model.getNodes().forEach(deactivate);
       model.getLinks().forEach(deactivate);
+    }else if(event.type === 'contextmenu'){
+      // Disable loses focus event when opening context menu
+      this.node.removeEventListener('blur', this, true);
     }
   }
 
   protected onAfterAttach(msg) {
     this.node.addEventListener('mouseup', this, true);
     this.node.addEventListener('blur', this, true);
+    this.node.addEventListener('contextmenu', this, true);
   }
 
   protected onBeforeDetach() {
     this.node.removeEventListener('mouseup', this, true);
     this.node.removeEventListener('blur', this, true);
+    this.node.removeEventListener('contextmenu', this, true);
   }
 
   render(): any {
