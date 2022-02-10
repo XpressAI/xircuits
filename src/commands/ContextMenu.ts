@@ -69,10 +69,11 @@ export function addContextMenuCommands(
             _.forEach(selectedEntities, (model) => {
 
                 let node = null;
-                let links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"]
+                let links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
+                let oldValue = model.getPorts()["out-0"].getOptions()["label"]
 
                 // Prompt the user to enter new value
-                let theResponse = window.prompt('Enter New Value (Without Quotes):', "");
+                let theResponse = window.prompt('Enter New Value (Without Quotes):', oldValue);
                 if(theResponse == null || theResponse == ""){
                     // When Cancel is clicked or no input provided, just return
                     return
