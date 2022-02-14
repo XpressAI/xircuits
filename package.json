@@ -19,7 +19,8 @@
   "files": [
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
     "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}",
-    "style/index.js"
+    "style/index.js",
+    "schema/**/*.json"
   ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -115,7 +116,8 @@
       }
     },
     "extension": true,
-    "outputDir": "xircuits/labextension"
+    "outputDir": "xircuits/labextension",
+    "schemaDir": "schema"
   },
   "styleModule": "style/index.js"
 }

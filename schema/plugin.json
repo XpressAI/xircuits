@@ -1,0 +1,50 @@
+{
+    "title": "Xircuits Context Menu",
+    "description": "Xircuits Context Menu settings.",
+    "jupyter.lab.menus": {
+        "context": [
+            {
+                "command": "Xircuit-editor:edit-node",
+                "selector": ".xircuits-editor",
+                "rank": 0
+            },
+            {
+                "command": "Xircuit-editor:delete-node",
+                "selector": ".xircuits-editor",
+                "rank": 1
+            },
+            {
+                "type": "separator",
+                "selector": ".xircuits-editor",
+                "rank": 11
+            },
+            {
+                "command": "Xircuit-editor:save-node",
+                "selector": ".xircuits-editor",
+                "rank": 12
+            },
+            {
+                "command": "Xircuit-editor:run-node",
+                "selector": ".xircuits-editor",
+                "rank": 13
+            },
+            {
+                "type": "separator",
+                "selector": ".xircuits-editor",
+                "rank": 21
+            },
+            {
+                "command": "Xircuit-editor:create-new",
+                "selector": ".xircuits-editor",
+                "rank": 22
+            },
+            {
+                "command": "Xircuit-log:open",
+                "selector": ".xircuits-editor",
+                "rank": 23
+            }
+        ]
+    },
+    "additionalProperties": false,
+    "type": "object"
+}

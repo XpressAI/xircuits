@@ -179,7 +179,7 @@ export default function Sidebar(props: SidebarProps) {
                 <TrayWidget>
                     <div>
                         <div className="search-input">
-                            <input type="text" name="" value={searchTerm} placeholder="SEARCH" className="search-input__text-input" style={{ width: "80%" }} onChange={handleOnChange} />
+                            <input type="text" name="" value={searchTerm} placeholder="SEARCH" className="search-input__text-input" style={{ width: "75%" }} onChange={handleOnChange} />
                             <a onClick={handleSearchOnClick} className="search-input__button"><i className="fa fa-search "></i></a>
                             <a onClick={handleRefreshOnClick} className="search-input__button"><i className="fa fa-refresh "></i></a>
                         </div>
@@ -214,7 +214,7 @@ export default function Sidebar(props: SidebarProps) {
                                                                         name={componentVal.task}
                                                                         color={componentVal.color}
                                                                         app={props.lab}
-                                                                        path={componentVal.path} />
+                                                                        path={componentVal.file_path} />
                                                                 </div>
                                                             );
                                                         }
@@ -240,7 +240,7 @@ export default function Sidebar(props: SidebarProps) {
                                             name={val.task}
                                             color={val.color}
                                             app={props.lab}
-                                            path={val.path} />
+                                            path={val.file_path} />
                                     </div>
                                 );
                             })
