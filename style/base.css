@@ -7,13 +7,12 @@
 #main-logo{
   background-image: url(../style/icons/xpress-logo.svg); 
   background-repeat: no-repeat;
-  display: block;
-  background-size: auto;
-  position: relative;
-  left: 650px;
-  top: 270px;
+  position: fixed;
   width: 15%;
   height: 15%; 
+  top: 50%;
+  left: 55%;
+  transform: translate(-50%, -50%);
 }
 #main-logo > svg{
   visibility: hidden;
