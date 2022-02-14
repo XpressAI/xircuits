@@ -24,6 +24,7 @@ import { commandIDs } from './components/xircuitBodyWidget';
 import { CommandIDs } from './log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
 import { RunSwitcher } from './components/RunSwitcher';
+import { lockIcon, xircuitsIcon } from './ui-components/icons';
 
 const XPIPE_CLASS = 'xircuits-editor';
 
@@ -107,7 +108,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
 
     const widget = new DocumentWidget({ content, context });
     widget.addClass(XPIPE_CLASS);
-    widget.title.iconClass = 'jp-XircuitLogo';
+    widget.title.icon = xircuitsIcon;
 
     /**
      * Create a save button toolbar item.
@@ -190,7 +191,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
      * Create a lock button toolbar item.
      */
      let lockButton = new ToolbarButton({
-      iconClass: 'jp-LockLogo',
+      icon: lockIcon,
       tooltip: "Lock all non-general nodes connected from start node",
       onClick: (): void => {
         this.commands.execute(commandIDs.lockXircuit);
