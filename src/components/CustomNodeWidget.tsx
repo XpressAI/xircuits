@@ -1,8 +1,7 @@
 import * as React from 'react';
 import * as _ from 'lodash';
 import { DiagramEngine } from '@projectstorm/react-diagrams-core';
-
-import { DefaultLinkModel, DefaultNodeModel ,DefaultPortLabel} from '@projectstorm/react-diagrams';
+import { DefaultNodeModel ,DefaultPortLabel} from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from 'react-image-gallery';
@@ -11,7 +10,8 @@ import { Pagination } from "krc-pagination";
 import 'krc-pagination/styles.css';
 import { Action, ActionEvent, InputType } from '@projectstorm/react-canvas-core';
 import Toggle from 'react-toggle'
-import { CustomNodeModel } from './CustomNodeModel';
+import { JupyterFrontEnd } from '@jupyterlab/application';
+import { commandIDs } from './xircuitBodyWidget';
 
 
 var S;
@@ -66,15 +66,17 @@ var S;
 export interface DefaultNodeProps {
     node: DefaultNodeModel;
     engine: DiagramEngine;
+    app: JupyterFrontEnd;
 }
 
 interface CustomDeleteItemsActionOptions {
 	keyCodes?: number[];
     customDelete?: CustomNodeWidget;
+    app: JupyterFrontEnd;
 }
 
 export class CustomDeleteItemsAction extends Action {
-    constructor(options: CustomDeleteItemsActionOptions = {}) {
+    constructor(options: CustomDeleteItemsActionOptions) {
         options = {
             keyCodes: [46, 8],
             ...options
@@ -84,24 +86,8 @@ export class CustomDeleteItemsAction extends Action {
             type: InputType.KEY_DOWN,
             fire: (event: ActionEvent<React.KeyboardEvent>) => {
                 if (options.keyCodes.indexOf(event.event.keyCode) !== -1) {
-                    const selectedEntities = this.engine.getModel().getSelectedEntities();
-
-                    _.forEach(selectedEntities, (model) => {
-                        if (model.getOptions()["name"] !== "undefined") {
-                            let modelName = model.getOptions()["name"];
-                            if (modelName !== 'Start' && modelName !== 'Finish') {
-                                if (!model.isLocked()) {
-                                    model.remove()
-                                } else {
-                                    alert(`${modelName}'s node cannot be deleted!`);
-                                }
-                            }
-                            else {
-                                alert(`${modelName}'s node cannot be deleted!`);
-                            }
-                        }
-                    });
-                    this.engine.repaintCanvas();
+                    const app = options.app;
+                    app.commands.execute(commandIDs.deleteNode)
                 }
             }
         });
@@ -178,46 +164,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         if (!this.props.node.getOptions()["name"].startsWith("Literal")) {
             return;
         }
-
-        let node = null;
-        var data = this.props.node;
-        let links = this.props.engine.getModel()["layers"][0]["models"]
-
-        // Prompt the user to enter new value
-        let theResponse = window.prompt('Enter New Value (Without Quotes):');
-        node = new CustomNodeModel({ name: data["name"], color: data["color"], extras: { "type": data["extras"]["type"] } });
-        node.addOutPortEnhance(theResponse, 'out-0');
-
-        // Set new node to old node position
-        let position = this.props.node.getPosition();
-        node.setPosition(position);
-        this.props.engine.getModel().addNode(node);
-        
-        // Update the links
-        for (let linkID in links) {
-
-            let link = links[linkID];
-
-            if (link["sourcePort"] && link["targetPort"]) {
-
-                let newLink = new DefaultLinkModel();
-
-                let sourcePort = node.getPorts()["out-0"];
-                newLink.setSourcePort(sourcePort);
-
-                // This to make sure the new link came from the same literal node as previous link
-                let sourceLinkNodeId = link["sourcePort"].getParent().getID()
-                let sourceNodeId = data.getOptions()["id"]
-                if (sourceLinkNodeId == sourceNodeId) {
-                    newLink.setTargetPort(link["targetPort"]);
-                }
-
-                this.props.engine.getModel().addLink(newLink)
-            }
-        }
-
-        // Remove old node
-        this.props.node.remove();
+        this.props.app.commands.execute(commandIDs.editNode)
     }
     
     render() {
