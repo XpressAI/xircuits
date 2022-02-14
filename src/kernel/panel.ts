@@ -3,23 +3,16 @@ import {
     SessionContext,
     sessionContextDialogs,
 } from '@jupyterlab/apputils';
-
 import { OutputAreaModel, SimplifiedOutputArea } from '@jupyterlab/outputarea';
-
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
-
 import { KernelMessage, ServiceManager } from '@jupyterlab/services';
-
 import {
     ITranslator,
     nullTranslator,
     TranslationBundle,
 } from '@jupyterlab/translation';
-
 import { Message } from '@lumino/messaging';
-
 import { StackedPanel } from '@lumino/widgets';
-
 import { Log } from '../log/LogPlugin';
 import { XircuitFactory } from '../xircuitFactory';
 
