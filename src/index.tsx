@@ -21,6 +21,7 @@ import { requestAPI } from './server/handler';
 import { OutputPanel } from './kernel/panel';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { DocumentWidget } from '@jupyterlab/docregistry';
+import { xircuitsIcon, debuggerIcon } from './ui-components/icons';
 
 const FACTORY = 'Xircuits editor';
 
@@ -68,7 +69,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       name: 'xircuits',
       displayName: 'Xircuits',
       extensions: ['.xircuits'],
-      iconClass: 'jp-XircuitLogo'
+      icon: xircuitsIcon
     });
 
     // Registering the widget factory
@@ -100,6 +101,24 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       name: widget => widget.context.path
     });
     
+    // Find the MainLogo widget in the shell and replace it with the Xircuits Logo
+    const widgets = app.shell.widgets('top');
+    let widget = widgets.next();
+
+    while (widget !== undefined) {
+      if (widget.id === 'jp-MainLogo') {
+        xircuitsIcon.element({
+          container: widget.node,
+          justify: 'center',
+          height: 'auto',
+          width: '25px'
+        });
+        break;
+      }
+
+      widget = widgets.next();
+    }
+
     // Creating the sidebar widget for the xai components
     const sidebarWidget = ReactWidget.create(<Sidebar lab={app}/>);
     sidebarWidget.id = 'xircuits-component-sidebar';
@@ -112,7 +131,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     // Creating the sidebar debugger
     const sidebarDebugger = new XircuitsDebugger.Sidebar({ app, translator, widgetFactory })
     sidebarDebugger.id = 'xircuits-debugger-sidebar';
-    sidebarDebugger.title.iconClass = 'jp-DebuggerLogo';
+    sidebarDebugger.title.icon = debuggerIcon;
     sidebarDebugger.title.caption = "Xircuits Debugger";
     restorer.add(sidebarDebugger, sidebarDebugger.id);
     app.shell.add(sidebarDebugger, 'right', { rank: 1001 });
@@ -129,7 +148,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     // Add a command for creating a new xircuits file.
     app.commands.addCommand(commandIDs.createNewXircuit, {
       label: 'Xircuits File',
-      iconClass: 'jp-XircuitLogo',
+      icon: xircuitsIcon,
       caption: 'Create a new xircuits file',
       execute: () => {
         app.commands

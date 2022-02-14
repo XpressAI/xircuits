@@ -21,6 +21,7 @@ import { Message } from '@lumino/messaging';
 import { StackedPanel } from '@lumino/widgets';
 
 import { Log } from '../log/LogPlugin';
+import { xircuitsIcon } from '../ui-components/icons';
 import { XircuitFactory } from '../xircuitFactory';
 
 /**
@@ -46,7 +47,7 @@ export class OutputPanel extends StackedPanel {
         this.id = 'xircuit-output-panel';
         this.title.label = this._trans.__('Xircuit Output');
         this.title.closable = true;
-        this.title.iconClass = 'jp-XircuitLogo';
+        this.title.icon = xircuitsIcon;
 
         this._sessionContext = new SessionContext({
             sessionManager: manager.sessions,

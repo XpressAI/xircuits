@@ -6,6 +6,7 @@ import { commandIDs } from '../components/xircuitBodyWidget';
 import { DebuggerWidget } from './DebuggerWidget';
 import { XircuitFactory } from '../xircuitFactory';
 import { Toolbar, CommandToolbarButton } from '@jupyterlab/apputils';
+import { breakpointIcon } from '../ui-components/icons';
 
 export const DebuggerCommandIDs = {
   continue: 'Xircuits-debugger:continue',
@@ -166,7 +167,7 @@ export const DebuggerCommandIDs = {
       // Add command signal to toggle breakpoint
       app.commands.addCommand(commandIDs.breakpointXircuit, {
         caption: trans.__('Toggle Breakpoint'),
-        iconClass: 'jp-BreakpointLogo',
+        icon: breakpointIcon,
         isEnabled: () => {
           return debugMode ?? false;
         },
