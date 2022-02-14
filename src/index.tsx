@@ -8,7 +8,8 @@ import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { commandIDs } from './components/xircuitBodyWidget';
 import {
   WidgetTracker,
-  ReactWidget
+  ReactWidget,
+  IWidgetTracker
 } from '@jupyterlab/apputils';
 import { ILauncher } from '@jupyterlab/launcher';
 import { XircuitFactory } from './xircuitFactory';
@@ -21,8 +22,22 @@ import { requestAPI } from './server/handler';
 import { OutputPanel } from './kernel/panel';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { DocumentWidget } from '@jupyterlab/docregistry';
+import { runIcon, saveIcon } from '@jupyterlab/ui-components';
+import { addContextMenuCommands } from './commands/ContextMenu';
+import { Token } from '@lumino/coreutils';
 
 const FACTORY = 'Xircuits editor';
+
+// Export a token so other extensions can require it
+export const IXircuitsDocTracker = new Token<IWidgetTracker<DocumentWidget>>(
+  'xircuitsDocTracker'
+);
+
+/**
+ * A class that tracks xircuits widgets.
+ */
+ export interface IXircuitsDocTracker
+ extends IWidgetTracker<DocumentWidget> {}
 
 /**
  * Initialization data for the documents extension.
@@ -38,7 +53,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     IDocumentManager,
     ITranslator
   ],
-
+  provides: IXircuitsDocTracker,
   activate: async (
     app: JupyterFrontEnd,
     launcher: ILauncher,
@@ -117,6 +132,9 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     restorer.add(sidebarDebugger, sidebarDebugger.id);
     app.shell.add(sidebarDebugger, 'right', { rank: 1001 });
 
+    // Additional commands for context menu
+    addContextMenuCommands(app, tracker, translator);
+
     // Add a command to open xircuits sidebar debugger
     app.commands.addCommand(commandIDs.openDebugger, {
       execute: () => {
@@ -128,7 +146,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     // Add a command for creating a new xircuits file.
     app.commands.addCommand(commandIDs.createNewXircuit, {
-      label: 'Xircuits File',
+      label: 'Create New Xircuits',
       iconClass: 'jp-XircuitLogo',
       caption: 'Create a new xircuits file',
       execute: () => {
@@ -277,6 +295,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     // Add command signal to save xircuits
     app.commands.addCommand(commandIDs.saveXircuit, {
+      label: "Save",
+      icon: saveIcon,
       execute: args => {
         widgetFactory.saveXircuitSignal.emit(args);
       }
@@ -291,6 +311,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     // Add command signal to run xircuits
     app.commands.addCommand(commandIDs.runXircuit, {
+      label: "Run Xircuits",
+      icon: runIcon,
       execute: args => {
         widgetFactory.runXircuitSignal.emit(args);
       }

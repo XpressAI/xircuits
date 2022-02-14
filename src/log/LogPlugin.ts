@@ -104,7 +104,7 @@ export const logPlugin: JupyterFrontEndPlugin<void> = {
       });
       
       logConsoleWidget.addClass('jp-LogConsole');
-      logConsoleWidget.title.label = 'Xircuit Log console';
+      logConsoleWidget.title.label = 'xircuits Log console';
       logConsoleWidget.title.icon = listIcon;
 
       logConsoleWidget.toolbar.addItem(
@@ -140,8 +140,9 @@ export const logPlugin: JupyterFrontEndPlugin<void> = {
     };
 
     app.commands.addCommand(CommandIDs.openLog, {
-      label: 'Xircuit Log Console',
-      caption: 'Xircuit log console',
+      label: 'Open Xircuits Log Console',
+      caption: 'Xircuits log console',
+      icon: listIcon,
       isToggled: () => logConsoleWidget !== null,
       execute: () => {
         if (logConsoleWidget) {
@@ -187,7 +188,7 @@ export const logPlugin: JupyterFrontEndPlugin<void> = {
 
     app.commands.addCommand(commandIDs.outputMsg, {
       label: 'Output log message',
-      caption: 'Output xircuit log message.',
+      caption: 'Output xircuits log message.',
       execute: args => {
         const outputMsg = typeof args['outputMsg'] === 'undefined' ? '' : (args['outputMsg'] as string);
         const setLevel = args['level'] as any;
