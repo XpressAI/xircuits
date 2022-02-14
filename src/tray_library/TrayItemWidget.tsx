@@ -42,8 +42,7 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 					if (event.ctrlKey || event.metaKey) {
 						const { commands } = this.props.app;
 						commands.execute('docmanager:open', {
-							path: this.props.path,
-							factory: 'Editor',
+							path: this.props.path
 						});
 					}
 					this.forceUpdate();
@@ -52,8 +51,7 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 					if (this.props.path != "") {
 						const { commands } = this.props.app;
 						commands.execute('docmanager:open', {
-							path: this.props.path,
-							factory: 'Editor',
+							path: this.props.path
 						});
 					}
 					this.forceUpdate();

@@ -7,6 +7,7 @@ from itertools import chain
 
 import tornado
 from jupyter_server.base.handlers import APIHandler
+import platform
 
 from .config import get_config
 
@@ -148,6 +149,8 @@ class ComponentsRouteHandler(APIHandler):
             "class": name,
             "package_name": ("xai_components." if python_path is None else "") + file_path.as_posix().replace("/", ".")[:-3],
             "python_path": str(python_path) if python_path is not None else None,
+            "abs_file_path": os.path.join(str(python_path), str(file_path)) if python_path is not None else None,
+            "file_path": "xai_components/" + (file_path.as_posix()[:-3] + ".py" if platform.system() == "Windows" else str(file_path)),
             "task": name,
             "header": GROUP_ADVANCED,
             "category": category,
