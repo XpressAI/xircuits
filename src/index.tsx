@@ -250,6 +250,11 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       return outputPanel;
     }
 
+    // Dispose the output panel when closing browser or tab
+    window.addEventListener('beforeunload', function (e) {
+      outputPanel.dispose();
+    });
+
     async function requestToSparkSubmit(path: string, addArgs: string) {
       const dataToSend = { "currentPath": path, "addArgs": addArgs };
 
@@ -280,9 +285,6 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
         // Create the panel if it does not exist
         if (!outputPanel || outputPanel.isDisposed) {
-          await createPanel();
-        } else {
-          outputPanel.dispose();
           await createPanel();
         }
 
