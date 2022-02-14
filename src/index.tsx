@@ -99,7 +99,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }),
       name: widget => widget.context.path
     });
-    
+
     // Creating the sidebar widget for the xai components
     const sidebarWidget = ReactWidget.create(<Sidebar lab={app}/>);
     sidebarWidget.id = 'xircuits-component-sidebar';
@@ -247,9 +247,6 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
         // Create the panel if it does not exist
         if (!outputPanel || outputPanel.isDisposed) {
-          await createPanel();
-        } else {
-          outputPanel.dispose();
           await createPanel();
         }
 
