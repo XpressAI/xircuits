@@ -23,22 +23,12 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-
     - name: Set Branch Name
       run: |
-        echo "branch_name=$GITHUB_REF_NAME" >> $GITHUB_ENV
+        echo "branch_name=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV               
 
-    - name: Set Branch Name 2
-      run: |
-        echo "branch_name2=$GITHUB_REF" >> $GITHUB_ENV
-
-    - name: Set Branch Name 3
-      run: |
-        echo "branch_name3=$GITHUB_HEAD_REF" >> $GITHUB_ENV               
-
-    - name: Set Branch Name 4
-      run: |
-        echo "branch_name4=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV               
+    - name: Check Branch
+      run: echo "$env.branch_name"
 
     - name: Get Hash
       id: hash
@@ -68,5 +58,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: xircuits-wheel-${{ env.branch_name4 }}-${{ env.git_hash }}
+        name: xircuits-wheel-${{ env.branch_name }}-${{ env.git_hash }}
         path: dist
