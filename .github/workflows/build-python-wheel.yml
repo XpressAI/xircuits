@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -29,11 +28,11 @@ jobs:
       run: |
         echo "branch_name=$GITHUB_REF_NAME" >> $GITHUB_ENV
 
-     - name: Set Branch Name 2
+    - name: Set Branch Name 2
       run: |
         echo "branch_name2=$GITHUB_REF" >> $GITHUB_ENV
 
-     - name: Set Branch Name 3
+    - name: Set Branch Name 3
       run: |
         echo "branch_name3=$GITHUB_HEAD_REF" >> $GITHUB_ENV               
 
