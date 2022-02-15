@@ -25,10 +25,19 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
 
-    - name: Check Branch and Commit Hash
-      run: |
-        echo "Branch: ${{ steps.vars.outputs.branch }}"
-        echo "Sha: ${{ steps.vars.outputs.sha_short }}"
+    - name: Get Branch
+      id: branch
+      run: echo "git_branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_BRANCH
+
+    - name: Check Branch
+      run: echo "${{ env.branch }}"
+
+    - name: Get Hash
+      id: hash
+      run: echo "git_hash=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_HASH
+
+    - name: Check Hash
+      run: echo "${{ env.hash }}"
       
     - name: Setup Build Env
       run: |
@@ -51,5 +60,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: "xircuits-wheel-${GITHUB_REF#refs/*/}-${GITHUB_SHA}"
+        name: "xircuits-wheel-"${{ env.branch }}"-"${{ env.hash }}"
         path: dist
