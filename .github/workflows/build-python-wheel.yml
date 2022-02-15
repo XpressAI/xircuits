@@ -23,6 +23,12 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
+
+    - name: Check Branch and Commit Hash
+      run: |
+        echo "Branch: ${{ steps.vars.outputs.branch }}"
+        echo "Sha: ${{ steps.vars.outputs.sha_short }}"
       
     - name: Setup Build Env
       run: |
@@ -45,5 +51,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: xircuits-wheel-${GITHUB_REF#refs/*/}-$(git rev-parse --short "$GITHUB_SHA")
+        name: xircuits-wheel-${GITHUB_REF#refs/*/}-${GITHUB_SHA}
         path: dist
