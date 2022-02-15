@@ -25,31 +25,18 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
 
-    - name: Get Branch
-      id: branch
-      run: echo "git_branch=${GITHUB_REF#refs/heads/}" 
-      
-
-    - name: Check Branch
-      run: echo "$GITHUB_REF_NAME"
-
-    - name: Check Branch 2
-      run: echo $GITHUB_REF_NAME
+    - name: Set Branch Name
+      run: |
+        echo "branch_name=$GITHUB_REF_NAME" >> $GITHUB_ENV
 
     - name: Get Hash
       id: hash
-      run: echo "git_hash=$(git rev-parse --short "$GITHUB_SHA")" 
+      run: echo "git_hash=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
 
     - name: Check Hash
       run: echo "${{ env.hash }}"
 
-    - name: Check Hash2
-      env:
-        hash-short: $(git rev-parse --short "$GITHUB_SHA")" 
-      run: echo "$hash-short"
-
     - name: Get branch name
-      if: ${{ contains(github.ref, 'refs/tags/') }}
       run: echo "::set-env name=BRANCH_NAME::${GITHUB_REF##*/}"
       
     - name: Setup Build Env
