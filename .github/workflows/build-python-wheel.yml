@@ -61,5 +61,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: xircuits-wheel-"${{ env.branch }}"-"${{ env.hash }}"
+        name: xircuits-wheel-${GITHUB_REF#refs/heads/}-$(git rev-parse --short "$GITHUB_SHA")
         path: dist
