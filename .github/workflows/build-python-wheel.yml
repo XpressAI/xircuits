@@ -46,7 +46,11 @@ jobs:
     - name: Check Hash2
       env:
         hash-short: $(git rev-parse --short "$GITHUB_SHA")" 
-      run: echo "hash-short"
+      run: echo "$hash-short"
+
+    - name: Get branch name
+      if: ${{ contains(github.ref, 'refs/tags/') }}
+      run: echo "::set-env name=BRANCH_NAME::${GITHUB_REF##*/}"
       
     - name: Setup Build Env
       run: |
@@ -69,5 +73,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: xircuits-wheel-${GITHUB_REF_NAME}
+        name: ${{ env.BRANCH_NAME }}-xircuits-artifact
         path: dist
