@@ -61,6 +61,10 @@ export class OutputPanel extends StackedPanel {
             .then(async (value) => {
                 if (value) {
                     await sessionContextDialogs.selectKernel(this._sessionContext);
+                    // Dispose panel when no kernel selected
+                    if (this._sessionContext.hasNoKernel) {
+                        super.dispose();
+                    }
                 }
             })
             .catch((reason) => {
