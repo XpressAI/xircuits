@@ -31,7 +31,10 @@ jobs:
       
 
     - name: Check Branch
-      run: echo "${{ env.branch }}"
+      run: echo "$GITHUB_REF_NAME"
+
+    - name: Check Branch 2
+      run: echo $GITHUB_REF_NAME
 
     - name: Get Hash
       id: hash
@@ -39,6 +42,11 @@ jobs:
 
     - name: Check Hash
       run: echo "${{ env.hash }}"
+
+    - name: Check Hash2
+      env:
+        hash-short: $(git rev-parse --short "$GITHUB_SHA")" 
+      run: echo "hash-short"
       
     - name: Setup Build Env
       run: |
@@ -61,5 +69,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: xircuits-wheel-${GITHUB_REF#refs/heads/}-$(git rev-parse --short "$GITHUB_SHA")
+        name: xircuits-wheel-${GITHUB_REF_NAME}
         path: dist
