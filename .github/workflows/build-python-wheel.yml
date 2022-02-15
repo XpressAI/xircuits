@@ -60,5 +60,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: "xircuits-wheel-"${{ env.branch }}"-"${{ env.hash }}"
+        name: xircuits-wheel-"${{ env.branch }}"-"${{ env.hash }}"
         path: dist
