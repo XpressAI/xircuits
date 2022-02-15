@@ -38,7 +38,7 @@ jobs:
 
     - name: Set Branch Name 4
       run: |
-        echo "branch_name4=${GITHUB_REF##*/}" >> $GITHUB_ENV               
+        echo "branch_name4=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV               
 
     - name: Get Hash
       id: hash
