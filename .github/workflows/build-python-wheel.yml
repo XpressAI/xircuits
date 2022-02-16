@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -23,7 +22,21 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-      
+
+    - name: Set Branch Name
+      run: |
+        echo "branch_name=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV               
+
+    - name: Check Branch
+      run: echo "$env.branch_name"
+
+    - name: Get Hash
+      id: hash
+      run: echo "git_hash=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
+
+    - name: Check Hash
+      run: echo "$env.git_hash"
+
     - name: Setup Build Env
       run: |
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
@@ -45,5 +58,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: xircuits-wheel
+        name: xircuits-wheel-${{ env.branch_name }}-${{ env.git_hash }}
         path: dist
