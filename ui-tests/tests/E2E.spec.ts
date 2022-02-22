@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const TARGET_URL = process.env.TARGET_URL ?? 'http://localhost:8888/lab/tree/examples/KerasModelPredict.xircuits';
+const TARGET_URL = process.env.TARGET_URL ?? 'http://localhost:8888';
 
 test('Should complete E2E test', async ({
   page,
@@ -11,9 +11,17 @@ test('Should complete E2E test', async ({
     logs.push(message.text());
   });
 
-  await page.goto(`${TARGET_URL}/lab`);
+  await page.goto(`${TARGET_URL}`);
   await page.waitForSelector('#jupyterlab-splash', { state: 'detached' });
-  await page.pause();
+  //await page.pause();
+
+  
+  // Click [aria-label="File\ Browser\ Section"] >> text=examples
+  await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=examples').dblclick();
+  // assert.equal(page.url(), 'http://localhost:8888/lab/tree/examples');
+  // Click text=KerasModelPredict.xircuits
+  await page.locator('text=KerasModelPredict.xircuits').dblclick()
+  // assert.equal(page.url(), 'http://localhost:8888/lab/tree/examples/KerasModelPredict.xircuits');
 
   page.once('dialog', dialog => {
     console.log(`Dialog message: ${dialog.message()}`);
