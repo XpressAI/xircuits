@@ -166,7 +166,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     // Add a command for creating a new xircuits file.
     app.commands.addCommand(commandIDs.createNewXircuit, {
-      label: 'Create New Xircuits',
+      label: (args) => (args['isLauncher'] ? 'Xircuits File' : 'Create New Xircuits'),
       icon: xircuitsIcon,
       caption: 'Create a new xircuits file',
       execute: () => {
@@ -366,6 +366,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       launcher.add({
         command: commandIDs.createNewXircuit,
         rank: 1,
+        args: { isLauncher: true },
         category: 'Other'
       });
     }
