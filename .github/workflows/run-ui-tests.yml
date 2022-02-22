@@ -60,9 +60,9 @@ jobs:
       run: |
         cd ui-tests
         npx playwright install --with-deps
-        npm install -D @playwright/test
+        
 
     - name: Test E2E
       run: |
-        ( cd .. && jupyter lab --NotebookApp.token='' ) & (sleep 10 && npx playwright test)
+        ( cd .. && jupyter lab --NotebookApp.token='' ) & ( npm install -D @playwright/test && npx playwright test )
     
