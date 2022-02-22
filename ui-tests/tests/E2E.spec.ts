@@ -13,15 +13,12 @@ test('Should complete E2E test', async ({
 
   await page.goto(`${TARGET_URL}`);
   await page.waitForSelector('#jupyterlab-splash', { state: 'detached' });
-  //await page.pause();
-
   
   // Click [aria-label="File\ Browser\ Section"] >> text=examples
   await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=examples').dblclick();
-  // assert.equal(page.url(), 'http://localhost:8888/lab/tree/examples');
+  
   // Click text=KerasModelPredict.xircuits
   await page.locator('text=KerasModelPredict.xircuits').dblclick()
-  // assert.equal(page.url(), 'http://localhost:8888/lab/tree/examples/KerasModelPredict.xircuits');
 
   page.once('dialog', dialog => {
     console.log(`Dialog message: ${dialog.message()}`);
