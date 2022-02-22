@@ -8,7 +8,6 @@ import ImageGallery from 'react-image-gallery';
 import ToolTip from 'react-portal-tooltip';
 import { Pagination } from "krc-pagination";
 import 'krc-pagination/styles.css';
-import { Action, ActionEvent, InputType } from '@projectstorm/react-canvas-core';
 import Toggle from 'react-toggle'
 import { JupyterFrontEnd } from '@jupyterlab/application';
 import { commandIDs } from './xircuitBodyWidget';
@@ -67,31 +66,6 @@ export interface DefaultNodeProps {
     node: DefaultNodeModel;
     engine: DiagramEngine;
     app: JupyterFrontEnd;
-}
-
-interface CustomDeleteItemsActionOptions {
-	keyCodes?: number[];
-    customDelete?: CustomNodeWidget;
-    app: JupyterFrontEnd;
-}
-
-export class CustomDeleteItemsAction extends Action {
-    constructor(options: CustomDeleteItemsActionOptions) {
-        options = {
-            keyCodes: [46, 8],
-            ...options
-        };
-
-        super({
-            type: InputType.KEY_DOWN,
-            fire: (event: ActionEvent<React.KeyboardEvent>) => {
-                if (options.keyCodes.indexOf(event.event.keyCode) !== -1) {
-                    const app = options.app;
-                    app.commands.execute(commandIDs.deleteNode)
-                }
-            }
-        });
-    }
 }
 
 /**

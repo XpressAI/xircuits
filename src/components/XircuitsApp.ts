@@ -2,7 +2,7 @@ import * as SRD from '@projectstorm/react-diagrams';
 import { CustomNodeFactory } from "./CustomNodeFactory";
 import { CustomNodeModel } from './CustomNodeModel';
 import { ZoomCanvasAction } from '@projectstorm/react-canvas-core';
-import { CustomDeleteItemsAction } from './CustomNodeWidget';
+import { CustomActionEvent } from '../commands/CustomActionEvent';
 import { JupyterFrontEnd } from '@jupyterlab/application';
 
 export class XircuitsApplication {
@@ -17,7 +17,7 @@ export class XircuitsApplication {
                 this.activeModel = new SRD.DiagramModel();
                 this.diagramEngine.getNodeFactories().registerFactory(new CustomNodeFactory(app));
                 this.diagramEngine.getActionEventBus().registerAction(new ZoomCanvasAction({ inverseZoom: true }))
-                this.diagramEngine.getActionEventBus().registerAction(new CustomDeleteItemsAction({ app }));
+                this.diagramEngine.getActionEventBus().registerAction(new CustomActionEvent({ app }));
 
                 let startNode = new CustomNodeModel({ name: 'Start', color: 'rgb(255,102,102)', extras: { "type": "Start" } });
                 startNode.addOutPortEnhance('▶', 'out-0');

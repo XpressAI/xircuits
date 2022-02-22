@@ -4,14 +4,29 @@
     "jupyter.lab.menus": {
         "context": [
             {
-                "command": "Xircuit-editor:edit-node",
+                "command": "Xircuit-editor:cut-node",
                 "selector": ".xircuits-editor",
                 "rank": 0
             },
             {
-                "command": "Xircuit-editor:delete-node",
+                "command": "Xircuit-editor:copy-node",
                 "selector": ".xircuits-editor",
                 "rank": 1
+            },
+            {
+                "command": "Xircuit-editor:paste-node",
+                "selector": ".xircuits-editor",
+                "rank": 2
+            },
+            {
+                "command": "Xircuit-editor:edit-node",
+                "selector": ".xircuits-editor",
+                "rank": 3
+            },
+            {
+                "command": "Xircuit-editor:delete-node",
+                "selector": ".xircuits-editor",
+                "rank": 4
             },
             {
                 "type": "separator",
