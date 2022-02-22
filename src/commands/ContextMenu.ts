@@ -186,6 +186,8 @@ export function addContextMenuCommands(
 
                 modelInstance.setPosition(oldX + 10, oldY + 10)
                 model.addNode(modelInstance);
+                // Remove any empty/default node
+                if(modelInstance.getOptions()['type'] == 'default') model.removeNode(modelInstance)
                 modelInstance.setSelected(true);
             });
 
