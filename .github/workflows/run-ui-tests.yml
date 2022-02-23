@@ -1,0 +1,68 @@
+name: Run UI E2E Test
+
+on:
+  push:
+    branches: master
+  pull_request:
+    branches: "*"
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9"]
+
+    steps:
+    
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Set Branch Name
+      run: |
+        echo "branch_name=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV               
+
+    - name: Check Branch
+      run: echo "$env.branch_name"
+
+    - name: Get Hash
+      id: hash
+      run: echo "git_hash=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
+
+    - name: Check Hash
+      run: echo "$env.git_hash"
+
+    - name: Setup Build Env
+      run: |
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+        . ~/.nvm/nvm.sh
+        nvm install 14.15.3
+        nvm use 14.15.3
+        npm install --global yarn
+
+    - name: Build Wheel
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade build &&
+        python -m build
+
+    - name: Install Xircuits
+      run: |
+        pip install dist/*.whl
+
+    - name: Setup Playwright
+      run: |
+        cd ui-tests
+        npx playwright install --with-deps
+        
+
+    - name: Test E2E
+      run: |
+        ( ls && jupyter lab --NotebookApp.token='' ) & npm install -D @playwright/test && npx playwright test
+    
