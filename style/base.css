@@ -15,17 +15,9 @@
 
 }
 
-#moon1.orbit{
+.orbit{
   visibility: hidden;
 }
-
-#moon2.orbit{
-  visibility: hidden;
-}
-
-#moon3.orbit{
-  visibility: hidden;
-} 
 
 #main-logo > svg{
   visibility: hidden;
