@@ -4,7 +4,7 @@ import debuggerSvg from '../../style/icons/debugger.svg';
 import lockSvg from '../../style/icons/lock.svg';
 import breakpointSvg from '../../style/icons/breakpoint.svg';
 
-export const xircuitsFaviconLink = 'https://raw.githubusercontent.com/XpressAI/xircuits.io/9c147c956e9191dab2d4c32ba1393e2b01a2aa39/static/img/xpress-logo.ico';
+export const xircuitsFaviconLink = 'https://raw.githubusercontent.com/XpressAI/xircuits/master/style/icons/xpress-logo.ico';
 export const xircuitsIcon = new LabIcon({ name: 'xircuits:xircuits', svgstr: xircuitsSvg });
 export const debuggerIcon = new LabIcon({ name: 'xircuits:debuggerIcon', svgstr: debuggerSvg });
 export const lockIcon = new LabIcon({ name: 'xircuits:lockIcon', svgstr: lockSvg });
