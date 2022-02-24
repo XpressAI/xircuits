@@ -25,7 +25,7 @@ import { DocumentWidget } from '@jupyterlab/docregistry';
 import { runIcon, saveIcon } from '@jupyterlab/ui-components';
 import { addContextMenuCommands } from './commands/ContextMenu';
 import { Token } from '@lumino/coreutils';
-import { xircuitsIcon, debuggerIcon } from './ui-components/icons';
+import { xircuitsIcon, debuggerIcon, changeFavicon, xircuitsFaviconLink } from './ui-components/icons';
 
 
 const FACTORY = 'Xircuits editor';
@@ -134,6 +134,9 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
       widget = widgets.next();
     }
+
+    // Change the favicon
+    changeFavicon(xircuitsFaviconLink);
 
     // Creating the sidebar widget for the xai components
     const sidebarWidget = ReactWidget.create(<Sidebar lab={app}/>);
