@@ -24,7 +24,7 @@ class ConvertTorchModelToOnnx(Component):
     output_model_path: InArg[str]
     image_size: InArg[tuple]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.model = InArg.empty()
         self.device_name = InArg.empty()
@@ -71,7 +71,7 @@ class CreateUnetModel(Component):
     optimizer: OutArg[optim.Adam]
     early_stopping: OutArg[EarlyStopping]
     
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
        
         self.learning_rate = InArg.empty()
@@ -120,7 +120,7 @@ class ImageTrainTestSplit(Component):
     train_image_path: OutArg[Tuple[str, str]]
     test_image_path: OutArg[Tuple[str, str]]
     
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.split_ratio = InArg.empty()
         self.random_seed = InArg.empty()
@@ -209,7 +209,7 @@ class PrepareUnetDataLoader(Component):
     train_loader: OutArg[torch.utils.data.DataLoader]
     tests_loader: OutArg[torch.utils.data.DataLoader]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
 
         self.train_image_folder = InArg.empty()
@@ -270,7 +270,7 @@ class TrainUnet(Component):
     dice_score_metric: OutArg[list]
     iou_score_metric: OutArg[list]
     
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
 
         self.model = InArg.empty()
@@ -449,7 +449,7 @@ class UNetModel(Component):
     model: OutArg[str]
     device_name: OutArg[str]
     
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.gpu = InArg.empty()
         
@@ -481,7 +481,7 @@ class UnetPredict(Component):
     image_path: InArg[str]
     image_size: InArg[tuple]
     
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.model_path = InArg.empty()
         self.image_path = InArg.empty()

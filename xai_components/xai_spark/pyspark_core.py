@@ -21,7 +21,7 @@ class xSparkSession(Component):
     config: InArg[str]  #config("spark.some.config.option", "some-value")
     sparksession: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.master = InArg(None)
@@ -46,7 +46,7 @@ class SparkReadPandas(Component):
     out_dataframe: OutArg[any]
 
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.in_sparksession = InArg(None)
@@ -73,7 +73,7 @@ class SparkReadFile(Component):
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.in_sparksession = InArg(None)
@@ -122,7 +122,7 @@ class SparkReadCSV(Component):
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.in_sparksession = InArg(None)
@@ -159,7 +159,7 @@ class SparkWriteFile(Component):
     header: InArg[bool]
     out_sparksession: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.dataframe = InArg(None)
@@ -195,7 +195,7 @@ class SparkSQL(Component):
     sql_dataframe: OutArg[any]
 
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.in_sparksession = InArg(None)
@@ -237,7 +237,7 @@ class SparkVisualize(Component):
     y_axis: InArg[str]
     output_name: InArg[str]
 
-    def __init__(self):
+    def __init__(self, ctx):
         
         self.done = False
         self.dataframe = InArg(None)

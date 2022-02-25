@@ -3,7 +3,7 @@ from xai_components.base import InArg, OutArg, InCompArg, Component, xai_compone
 @xai_component(color="red")
 class HelloComponent(Component):
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
 
@@ -21,7 +21,7 @@ class HelloComponent(Component):
 class HelloHyperparameter(Component):
     input_str: InArg[str]
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.input_str = InArg.empty()
@@ -40,7 +40,7 @@ class CompulsoryHyperparameter(Component):
     comp_str: InCompArg[str]
     comp_int: InCompArg[int]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.input_str = InArg.empty()
         self.comp_str = InCompArg.empty()
@@ -63,13 +63,13 @@ class HelloListTupleDict(Component):
     input_tuple: InArg[tuple]
     input_dict: InArg[dict]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.input_tuple = InArg.empty()
         self.input_list = InArg.empty()
         self.input_dict = InArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         #if you would like ports to have default values if user does not provide, try this way.
         input_list = self.input_list.value if self.input_list.value else ""

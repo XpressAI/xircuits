@@ -20,7 +20,7 @@ class ReadDataSet(Component):
     class_dict: OutArg[any]
 
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.dataset_name = InArg.empty()
         self.dataset = OutArg.empty()
@@ -131,7 +131,7 @@ class ReadMaskDataSet(Component):
     
     dataset: OutArg[Tuple[str, str]]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.dataset_name = InArg.empty()
         self.mask_dataset_name = InArg.empty()
@@ -157,7 +157,7 @@ class FlattenImageData(Component):
     dataset: InArg[Tuple[np.array, np.array]]
     resized_dataset: OutArg[Tuple[np.array, np.array]]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.dataset = InArg.empty()
         self.resized_dataset = OutArg.empty()
@@ -182,7 +182,7 @@ class TrainTestSplit(Component):
     train: OutArg[Tuple[np.array, np.array]]
     test: OutArg[Tuple[np.array, np.array]]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.dataset = InArg.empty()
         self.train_split = InArg.empty()
@@ -217,7 +217,7 @@ class Create1DInputModel(Component):
 
     model: OutArg[keras.Sequential]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.training_data = InArg.empty()
         self.model = OutArg.empty()
@@ -250,7 +250,7 @@ class Create2DInputModel(Component):
     model_config: OutArg[dict]
 
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.training_data = InArg.empty()
         self.model = OutArg.empty()
@@ -304,7 +304,7 @@ class TrainImageClassifier(Component):
     trained_model: OutArg[keras.Sequential]
     training_metrics: OutArg[dict]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
 
         self.model = InArg.empty()
@@ -342,7 +342,7 @@ class EvaluateAccuracy(Component):
 
     metrics: OutArg[Dict[str, str]]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.model = InArg.empty()
         self.eval_dataset = InArg.empty()
@@ -369,7 +369,7 @@ class ShouldStop(Component):
 
     should_retrain: OutArg[bool]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.target_accuracy = InArg.empty()
         self.max_retries = InArg.empty()
@@ -402,7 +402,7 @@ class SaveKerasModel(Component):
     model_name: InArg[str]
     model_h5_path: OutArg[str]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.model = InArg.empty()
         self.model_name = InArg.empty()
@@ -425,7 +425,7 @@ class SaveKerasModelInModelStash(Component):
     experiment_name: InArg[str]
     metrics: InArg[Dict[str, float]]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.model = InArg.empty()
         self.experiment_name = InArg.empty()

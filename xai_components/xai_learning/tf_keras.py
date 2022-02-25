@@ -22,7 +22,7 @@ class LoadKerasModel(Component):
     #**kwargs
     model: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.model_name = InArg(None)
         self.include_top = InArg(None)
@@ -90,7 +90,7 @@ class KerasPredict(Component):
     class_list: InArg[any]
     target_shape: InArg[tuple]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.model = InArg(None)
         self.img_string = InArg(None)
@@ -107,7 +107,7 @@ class KerasPredict(Component):
             decode_predictions: any
             target_size:any
 
-            def __init__(self):
+            def __init__(self, ctx):
                 self.preprocess_input = None
                 self.decode_predictions = None
                 self.target_size = (224, 224)
@@ -203,7 +203,7 @@ class resnet_model_config:
     pooling: any
     classes: int
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.include_top = True
         self.weights = "imagenet"
         self.input_tensor = None
@@ -221,7 +221,7 @@ class ResNet50(Component):
     args: InArg[int]
     model: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.include_top = InArg(None)
         self.weights = InArg(None)
@@ -263,7 +263,7 @@ class ResNet101(Component):
     args: InArg[int]
     model: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.include_top = InArg(None)
         self.weights = InArg(None)
@@ -305,7 +305,7 @@ class ResNet152(Component):
     args: InArg[int]
     model: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.include_top = InArg(None)
         self.weights = InArg(None)
@@ -344,7 +344,7 @@ class vgg_model_config:
     classes: int
     classifier_activation: str
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.include_top = True
         self.weights = "imagenet"
         self.input_tensor = None
@@ -364,7 +364,7 @@ class VGG16(Component):
     classifier_activation: InArg[int]
     model: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.include_top = InArg(None)
         self.weights = InArg(None)
@@ -407,7 +407,7 @@ class VGG19(Component):
     classifier_activation: InArg[int]
     model: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.include_top = InArg(None)
         self.weights = InArg(None)
@@ -450,7 +450,7 @@ class Xception(Component):
     classifier_activation: InArg[int]
     model: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.include_top = InArg(None)
         self.weights = InArg(None)
@@ -495,7 +495,7 @@ class mobile_model_config:
     classes: int
     classifier_activation: str
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.input_shape=None
         self.alpha=1.0
@@ -524,7 +524,7 @@ class MobileNet(Component):
     classifier_activation: InArg[str]
     model: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.include_top = InArg(None)
         self.weights = InArg(None)

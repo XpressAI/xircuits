@@ -17,7 +17,7 @@ class StartLocalModelStashSession(Component):
     username: InCompArg[str] 
     password: InCompArg[str]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
 
         self.client_url = InArg.empty()
@@ -46,7 +46,7 @@ class StartLocalModelStashSession(Component):
 @xai_component
 class ListModels(Component):
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
 
     def execute(self) -> None:
@@ -57,7 +57,7 @@ class ListModels(Component):
 @xai_component
 class ListSkills(Component):
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
 
     def execute(self) -> None:
@@ -82,7 +82,7 @@ class UploadToModelStash(Component):
     ms_model: OutArg[any] #should be a list
 
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
 
         self.model_file_path = InCompArg.empty()
@@ -186,7 +186,7 @@ class DeleteModelfromModelStash(Component):
 
     model_name: InArg[str]
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.model_name = InArg.empty()
@@ -217,7 +217,7 @@ class DownloadLinkfromModelStash(Component):
     model_name: InArg[str]
     modelVersion: InArg[int] 
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.model_name = InArg.empty()
@@ -245,7 +245,7 @@ class LoadfromModelStash(Component):
     modelVersion: InArg[int]
     model: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
 

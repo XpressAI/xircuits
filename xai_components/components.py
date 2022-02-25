@@ -5,7 +5,7 @@ class MyComponent(Component):
     data_set: OutArg[Dataset]
     name: InArg[str]
         
-    def __init__(self):
+    def __init__(self, ctx):
         self.data_name = InArg.default()
         self.data_set = OutArg.default()
         

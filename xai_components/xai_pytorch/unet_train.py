@@ -86,7 +86,7 @@ class UNetDataset(Dataset):
 
 class UNet(nn.Module):
 
-    def __init__(self):
+    def __init__(self, ctx):
         super().__init__()
 
         self.d_conv_down_1 = self.double_conv(1, 16)

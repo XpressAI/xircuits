@@ -21,7 +21,7 @@ class SparkSparseVector(Component):
     vector_list: InArg[list]
     sparse_vector: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.vector_list = InArg(None)
@@ -47,7 +47,7 @@ class SparkLabeledPoint(Component):
     labeled_point: OutArg[any]
 
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.label = InArg(None)
@@ -75,7 +75,7 @@ class SparkLoadImageFolder(Component):
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.in_sparksession = InArg(None)
@@ -109,7 +109,7 @@ class SparkSplitDataFrame(Component):
     test_dataframe: OutArg[any]
 
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.in_dataframe = InArg(None)
@@ -155,7 +155,7 @@ class SparkLoadLIBSVM(Component):
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.in_sparksession = InArg(None)
@@ -194,7 +194,7 @@ class SparkLogisticRegression(Component):
 
     model: OutArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.train_dataframe = InArg(None)
@@ -236,7 +236,7 @@ class SparkPredict(Component):
     model: InArg[any]
     test_df: InArg[any]
 
-    def __init__(self):
+    def __init__(self, ctx):
 
         self.done = False
         self.model = InArg(None)

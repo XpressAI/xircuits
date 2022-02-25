@@ -11,7 +11,7 @@ class LoadImage(Component):
     dataset_name: InArg[str]
     dataset: OutArg[Tuple[np.array, np.array]]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.dataset_name = InArg.empty()
         self.dataset = OutArg.empty()
@@ -39,7 +39,7 @@ class ResizeImageData(Component):
     dataset: InArg[Tuple[np.array, np.array]]
     resized_dataset: OutArg[Tuple[np.array, np.array]]
 
-    def __init__(self):
+    def __init__(self, ctx):
         self.done = False
         self.dataset = InArg.empty()
         self.resized_dataset = OutArg.empty()
