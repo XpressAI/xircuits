@@ -84,3 +84,23 @@ class HelloListTupleDict(Component):
         print(input_dict)
 
         self.done = True
+
+@xai_component
+class HelloContext(Component):
+
+    context_dict: InArg[dict]
+
+    def __init__(self, ctx):
+        self.done = False
+        self.context_dict = InArg.empty()
+
+    def execute(self, ctx) -> None:
+        
+        print(f"Current Context:\n{ctx}")
+        
+        context_dict = self.context_dict.value if self.context_dict.value else {"new ctx": "Hello Xircuits!"}
+        ctx.update(context_dict)
+
+        print(f"After Adding Context:\n{ctx}")
+
+        self.done = True
