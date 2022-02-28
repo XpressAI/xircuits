@@ -107,7 +107,7 @@ class KerasPredict(Component):
             decode_predictions: any
             target_size:any
 
-            def __init__(self, ctx):
+            def __init__(self):
                 self.preprocess_input = None
                 self.decode_predictions = None
                 self.target_size = (224, 224)
@@ -203,7 +203,7 @@ class resnet_model_config:
     pooling: any
     classes: int
 
-    def __init__(self, ctx):
+    def __init__(self):
         self.include_top = True
         self.weights = "imagenet"
         self.input_tensor = None
