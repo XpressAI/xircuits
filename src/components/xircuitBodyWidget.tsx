@@ -431,9 +431,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		pythonCode += "outarg_output_data = []\n";
 		pythonCode += "is_done_list = []\n";
 
-		pythonCode += "\ndef main(args):\n";
+		pythonCode += "\ndef main(args):\n\n";
 		pythonCode += '    ' + 'ctx = {}\n';
-		pythonCode += '    ' + "ctx['args'] = args\n";
+		pythonCode += '    ' + "ctx['args'] = args\n\n";
 
 		for (let i = 0; i < allNodes.length; i++) {
 
@@ -449,7 +449,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				let bindingName = 'c_' + i;
 				let componentName = allNodes[i]["name"];
 				componentName = componentName.replace(/\s+/g, "");
-				pythonCode += '    ' + bindingName + ' = ' + componentName + '(ctx)\n';
+				pythonCode += '    ' + bindingName + ' = ' + componentName + '()\n';
 			}
 
 		}

@@ -21,13 +21,13 @@ class SparkSparseVector(Component):
     vector_list: InArg[list]
     sparse_vector: OutArg[any]
 
-    def __init__(self, ctx):
+    def __init__(self):
 
         self.done = False
         self.vector_list = InArg(None)
         self.sparse_vector = OutArg(None)
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         vector_list = self.vector_list.value
 
@@ -47,7 +47,7 @@ class SparkLabeledPoint(Component):
     labeled_point: OutArg[any]
 
 
-    def __init__(self, ctx):
+    def __init__(self):
 
         self.done = False
         self.label = InArg(None)
@@ -56,7 +56,7 @@ class SparkLabeledPoint(Component):
 
         self.labeled_point = OutArg(None)
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         label = self.label.value
         vector = self.dense_vector.value if self.dense_vector.value else self.sparse_vector.value
@@ -75,7 +75,7 @@ class SparkLoadImageFolder(Component):
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
 
-    def __init__(self, ctx):
+    def __init__(self):
 
         self.done = False
         self.in_sparksession = InArg(None)
@@ -84,7 +84,7 @@ class SparkLoadImageFolder(Component):
         self.out_dataframe = OutArg(None)
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         spark = self.in_sparksession.value
         folder_path = self.folder_path.value
@@ -109,7 +109,7 @@ class SparkSplitDataFrame(Component):
     test_dataframe: OutArg[any]
 
 
-    def __init__(self, ctx):
+    def __init__(self):
 
         self.done = False
         self.in_dataframe = InArg(None)
@@ -122,7 +122,7 @@ class SparkSplitDataFrame(Component):
 
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         df = self.in_dataframe.value
         seed = self.seed.value if self.seed.value else None
@@ -155,7 +155,7 @@ class SparkLoadLIBSVM(Component):
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
 
-    def __init__(self, ctx):
+    def __init__(self):
 
         self.done = False
         self.in_sparksession = InArg(None)
@@ -166,7 +166,7 @@ class SparkLoadLIBSVM(Component):
         self.out_dataframe = OutArg(None)
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         spark = self.in_sparksession.value
         filepath = self.file_input.value
@@ -194,7 +194,7 @@ class SparkLogisticRegression(Component):
 
     model: OutArg[any]
 
-    def __init__(self, ctx):
+    def __init__(self):
 
         self.done = False
         self.train_dataframe = InArg(None)
@@ -204,7 +204,7 @@ class SparkLogisticRegression(Component):
         self.model = OutArg(None)
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         training = self.train_dataframe.value
         options = self.options.value if self.options.value else {"maxIter":10, "regParam":0.3, "elasticNetParam":0.8}
@@ -236,13 +236,13 @@ class SparkPredict(Component):
     model: InArg[any]
     test_df: InArg[any]
 
-    def __init__(self, ctx):
+    def __init__(self):
 
         self.done = False
         self.model = InArg(None)
         self.test_df = InArg(None)
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         model = self.model.value
         test = self.test_df.value

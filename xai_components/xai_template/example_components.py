@@ -3,11 +3,11 @@ from xai_components.base import InArg, OutArg, InCompArg, Component, xai_compone
 @xai_component(color="red")
 class HelloComponent(Component):
 
-    def __init__(self, ctx):
+    def __init__(self):
 
         self.done = False
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         
         #If the import is only exclusive to 1 component, it is a good practice to import inside execute()
         import os 
@@ -21,12 +21,12 @@ class HelloComponent(Component):
 class HelloHyperparameter(Component):
     input_str: InArg[str]
 
-    def __init__(self, ctx):
+    def __init__(self):
 
         self.done = False
         self.input_str = InArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         input_str = self.input_str.value
         print("Hello, " + str(input_str))
         self.done = True
@@ -40,13 +40,13 @@ class CompulsoryHyperparameter(Component):
     comp_str: InCompArg[str]
     comp_int: InCompArg[int]
 
-    def __init__(self, ctx):
+    def __init__(self):
         self.done = False
         self.input_str = InArg.empty()
         self.comp_str = InCompArg.empty()
         self.comp_int = InCompArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         input_str = self.input_str.value
         comp_str = self.comp_str.value
         comp_int = self.comp_int.value
@@ -63,7 +63,7 @@ class HelloListTupleDict(Component):
     input_tuple: InArg[tuple]
     input_dict: InArg[dict]
 
-    def __init__(self, ctx):
+    def __init__(self):
         self.done = False
         self.input_tuple = InArg.empty()
         self.input_list = InArg.empty()
@@ -90,7 +90,7 @@ class HelloContext(Component):
 
     context_dict: InArg[dict]
 
-    def __init__(self, ctx):
+    def __init__(self):
         self.done = False
         self.context_dict = InArg.empty()
 

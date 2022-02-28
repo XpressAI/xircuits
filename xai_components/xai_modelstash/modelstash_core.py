@@ -17,7 +17,7 @@ class StartLocalModelStashSession(Component):
     username: InCompArg[str] 
     password: InCompArg[str]
 
-    def __init__(self, ctx):
+    def __init__(self):
         self.done = False
 
         self.client_url = InArg.empty()
@@ -25,7 +25,7 @@ class StartLocalModelStashSession(Component):
         self.password = InCompArg.empty() 
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         
         global ms
         global ms_cli
@@ -46,10 +46,10 @@ class StartLocalModelStashSession(Component):
 @xai_component
 class ListModels(Component):
 
-    def __init__(self, ctx):
+    def __init__(self):
         self.done = False
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         print(ms_cli.list_models())
         self.done = True
 
@@ -57,10 +57,10 @@ class ListModels(Component):
 @xai_component
 class ListSkills(Component):
 
-    def __init__(self, ctx):
+    def __init__(self):
         self.done = False
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         print(ms_cli.list_skills())
         self.done = True
 
@@ -82,7 +82,7 @@ class UploadToModelStash(Component):
     ms_model: OutArg[any] #should be a list
 
 
-    def __init__(self, ctx):
+    def __init__(self):
         self.done = False
 
         self.model_file_path = InCompArg.empty()
@@ -100,7 +100,7 @@ class UploadToModelStash(Component):
         self.ms_model = OutArg.empty() 
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         import getpass
 
@@ -186,12 +186,12 @@ class DeleteModelfromModelStash(Component):
 
     model_name: InArg[str]
 
-    def __init__(self, ctx):
+    def __init__(self):
 
         self.done = False
         self.model_name = InArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         filename = Path(sys.argv[0]).stem
         model_name = self.model_name.value if self.model_name.value else filename
@@ -217,13 +217,13 @@ class DownloadLinkfromModelStash(Component):
     model_name: InArg[str]
     modelVersion: InArg[int] 
 
-    def __init__(self, ctx):
+    def __init__(self):
 
         self.done = False
         self.model_name = InArg.empty()
         self.modelVersion = InArg.empty() 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         filename = Path(sys.argv[0]).stem
         model_name = self.model_name.value if self.model_name.value else filename
@@ -245,7 +245,7 @@ class LoadfromModelStash(Component):
     modelVersion: InArg[int]
     model: OutArg[any]
 
-    def __init__(self, ctx):
+    def __init__(self):
 
         self.done = False
 
@@ -255,7 +255,7 @@ class LoadfromModelStash(Component):
         self.model = OutArg.empty() 
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
 
         filename = Path(sys.argv[0]).stem
