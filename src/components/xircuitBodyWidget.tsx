@@ -772,6 +772,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
+		onChange()
 		setInitialize(true);
 		setSaved(true);
 		commands.execute(commandIDs.saveDocManager);
