@@ -3,12 +3,14 @@ import xircuitsSvg from '../../style/icons/xpress-logo.svg';
 import debuggerSvg from '../../style/icons/debugger.svg';
 import lockSvg from '../../style/icons/lock.svg';
 import breakpointSvg from '../../style/icons/breakpoint.svg';
+import revertSvg from '../../style/icons/revert.svg';
 
 export const xircuitsFaviconLink = 'https://raw.githubusercontent.com/XpressAI/xircuits/master/style/icons/xpress-logo.ico';
 export const xircuitsIcon = new LabIcon({ name: 'xircuits:xircuits', svgstr: xircuitsSvg });
 export const debuggerIcon = new LabIcon({ name: 'xircuits:debuggerIcon', svgstr: debuggerSvg });
 export const lockIcon = new LabIcon({ name: 'xircuits:lockIcon', svgstr: lockSvg });
 export const breakpointIcon = new LabIcon({ name: 'xircuits:breakpointIcon', svgstr: breakpointSvg });
+export const revertIcon = new LabIcon({ name: 'xircuits:revertIcon', svgstr: revertSvg });
 
 export function changeFavicon(src: string) {
     let head = document.head || document.getElementsByTagName('head')[0];
@@ -23,3 +25,4 @@ export function changeFavicon(src: string) {
     }
     head.appendChild(link);
 }
+
