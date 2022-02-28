@@ -116,6 +116,10 @@ export  class CustomPortModel extends DefaultPortModel  {
 
         }else{
             if (thisName.startsWith("parameter")){
+                // Skip 'any' type check
+                if(thisName.includes('any')){
+                    return
+                }
 		        port.getNode().getOptions().extras["borderColor"]="red";
 		        port.getNode().getOptions().extras["tip"]= "Node link to this port must be a hyperparameter/literal";
                 port.getNode().setSelected(true);
