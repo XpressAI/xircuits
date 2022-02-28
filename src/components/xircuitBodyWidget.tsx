@@ -284,6 +284,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		const currentContext = contextRef.current;
 	
 		const changeHandler = (): void => {
+			const modelStr = currentContext.model.toString();
+			if (!isJSON(modelStr)) {
+				// When context can't be parsed, just return
+				return
+			}
+
 			try {
 				if (notInitialRender.current) {
 		  const model: any = currentContext.model.toJSON();
@@ -306,6 +312,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		  currentContext.model.contentChanged.disconnect(changeHandler);
 		};
 	  }, []);
+
+	const isJSON = (str) => {
+		try {
+			return (JSON.parse(str) && !!str);
+		} catch (e) {
+			return false;
+		}
+	}
 
 	const getBindingIndexById = (nodeModels: any[], id: string): number | null => {
 		for (let i = 0; i < nodeModels.length; i++) {
