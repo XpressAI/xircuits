@@ -282,7 +282,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	useEffect(() => {
 		const currentContext = contextRef.current;
-	
+
 		const changeHandler = (): void => {
 			const modelStr = currentContext.model.toString();
 			if (!isJSON(modelStr)) {
@@ -292,9 +292,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 			try {
 				if (notInitialRender.current) {
-		  const model: any = currentContext.model.toJSON();
-				let deserializedModel = customDeserializeModel(model, xircuitsApp.getDiagramEngine());
-				xircuitsApp.getDiagramEngine().setModel(deserializedModel);
+					const model: any = currentContext.model.toJSON();
+					let deserializedModel = customDeserializeModel(model, xircuitsApp.getDiagramEngine());
+					xircuitsApp.getDiagramEngine().setModel(deserializedModel);
 				} else {
 					// Clear undo history when first time rendering
 					notInitialRender.current = true;
@@ -772,7 +772,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		onChange();
 		setInitialize(true);
 		setSaved(true);
 		commands.execute(commandIDs.saveDocManager);
