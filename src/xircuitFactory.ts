@@ -16,8 +16,7 @@ import {
   listIcon, 
   refreshIcon, 
   runIcon, 
-  saveIcon, 
-  undoIcon 
+  saveIcon
 } from '@jupyterlab/ui-components';
 import { ToolbarButton } from '@jupyterlab/apputils';
 import { commandIDs } from './components/xircuitBodyWidget';

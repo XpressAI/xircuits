@@ -6,7 +6,7 @@ import { commandIDs } from '../components/xircuitBodyWidget';
 import { DebuggerWidget } from './DebuggerWidget';
 import { XircuitFactory } from '../xircuitFactory';
 import { Toolbar, CommandToolbarButton } from '@jupyterlab/apputils';
-import { breakpointIcon } from '../ui-components/icons';
+import { breakpointIcon, nextIcon } from '../ui-components/icons';
 
 export const DebuggerCommandIDs = {
   continue: 'Xircuits-debugger:continue',
@@ -146,7 +146,7 @@ export const DebuggerCommandIDs = {
       // Add command signal to toggle next node
       app.commands.addCommand(commandIDs.nextNode, {
         caption: trans.__('Next Node'),
-        iconClass: 'jp-NextLogo',
+        icon: nextIcon,
         isEnabled: () => {
           return inDebugMode ?? false;
         },
