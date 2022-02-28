@@ -8,6 +8,7 @@ import { XPipePanel } from '../xircuitWidget';
 import { Dialog, showDialog } from '@jupyterlab/apputils';
 import { DefaultLinkModel } from '@projectstorm/react-diagrams';
 import { BaseModel, BaseModelGenerics } from '@projectstorm/react-canvas-core';
+import { copyIcon, cutIcon, pasteIcon, redoIcon, undoIcon } from '@jupyterlab/ui-components';
 
 /**
  * Add the commands for the xircuits's context menu.
@@ -30,10 +31,47 @@ export function addContextMenuCommands(
         );
     }
 
+    //Add command to undo
+    commands.addCommand(commandIDs.undo, {
+        execute:  () =>{
+            const widget = tracker.currentWidget?.content as XPipePanel;
+            const model = widget.context.model.sharedModel;
+
+            model.undo();
+        },
+        label: trans.__('Undo'),
+        icon: undoIcon,
+        isEnabled: () => {
+            const widget = tracker.currentWidget?.content as XPipePanel;
+            const canUndo = widget.context.model.sharedModel.canUndo();
+            
+            return canUndo ?? false;
+        }
+    });
+
+    //Add command to redo
+    commands.addCommand(commandIDs.redo, {
+        execute: () => {
+            const widget = tracker.currentWidget?.content as XPipePanel;
+            const model = widget.context.model.sharedModel;
+
+            model.redo();
+        },
+        label: trans.__('Redo'),
+        icon: redoIcon,
+        isEnabled: () => {
+            const widget = tracker.currentWidget?.content as XPipePanel;
+            const canRedo = widget.context.model.sharedModel.canRedo();
+            
+            return canRedo ?? false;
+        }
+    });
+
     //Add command to cut node
     commands.addCommand(commandIDs.cutNode, {
         execute: cutNode,
         label: trans.__('Cut'),
+        icon: cutIcon,
         isEnabled: () => {
             const widget = tracker.currentWidget?.content as XPipePanel;
             const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
@@ -49,6 +87,7 @@ export function addContextMenuCommands(
     commands.addCommand(commandIDs.copyNode, {
         execute: copyNode,
         label: trans.__('Copy'),
+        icon: copyIcon,
         isEnabled: () => {
             const widget = tracker.currentWidget?.content as XPipePanel;
             const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
@@ -64,6 +103,7 @@ export function addContextMenuCommands(
     commands.addCommand(commandIDs.pasteNode, {
         execute: pasteNode,
         label: trans.__('Paste'),
+        icon: pasteIcon,
         isEnabled: () => {
             const clipboard = JSON.parse(localStorage.getItem('clipboard'));
             let isClipboardFilled: boolean
