@@ -3,7 +3,7 @@ import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
 import { LinkModel, DiagramModel, DiagramEngine, DefaultLinkModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
-import { Dialog, showDialog } from '@jupyterlab/apputils';
+import { Dialog, showDialog, showErrorMessage } from '@jupyterlab/apputils';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
 import {
@@ -170,6 +170,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [runType, setRunType] = useState<string>("run");
 	const xircuitLogger = new Log(app);
 	const contextRef = useRef(context);
+	const notInitialRender = useRef(false);
 
 	const onChange = useCallback(
 		(): void => {
@@ -278,10 +279,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		const currentContext = contextRef.current;
 	
 		const changeHandler = (): void => {
+			try {
+				if (notInitialRender.current) {
 		  const model: any = currentContext.model.toJSON();
-			if (context.isReady) {
 				let deserializedModel = customDeserializeModel(model, xircuitsApp.getDiagramEngine());
 				xircuitsApp.getDiagramEngine().setModel(deserializedModel);
+				} else {
+					// Clear undo history when first time rendering
+					notInitialRender.current = true;
+					currentContext.model.sharedModel.clearUndoHistory();
+				}
+			} catch (e) {
+				showErrorMessage('Error', <pre>{e}</pre>)
 			}
 		};
 
