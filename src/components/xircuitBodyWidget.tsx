@@ -185,6 +185,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	
 	const customDeserializeModel = (modelContext: any, diagramEngine: DiagramEngine) => {
 
+		if (modelContext == null) {
+			// When context empty, just return
+			return;
+		}
+
 		let tempModel = new DiagramModel();
 		let links = modelContext["layers"][0]["models"];
 		let nodes = modelContext["layers"][1]["models"];
