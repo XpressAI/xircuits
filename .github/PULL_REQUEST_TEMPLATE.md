@@ -13,6 +13,7 @@ If applicable, note issue numbers this pull request addresses. You can also note
 - [ ] Xircuits Core (Jupyterlab Related changes)
 - [ ] Xircuits Canvas (Custom RD Related changes)
 - [ ] Xircuits Component Library
+- [ ] Testing Automation
 - [ ] Documentation
 - [ ] Others (Please Specify)
 
@@ -27,7 +28,7 @@ If applicable, note issue numbers this pull request addresses. You can also note
 
 Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce. Please also list any relevant details for your test configuration.
 
-1. Test A
+**1. Test A**
 
     1. First step
     2. Second step
