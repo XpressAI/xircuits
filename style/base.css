@@ -37,18 +37,6 @@
   flex: 0 0 auto;
 }
 
-.jp-ComponentLibraryLogo {
-  background-image: url(./icons/component-library.svg);
-  background-repeat: no-repeat;
-  background-size: 28px 28px;
-}
-
-.jp-NextLogo {
-  background-image: url(./icons/next.svg);
-  background-repeat: no-repeat;
-  background-size: 25px 25px;
-}
-
 /* Close button for image viewer*/
 .close {
   color: #fff;

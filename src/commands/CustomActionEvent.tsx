@@ -14,7 +14,10 @@ export class CustomActionEvent extends Action {
                 const app = options.app;
                 const keyCode = event.event.key;
                 const ctrlKey = event.event.ctrlKey;
-                
+
+                if (ctrlKey && keyCode === 'z') app.commands.execute(commandIDs.undo);
+                if (ctrlKey && keyCode === 'y') app.commands.execute(commandIDs.redo);
+                if (ctrlKey && keyCode === 's') app.commands.execute(commandIDs.saveXircuit);
                 // Comment this first until the TODO below is fix
                 // if (ctrlKey && keyCode === 'x') app.commands.execute(commandIDs.cutNode);
                 // if (ctrlKey && keyCode === 'c') app.commands.execute(commandIDs.copyNode);

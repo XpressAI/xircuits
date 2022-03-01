@@ -16,15 +16,14 @@ import {
   listIcon, 
   refreshIcon, 
   runIcon, 
-  saveIcon, 
-  undoIcon 
+  saveIcon
 } from '@jupyterlab/ui-components';
 import { ToolbarButton } from '@jupyterlab/apputils';
 import { commandIDs } from './components/xircuitBodyWidget';
 import { CommandIDs } from './log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
 import { RunSwitcher } from './components/RunSwitcher';
-import { lockIcon, xircuitsIcon } from './ui-components/icons';
+import { lockIcon, revertIcon, xircuitsIcon } from './ui-components/icons';
 
 const XPIPE_CLASS = 'xircuits-editor';
 
@@ -136,7 +135,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
      * Create a revert button toolbar item.
      */
     let revertButton = new ToolbarButton({
-      icon: undoIcon,
+      icon: revertIcon,
       tooltip: 'Revert Xircuits to Checkpoint',
       onClick: (): void => {
         this.commands.execute(commandIDs.revertDocManager);

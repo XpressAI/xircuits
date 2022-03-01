@@ -3,7 +3,7 @@ import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
 import { LinkModel, DiagramModel, DiagramEngine, DefaultLinkModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
-import { Dialog, showDialog } from '@jupyterlab/apputils';
+import { Dialog, showDialog, showErrorMessage } from '@jupyterlab/apputils';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
 import {
@@ -91,6 +91,8 @@ export const commandIDs = {
 	runXircuit: 'Xircuit-editor:run-node',
 	debugXircuit: 'Xircuit-editor:debug-node',
 	lockXircuit: 'Xircuit-editor:lock-node',
+	undo: 'Xircuit-editor:undo',
+	redo: 'Xircuit-editor:redo',
 	cutNode: 'Xircuit-editor:cut-node',
 	copyNode: 'Xircuit-editor:copy-node',
 	pasteNode: 'Xircuit-editor:paste-node',
@@ -168,6 +170,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [runType, setRunType] = useState<string>("run");
 	const xircuitLogger = new Log(app);
 	const contextRef = useRef(context);
+	const notInitialRender = useRef(false);
 
 	const onChange = useCallback(
 		(): void => {
@@ -181,6 +184,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}, []);
 	
 	const customDeserializeModel = (modelContext: any, diagramEngine: DiagramEngine) => {
+
+		if (modelContext == null) {
+			// When context empty, just return
+			return;
+		}
 
 		let tempModel = new DiagramModel();
 		let links = modelContext["layers"][0]["models"];
@@ -274,12 +282,26 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	useEffect(() => {
 		const currentContext = contextRef.current;
-	
+
 		const changeHandler = (): void => {
-		  const model: any = currentContext.model.toJSON();
-			if (context.isReady) {
-				let deserializedModel = customDeserializeModel(model, xircuitsApp.getDiagramEngine());
-				xircuitsApp.getDiagramEngine().setModel(deserializedModel);
+			const modelStr = currentContext.model.toString();
+			if (!isJSON(modelStr)) {
+				// When context can't be parsed, just return
+				return
+			}
+
+			try {
+				if (notInitialRender.current) {
+					const model: any = currentContext.model.toJSON();
+					let deserializedModel = customDeserializeModel(model, xircuitsApp.getDiagramEngine());
+					xircuitsApp.getDiagramEngine().setModel(deserializedModel);
+				} else {
+					// Clear undo history when first time rendering
+					notInitialRender.current = true;
+					currentContext.model.sharedModel.clearUndoHistory();
+				}
+			} catch (e) {
+				showErrorMessage('Error', <pre>{e}</pre>)
 			}
 		};
 
@@ -290,6 +312,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		  currentContext.model.contentChanged.disconnect(changeHandler);
 		};
 	  }, []);
+
+	const isJSON = (str) => {
+		try {
+			return (JSON.parse(str) && !!str);
+		} catch (e) {
+			return false;
+		}
+	}
 
 	const getBindingIndexById = (nodeModels: any[], id: string): number | null => {
 		for (let i = 0; i < nodeModels.length; i++) {
@@ -742,7 +772,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		onChange();
+		onChange()
 		setInitialize(true);
 		setSaved(true);
 		commands.execute(commandIDs.saveDocManager);
