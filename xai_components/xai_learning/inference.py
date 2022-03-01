@@ -16,7 +16,7 @@ class LoadImage(Component):
         self.dataset_name = InArg.empty()
         self.dataset = OutArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         if self.dataset_name.value == 'mnist':
             (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
 
@@ -44,7 +44,7 @@ class ResizeImageData(Component):
         self.dataset = InArg.empty()
         self.resized_dataset = OutArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         x = self.dataset.value[0]
         x = x.reshape(x.shape[0], x.shape[1] * x.shape[2])
 

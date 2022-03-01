@@ -9,7 +9,7 @@ class MyComponent(Component):
         self.data_name = InArg.default()
         self.data_set = OutArg.default()
         
-    def execute(self):
+    def execute(self, ctx):
         # logic here
         pass
 
@@ -17,6 +17,6 @@ class RotateCounterClockWiseComponent(Component):
     data_set: InArg[Dataset]
     out: OutArg[Dataset]
         
-    def execute(self):
+    def execute(self, ctx):
         pass
     

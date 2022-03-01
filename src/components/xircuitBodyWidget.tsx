@@ -461,7 +461,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		pythonCode += "outarg_output_data = []\n";
 		pythonCode += "is_done_list = []\n";
 
-		pythonCode += "\ndef main(args):\n";
+		pythonCode += "\ndef main(args):\n\n";
+		pythonCode += '    ' + 'ctx = {}\n';
+		pythonCode += '    ' + "ctx['args'] = args\n\n";
 
 		for (let i = 0; i < allNodes.length; i++) {
 
@@ -619,17 +621,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			pythonCode += '\n';
 
 			pythonCode += '            ' + 'if len(input_data) > 0 and input_data[-1] == \'run\':\n';
-			pythonCode += '                ' + 'is_done, next_component = next_component.do()\n';
+			pythonCode += '                ' + 'is_done, next_component = next_component.do(ctx)\n';
 			pythonCode += '                ' + 'input_data.clear()\n';
 			pythonCode += '                ' + 'is_done_list.append(is_done)\n';
 			pythonCode += '\n';
 
 			pythonCode += '            ' + 'if len(input_data) > 0 and input_data[-1] == \'skip\':\n';
-			pythonCode += '                ' + 'is_done, next_component = next_component.do()\n';
+			pythonCode += '                ' + 'is_done, next_component = next_component.do(ctx)\n';
 			pythonCode += '\n';
 
 			pythonCode += '        ' + 'else:\n';
-			pythonCode += '            ' + 'is_done, next_component = next_component.do()\n';
+			pythonCode += '            ' + 'is_done, next_component = next_component.do(ctx)\n';
 			pythonCode += '\n';
 
 			pythonCode += '@app.route(\'/terminate\')\n';

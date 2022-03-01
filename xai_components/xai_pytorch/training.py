@@ -32,7 +32,7 @@ class ConvertTorchModelToOnnx(Component):
         self.output_model_path = InArg.empty()
         self.image_size = InArg.empty()
         
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         model = self.model.value
         model_path_w_extn = self.input_model_path.value
     
@@ -83,7 +83,7 @@ class CreateUnetModel(Component):
         self.optimizer = OutArg.empty()
         self.early_stopping = OutArg.empty()
         
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         learningRate = self.learning_rate.value if self.learning_rate.value else 0.0001
         earlyStop = self.earlystop.value if self.earlystop.value else 15
         verbose = self.verbose.value if self.verbose.value else True
@@ -129,7 +129,7 @@ class ImageTrainTestSplit(Component):
         self.train_image_path = OutArg.empty()
         self.test_image_path = OutArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         splitRatio = self.split_ratio.value if self.split_ratio.value else 0.8
         randomSeed = self.random_seed.value if self.random_seed.value else 1234
         
@@ -223,7 +223,7 @@ class PrepareUnetDataLoader(Component):
         self.train_loader = OutArg.empty()
         self.tests_loader = OutArg.empty()
         
-    def execute(self) -> None:  
+    def execute(self, ctx) -> None:  
         image_batch_size = self.batch_size.value if self.batch_size.value else 1
         shuffle_bool = self.shuffle.value if self.shuffle.value else True
         workers_integer = self.workers.value if self.workers.value else 0
@@ -287,7 +287,7 @@ class TrainUnet(Component):
         self.dice_score_metric = OutArg.empty()
         self.iou_score_metric = OutArg.empty()
         
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         gpu_no = self.gpu.value if self.gpu.value else 0
         save_graph = self.save_graph.value if self.save_graph.value else True
         
@@ -456,7 +456,7 @@ class UNetModel(Component):
         self.model = OutArg.empty()
         self.device_name = OutArg.empty()
         
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         gpu_no = self.gpu.value if self.gpu.value else 0
         
         if torch.cuda.is_available():
@@ -487,7 +487,7 @@ class UnetPredict(Component):
         self.image_path = InArg.empty()
         self.image_size = InArg.empty()
         
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
         model = UNet()

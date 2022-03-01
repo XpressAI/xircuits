@@ -27,7 +27,7 @@ class ReadDataSet(Component):
         self.class_dict = OutArg.empty()
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         if self.dataset_name.value == 'mnist':
             (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
@@ -137,7 +137,7 @@ class ReadMaskDataSet(Component):
         self.mask_dataset_name = InArg.empty()
         self.dataset = OutArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         if self.dataset_name.value and self.mask_dataset_name.value:
             
@@ -162,7 +162,7 @@ class FlattenImageData(Component):
         self.dataset = InArg.empty()
         self.resized_dataset = OutArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         x = self.dataset.value[0]
         x = x.reshape(x.shape[0], -1)
@@ -191,7 +191,7 @@ class TrainTestSplit(Component):
         self.train = OutArg.empty()
         self.test = OutArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         train_split = self.train_split.value if self.train_split.value else 0.75
         shuffle = self.shuffle.value if self.shuffle.value else True
@@ -222,7 +222,7 @@ class Create1DInputModel(Component):
         self.training_data = InArg.empty()
         self.model = OutArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         x_shape = self.training_data.value[0].shape
         y_shape = self.training_data.value[1].shape
 
@@ -257,7 +257,7 @@ class Create2DInputModel(Component):
         self.model_config = OutArg.empty()
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         x_shape = self.training_data.value[0].shape[1:]
         y_shape = self.training_data.value[1].shape[1]
@@ -313,7 +313,7 @@ class TrainImageClassifier(Component):
         self.trained_model = OutArg.empty()
         self.training_metrics = OutArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         model = self.model.value
 
@@ -348,7 +348,7 @@ class EvaluateAccuracy(Component):
         self.eval_dataset = InArg.empty()
         self.metrics = OutArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         (loss, acc) = self.model.value.evaluate(self.eval_dataset.value[0], self.eval_dataset.value[1], verbose=0)
         metrics = {
             'loss': str(loss),
@@ -377,7 +377,7 @@ class ShouldStop(Component):
         self.should_retrain = OutArg(True)
         self.retries = 0
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         self.retries += 1
 
         if self.retries < self.max_retries.value:
@@ -409,7 +409,7 @@ class SaveKerasModel(Component):
 
         self.model_h5_path = OutArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         model = self.model.value
         model_name = self.model_name.value if self.model_name.value else os.path.splitext(sys.argv[0])[0] + ".h5"
         model.save(model_name)
@@ -431,7 +431,7 @@ class SaveKerasModelInModelStash(Component):
         self.experiment_name = InArg.empty()
         self.metrics = InArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         config = self.execution_context.args
 
         if not os.path.exists(os.path.join('..', 'experiments')):

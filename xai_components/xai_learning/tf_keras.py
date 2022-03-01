@@ -34,7 +34,7 @@ class LoadKerasModel(Component):
         self.model = OutArg(None)
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         model = None
         model_name = (self.model_name.value).lower()
 
@@ -97,7 +97,7 @@ class KerasPredict(Component):
         self.class_list = InArg(None)
         self.target_shape = InArg(None)
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         model = self.model.value
         img_path = self.img_string.value
         class_list = self.class_list.value if self.class_list.value else []
@@ -232,7 +232,7 @@ class ResNet50(Component):
         self.model = OutArg(None)
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         model_config = resnet_model_config()
 
         #dynamically sync model config with node inputs
@@ -274,7 +274,7 @@ class ResNet101(Component):
         self.model = OutArg(None)
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         model_config = resnet_model_config()
 
         #dynamically sync model config with node inputs
@@ -316,7 +316,7 @@ class ResNet152(Component):
         self.model = OutArg(None)
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         model_config = resnet_model_config()
         #dynamically sync model config with node inputs
         for port in self.__dict__.keys():
@@ -375,7 +375,7 @@ class VGG16(Component):
         self.model = OutArg(None)
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         model_config = vgg_model_config()
 
@@ -418,7 +418,7 @@ class VGG19(Component):
         self.model = OutArg(None)
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         model_config = vgg_model_config()
 
@@ -461,7 +461,7 @@ class Xception(Component):
         self.model = OutArg(None)
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         model_config = vgg_model_config()
 
@@ -535,7 +535,7 @@ class MobileNet(Component):
         self.model = OutArg(None)
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         model_config = vgg_model_config()
 

@@ -7,7 +7,7 @@ class HelloComponent(Component):
 
         self.done = False
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         
         #If the import is only exclusive to 1 component, it is a good practice to import inside execute()
         import os 
@@ -26,7 +26,7 @@ class HelloHyperparameter(Component):
         self.done = False
         self.input_str = InArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         input_str = self.input_str.value
         print("Hello, " + str(input_str))
         self.done = True
@@ -46,7 +46,7 @@ class CompulsoryHyperparameter(Component):
         self.comp_str = InCompArg.empty()
         self.comp_int = InCompArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         input_str = self.input_str.value
         comp_str = self.comp_str.value
         comp_int = self.comp_int.value
@@ -69,7 +69,7 @@ class HelloListTupleDict(Component):
         self.input_list = InArg.empty()
         self.input_dict = InArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         #if you would like ports to have default values if user does not provide, try this way.
         input_list = self.input_list.value if self.input_list.value else ""
@@ -82,5 +82,25 @@ class HelloListTupleDict(Component):
         print(input_tuple)
         print("\nDisplaying Dict: ")
         print(input_dict)
+
+        self.done = True
+
+@xai_component
+class HelloContext(Component):
+
+    context_dict: InArg[dict]
+
+    def __init__(self):
+        self.done = False
+        self.context_dict = InArg.empty()
+
+    def execute(self, ctx) -> None:
+        
+        print(f"Current Context:\n{ctx}")
+        
+        context_dict = self.context_dict.value if self.context_dict.value else {"new ctx": "Hello Xircuits!"}
+        ctx.update(context_dict)
+
+        print(f"After Adding Context:\n{ctx}")
 
         self.done = True

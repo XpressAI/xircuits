@@ -25,7 +25,7 @@ class StartLocalModelStashSession(Component):
         self.password = InCompArg.empty() 
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         
         global ms
         global ms_cli
@@ -49,7 +49,7 @@ class ListModels(Component):
     def __init__(self):
         self.done = False
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         print(ms_cli.list_models())
         self.done = True
 
@@ -60,7 +60,7 @@ class ListSkills(Component):
     def __init__(self):
         self.done = False
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         print(ms_cli.list_skills())
         self.done = True
 
@@ -100,7 +100,7 @@ class UploadToModelStash(Component):
         self.ms_model = OutArg.empty() 
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         import getpass
 
@@ -191,7 +191,7 @@ class DeleteModelfromModelStash(Component):
         self.done = False
         self.model_name = InArg.empty()
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         filename = Path(sys.argv[0]).stem
         model_name = self.model_name.value if self.model_name.value else filename
@@ -223,7 +223,7 @@ class DownloadLinkfromModelStash(Component):
         self.model_name = InArg.empty()
         self.modelVersion = InArg.empty() 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         filename = Path(sys.argv[0]).stem
         model_name = self.model_name.value if self.model_name.value else filename
@@ -255,7 +255,7 @@ class LoadfromModelStash(Component):
         self.model = OutArg.empty() 
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
 
         filename = Path(sys.argv[0]).stem

@@ -71,9 +71,9 @@ class Component(BaseComponent):
     next: BaseComponent
     done: False
 
-    def do(self) -> BaseComponent:
+    def do(self, ctx) -> BaseComponent:
         print(f"\nExecuting: {self.__class__.__name__}")
-        self.execute()
+        self.execute(ctx)
 
         return self.done, self.next
 
@@ -87,7 +87,7 @@ class BranchComponent(BaseComponent):
 
     condition: InArg[bool]
 
-    def do(self) -> BaseComponent:
+    def do(self, ctx) -> BaseComponent:
         if self.condition.value:
             return self.when_true
         else:
@@ -100,16 +100,16 @@ class LoopComponent(Component):
 
     condition: InArg[bool]
 
-    def do(self) -> BaseComponent:
+    def do(self, ctx) -> BaseComponent:
         while self.condition.value:
-            next_body = self.body.do()
+            next_body = self.body.do(ctx)
             while next_body:
-                next_body = next_body.do()
+                next_body = next_body.do(ctx)
             return self
         return self.next
 
 
-def execute_graph(args: Namespace, start: BaseComponent) -> None:
+def execute_graph(args: Namespace, start: BaseComponent, ctx) -> None:
     BaseComponent.set_execution_context(ExecutionContext(args))
 
     if 'debug' in args and args['debug']:
@@ -117,11 +117,11 @@ def execute_graph(args: Namespace, start: BaseComponent) -> None:
         pdb.set_trace()
 
         current_component = start
-        next_component = current_component.do()
+        next_component = current_component.do(ctx)
         while next_component:
             current_component = next_component
-            next_component = current_component.do()
+            next_component = current_component.do(ctx)
     else:
-        next_component = start.do()
+        next_component = start.do(ctx)
         while next_component:
-            next_component = next_component.do()
+            next_component = next_component.do(ctx)

@@ -30,7 +30,7 @@ class xSparkSession(Component):
         self.sparksession = OutArg(None)
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         spark = SparkSession.builder.getOrCreate()
         self.sparksession.value = spark
@@ -53,7 +53,7 @@ class SparkReadPandas(Component):
         self.pandas_dataframe = InArg(None)
         self.out_sparksession = OutArg(None)
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         spark = self.in_sparksession.value
         df = self.pandas_dataframe.value
@@ -82,7 +82,7 @@ class SparkReadFile(Component):
         self.out_dataframe = OutArg(None)
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         spark = self.in_sparksession.value
         filepath = self.file_input.value
@@ -133,7 +133,7 @@ class SparkReadCSV(Component):
         self.out_dataframe = OutArg(None)
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         spark = self.in_sparksession.value
         filepath = self.file_input.value
@@ -167,7 +167,7 @@ class SparkWriteFile(Component):
         self.header = InArg(None)
         self.out_sparksession = OutArg(None)
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         df = self.dataframe.value
         filepath = self.output_name.value
@@ -206,7 +206,7 @@ class SparkSQL(Component):
         self.out_sparksession = OutArg(None)
         self.sql_dataframe = OutArg(None)
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         spark = self.in_sparksession.value
         df = self.dataframe.value
@@ -247,7 +247,7 @@ class SparkVisualize(Component):
         self.output_name = InArg(None)    
 
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
 
         df = self.dataframe.value
         plot_type = self.plot_type.value if self.plot_type.value else "bar"
