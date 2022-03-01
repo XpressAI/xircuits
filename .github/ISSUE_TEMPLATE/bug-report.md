@@ -7,6 +7,14 @@ assignees: ''
 
 ---
 
+**What kind of bug is it?**
+- [ ] Xircuits Core (Jupyterlab related features)
+- [ ] Xircuits Canvas (Custom RD related features)
+- [ ] Xircuits Component Library
+- [ ] Testing Automation
+- [ ] Documentation
+- [ ] Not Sure
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
@@ -23,10 +31,13 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Tested on?**
+
+- [ ] Windows  
+- [ ] Linux Ubuntu 
+- [ ] Centos 
+- [ ] Mac  
+- [ ] Others  (State here -> xxx )  
 
 **Additional context**
 Add any other context about the problem here.
