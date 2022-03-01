@@ -309,7 +309,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
             }
 
             // Display the multi-line message
-            code = `"""${msg}"""`;
+            const outputCode = `"""${msg}"""`;
+            code = `print(${outputCode}, flush=True)`;
           }
 
           outputPanel.execute(code, xircuitsLogger);
