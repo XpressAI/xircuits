@@ -290,8 +290,9 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         code_str += "process=subprocess.Popen(spark_submit_str, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)\n";
         code_str += "while True:\n";
         code_str += "    " + "line = process.stdout.readline()\n";
+        code_str += "    " + "err = process.stderr.read()\n";
         code_str += "    " + "if not line:\n";
-        code_str += "    " + "    " + "print(process.stderr.read())\n";
+        code_str += "    " + "    " + "print(err)\n";
         code_str += "    " + "    " + "break\n";
         code_str += "    " + "print(line.rstrip())"
 
