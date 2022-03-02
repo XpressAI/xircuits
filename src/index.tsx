@@ -279,7 +279,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
       try {
         let spark_submit_str;
-        let code_str = "import subprocess\n\n";
+        let code_str = "from subprocess import Popen, PIPE\n\n";
 
         if (addArgs.length > 0) {
           spark_submit_str = "spark-submit " + addArgs + " " + path;
@@ -287,14 +287,11 @@ const xircuits: JupyterFrontEndPlugin<void> = {
           spark_submit_str = "spark-submit " + path;
         }
         code_str += `spark_submit_str= "${spark_submit_str}"\n`;
-        code_str += "process=subprocess.Popen(spark_submit_str, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)\n";
-        code_str += "while True:\n";
-        code_str += "    " + "line = process.stdout.readline()\n";
-        code_str += "    " + "err = process.stderr.read()\n";
-        code_str += "    " + "if not line:\n";
-        code_str += "    " + "    " + "print(err)\n";
-        code_str += "    " + "    " + "break\n";
-        code_str += "    " + "print(line.rstrip())"
+        code_str += "p=Popen(spark_submit_str, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)\n";
+        code_str += "for line in p.stdout:\n";
+        code_str += "    " + "print(line.rstrip())\n\n";
+        code_str += "if p.returncode != 0:\n";
+        code_str += "    " + "print(p.stderr.read())";
 
         return code_str;
       } catch (e) {
