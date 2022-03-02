@@ -275,6 +275,32 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     };
 
+    function doSparkSubmit(path: string, addArgs: string){
+
+      try {
+        let spark_submit_str;
+        let code_str = "import subprocess\n\n";
+
+        if (addArgs.length > 0) {
+          spark_submit_str = "spark-submit " + addArgs + " " + path;
+        } else {
+          spark_submit_str = "spark-submit " + path;
+        }
+        code_str += `spark_submit_str= "${spark_submit_str}"\n`;
+        code_str += "process=subprocess.Popen(spark_submit_str, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)\n";
+        code_str += "while True:\n";
+        code_str += "    " + "line = process.stdout.readline()\n";
+        code_str += "    " + "if not line:\n";
+        code_str += "    " + "    " + "print(process.stderr.read())\n";
+        code_str += "    " + "    " + "break\n";
+        code_str += "    " + "print(line.rstrip())"
+
+        return code_str;
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
     // Execute xircuits python script and display at output panel
     app.commands.addCommand(commandIDs.executeToOutputPanel, {
       execute: async args => {
@@ -296,21 +322,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
           // Run spark submit when run type is Spark Submit
           if (runType == 'spark-submit') {
-            const request = await requestToSparkSubmit(model_path, addArgs);
-            const errorMsg = request["stderr"];
-            const outputMsg = request["stdout"];
-            let msg = "";
-
-            // Display the errors if there no output
-            if (outputMsg != 0) {
-              msg = outputMsg;
-            } else {
-              msg = errorMsg;
-            }
-
-            // Display the multi-line message
-            const outputCode = `"""${msg}"""`;
-            code = `print(${outputCode}, flush=True)`;
+            code = doSparkSubmit(model_path, addArgs);
           }
 
           outputPanel.execute(code, xircuitsLogger);
