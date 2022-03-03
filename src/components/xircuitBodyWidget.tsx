@@ -168,6 +168,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const [runType, setRunType] = useState<string>("run");
+	const [addedArgSparkSubmit, setAddedArgSparkSubmit] = useState<string>("");
 	const xircuitLogger = new Log(app);
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
@@ -1395,6 +1396,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			title,
 			body: formDialogWidget(
 				<RunDialog
+					lastAddedArgsSparkSubmit={addedArgSparkSubmit}
 					childSparkSubmitNodes={sparkSubmitNodes}
 					childStringNodes={stringNodes}
 					childBoolNodes={boolNodes}
@@ -1416,6 +1418,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let commandStr = ' ';
 		// Added arguments for spark submit
 		let addArgs = dialogResult["value"][sparkSubmitNodes] ?? "";
+		setAddedArgSparkSubmit(addArgs);
 
 		stringNodes.forEach((param) => {
 			if (param == 'experiment name') {

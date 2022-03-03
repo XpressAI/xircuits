@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Switch from "react-switch";
 
 export const RunDialog = ({
+	lastAddedArgsSparkSubmit,
 	childSparkSubmitNodes,
 	childStringNodes,
 	childBoolNodes,
@@ -28,6 +29,7 @@ export const RunDialog = ({
 					<><div><h4 style={{ marginTop: 2, marginBottom: 0 }}>Spark Submit</h4></div><div>{childSparkSubmitNodes}
 						<div>
 							<TextareaAutosize
+								defaultValue={lastAddedArgsSparkSubmit}
 								minRows={3}
 								maxRows={8}
 								name={childSparkSubmitNodes}
