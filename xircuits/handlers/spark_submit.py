@@ -1,6 +1,6 @@
 import json
 import tornado
-import subprocess
+from subprocess import Popen, PIPE
 from jupyter_server.base.handlers import APIHandler
 import platform
 
@@ -22,12 +22,15 @@ class SparkSubmitRouteHandler(APIHandler):
             spark_submit_cmd = "spark-submit "
 
         spark_submit_str= spark_submit_cmd + addArguments + " " + currentPath
-        process=subprocess.Popen(spark_submit_str,stdout=subprocess.PIPE,stderr=subprocess.PIPE, universal_newlines=True, shell=True)
-        stdout,stderr = process.communicate()
+        p=Popen(spark_submit_str, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
+        for line in p.stdout:
+            print(line.rstrip())
+        if p.returncode != 0:
+            print(p.stderr.read())
 
         data = {
             "stderr": stderr,
             "stdout": stdout
         }
 
-        self.finish(json.dumps(data))
+        self.finish()
