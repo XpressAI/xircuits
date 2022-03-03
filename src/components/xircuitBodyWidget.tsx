@@ -855,8 +855,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let pythonCode = getPythonCompiler();
 		let showOutput = false;
 		
-		// Don't compile if 'Run w/o compile' is chosen
-		if(runType != 'run-dont-compile'){
+		// Only compile when 'Run' is chosen
+		if(runType == 'run'){
 			commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
 			setCompiled(true);
 		}
