@@ -26,6 +26,7 @@ import { runIcon, saveIcon } from '@jupyterlab/ui-components';
 import { addContextMenuCommands } from './commands/ContextMenu';
 import { Token } from '@lumino/coreutils';
 import { xircuitsIcon, debuggerIcon, componentLibIcon, changeFavicon, xircuitsFaviconLink } from './ui-components/icons';
+import { startRunOutputStr } from './kernel/RunOutput';
 
 
 const FACTORY = 'Xircuits editor';
@@ -279,7 +280,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
       try {
         let spark_submit_str;
-        let code_str = "from subprocess import Popen, PIPE\n\n";
+        let code_str = "\nfrom subprocess import Popen, PIPE\n\n";
 
         if (addArgs.length > 0) {
           spark_submit_str = "spark-submit " + addArgs + " " + path;
@@ -319,11 +320,12 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         }
 
         outputPanel.session.ready.then(async () => {
-          let code = "%run " + model_path + message + debug_mode;
+          let code = startRunOutputStr();
+          if (runType == 'run') code += "%run " + model_path + message + debug_mode;
 
           // Run spark submit when run type is Spark Submit
           if (runType == 'spark-submit') {
-            code = doSparkSubmit(model_path, addArgs);
+            code += doSparkSubmit(model_path, addArgs);
             // requestToSparkSubmit(model_path, addArgs);
           }
 
