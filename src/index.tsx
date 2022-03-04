@@ -291,7 +291,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         code_str += "p=Popen(spark_submit_str, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)\n";
         code_str += "print('Spark Submit is running...\\n')\n";
         code_str += "print('Please go to http://localhost:8088/ for more details\\n')\n";
-        code_str += "print('Also, you can go to Kraftboard to check the EDA\\n')\n";
+        code_str += "print('Also, you can go to Kraftboard to check the benchmarks\\n')\n";
         code_str += "for line in p.stdout:\n";
         code_str += "    " + "print(line.rstrip())\n\n";
         code_str += "if p.returncode != 0:\n";
