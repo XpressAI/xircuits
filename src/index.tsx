@@ -26,6 +26,7 @@ import { runIcon, saveIcon } from '@jupyterlab/ui-components';
 import { addContextMenuCommands } from './commands/ContextMenu';
 import { Token } from '@lumino/coreutils';
 import { xircuitsIcon, debuggerIcon, componentLibIcon, changeFavicon, xircuitsFaviconLink } from './ui-components/icons';
+import { startRunOutputStr } from './kernel/RunOutput';
 
 
 const FACTORY = 'Xircuits editor';
@@ -292,7 +293,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         }
 
         outputPanel.session.ready.then(async () => {
-          let code = "%run " + model_path + message + debug_mode;
+          let code = startRunOutputStr();
+          code += "%run " + model_path + message + debug_mode;
 
           // Run spark submit when run type is Spark Submit
           if (runType == 'spark-submit') {
