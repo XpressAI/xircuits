@@ -321,7 +321,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
         outputPanel.session.ready.then(async () => {
           let code = startRunOutputStr();
-          if (runType == 'run') code += "%run " + model_path + message + debug_mode;
+
+          if (runType != 'spark-submit') code += "%run " + model_path + message + debug_mode;
 
           // Run spark submit when run type is Spark Submit
           if (runType == 'spark-submit') {

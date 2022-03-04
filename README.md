@@ -53,19 +53,32 @@ pip install -e .
 jupyter labextension develop . --overwrite
 # Enable the server extension
 jupyter server extension enable xircuits
+```
+### Running
+Start up xircuits using:
+```
+xircuits
+```
+Xircuits will open automatically in the browser.
 
+##### If additional arguments required, launch xircuits using:
+```
+jupyter lab 
+```
+### Rebuild
+Rebuild Xircuits after making changes.
+```
 # Rebuild Typescript source after making changes
 jlpm build
-# Rebuild JupyterLab after making any changes
+# Rebuild Xircuits after making any changes
 jupyter lab build
-
 ```
-
-You can watch the source directory and run JupyterLab in watch mode to watch for changes in the extension's source and automatically rebuild the extension and application.
+### Rebuild (Automatically)
+You can watch the source directory and run Xircuits in watch mode to watch for changes in the extension's source and automatically rebuild the extension and application.
 ```
 # Watch the source directory in another terminal tab
 jlpm run watch
-# Run jupyterlab in watch mode in one terminal tab
+# Run Xircuits in watch mode in one terminal tab
 jupyter lab --watch
 ```
 
@@ -78,6 +91,8 @@ jupyter lab --watch
 ### Machine Learning
 ![XircuitKeras](https://user-images.githubusercontent.com/68586800/151285439-28a1ad93-4585-4fdb-8d73-41b5b7ba2044.gif)
 
+### PySpark
+![spark submit](https://user-images.githubusercontent.com/68586800/156138662-f3181471-6433-49dd-a8c1-2f73eea14d11.png)
 
 
 

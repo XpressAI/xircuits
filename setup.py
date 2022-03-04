@@ -141,7 +141,8 @@ setup_args = dict(
         "tqdm",
         "pandas",
         "py4j",
-        "pyspark"
+        "pyspark",
+        "matplotlib"
     ],
     zip_safe=False,
     include_package_data=True,

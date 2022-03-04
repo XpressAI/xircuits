@@ -168,6 +168,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const [runType, setRunType] = useState<string>("run");
+	const [addedArgSparkSubmit, setAddedArgSparkSubmit] = useState<string>("");
 	const xircuitLogger = new Log(app);
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
@@ -396,7 +397,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return null;
 	}
 
-	const getPythonCompiler = (): string => {
+	const getPythonCompiler = (debuggerMode?): string => {
 		let componentDB = new Map(componentList.map( x => [x["task"], x]))
 		let component_task = componentList.map(x => x["task"]);
 		let model = xircuitsApp.getDiagramEngine().getModel();
@@ -405,9 +406,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let pythonCode = 'from argparse import ArgumentParser\n';
 		pythonCode += 'from datetime import datetime\n';
 		pythonCode += 'from time import sleep\n';
-		pythonCode += 'import json, os, signal\n';
-		pythonCode += 'from flask import Flask, jsonify, request\n';
-		pythonCode += 'from threading import Thread\n';
+		if (debuggerMode == true) {
+			pythonCode += 'import json, os, signal\n';
+			pythonCode += 'from flask import Flask, jsonify, request\n';
+			pythonCode += 'from threading import Thread\n';
+		}
 
 		let uniqueComponents = {};
 
@@ -454,12 +457,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		}
 
-		pythonCode += "\napp = Flask(__name__)\n";
-		pythonCode += "input_data = []\n";
-		pythonCode += "continue_input_data = []\n";
-		pythonCode += "inarg_output_data = []\n";
-		pythonCode += "outarg_output_data = []\n";
-		pythonCode += "is_done_list = []\n";
+		if(debuggerMode == true){
+			pythonCode += "\napp = Flask(__name__)\n";
+			pythonCode += "input_data = []\n";
+			pythonCode += "continue_input_data = []\n";
+			pythonCode += "inarg_output_data = []\n";
+			pythonCode += "outarg_output_data = []\n";
+			pythonCode += "is_done_list = []\n";
+		}
 
 		pythonCode += "\ndef main(args):\n\n";
 		pythonCode += '    ' + 'ctx = {}\n';
@@ -599,82 +604,88 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		}
 
-		pythonCode += '    ' + 'debug_mode = args.debug_mode\n';
+		if (debuggerMode == true) pythonCode += '    ' + 'debug_mode = args.debug_mode\n';
 
 		if (allNodes.length > 2) {
-			pythonCode += '\n';
-			pythonCode += '    ' + 'next_component = c_1\n';
-			pythonCode += '    ' + 'while next_component:\n';
+			
+				pythonCode += '\n';
+				pythonCode += '    ' + 'next_component = c_1\n';
+				pythonCode += '    ' + 'while next_component:\n';
 
-			pythonCode += '        ' + 'if debug_mode:\n';
-			pythonCode += '            ' + 'if len(continue_input_data) > 0 and continue_input_data[-1] == \'continue\':\n';
-			pythonCode += '                ' + 'vars_dict = vars(next_component)\n';
-			pythonCode += '                ' + 'new_dict = {}\n';
-			pythonCode += '                ' + 'for i in vars_dict:\n';
-			pythonCode += '                    ' + 'if not i in [\'next\', \'done\']:\n';
-			pythonCode += '                        ' + 'new_dict[i] = next_component.__getattribute__(i).value\n';
-			pythonCode += '                        ' + 'if \'InArg\' in str(vars_dict[i]):\n';
-			pythonCode += '                            ' + 'inarg_output_data.append(str(i) + \': \' + str(next_component.__getattribute__(i).value))\n';
-			pythonCode += '                        ' + 'if \'OutArg\' in str(vars_dict[i]):\n';
-			pythonCode += '                            ' + 'outarg_output_data.append(str(i) + \': \' + str(next_component.__getattribute__(i).value))\n';
-			pythonCode += '                ' + 'continue_input_data.clear()\n';
-			pythonCode += '\n';
+			if (debuggerMode == true) {
+				pythonCode += '        ' + 'if debug_mode:\n';
+				pythonCode += '            ' + 'if len(continue_input_data) > 0 and continue_input_data[-1] == \'continue\':\n';
+				pythonCode += '                ' + 'vars_dict = vars(next_component)\n';
+				pythonCode += '                ' + 'new_dict = {}\n';
+				pythonCode += '                ' + 'for i in vars_dict:\n';
+				pythonCode += '                    ' + 'if not i in [\'next\', \'done\']:\n';
+				pythonCode += '                        ' + 'new_dict[i] = next_component.__getattribute__(i).value\n';
+				pythonCode += '                        ' + 'if \'InArg\' in str(vars_dict[i]):\n';
+				pythonCode += '                            ' + 'inarg_output_data.append(str(i) + \': \' + str(next_component.__getattribute__(i).value))\n';
+				pythonCode += '                        ' + 'if \'OutArg\' in str(vars_dict[i]):\n';
+				pythonCode += '                            ' + 'outarg_output_data.append(str(i) + \': \' + str(next_component.__getattribute__(i).value))\n';
+				pythonCode += '                ' + 'continue_input_data.clear()\n';
+				pythonCode += '\n';
 
-			pythonCode += '            ' + 'if len(input_data) > 0 and input_data[-1] == \'run\':\n';
-			pythonCode += '                ' + 'is_done, next_component = next_component.do(ctx)\n';
-			pythonCode += '                ' + 'input_data.clear()\n';
-			pythonCode += '                ' + 'is_done_list.append(is_done)\n';
-			pythonCode += '\n';
+				pythonCode += '            ' + 'if len(input_data) > 0 and input_data[-1] == \'run\':\n';
+				pythonCode += '                ' + 'is_done, next_component = next_component.do(ctx)\n';
+				pythonCode += '                ' + 'input_data.clear()\n';
+				pythonCode += '                ' + 'is_done_list.append(is_done)\n';
+				pythonCode += '\n';
 
-			pythonCode += '            ' + 'if len(input_data) > 0 and input_data[-1] == \'skip\':\n';
-			pythonCode += '                ' + 'is_done, next_component = next_component.do(ctx)\n';
-			pythonCode += '\n';
+				pythonCode += '            ' + 'if len(input_data) > 0 and input_data[-1] == \'skip\':\n';
+				pythonCode += '                ' + 'is_done, next_component = next_component.do(ctx)\n';
+				pythonCode += '\n';
 
-			pythonCode += '        ' + 'else:\n';
-			pythonCode += '            ' + 'is_done, next_component = next_component.do(ctx)\n';
-			pythonCode += '\n';
+				pythonCode += '        ' + 'else:\n';
+				pythonCode += '            ' + 'is_done, next_component = next_component.do(ctx)\n';
+				pythonCode += '\n';
 
-			pythonCode += '@app.route(\'/terminate\')\n';
-			pythonCode += 'def shutdown():\n';
-			pythonCode += '    ' + 'os.kill(os.getpid(), signal.SIGINT)\n';
-			pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Server is shutting down..." })\n\n';
+				pythonCode += '@app.route(\'/terminate\')\n';
+				pythonCode += 'def shutdown():\n';
+				pythonCode += '    ' + 'os.kill(os.getpid(), signal.SIGINT)\n';
+				pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Server is shutting down..." })\n\n';
 
-			pythonCode += '@app.route(\'/run\')\n';
-			pythonCode += 'def next_node(input_data=input_data):\n';
-			pythonCode += '    ' + 'input_data.append("run")\n';
-			pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Run is executed" })\n\n';
+				pythonCode += '@app.route(\'/run\')\n';
+				pythonCode += 'def next_node(input_data=input_data):\n';
+				pythonCode += '    ' + 'input_data.append("run")\n';
+				pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Run is executed" })\n\n';
 
-			pythonCode += '@app.route(\'/execute\')\n';
-			pythonCode += 'def get_execution_output():\n';
-			pythonCode += '    ' + 'return str(is_done_list)\n\n';
+				pythonCode += '@app.route(\'/execute\')\n';
+				pythonCode += 'def get_execution_output():\n';
+				pythonCode += '    ' + 'return str(is_done_list)\n\n';
 
-			pythonCode += '@app.route(\'/clear_execution\')\n';
-			pythonCode += 'def clear_execution_output():\n';
-			pythonCode += '    ' + 'is_done_list.clear()\n';
-			pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Clearing execution" })\n\n';
+				pythonCode += '@app.route(\'/clear_execution\')\n';
+				pythonCode += 'def clear_execution_output():\n';
+				pythonCode += '    ' + 'is_done_list.clear()\n';
+				pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Clearing execution" })\n\n';
 
-			pythonCode += '@app.route(\'/continue\')\n';
-			pythonCode += 'def continue_node(continue_input_data=continue_input_data):\n';
-			pythonCode += '    ' + 'continue_input_data.append("continue")\n';
-			pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Continue is executed" })\n\n';
+				pythonCode += '@app.route(\'/continue\')\n';
+				pythonCode += 'def continue_node(continue_input_data=continue_input_data):\n';
+				pythonCode += '    ' + 'continue_input_data.append("continue")\n';
+				pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Continue is executed" })\n\n';
 
-			pythonCode += '@app.route(\'/clear\')\n';
-			pythonCode += 'def clear_node():\n';
-			pythonCode += '    ' + 'inarg_output_data.clear()\n';
-			pythonCode += '    ' + 'outarg_output_data.clear()\n';
-			pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Clearing input/output args" })\n\n';
+				pythonCode += '@app.route(\'/clear\')\n';
+				pythonCode += 'def clear_node():\n';
+				pythonCode += '    ' + 'inarg_output_data.clear()\n';
+				pythonCode += '    ' + 'outarg_output_data.clear()\n';
+				pythonCode += '    ' + 'return jsonify({ "success": True, "message": "Clearing input/output args" })\n\n';
 
-			pythonCode += '@app.route(\'/get/output\')\n';
-			pythonCode += 'def get_output_data():\n';
-			pythonCode += '    ' + 'inarg_output = \'\'\n';
-			pythonCode += '    ' + 'if inarg_output_data != []:\n';
-			pythonCode += '        ' + 'inarg_output = \'InArg -> \'\n';
-			pythonCode += '        ' + 'inarg_output += \'\t\'.join(inarg_output_data)\n\n';
-			pythonCode += '    ' + 'outarg_output = \'\'\n';
-			pythonCode += '    ' + 'if outarg_output_data != []:\n';
-			pythonCode += '        ' + 'outarg_output = \'OutArg -> \'\n';
-			pythonCode += '        ' + 'outarg_output += \'\t\'.join(outarg_output_data)\n\n';
-			pythonCode += '    ' + 'return (str(inarg_output) + \' \' + str(outarg_output)).strip()\n\n';
+				pythonCode += '@app.route(\'/get/output\')\n';
+				pythonCode += 'def get_output_data():\n';
+				pythonCode += '    ' + 'inarg_output = \'\'\n';
+				pythonCode += '    ' + 'if inarg_output_data != []:\n';
+				pythonCode += '        ' + 'inarg_output = \'InArg -> \'\n';
+				pythonCode += '        ' + 'inarg_output += \'\t\'.join(inarg_output_data)\n\n';
+				pythonCode += '    ' + 'outarg_output = \'\'\n';
+				pythonCode += '    ' + 'if outarg_output_data != []:\n';
+				pythonCode += '        ' + 'outarg_output = \'OutArg -> \'\n';
+				pythonCode += '        ' + 'outarg_output += \'\t\'.join(outarg_output_data)\n\n';
+				pythonCode += '    ' + 'return (str(inarg_output) + \' \' + str(outarg_output)).strip()\n\n';
+			} else {
+				pythonCode += '        ' + 'is_done, next_component = next_component.do(ctx)\n';
+				pythonCode += '\n';
+			}
 
 			pythonCode += "if __name__ == '__main__':\n";
 			pythonCode += '    ' + 'parser = ArgumentParser()\n';
@@ -719,11 +730,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					pythonCode += '    ' + "parser.add_argument('--" + boolParam + "', default=True, type=bool)\n";
 				}
 			}
-			pythonCode += '    ' + "parser.add_argument('--debug_mode', default=False, type=bool)\n\n";
-			pythonCode += '    ' + "debug_mode = parser.parse_args().debug_mode\n";
-			pythonCode += '    ' + "if debug_mode:\n";
-			pythonCode += '        ' + 'thread = Thread(target=app.run, daemon=True)\n';
-			pythonCode += '        ' + 'thread.start()\n\n';
+			if (debuggerMode == true) {
+				pythonCode += '    ' + "parser.add_argument('--debug_mode', default=False, type=bool)\n\n";
+				pythonCode += '    ' + "debug_mode = parser.parse_args().debug_mode\n";
+				pythonCode += '    ' + "if debug_mode:\n";
+				pythonCode += '        ' + 'thread = Thread(target=app.run, daemon=True)\n';
+				pythonCode += '        ' + 'thread.start()\n\n';
+			}
 
 			pythonCode += '    ' + 'main(parser.parse_args())\n';
 			pythonCode += '    ' + 'print("\\nFinish Executing")';
@@ -812,7 +825,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		handleCompileClick();
 	}
 
-	const saveAndCompileAndRun = async (compileMode: boolean) => {
+	const saveAndCompileAndRun = async (debuggerMode: boolean) => {
 
 		//This is to avoid running xircuits while in dirty state
 		if (contextRef.current.model.dirty) {
@@ -851,17 +864,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		let pythonCode = getPythonCompiler();
+		let pythonCode = getPythonCompiler(debuggerMode);
 		let showOutput = false;
 		
-		// Don't compile if 'Run w/o compile' is chosen
-		if(runType != 'run-dont-compile'){
+		// Only compile when 'Run' is chosen
+		if(runType == 'run'){
 			commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
 			setCompiled(true);
 		}
 
 		// Compile Mode
-		if (compileMode) {
+		if (debuggerMode) {
 			const runCommand = await handleRunDialog();
 			const debug_mode = "--debug_mode True";
 			if (runCommand) {
@@ -1395,6 +1408,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			title,
 			body: formDialogWidget(
 				<RunDialog
+					lastAddedArgsSparkSubmit={addedArgSparkSubmit}
 					childSparkSubmitNodes={sparkSubmitNodes}
 					childStringNodes={stringNodes}
 					childBoolNodes={boolNodes}
@@ -1416,6 +1430,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let commandStr = ' ';
 		// Added arguments for spark submit
 		let addArgs = dialogResult["value"][sparkSubmitNodes] ?? "";
+		setAddedArgSparkSubmit(addArgs);
 
 		stringNodes.forEach((param) => {
 			if (param == 'experiment name') {
