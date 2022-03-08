@@ -48,7 +48,6 @@ class ZipDirectory(Component):
             for filename in files:
                 
                 if self.include_dir.value == False:
-                    print(f"Saving {os.path.join(dirs, filename)}")
                     zipObj.write(os.path.join(root, filename), os.path.join(dirs, filename))
                 
                 else:
