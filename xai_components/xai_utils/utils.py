@@ -39,7 +39,7 @@ class ZipDirectory(Component):
             print(zip_fn + " updated at " + os.getcwd()) 
             zipObj = ZipFile(zip_fn,'a')
 
-        for dirname, subdirs, files in os.walk(dir_name):
+        for dirname, subdirs, files in tqdm(list(os.walk(dir_name))):
             zipObj.write(dirname)
             for filename in files:
                 zipObj.write(os.path.join(dirname, filename))
