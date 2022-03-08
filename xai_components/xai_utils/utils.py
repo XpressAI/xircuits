@@ -8,18 +8,17 @@ from pathlib import Path
 class ZipDirectory(Component):
     zip_fn: InArg[str]
     dir_name: InCompArg[str]
-
+    include_dir: InArg[bool]
 
     def __init__(self):
 
         self.done = False
         self.zip_fn = InArg.empty()
         self.dir_name = InCompArg.empty()
+        self.include_dir = InArg.empty()
 
     def execute(self, ctx) -> None:
         
-        # import shutil
-
         from zipfile import ZipFile
         from tqdm import tqdm
 
@@ -39,11 +38,22 @@ class ZipDirectory(Component):
             print(zip_fn + " updated at " + os.getcwd()) 
             zipObj = ZipFile(zip_fn,'a')
 
-        for dirname, subdirs, files in tqdm(list(os.walk(dir_name))):
-            zipObj.write(dirname)
+        for root, dirs, files in tqdm(list(os.walk(dir_name))):
+            
+            #chop off root dir
+            if self.include_dir.value == False:
+                length = len(dir_name)
+                dirs = root[length:]
+                
             for filename in files:
-                zipObj.write(os.path.join(dirname, filename))
-        
+                
+                if self.include_dir.value == False:
+                    print(f"Saving {os.path.join(dirs, filename)}")
+                    zipObj.write(os.path.join(root, filename), os.path.join(dirs, filename))
+                
+                else:
+                    zipObj.write(os.path.join(root, filename))
+
         zipObj.close()        
        
         self.done = True
