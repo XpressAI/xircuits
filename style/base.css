@@ -15,6 +15,33 @@
 
 }
 
+.container {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.custom-context-menu {
+  width: 350px;
+  height: 400px;
+  position: fixed;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.option {
+  cursor: pointer;
+  padding: 15px 30px;
+}
+
+.option:hover {
+  background: yellow;
+}
+
 .orbit{
   visibility: hidden;
 }
