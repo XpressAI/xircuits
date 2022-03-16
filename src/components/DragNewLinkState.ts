@@ -79,7 +79,7 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 					}
 
 					if (!this.config.allowLooseLinks) {
-						this.engine.fireEvent(event.event, 'myCustomListenerName')
+						this.fireEvent();
 						this.link.remove();
 						this.engine.repaintCanvas();
 					}
@@ -87,6 +87,11 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 			})
 		);
 	}
+
+	fireEvent = () => {
+		//@ts-ignore
+		this.engine.fireEvent({ link: this.link }, 'droppedLink');
+	};
 
 	/**
 	 * Calculates the link's far-end point position on mouse move.

@@ -276,10 +276,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			}
 		});
 
-		diagramEngine.registerListener({
-			myCustomListenerName: event => setIsShown(true),
-		  })
-
 		tempModel.setOffsetX(offsetX);
 		tempModel.setOffsetY(offsetY);
 		tempModel.setZoomLevel(zoom);
@@ -305,6 +301,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					// Clear undo history when first time rendering
 					notInitialRender.current = true;
 					currentContext.model.sharedModel.clearUndoHistory();
+					// Register engine listener just once
+					xircuitsApp.getDiagramEngine().registerListener({
+						droppedLink: event => showComponentPanelFromLink(event),
+					})
 				}
 			} catch (e) {
 				showErrorMessage('Error', <pre>{e}</pre>)
