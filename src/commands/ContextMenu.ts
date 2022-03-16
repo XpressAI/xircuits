@@ -253,6 +253,14 @@ export function addContextMenuCommands(
             const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
             _.forEach(selectedEntities, (model) => {
 
+                if (!model.getOptions()["name"].startsWith("Literal")) {
+                    showDialog({
+                        title: 'Only Literal Node can be edited',
+                        buttons: [Dialog.warnButton({ label: 'OK' })]
+                    })
+                    return
+                }
+
                 let node = null;
                 let links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
                 let oldValue = model.getPorts()["out-0"].getOptions()["label"]
