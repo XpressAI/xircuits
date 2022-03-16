@@ -52,41 +52,6 @@
     padding: 15px;
     animation: fadein 0.45s ease-in;
   }
-
-  /* -------------------------------------------------- */
-  /* ---------------- Components Panel ------------------ */
-  /* -------------------------------------------------- */
-
-  .accordion__item_panel + .accordion__item_panel {
-    border-top: 3px ;
-  }
-
-  .accordion__button_panel {
-    color: rgb(255, 255, 255);
-    cursor: pointer;
-    width: auto;
-    text-align: left;
-  }
-
-  .accordion__button_panel:hover {
-    background-color: rgb(36, 64, 110);
-  }
-
-  .accordion__button_panel:before {
-    display: inline-block;
-    content: "";
-    height: 5px;
-    width: 5px;
-    margin-right: 12px;
-    border-bottom: 2px solid currentColor;
-    border-right: 2px solid currentColor;
-    transform: rotate(-45deg);
-  }
-
-  .accordion__button_panel[aria-expanded="true"]::before,
-  .accordion__button_panel[aria-selected="true"]::before {
-    transform: rotate(45deg);
-  }
   
   /* -------------------------------------------------- */
   /* ---------------- Animation part ------------------ */

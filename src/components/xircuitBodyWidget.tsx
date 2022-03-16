@@ -1,5 +1,5 @@
 import React, { FC, useState, useCallback, useEffect, useRef } from 'react';
-import { BaseEvent, CanvasWidget } from '@projectstorm/react-canvas-core';
+import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
 import { LinkModel, DiagramModel, DiagramEngine, DefaultLinkModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
@@ -22,6 +22,7 @@ import 'rc-dialog/assets/bootstrap.css';
 import { requestAPI } from '../server/handler';
 import { XircuitsApplication } from './XircuitsApp';
 import ComponentsPanel from '../context-menu/ComponentsPanel';
+import { GeneralComponentLibrary } from '../tray_library/GeneralComponentLib';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -304,6 +305,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					// Register engine listener just once
 					xircuitsApp.getDiagramEngine().registerListener({
 						droppedLink: event => showComponentPanelFromLink(event),
+						hidePanel: () => hidePanel()
 					})
 				}
 			} catch (e) {
@@ -1578,61 +1580,73 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 	}
 
-	// Show or hide the custom context menu
-	const [isShown, setIsShown] = useState(false);
+	/**Component Panel & Node Action Panel Context Menu */
+	const [isComponentPanelShown, setIsComponentPanelShown] = useState(false);
+	const [actionPanelShown, setActionPanelShown] = useState(false);
+	const [componentPanelposition, setComponentPanelposition] = useState({ x: 0, y: 0 });
+	const [actionPanelPosition, setActionPanelPosition] = useState({ x: 0, y: 0 });
+	const [looseLinkData, setLooseLinkData] = useState<any>();
+	const [isParameterLink, setIsParameterLink] = useState<boolean>(false);
 
-	// The position of the custom context menu
-	const [position, setPosition] = useState({ x: 0, y: 0 });
-
-	// Show the custom context menu
-	const showContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+	// Show the component panel context menu
+	const showComponentPanel = (event: React.MouseEvent<HTMLDivElement>) => {
 		// Disable the default context menu
 		event.preventDefault();
 
-		setIsShown(false);
+		setActionPanelShown(false)
+		setIsComponentPanelShown(false);
 		const newPosition = {
 			x: event.pageX,
 			y: event.pageY,
 		};
 
-		setPosition(newPosition);
-		setIsShown(true);
+		setComponentPanelposition(newPosition);
+		setIsComponentPanelShown(true);
 	};
 
-	// Show the custom context menu
-	const showContextMenuFromLink = (event) => {
-		console.log(event)
-		// Disable the default context menu
-		event.preventDefault();
+	// Show the component panel from dropped link
+	const showComponentPanelFromLink = (event) => {
+		setActionPanelShown(false)
+		setIsComponentPanelShown(false);
+		const linkName = event.link.sourcePort.options.name;
 
-		setIsShown(false);
+		if (linkName.startsWith("parameter")) {
+			setIsParameterLink(true)
+			// Don't show panel when loose link from parameter outPort
+			if (linkName.includes("parameter-out")) {
+				return
+			}
+		}
+
+		const newPosition = {
+			x: event.link.points[1].position.x,
+			y: event.link.points[1].position.y,
+		};
+		setLooseLinkData(event.link)
+		setComponentPanelposition(newPosition);
+		setIsComponentPanelShown(true);
+		};
+
+	// Hide component and node action panel
+	const hidePanel = () => {
+		setIsComponentPanelShown(false);
+		setActionPanelShown(false);
+		setLooseLinkData(null);
+		setIsParameterLink(false);
+	};
+
+	// Show the nodeActionPanel context menu
+	const showNodeActionPanel = (event: React.MouseEvent<HTMLDivElement>) => {
+		setActionPanelShown(false);
+		setIsComponentPanelShown(false);
 		const newPosition = {
 			x: event.pageX,
 			y: event.pageY,
-		};
-
-		setPosition(newPosition);
-		setIsShown(true);
 	};
 
-	// Hide the custom context menu
-	const hideContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
-		setIsShown(false);
+		setActionPanelPosition(newPosition);
+		setActionPanelShown(true);
 	};
-
-	// Do what you want when an option in the context menu is selected
-	const [selectedValue, setSelectedValue] = useState<String>();
-	const doSomething = (selectedValue: String) => {
-		// setSelectedValue(selectedValue);
-
-	};
-	const [searchTerm, setSearchTerm] = useState('');
-	let handleOnChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
-		setSearchTerm("");
-		setSearchTerm(event.target.value);
-		setIsShown(false)
-		// console.log(event)
-	}
 
 	return (
 		<Body>
@@ -1745,22 +1759,27 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					onMouseDown={(event) => {
 						event.preventDefault();
 					}}
-					onContextMenu={showContextMenu}
-					onClick={hideContextMenu}
-				>
-
+					onContextMenu={showComponentPanel}
+					onClick={(event) => {
+						hidePanel();
+					}}>
 					<DemoCanvasWidget>
 						<CanvasWidget engine={xircuitsApp.getDiagramEngine()} />
-
 					</DemoCanvasWidget>
-
 				</Layer>
-				<div>
-				{isShown && (
+				{/**Add Component Panel(right-click)*/}
+				{isComponentPanelShown && (
 					<div
-						style={{ top: position.y, left: position.x }}
-						className="custom-context-menu">
-						<ComponentsPanel lab={app} eng={xircuitsApp.getDiagramEngine()}></ComponentsPanel>
+						style={{ top: componentPanelposition.y, left: componentPanelposition.x }}
+						className="add-component-panel">
+						<ComponentsPanel
+							lab={app}
+							eng={xircuitsApp.getDiagramEngine()}
+							nodePosition={componentPanelposition}
+							linkData={looseLinkData}
+							isParameter={isParameterLink}
+							key="component-panel"
+						></ComponentsPanel>
 					</div>
 				)}
 				</div>
