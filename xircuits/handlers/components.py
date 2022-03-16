@@ -23,22 +23,23 @@ DEFAULT_COMPONENTS_PATHS = [
 # A good point in time to do that, would be when the python compilation step
 # gets refactored
 DEFAULT_COMPONENTS = {
-    1: { "name": "Math Operation", "returnType": "math"},
-    2: { "name": "Convert to Aurora", "returnType": "convert"},
-    3: { "name": "Get Hyper-parameter String Name", "returnType": "string"},
-    4: { "name": "Get Hyper-parameter Int Name", "returnType": "int"},
-    5: { "name": "Get Hyper-parameter Float Name", "returnType": "float"},
-    6: { "name": "Get Hyper-parameter Boolean Name", "returnType": "boolean"},
-    7: { "name": "Debug Image", "returnType": "debug"},
-    8: { "name": "Reached Target Accuracy", "returnType": "enough"},
-    9: { "name": "Literal String", "returnType": "string"},
-    10:{ "name": "Literal Integer", "returnType": "int"},
-    11:{ "name": "Literal Float", "returnType": "float"},
-    12:{ "name": "Literal True", "returnType": "boolean"},
-    13:{ "name": "Literal False", "returnType": "boolean"},
-    14:{ "name": "Literal List", "returnType": "list"},
-    15:{ "name": "Literal Tuple", "returnType": "tuple"},
-    16:{ "name": "Literal Dict", "returnType": "dict"},
+    1: { "name": "Get Hyper-parameter String Name", "returnType": "string"},
+    2: { "name": "Get Hyper-parameter Int Name", "returnType": "int"},
+    3: { "name": "Get Hyper-parameter Float Name", "returnType": "float"},
+    4: { "name": "Get Hyper-parameter Boolean Name", "returnType": "boolean"},
+    5: { "name": "Literal String", "returnType": "string"},
+    6:{ "name": "Literal Integer", "returnType": "int"},
+    7:{ "name": "Literal Float", "returnType": "float"},
+    8:{ "name": "Literal True", "returnType": "boolean"},
+    9:{ "name": "Literal False", "returnType": "boolean"},
+    10:{ "name": "Literal List", "returnType": "list"},
+    11:{ "name": "Literal Tuple", "returnType": "tuple"},
+    12:{ "name": "Literal Dict", "returnType": "dict"},
+    # Comment this first since we don't use it
+    # 1: { "name": "Math Operation", "returnType": "math"},
+    # 2: { "name": "Convert to Aurora", "returnType": "convert"},
+    # 7: { "name": "Debug Image", "returnType": "debug"},
+    # 8: { "name": "Reached Target Accuracy", "returnType": "enough"},
 }
 
 COLOR_PALETTE = [
