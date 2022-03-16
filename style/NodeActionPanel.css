@@ -1,0 +1,21 @@
+    .node-action-context-menu {
+    position: fixed;
+    z-index: 10;
+    border-top: 10px;
+    border-color: #000;
+    border-radius: 12px;
+  }
+  
+  .option {
+    cursor: pointer;
+    width: 50px;
+    height: 13px;
+    font-size:small;
+    padding: 5px 7px;
+    color: #fff;
+    background:rgb(35, 35, 35);
+  }
+  
+  .option:hover {
+    background-color: rgb(36, 64, 110);
+  }

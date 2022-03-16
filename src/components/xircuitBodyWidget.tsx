@@ -23,6 +23,7 @@ import { requestAPI } from '../server/handler';
 import { XircuitsApplication } from './XircuitsApp';
 import ComponentsPanel from '../context-menu/ComponentsPanel';
 import { GeneralComponentLibrary } from '../tray_library/GeneralComponentLib';
+import { NodeActionsPanel } from '../context-menu/NodeActionsPanel';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -1625,7 +1626,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setLooseLinkData(event.link)
 		setComponentPanelposition(newPosition);
 		setIsComponentPanelShown(true);
-		};
+	};
 
 	// Hide component and node action panel
 	const hidePanel = () => {
@@ -1642,7 +1643,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		const newPosition = {
 			x: event.pageX,
 			y: event.pageY,
-	};
+		};
 
 		setActionPanelPosition(newPosition);
 		setActionPanelShown(true);
@@ -1762,6 +1763,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					onContextMenu={showComponentPanel}
 					onClick={(event) => {
 						hidePanel();
+						if (event.ctrlKey || event.metaKey) {
+							showNodeActionPanel(event);
+						}
 					}}>
 					<DemoCanvasWidget>
 						<CanvasWidget engine={xircuitsApp.getDiagramEngine()} />
@@ -1782,7 +1786,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						></ComponentsPanel>
 					</div>
 				)}
-				</div>
+				{/**Node Action Panel(ctrl + left-click)*/}
+				{actionPanelShown && (
+					<div
+						style={{ top: actionPanelPosition.y, left: actionPanelPosition.x }}
+						className="node-action-context-menu">
+						<NodeActionsPanel
+							app={app}
+							eng={xircuitsApp.getDiagramEngine()}
+						></NodeActionsPanel>
+					</div>
+				)}
 			</Content>
 		</Body>
 	);
