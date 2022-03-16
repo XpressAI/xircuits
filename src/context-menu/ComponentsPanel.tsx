@@ -141,7 +141,7 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
     };
 
     const fetchComponentList = async () => {
-          // get the component list by sending the jupyterlab frontend and base path
+        // get the component list by sending the jupyterlab frontend and base path
         const response_1 = await ComponentList(props.lab.serviceManager);
 
         // get the header from the components
@@ -176,14 +176,15 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
         return () => clearInterval(intervalId);
     }, [category, componentList]);
 
-    const consLog = (e) => {
-        console.log(e)
+    function focusInput() {
+        document.getElementById("add-component-input").focus();
     }
 
     return (
         <Body>
             <Content>
                 <TrayPanel>
+                    <div onBlur={focusInput}>
                         <p className='title-panel'>Add Component</p>
                         <div className="search-input-panel" >
                             <input id='add-component-input' type="text" name="" value={searchTerm} placeholder="SEARCH" className="search-input__text-input-panel" autoFocus onChange={handleOnChange} />
@@ -211,56 +212,56 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
                                 );
                             })
                         }
-                        </div>
-                        <Accordion allowZeroExpanded>
-                            {
-                                category.filter((val) => {
-                                    if (searchTerm == "") {
-                                        return val;
-                                    }
-                                }).map((val, i) => {
+                    </div>
+                    <Accordion allowZeroExpanded>
+                        {
+                            category.filter((val) => {
+                                if (searchTerm == "") {
+                                    return val;
+                                }
+                            }).map((val, i) => {
                                 if (props.linkData != null) {
                                     if (props.isParameter == true) {
                                         // Only allow GENERAL component for parameter inPort
                                         if (val["task"].toString() == "GENERAL") {
-                                    return (
-                                        <AccordionItem key={`index-1-${val["task"].toString()}`} className='accordion__item_panel'>
-                                            <AccordionItemHeading >
-                                                <AccordionItemButton className='accordion__button_panel'>{val["task"]}</AccordionItemButton>
-                                            </AccordionItemHeading>
-                                            <AccordionItemPanel>
-                                                {
-                                                    componentList.filter((componentVal) => {
-                                                        if (searchTerm == "") {
-                                                            return componentVal;
-                                                        }
-                                                    }).map((componentVal, i2) => {
-                                                        if (componentVal["category"].toString().toUpperCase() == val["task"].toString()) {
-                                                            return (
+                                            return (
+                                                <AccordionItem key={`index-1-${val["task"].toString()}`} className='accordion__item_panel'>
+                                                    <AccordionItemHeading >
+                                                        <AccordionItemButton className='accordion__button_panel'>{val["task"]}</AccordionItemButton>
+                                                    </AccordionItemHeading>
+                                                    <AccordionItemPanel>
+                                                        {
+                                                            componentList.filter((componentVal) => {
+                                                                if (searchTerm == "") {
+                                                                    return componentVal;
+                                                                }
+                                                            }).map((componentVal, i2) => {
+                                                                if (componentVal["category"].toString().toUpperCase() == val["task"].toString()) {
+                                                                    return (
                                                                         <div key={`index-1-${i2}`}>
-                                                                    <TrayItemPanel
-                                                                        model={{
-                                                                            type: componentVal.type,
-                                                                            name: componentVal.task
-                                                                        }}
-                                                                        name={componentVal.task}
-                                                                        color={componentVal.color}
-                                                                        app={props.lab}
-                                                                        path={componentVal.file_path}
-                                                                        eng={props.eng}
+                                                                            <TrayItemPanel
+                                                                                model={{
+                                                                                    type: componentVal.type,
+                                                                                    name: componentVal.task
+                                                                                }}
+                                                                                name={componentVal.task}
+                                                                                color={componentVal.color}
+                                                                                app={props.lab}
+                                                                                path={componentVal.file_path}
+                                                                                eng={props.eng}
                                                                                 componentList={componentList}
                                                                                 nodePosition={props.nodePosition}
                                                                                 linkData={props.linkData}
                                                                                 isParameter={props.isParameter}
-                                                                        />
-                                                                </div>
-                                                            );
+                                                                            />
+                                                                        </div>
+                                                                    );
+                                                                }
+                                                            })
                                                         }
-                                                    })
-                                                }
-                                            </AccordionItemPanel>
-                                        </AccordionItem>
-                                    );
+                                                    </AccordionItemPanel>
+                                                </AccordionItem>
+                                            );
                                         }
                                     }
                                     // Except GENERAL component for '▶' port
@@ -297,8 +298,8 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
                                                                     </div>
                                                                 );
                                                             }
-                                })
-                            }
+                                                        })
+                                                    }
                                                 </AccordionItemPanel>
                                             </AccordionItem>
                                         );
@@ -312,34 +313,34 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
                                                 <AccordionItemButton className='accordion__button_panel'>{val["task"]}</AccordionItemButton>
                                             </AccordionItemHeading>
                                             <AccordionItemPanel>
-                        {
+                                                {
                                                     componentList.filter((componentVal) => {
                                                         if (searchTerm == "") {
                                                             return componentVal;
-                                }
+                                                        }
                                                     }).map((componentVal, i2) => {
                                                         if (componentVal["category"].toString().toUpperCase() == val["task"].toString()) {
-                                return (
+                                                            return (
                                                                 <div key={`index-1-${i2}`}>
-                                        <TrayItemPanel
+                                                                    <TrayItemPanel
                                                                         model={{
                                                                             type: componentVal.type,
                                                                             name: componentVal.task
                                                                         }}
                                                                         name={componentVal.task}
                                                                         color={componentVal.color}
-                                            app={props.lab}
+                                                                        app={props.lab}
                                                                         path={componentVal.file_path}
-                                            eng={props.eng}
+                                                                        eng={props.eng}
                                                                         componentList={componentList}
                                                                         nodePosition={props.nodePosition}
                                                                         linkData={props.linkData}
-                                            />
-                                    </div>
-                                );
+                                                                    />
+                                                                </div>
+                                                            );
                                                         }
-                            })
-                        }
+                                                    })
+                                                }
                                             </AccordionItemPanel>
                                         </AccordionItem>
                                     );
