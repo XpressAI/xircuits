@@ -14,7 +14,6 @@ import {
     AccordionItemPanel
 } from "react-accessible-accordion";
 
-import { requestAPI } from '../server/handler';
 import { DiagramEngine } from '@projectstorm/react-diagrams';
 import { TrayPanel } from './TrayPanel';
 import { TrayItemPanel } from './TrayItemPanel';
@@ -36,38 +35,6 @@ export const Content = styled.div`
     max-height: auto;
     'border-top': '4px solid #dfe2e5'
 `;
-
-const headerList = [
-    { task: 'GENERAL', id: 1 }
-];
-
-const advancedList = [
-    { task: 'ADVANCED', id: 1 }
-];
-
-const colorList_adv = [
-    { task: "rgb(192,255,0)", id: 1 },
-    { task: "rgb(0,102,204)", id: 2 },
-    { task: "rgb(255,153,102)", id: 3 },
-    { task: "rgb(255,102,102)", id: 4 },
-    { task: "rgb(15,255,255)", id: 5 },
-    { task: "rgb(255,204,204)", id: 6 },
-    { task: "rgb(153,204,51)", id: 7 },
-    { task: "rgb(255,153,0)", id: 8 },
-    { task: "rgb(255,204,0)", id: 9 },
-    { task: "rgb(204,204,204)", id: 10 },
-    { task: "rgb(153,204,204)", id: 11 },
-    { task: "rgb(153,0,102)", id: 12 },
-    { task: "rgb(102,51,102)", id: 13 },
-    { task: "rgb(153,51,204)", id: 14 },
-    { task: "rgb(102,102,102)", id: 15 },
-    { task: "rgb(255,102,0)", id: 16 },
-    { task: "rgb(51,51,51)", id: 17 },
-];
-
-const colorList_general = [
-    { task: "rgb(21,21,51)", id: 1 }
-];
 
 export interface ComponentsPanelProps {
     lab: JupyterFrontEnd;
@@ -165,28 +132,6 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
         setSearchTerm(event.target.value);
     }
 
-    function handleSearchOnClick() {
-        setSearchTerm("");
-        setSearchTerm(searchTerm);
-    }
-
-    async function getConfig(request: string) {
-        const dataToSend = { "config_request": request };
-
-        try {
-            const server_reply = await requestAPI<any>('get/config', {
-                body: JSON.stringify(dataToSend),
-                method: 'POST',
-            });
-
-            return server_reply;
-        } catch (reason) {
-            console.error(
-                `Error on POST get/config ${dataToSend}.\n${reason}`
-            );
-        }
-    };
-
     const fetchComponentList = async () => {
         // get the component list by sending the jupyterlab frontend and base path
         const response_1 = await ComponentList(props.lab.serviceManager);
@@ -267,7 +212,7 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
                                 if (searchTerm == "") {
                                     return val;
                                 }
-                            }).map((val, i) => {
+                            }).map((val) => {
                                 return (
                                     <AccordionItem key={`index-1-${val["task"].toString()}`} className='accordion__item_panel'>
                                         <AccordionItemHeading >
