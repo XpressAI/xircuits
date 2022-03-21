@@ -3043,7 +3043,7 @@
         "affectsGlobalScope": false
       },
       "./src/context-menu/TrayItemPanel.tsx": {
-        "version": "5f2de47d423c48d28c19cb667d1cc7d75bc74d2db0a9b46b540ef0148bc2b579",
+        "version": "d7ab399af166944f9e1457520ad0d2d29d80124faebe9cc82d00da04a2fb386b",
         "signature": "484967763f7e932d68415c5e54c489318a93156677252e3f6c18e319eef639eb",
         "affectsGlobalScope": false
       },
@@ -3058,7 +3058,7 @@
         "affectsGlobalScope": false
       },
       "./src/components/xircuitBodyWidget.tsx": {
-        "version": "504488336bb8c27f847d9bf8ff2913346a4ae5186d5864f3846f7a2bc84e35d2",
+        "version": "317843094c493cf98563df6f676c6fa7404a20973b9afba86862837944ac90b3",
         "signature": "e9ae0eb6f0d03574ecf2de18d98bc12d4c4dd4b40d08c95bda8fa25a4690d3da",
         "affectsGlobalScope": false
       },
@@ -3460,7 +3460,6 @@
       "types": [],
       "allowJs": true,
       "skipLibCheck": true,
-      "watch": true,
       "configFilePath": "./tsconfig.json"
     },
     "referencedMap": {
