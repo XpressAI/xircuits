@@ -14,7 +14,7 @@ import {
     AccordionItemPanel
 } from "react-accessible-accordion";
 
-import { DiagramEngine } from '@projectstorm/react-diagrams';
+import { DefaultLinkModel, DiagramEngine } from '@projectstorm/react-diagrams';
 import { TrayPanel } from './TrayPanel';
 import { TrayItemPanel } from './TrayItemPanel';
 
@@ -39,9 +39,9 @@ export const Content = styled.div`
 export interface ComponentsPanelProps {
     lab: JupyterFrontEnd;
     eng?: DiagramEngine;
-    nodePosition?: any;
-    linkData?: any;
-    isParameter?: any;
+    nodePosition?: {x: number, y: number};
+    linkData?: DefaultLinkModel;
+    isParameter?: boolean;
 }
 
 async function fetchComponent(componentList: string[]) {
