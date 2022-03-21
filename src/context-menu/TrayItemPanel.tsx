@@ -8,13 +8,9 @@ import { CustomNodeModel } from '../components/CustomNodeModel';
 import { GeneralComponentLibrary } from '../tray_library/GeneralComponentLib';
 
 export interface TrayItemWidgetProps {
-	model: any;
-	color: any;
-	name: string;
-	path: string;
+	currentNode: any;
 	app: JupyterFrontEnd;
 	eng: DiagramEngine;
-	componentList?: any;
 	nodePosition?: any;
 	linkData?: any;
 	isParameter?: any;
@@ -38,18 +34,13 @@ export const Tray = styled.div<TrayStyledProps>`
 
 export class TrayItemPanel extends React.Component<TrayItemWidgetProps> {
 	selectedNode() {
-		let component_task = this.props.componentList.map(x => x["task"]);
-		let drop_node = component_task.indexOf(this.props.name);
-		let current_node: any;
+		let current_node = this.props.currentNode;
 		let node: CustomNodeModel;
-		if (drop_node != -1) {
-			current_node = this.props.componentList[drop_node];
-		}
 		if (current_node != undefined) {
 			if (current_node.header == "GENERAL") {
-				node = GeneralComponentLibrary({ name: this.props.name, color: this.props.color, type: this.props.model.type });
+				node = GeneralComponentLibrary({ name: current_node["task"], color: current_node["color"], type: current_node["type"] });
 			} else {
-				node = new CustomNodeModel({ name: this.props.name, color: current_node["color"], extras: { "type": this.props.model.type } });
+				node = new CustomNodeModel({ name: current_node["task"], color: current_node["color"], extras: { "type": current_node["type"] } });
 				node.addInPortEnhance('▶', 'in-0');
 				node.addOutPortEnhance('▶', 'out-0');
 
@@ -132,12 +123,12 @@ export class TrayItemPanel extends React.Component<TrayItemWidgetProps> {
 	render() {
 		return (
 			<Tray
-				color={this.props.color || "white"}
+				color={this.props.currentNode["color"] || "white"}
 				onClick={(event) => {
 					if (event.ctrlKey || event.metaKey) {
 						const { commands } = this.props.app;
 						commands.execute('docmanager:open', {
-							path: this.props.path
+							path: this.props.currentNode["file_path"]
 						});
 						return;
 					}
@@ -148,7 +139,7 @@ export class TrayItemPanel extends React.Component<TrayItemWidgetProps> {
 					this.forceUpdate();
 				}}
 				className="tray-item">
-				{this.props.name}
+				{this.props.currentNode["task"]}
 			</Tray>
 		);
 	}

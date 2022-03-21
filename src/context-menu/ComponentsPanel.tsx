@@ -161,13 +161,6 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
 
     }, [category, componentList]);
 
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            fetchComponentList();
-        }, 600000); // every 10 minutes should re-fetch the component list
-        return () => clearInterval(intervalId);
-    }, [category, componentList]);
-
     function focusInput() {
         document.getElementById("add-component-input").focus();
     }
@@ -190,13 +183,9 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
                                 return (
                                     <div key={`index-3-${i}`} className="tray-search">
                                         <TrayItemPanel
-                                            model={{ type: val.type, name: val.task }}
-                                            name={val.task}
-                                            color={val.color}
+                                            currentNode={val}
                                             app={props.lab}
-                                            path={val.file_path}
                                             eng={props.eng}
-                                            componentList={componentList}
                                             nodePosition={props.nodePosition}
                                             linkData={props.linkData}
                                             isParameter={props.isParameter}
@@ -229,16 +218,9 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
                                                         return (
                                                             <div key={`index-1-${i2}`}>
                                                                 <TrayItemPanel
-                                                                    model={{
-                                                                        type: componentVal.type,
-                                                                        name: componentVal.task
-                                                                    }}
-                                                                    name={componentVal.task}
-                                                                    color={componentVal.color}
+                                                                    currentNode={componentVal}
                                                                     app={props.lab}
-                                                                    path={componentVal.file_path}
                                                                     eng={props.eng}
-                                                                    componentList={componentList}
                                                                     nodePosition={props.nodePosition}
                                                                     linkData={props.linkData}
                                                                     isParameter={props.isParameter}

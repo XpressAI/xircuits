@@ -3043,12 +3043,12 @@
         "affectsGlobalScope": false
       },
       "./src/context-menu/TrayItemPanel.tsx": {
-        "version": "0ab6823581d272ba206a3f86c7943c546c19ee633f7000ad0e6b391be86f8b9b",
-        "signature": "34fabcb1cf6d0b0ff4fd42603967525a61532d83950fa0510aace906c3d5da4f",
+        "version": "96426836c824ef8ccb3d1e035a1824e7cd4d94914188765829dba263c03456ff",
+        "signature": "484967763f7e932d68415c5e54c489318a93156677252e3f6c18e319eef639eb",
         "affectsGlobalScope": false
       },
       "./src/context-menu/ComponentsPanel.tsx": {
-        "version": "13b3b4fe54033318d3b65830aa3e0cf34e7468623d8ddd7e71ceb0bc4d7cc237",
+        "version": "c143f4b21e1fa1d815f01825b1b8773427efcd7caaa094149d2bdeb56ed3569b",
         "signature": "1d082a98d213926b3c57c452ebd9904f621dc570aafcbae3e6300d843daac6bd",
         "affectsGlobalScope": false
       },
@@ -3460,6 +3460,7 @@
       "types": [],
       "allowJs": true,
       "skipLibCheck": true,
+      "watch": true,
       "configFilePath": "./tsconfig.json"
     },
     "referencedMap": {
@@ -7121,10 +7122,10 @@
         "./node_modules/@blueprintjs/core/lib/cjs/common/position.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/cjs/common/index.d.ts": [
-        "./node_modules/@blueprintjs/core/lib/cjs/common/abstractcomponent.d.ts",
-        "./node_modules/@blueprintjs/core/lib/cjs/common/abstractcomponent2.d.ts",
-        "./node_modules/@blueprintjs/core/lib/cjs/common/abstractpurecomponent.d.ts",
-        "./node_modules/@blueprintjs/core/lib/cjs/common/abstractpurecomponent2.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/common/abstractComponent.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/common/abstractComponent2.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/common/abstractPureComponent.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/common/abstractPureComponent2.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/alignment.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/boundary.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/common/classes.d.ts",
@@ -7149,13 +7150,13 @@
       ],
       "./node_modules/@blueprintjs/core/lib/cjs/common/utils/index.d.ts": [
         "./node_modules/@blueprintjs/core/lib/cjs/common/refs.d.ts",
-        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/compareutils.d.ts",
-        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/domutils.d.ts",
-        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/functionutils.d.ts",
-        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/isdarktheme.d.ts",
-        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/jsutils.d.ts",
-        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/reactutils.d.ts",
-        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/safeinvokemember.d.ts"
+        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/compareUtils.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/domUtils.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/functionUtils.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/isDarkTheme.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/jsUtils.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/reactUtils.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/common/utils/safeInvokeMember.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/cjs/common/utils/isDarkTheme.d.ts": [
         "./node_modules/@blueprintjs/core/lib/cjs/common/configureDom4.d.ts"
@@ -7170,7 +7171,7 @@
       ],
       "./node_modules/@blueprintjs/core/lib/cjs/components/button/buttons.d.ts": [
         "./node_modules/@blueprintjs/core/lib/cjs/common/refs.d.ts",
-        "./node_modules/@blueprintjs/core/lib/cjs/components/button/abstractbutton.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/components/button/abstractButton.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/cjs/components/collapse/collapse.d.ts": [
@@ -7195,7 +7196,7 @@
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/accessibility/index.d.ts": [
-        "./node_modules/@blueprintjs/core/lib/esm/accessibility/focusstylemanager.d.ts"
+        "./node_modules/@blueprintjs/core/lib/esm/accessibility/focusStyleManager.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/common/abstractComponent.d.ts": [
         "./node_modules/@types/react/index.d.ts"
@@ -7216,10 +7217,10 @@
         "./node_modules/@blueprintjs/core/lib/esm/common/position.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/common/index.d.ts": [
-        "./node_modules/@blueprintjs/core/lib/esm/common/abstractcomponent.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/common/abstractcomponent2.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/common/abstractpurecomponent.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/common/abstractpurecomponent2.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/common/abstractComponent.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/common/abstractComponent2.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/common/abstractPureComponent.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/common/abstractPureComponent2.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/alignment.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/boundary.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/classes.d.ts",
@@ -7244,13 +7245,13 @@
       ],
       "./node_modules/@blueprintjs/core/lib/esm/common/utils/index.d.ts": [
         "./node_modules/@blueprintjs/core/lib/esm/common/refs.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/common/utils/compareutils.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/common/utils/domutils.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/common/utils/functionutils.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/common/utils/isdarktheme.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/common/utils/jsutils.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/common/utils/reactutils.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/common/utils/safeinvokemember.d.ts"
+        "./node_modules/@blueprintjs/core/lib/esm/common/utils/compareUtils.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/common/utils/domUtils.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/common/utils/functionUtils.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/common/utils/isDarkTheme.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/common/utils/jsUtils.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/common/utils/reactUtils.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/common/utils/safeInvokeMember.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/common/utils/isDarkTheme.d.ts": [
         "./node_modules/@blueprintjs/core/lib/esm/common/configureDom4.d.ts"
@@ -7271,7 +7272,7 @@
       "./node_modules/@blueprintjs/core/lib/esm/components/breadcrumbs/breadcrumbs.d.ts": [
         "./node_modules/@blueprintjs/core/lib/esm/common/index.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/breadcrumbs/breadcrumb.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/overflow-list/overflowlist.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/overflow-list/overflowList.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/popover/popover.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
@@ -7287,7 +7288,7 @@
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/button/buttons.d.ts": [
         "./node_modules/@blueprintjs/core/lib/esm/common/refs.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/button/abstractbutton.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/button/abstractButton.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/callout/callout.d.ts": [
@@ -7405,7 +7406,7 @@
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeys.d.ts": [
         "./node_modules/@blueprintjs/core/lib/esm/common/index.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeystypes.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeysTypes.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeysDialog.d.ts": [
@@ -7438,14 +7439,14 @@
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/index.d.ts": [
         "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkey.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeyparser.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeyParser.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeys.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeysdialog.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeysdialog2.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeystarget.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeystarget2.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeystypes.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/keycombo.d.ts"
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeysDialog.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeysDialog2.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeysTarget.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeysTarget2.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/hotkeysTypes.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/keyCombo.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/keyCombo.d.ts": [
         "./node_modules/@blueprintjs/core/lib/esm/common/index.d.ts",
@@ -7471,78 +7472,78 @@
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/index.d.ts": [
-        "./node_modules/@blueprintjs/core/lib/esm/common/configuredom4.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/common/configureDom4.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/alert/alert.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/breadcrumbs/breadcrumb.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/breadcrumbs/breadcrumbs.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/button/buttongroup.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/button/buttonGroup.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/button/buttons.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/callout/callout.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/card/card.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/collapse/collapse.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/collapsible-list/collapsiblelist.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/context-menu/contextmenu.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/context-menu/contextmenutarget.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/collapsible-list/collapsibleList.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/context-menu/contextMenu.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/context-menu/contextMenuTarget.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/dialog/dialog.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/dialog/dialogstep.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/dialog/multistepdialog.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/dialog/dialogStep.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/dialog/multistepDialog.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/divider/divider.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/drawer/drawer.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/editable-text/editabletext.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/forms/controlgroup.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/editable-text/editableText.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/forms/controlGroup.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/forms/controls.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/forms/fileinput.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/forms/formgroup.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/forms/inputgroup.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/forms/numericinput.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/forms/radiogroup.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/forms/textarea.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/forms/fileInput.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/forms/formGroup.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/forms/inputGroup.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/forms/numericInput.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/forms/radioGroup.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/forms/textArea.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/hotkeys/index.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/html-select/htmlselect.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/html-table/htmltable.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/html-select/htmlSelect.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/html-table/htmlTable.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/html/html.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/icon/icon.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/menu/menu.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/menu/menudivider.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/menu/menuitem.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/menu/menuDivider.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/menu/menuItem.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbar.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbardivider.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbargroup.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbarheading.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/non-ideal-state/nonidealstate.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/overflow-list/overflowlist.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbarDivider.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbarGroup.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbarHeading.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/non-ideal-state/nonIdealState.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/overflow-list/overflowList.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/overlay/overlay.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/panel-stack/panelprops.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/panel-stack/panelstack.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/panel-stack2/panelstack2.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/panel-stack2/paneltypes.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/panel-stack/panelProps.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/panel-stack/panelStack.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/panel-stack2/panelStack2.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/panel-stack2/panelTypes.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/popover/popover.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/popover/popoversharedprops.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/popover/popoverSharedProps.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/portal/portal.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/progress-bar/progressbar.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/resize-sensor/resizeobservertypes.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/resize-sensor/resizesensor.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/slider/handleprops.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/slider/multislider.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/slider/rangeslider.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/progress-bar/progressBar.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/resize-sensor/resizeObserverTypes.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/resize-sensor/resizeSensor.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/slider/handleProps.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/slider/multiSlider.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/slider/rangeSlider.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/slider/slider.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/spinner/spinner.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/tabs/tab.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/tabs/tabs.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/tag-input/taginput.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/tag-input/tagInput.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/tag/tag.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/text/text.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/toast/toast.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/toast/toaster.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/tooltip/tooltip.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/tree/tree.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/tree/treenode.d.ts"
+        "./node_modules/@blueprintjs/core/lib/esm/components/tree/treeNode.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/menu/menu.d.ts": [
         "./node_modules/@blueprintjs/core/lib/esm/common/index.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/props.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/menu/menudivider.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/menu/menuitem.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/menu/menuDivider.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/menu/menuItem.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/menu/menuDivider.d.ts": [
@@ -7558,9 +7559,9 @@
       "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbar.d.ts": [
         "./node_modules/@blueprintjs/core/lib/esm/common/index.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/props.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbardivider.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbargroup.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbarheading.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbarDivider.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbarGroup.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbarHeading.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/navbar/navbarDivider.d.ts": [
@@ -7613,7 +7614,7 @@
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/popover/popover.d.ts": [
         "./node_modules/@blueprintjs/core/lib/esm/common/index.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/popover/popoversharedprops.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/popover/popoverSharedProps.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/popover/popoverSharedProps.d.ts": [
@@ -7654,7 +7655,7 @@
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/slider/slider.d.ts": [
         "./node_modules/@blueprintjs/core/lib/esm/common/index.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/slider/multislider.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/slider/multiSlider.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/spinner/spinner.d.ts": [
@@ -7706,12 +7707,12 @@
         "./node_modules/@blueprintjs/core/lib/esm/common/index.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/common/props.d.ts",
         "./node_modules/@blueprintjs/core/lib/esm/components/popover/popover.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/popover/popoversharedprops.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/popover/popoverSharedProps.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/tree/tree.d.ts": [
         "./node_modules/@blueprintjs/core/lib/esm/common/props.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/components/tree/treenode.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/components/tree/treeNode.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/components/tree/treeNode.d.ts": [
@@ -7725,7 +7726,7 @@
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/context/index.d.ts": [
-        "./node_modules/@blueprintjs/core/lib/esm/context/hotkeys/hotkeysprovider.d.ts"
+        "./node_modules/@blueprintjs/core/lib/esm/context/hotkeys/hotkeysProvider.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/hooks/hotkeys/hotkeyConfig.d.ts": [
         "./node_modules/@types/react/index.d.ts"
@@ -7735,8 +7736,8 @@
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/hooks/index.d.ts": [
-        "./node_modules/@blueprintjs/core/lib/esm/hooks/hotkeys/hotkeyconfig.d.ts",
-        "./node_modules/@blueprintjs/core/lib/esm/hooks/hotkeys/usehotkeys.d.ts"
+        "./node_modules/@blueprintjs/core/lib/esm/hooks/hotkeys/hotkeyConfig.d.ts",
+        "./node_modules/@blueprintjs/core/lib/esm/hooks/hotkeys/useHotkeys.d.ts"
       ],
       "./node_modules/@blueprintjs/core/lib/esm/index.d.ts": [
         "./node_modules/@blueprintjs/core/lib/esm/accessibility/index.d.ts",
@@ -7752,17 +7753,17 @@
         "./node_modules/@blueprintjs/icons/lib/esm/generated/iconNames.d.ts"
       ],
       "./node_modules/@blueprintjs/icons/lib/esm/index.d.ts": [
-        "./node_modules/@blueprintjs/icons/lib/esm/generated/iconcontents.d.ts",
-        "./node_modules/@blueprintjs/icons/lib/esm/generated/iconnames.d.ts",
-        "./node_modules/@blueprintjs/icons/lib/esm/generated/iconsvgpaths.d.ts",
-        "./node_modules/@blueprintjs/icons/lib/esm/iconname.d.ts"
+        "./node_modules/@blueprintjs/icons/lib/esm/generated/iconContents.d.ts",
+        "./node_modules/@blueprintjs/icons/lib/esm/generated/iconNames.d.ts",
+        "./node_modules/@blueprintjs/icons/lib/esm/generated/iconSvgPaths.d.ts",
+        "./node_modules/@blueprintjs/icons/lib/esm/iconName.d.ts"
       ],
       "./node_modules/@blueprintjs/select/lib/cjs/common/index.d.ts": [
         "./node_modules/@blueprintjs/select/lib/cjs/common/classes.d.ts",
-        "./node_modules/@blueprintjs/select/lib/cjs/common/itemlistrenderer.d.ts",
-        "./node_modules/@blueprintjs/select/lib/cjs/common/itemrenderer.d.ts",
-        "./node_modules/@blueprintjs/select/lib/cjs/common/listitemsprops.d.ts",
-        "./node_modules/@blueprintjs/select/lib/cjs/common/listitemsutils.d.ts",
+        "./node_modules/@blueprintjs/select/lib/cjs/common/itemListRenderer.d.ts",
+        "./node_modules/@blueprintjs/select/lib/cjs/common/itemRenderer.d.ts",
+        "./node_modules/@blueprintjs/select/lib/cjs/common/listItemsProps.d.ts",
+        "./node_modules/@blueprintjs/select/lib/cjs/common/listItemsUtils.d.ts",
         "./node_modules/@blueprintjs/select/lib/cjs/common/predicate.d.ts"
       ],
       "./node_modules/@blueprintjs/select/lib/cjs/common/itemListRenderer.d.ts": [
@@ -8338,7 +8339,7 @@
         "./node_modules/@jupyterlab/services/lib/index.d.ts",
         "./node_modules/@lumino/disposable/types/index.d.ts",
         "./node_modules/@lumino/signaling/types/index.d.ts",
-        "./node_modules/vscode-debugprotocol/lib/debugprotocol.d.ts"
+        "./node_modules/vscode-debugprotocol/lib/debugProtocol.d.ts"
       ],
       "./node_modules/@jupyterlab/debugger/lib/session.d.ts": [
         "./node_modules/@jupyterlab/debugger/lib/tokens.d.ts",
@@ -8372,7 +8373,7 @@
         "./node_modules/@lumino/disposable/types/index.d.ts",
         "./node_modules/@lumino/signaling/types/index.d.ts",
         "./node_modules/@lumino/widgets/types/index.d.ts",
-        "./node_modules/vscode-debugprotocol/lib/debugprotocol.d.ts"
+        "./node_modules/vscode-debugprotocol/lib/debugProtocol.d.ts"
       ],
       "./node_modules/@jupyterlab/docmanager/lib/dialogs.d.ts": [
         "./node_modules/@jupyterlab/docmanager/lib/index.d.ts",
@@ -9164,7 +9165,7 @@
         "./node_modules/@blueprintjs/core/lib/cjs/components/button/buttons.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/components/collapse/collapse.d.ts",
         "./node_modules/@blueprintjs/core/lib/cjs/components/forms/controls.d.ts",
-        "./node_modules/@blueprintjs/core/lib/cjs/components/forms/inputgroup.d.ts",
+        "./node_modules/@blueprintjs/core/lib/cjs/components/forms/inputGroup.d.ts",
         "./node_modules/@blueprintjs/select/lib/cjs/components/select/select.d.ts",
         "./node_modules/@types/react/index.d.ts"
       ],
@@ -9541,11 +9542,11 @@
         "./node_modules/@projectstorm/geometry/dist/@types/Polygon.d.ts"
       ],
       "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts": [
-        "./node_modules/@projectstorm/geometry/dist/@types/beziercurve.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/matrix.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/point.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/polygon.d.ts",
-        "./node_modules/@projectstorm/geometry/dist/@types/rectangle.d.ts"
+        "./node_modules/@projectstorm/geometry/dist/@types/BezierCurve.d.ts",
+        "./node_modules/@projectstorm/geometry/dist/@types/Matrix.d.ts",
+        "./node_modules/@projectstorm/geometry/dist/@types/Point.d.ts",
+        "./node_modules/@projectstorm/geometry/dist/@types/Polygon.d.ts",
+        "./node_modules/@projectstorm/geometry/dist/@types/Rectangle.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/CanvasEngine.d.ts": [
         "./node_modules/@projectstorm/geometry/dist/@types/index.d.ts",
@@ -9673,38 +9674,38 @@
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/LayerModel.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts": [
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/actions/deleteitemsaction.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/actions/zoomcanvasaction.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/canvasengine.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/action.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/actioneventbus.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/baseentity.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basemodel.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/basepositionmodel.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/abstractdisplacementstate.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/state.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/statemachine.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/abstractfactory.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/abstractmodelfactory.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/abstractreactfactory.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/baseobserver.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/factorybank.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/modelgeometryinterface.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/canvasmodel.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/canvaswidget.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/layermodel.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/smartlayerwidget.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/transformlayerwidget.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/selection/selectionboxlayerfactory.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/selection/selectionboxwidget.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/selection/selectionlayermodel.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/defaultstate.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/dragcanvasstate.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/moveitemsstate.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/selectingstate.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/selectionboxstate.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/toolkit.d.ts",
-        "./node_modules/@projectstorm/react-canvas-core/dist/@types/widgets/peformancewidget.d.ts"
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/CanvasEngine.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/Toolkit.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/actions/DeleteItemsAction.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/actions/ZoomCanvasAction.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/Action.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-actions/ActionEventBus.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/BaseEntity.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/BaseModel.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-models/BasePositionModel.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/AbstractDisplacementState.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/State.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/StateMachine.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/AbstractFactory.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/AbstractModelFactory.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/AbstractReactFactory.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/BaseObserver.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/FactoryBank.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/core/ModelGeometryInterface.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/CanvasModel.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/canvas/CanvasWidget.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/LayerModel.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/SmartLayerWidget.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/layer/TransformLayerWidget.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/selection/SelectionBoxLayerFactory.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/selection/SelectionBoxWidget.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/entities/selection/SelectionLayerModel.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/DefaultState.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/DragCanvasState.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/MoveItemsState.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/SelectingState.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/SelectionBoxState.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/widgets/PeformanceWidget.d.ts"
       ],
       "./node_modules/@projectstorm/react-canvas-core/dist/@types/states/DefaultState.d.ts": [
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/core-state/State.d.ts"
@@ -9824,25 +9825,25 @@
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/index.d.ts": [
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/diagramengine.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/label/labelmodel.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/linklayerfactory.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/linklayermodel.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/linklayerwidget.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkmodel.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/linkwidget.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/pointmodel.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node-layer/nodelayerfactory.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node-layer/nodelayermodel.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node-layer/nodelayerwidget.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/nodemodel.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/nodewidget.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portmodel.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/portwidget.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/models/diagrammodel.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/defaultdiagramstate.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/dragdiagramitemsstate.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/dragnewlinkstate.d.ts"
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/DiagramEngine.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/label/LabelModel.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/LinkLayerFactory.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/LinkLayerModel.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link-layer/LinkLayerWidget.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/LinkModel.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/LinkWidget.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/link/PointModel.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node-layer/NodeLayerFactory.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node-layer/NodeLayerModel.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node-layer/NodeLayerWidget.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/NodeModel.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/node/NodeWidget.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/PortModel.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/PortWidget.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/models/DiagramModel.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/DefaultDiagramState.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/DragDiagramItemsState.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-core/dist/@types/states/DragNewLinkState.d.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-core/dist/@types/models/DiagramModel.d.ts": [
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
@@ -9868,20 +9869,20 @@
         "./node_modules/@projectstorm/react-diagrams-core/dist/@types/entities/port/PortModel.d.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/index.d.ts": [
-        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/defaultlabelfactory.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/defaultlabelmodel.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/defaultlabelwidget.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkfactory.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkmodel.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkpointwidget.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinksegmentwidget.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/defaultlinkwidget.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/node/defaultnodefactory.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/node/defaultnodemodel.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/node/defaultnodewidget.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/port/defaultportfactory.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/port/defaultportlabelwidget.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/port/defaultportmodel.d.ts"
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/DefaultLabelFactory.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/DefaultLabelModel.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/DefaultLabelWidget.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/DefaultLinkFactory.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/DefaultLinkModel.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/DefaultLinkPointWidget.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/DefaultLinkSegmentWidget.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/link/DefaultLinkWidget.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/node/DefaultNodeFactory.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/node/DefaultNodeModel.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/node/DefaultNodeWidget.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/port/DefaultPortFactory.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/port/DefaultPortLabelWidget.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/port/DefaultPortModel.d.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-defaults/dist/@types/label/DefaultLabelFactory.d.ts": [
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
@@ -9961,14 +9962,14 @@
         "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/PathFindingLinkFactory.d.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/index.d.ts": [
-        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/dagre/dagreengine.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/engine/pathfinding.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/pathfindinglinkfactory.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/pathfindinglinkmodel.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/pathfindinglinkwidget.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/rightanglelinkfactory.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/rightanglelinkmodel.d.ts",
-        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/rightanglelinkwidget.d.ts"
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/dagre/DagreEngine.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/engine/PathFinding.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/PathFindingLinkFactory.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/PathFindingLinkModel.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/PathFindingLinkWidget.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/RightAngleLinkFactory.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/RightAngleLinkModel.d.ts",
+        "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/RightAngleLinkWidget.d.ts"
       ],
       "./node_modules/@projectstorm/react-diagrams-routing/dist/@types/link/PathFindingLinkFactory.d.ts": [
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
@@ -10060,15 +10061,15 @@
         "./node_modules/@types/react/index.d.ts"
       ],
       "./node_modules/react-accessible-accordion/dist/types/helpers/uuid.d.ts": [
-        "./node_modules/react-accessible-accordion/dist/types/components/itemcontext.d.ts"
+        "./node_modules/react-accessible-accordion/dist/types/components/ItemContext.d.ts"
       ],
       "./node_modules/react-accessible-accordion/dist/types/index.d.ts": [
-        "./node_modules/react-accessible-accordion/dist/types/components/accordion.d.ts",
-        "./node_modules/react-accessible-accordion/dist/types/components/accordionitem.d.ts",
-        "./node_modules/react-accessible-accordion/dist/types/components/accordionitembutton.d.ts",
-        "./node_modules/react-accessible-accordion/dist/types/components/accordionitemheading.d.ts",
-        "./node_modules/react-accessible-accordion/dist/types/components/accordionitempanel.d.ts",
-        "./node_modules/react-accessible-accordion/dist/types/components/accordionitemstate.d.ts",
+        "./node_modules/react-accessible-accordion/dist/types/components/Accordion.d.ts",
+        "./node_modules/react-accessible-accordion/dist/types/components/AccordionItem.d.ts",
+        "./node_modules/react-accessible-accordion/dist/types/components/AccordionItemButton.d.ts",
+        "./node_modules/react-accessible-accordion/dist/types/components/AccordionItemHeading.d.ts",
+        "./node_modules/react-accessible-accordion/dist/types/components/AccordionItemPanel.d.ts",
+        "./node_modules/react-accessible-accordion/dist/types/components/AccordionItemState.d.ts",
         "./node_modules/react-accessible-accordion/dist/types/helpers/uuid.d.ts"
       ],
       "./node_modules/react-switch/index.d.ts": [
@@ -10099,46 +10100,46 @@
         "./node_modules/yjs/dist/src/internals.d.ts"
       ],
       "./node_modules/yjs/dist/src/internals.d.ts": [
-        "./node_modules/yjs/dist/src/structs/abstractstruct.d.ts",
-        "./node_modules/yjs/dist/src/structs/contentany.d.ts",
-        "./node_modules/yjs/dist/src/structs/contentbinary.d.ts",
-        "./node_modules/yjs/dist/src/structs/contentdeleted.d.ts",
-        "./node_modules/yjs/dist/src/structs/contentdoc.d.ts",
-        "./node_modules/yjs/dist/src/structs/contentembed.d.ts",
-        "./node_modules/yjs/dist/src/structs/contentformat.d.ts",
-        "./node_modules/yjs/dist/src/structs/contentjson.d.ts",
-        "./node_modules/yjs/dist/src/structs/contentstring.d.ts",
-        "./node_modules/yjs/dist/src/structs/contenttype.d.ts",
-        "./node_modules/yjs/dist/src/structs/gc.d.ts",
-        "./node_modules/yjs/dist/src/structs/item.d.ts",
-        "./node_modules/yjs/dist/src/structs/skip.d.ts",
-        "./node_modules/yjs/dist/src/types/abstracttype.d.ts",
-        "./node_modules/yjs/dist/src/types/yarray.d.ts",
-        "./node_modules/yjs/dist/src/types/ymap.d.ts",
-        "./node_modules/yjs/dist/src/types/ytext.d.ts",
-        "./node_modules/yjs/dist/src/types/yxmlelement.d.ts",
-        "./node_modules/yjs/dist/src/types/yxmlevent.d.ts",
-        "./node_modules/yjs/dist/src/types/yxmlfragment.d.ts",
-        "./node_modules/yjs/dist/src/types/yxmlhook.d.ts",
-        "./node_modules/yjs/dist/src/types/yxmltext.d.ts",
-        "./node_modules/yjs/dist/src/utils/abstractconnector.d.ts",
-        "./node_modules/yjs/dist/src/utils/deleteset.d.ts",
-        "./node_modules/yjs/dist/src/utils/doc.d.ts",
+        "./node_modules/yjs/dist/src/structs/AbstractStruct.d.ts",
+        "./node_modules/yjs/dist/src/structs/ContentAny.d.ts",
+        "./node_modules/yjs/dist/src/structs/ContentBinary.d.ts",
+        "./node_modules/yjs/dist/src/structs/ContentDeleted.d.ts",
+        "./node_modules/yjs/dist/src/structs/ContentDoc.d.ts",
+        "./node_modules/yjs/dist/src/structs/ContentEmbed.d.ts",
+        "./node_modules/yjs/dist/src/structs/ContentFormat.d.ts",
+        "./node_modules/yjs/dist/src/structs/ContentJSON.d.ts",
+        "./node_modules/yjs/dist/src/structs/ContentString.d.ts",
+        "./node_modules/yjs/dist/src/structs/ContentType.d.ts",
+        "./node_modules/yjs/dist/src/structs/GC.d.ts",
+        "./node_modules/yjs/dist/src/structs/Item.d.ts",
+        "./node_modules/yjs/dist/src/structs/Skip.d.ts",
+        "./node_modules/yjs/dist/src/types/AbstractType.d.ts",
+        "./node_modules/yjs/dist/src/types/YArray.d.ts",
+        "./node_modules/yjs/dist/src/types/YMap.d.ts",
+        "./node_modules/yjs/dist/src/types/YText.d.ts",
+        "./node_modules/yjs/dist/src/types/YXmlElement.d.ts",
+        "./node_modules/yjs/dist/src/types/YXmlEvent.d.ts",
+        "./node_modules/yjs/dist/src/types/YXmlFragment.d.ts",
+        "./node_modules/yjs/dist/src/types/YXmlHook.d.ts",
+        "./node_modules/yjs/dist/src/types/YXmlText.d.ts",
+        "./node_modules/yjs/dist/src/utils/AbstractConnector.d.ts",
+        "./node_modules/yjs/dist/src/utils/DeleteSet.d.ts",
+        "./node_modules/yjs/dist/src/utils/Doc.d.ts",
+        "./node_modules/yjs/dist/src/utils/EventHandler.d.ts",
+        "./node_modules/yjs/dist/src/utils/ID.d.ts",
+        "./node_modules/yjs/dist/src/utils/PermanentUserData.d.ts",
+        "./node_modules/yjs/dist/src/utils/RelativePosition.d.ts",
+        "./node_modules/yjs/dist/src/utils/Snapshot.d.ts",
+        "./node_modules/yjs/dist/src/utils/StructStore.d.ts",
+        "./node_modules/yjs/dist/src/utils/Transaction.d.ts",
+        "./node_modules/yjs/dist/src/utils/UndoManager.d.ts",
+        "./node_modules/yjs/dist/src/utils/UpdateDecoder.d.ts",
+        "./node_modules/yjs/dist/src/utils/UpdateEncoder.d.ts",
+        "./node_modules/yjs/dist/src/utils/YEvent.d.ts",
         "./node_modules/yjs/dist/src/utils/encoding.d.ts",
-        "./node_modules/yjs/dist/src/utils/eventhandler.d.ts",
-        "./node_modules/yjs/dist/src/utils/id.d.ts",
-        "./node_modules/yjs/dist/src/utils/isparentof.d.ts",
+        "./node_modules/yjs/dist/src/utils/isParentOf.d.ts",
         "./node_modules/yjs/dist/src/utils/logging.d.ts",
-        "./node_modules/yjs/dist/src/utils/permanentuserdata.d.ts",
-        "./node_modules/yjs/dist/src/utils/relativeposition.d.ts",
-        "./node_modules/yjs/dist/src/utils/snapshot.d.ts",
-        "./node_modules/yjs/dist/src/utils/structstore.d.ts",
-        "./node_modules/yjs/dist/src/utils/transaction.d.ts",
-        "./node_modules/yjs/dist/src/utils/undomanager.d.ts",
-        "./node_modules/yjs/dist/src/utils/updatedecoder.d.ts",
-        "./node_modules/yjs/dist/src/utils/updateencoder.d.ts",
-        "./node_modules/yjs/dist/src/utils/updates.d.ts",
-        "./node_modules/yjs/dist/src/utils/yevent.d.ts"
+        "./node_modules/yjs/dist/src/utils/updates.d.ts"
       ],
       "./node_modules/yjs/dist/src/structs/AbstractStruct.d.ts": [
         "./node_modules/yjs/dist/src/utils/ID.d.ts",
@@ -10384,27 +10385,27 @@
       ],
       "./node_modules/yjs/dist/src/utils/encoding.d.ts": [
         "./node_modules/lib0/decoding.d.ts",
-        "./node_modules/yjs/dist/src/structs/gc.d.ts",
-        "./node_modules/yjs/dist/src/structs/item.d.ts",
-        "./node_modules/yjs/dist/src/utils/doc.d.ts",
-        "./node_modules/yjs/dist/src/utils/structstore.d.ts",
-        "./node_modules/yjs/dist/src/utils/transaction.d.ts",
-        "./node_modules/yjs/dist/src/utils/updatedecoder.d.ts",
-        "./node_modules/yjs/dist/src/utils/updateencoder.d.ts"
+        "./node_modules/yjs/dist/src/structs/GC.d.ts",
+        "./node_modules/yjs/dist/src/structs/Item.d.ts",
+        "./node_modules/yjs/dist/src/utils/Doc.d.ts",
+        "./node_modules/yjs/dist/src/utils/StructStore.d.ts",
+        "./node_modules/yjs/dist/src/utils/Transaction.d.ts",
+        "./node_modules/yjs/dist/src/utils/UpdateDecoder.d.ts",
+        "./node_modules/yjs/dist/src/utils/UpdateEncoder.d.ts"
       ],
       "./node_modules/yjs/dist/src/utils/isParentOf.d.ts": [
         "./node_modules/yjs/dist/src/structs/Item.d.ts",
         "./node_modules/yjs/dist/src/types/AbstractType.d.ts"
       ],
       "./node_modules/yjs/dist/src/utils/logging.d.ts": [
-        "./node_modules/yjs/dist/src/types/abstracttype.d.ts"
+        "./node_modules/yjs/dist/src/types/AbstractType.d.ts"
       ],
       "./node_modules/yjs/dist/src/utils/updates.d.ts": [
-        "./node_modules/yjs/dist/src/structs/gc.d.ts",
-        "./node_modules/yjs/dist/src/structs/item.d.ts",
-        "./node_modules/yjs/dist/src/structs/skip.d.ts",
-        "./node_modules/yjs/dist/src/utils/updatedecoder.d.ts",
-        "./node_modules/yjs/dist/src/utils/updateencoder.d.ts"
+        "./node_modules/yjs/dist/src/structs/GC.d.ts",
+        "./node_modules/yjs/dist/src/structs/Item.d.ts",
+        "./node_modules/yjs/dist/src/structs/Skip.d.ts",
+        "./node_modules/yjs/dist/src/utils/UpdateDecoder.d.ts",
+        "./node_modules/yjs/dist/src/utils/UpdateEncoder.d.ts"
       ],
       "./src/commands/ContextMenu.ts": [
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
