@@ -8,7 +8,7 @@ include install.json
 include ts*.json
 include yarn.lock
 include requirements.txt
-include requirements-full.txt
+include requirements-min.txt
 
 graft xircuits/labextension
 
