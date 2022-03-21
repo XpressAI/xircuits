@@ -3043,7 +3043,7 @@
         "affectsGlobalScope": false
       },
       "./src/context-menu/TrayItemPanel.tsx": {
-        "version": "96426836c824ef8ccb3d1e035a1824e7cd4d94914188765829dba263c03456ff",
+        "version": "5f2de47d423c48d28c19cb667d1cc7d75bc74d2db0a9b46b540ef0148bc2b579",
         "signature": "484967763f7e932d68415c5e54c489318a93156677252e3f6c18e319eef639eb",
         "affectsGlobalScope": false
       },
