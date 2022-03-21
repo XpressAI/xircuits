@@ -1610,6 +1610,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setActionPanelShown(false)
 		setIsComponentPanelShown(false);
 		const linkName = event.link.sourcePort.options.name;
+		console.log(event.link.sourcePort.options.name)
 
 		if (linkName.startsWith("parameter")) {
 			setIsParameterLink(true)
@@ -1623,6 +1624,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			x: event.link.points[1].position.x,
 			y: event.link.points[1].position.y,
 		};
+		console.log(event.link)
 		setLooseLinkData(event.link)
 		setComponentPanelposition(newPosition);
 		setIsComponentPanelShown(true);

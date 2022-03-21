@@ -74,7 +74,9 @@ export class TrayItemPanel extends React.Component<TrayItemWidgetProps> {
 	}
 
 	addNode(node) {
-		console.log(this.props.currentNode)
+		console.log(this.props.nodePosition)
+		console.log(this.props.linkData)
+		console.log(this.props.isParameter)
 		node.setPosition(this.props.nodePosition);
 		this.props.eng.getModel().addNode(node)
 	}
