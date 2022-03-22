@@ -1364,13 +1364,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		let node = new CustomNodeModel({ name: "Testing Node", color: 'rgb(255,240,240)', extras: { "type": "Testing" } });
-		node.addInPortEnhance('▶', 'in-0');
-		node.addOutPortEnhance('▶', 'out-0');
-
-		node.setPosition(componentPanelposition as any);
-		xircuitsApp.getDiagramEngine().getModel().addNode(node)
-		// alert("Testing");
+		alert("Testing");
 	}
 
 	const hideRcDialog = () => {
