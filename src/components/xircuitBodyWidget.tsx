@@ -101,6 +101,8 @@ export const commandIDs = {
 	pasteNode: 'Xircuit-editor:paste-node',
 	editNode: 'Xircuit-editor:edit-node',
 	deleteNode: 'Xircuit-editor:delete-node',
+	addNode: 'Xircuit-editor:add-node', 
+	connectNode: 'Xircuit-editor:connect-node', 
 	createArbitraryFile: 'Xircuit-editor:create-arbitrary-file',
 	openDebugger: 'Xircuit-debugger:open',
 	breakpointXircuit: 'Xircuit-editor:breakpoint-node',

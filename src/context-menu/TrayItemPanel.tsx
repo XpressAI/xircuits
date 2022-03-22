@@ -6,6 +6,7 @@ import { JupyterFrontEnd } from '@jupyterlab/application';
 import { DefaultLinkModel, DiagramEngine } from '@projectstorm/react-diagrams';
 import { CustomNodeModel } from '../components/CustomNodeModel';
 import { GeneralComponentLibrary } from '../tray_library/GeneralComponentLib';
+import { commandIDs } from '../components/xircuitBodyWidget';
 
 export interface TrayItemWidgetProps {
 	currentNode: any;
@@ -74,48 +75,18 @@ export class TrayItemPanel extends React.Component<TrayItemWidgetProps> {
 	}
 
 	addNode(node) {
-		console.log(this.props.nodePosition)
-		console.log(this.props.linkData)
-		console.log(this.props.isParameter)
-		node.setPosition(this.props.nodePosition);
-		this.props.eng.getModel().addNode(node)
+		const nodePosition = this.props.nodePosition;
+		this.props.app.commands.execute(commandIDs.addNode, { node, nodePosition });
 	}
 
 	connectLink(node) {
 		if (this.props.linkData == null) {
 			return
 		}
-
-		// Create new link to connect to new node automatically
-		let newLink = new DefaultLinkModel();
-		let looseLink = this.props.linkData as DefaultLinkModel;
-		let sourcePort;
-
-		// Get loose link node port
-		const linkPort = looseLink.getSourcePort();
-
-		// Get target port and connect it
-		let targetNode = node;
-		let targetPort;
-
-		// When '▶' of sourcePort from inPort, connect to '▶' outPort of target node
-		if (looseLink.getSourcePort().getOptions()['name'] == "in-0") {
-			sourcePort = targetNode.getPorts()["out-0"];
-			targetPort = linkPort;
-		} else if (this.props.isParameter) {
-			// When looseLink is connected to parameter node
-			const parameterNodeName = targetNode.getOutPorts()[0].getOptions()['name']
-			sourcePort = targetNode.getPorts()[parameterNodeName];
-			targetPort = linkPort;
-		}
-		else {
-			// '▶' of sourcePort to '▶' of targetPort
-			sourcePort = linkPort;
-			targetPort = targetNode.getPorts()["in-0"];
-		}
-		newLink.setSourcePort(sourcePort);
-		newLink.setTargetPort(targetPort);
-		this.props.eng.getModel().addLink(newLink);
+		const targetNode = node;
+		const sourceLink = this.props.linkData as any;
+		const isParameterLink = this.props.isParameter;
+		this.props.app.commands.execute(commandIDs.connectNode, { targetNode, sourceLink, isParameterLink  });
 	}
 
 	hidePanelEvent() {
