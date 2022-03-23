@@ -30,6 +30,7 @@ export interface BodyWidgetProps {
 	commands: any;
 	widgetId?: string;
 	serviceManager: ServiceManager;
+	fetchComponentsSignal: Signal<XPipePanel, any>;
 	saveXircuitSignal: Signal<XPipePanel, any>;
 	compileXircuitSignal: Signal<XPipePanel, any>;
 	runXircuitSignal: Signal<XPipePanel, any>;
@@ -123,6 +124,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	commands,
 	widgetId,
 	serviceManager,
+	fetchComponentsSignal,
 	saveXircuitSignal,
 	compileXircuitSignal,
 	runXircuitSignal,
@@ -1516,14 +1518,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	signalConnections.forEach(connectSignal);
 
-	const fetchComponentList = async () => {
-		const response = await ComponentList(serviceManager);
-
-		if (response.length > 0) {
-			setComponentList([]);
-		}
-		setComponentList(response);
-	}
+	useEffect(() => {
+		fetchComponentsSignal.connect((_, args) => {
+			setComponentList(args)
+		});
+	}, [fetchComponentsSignal])
 
 	useEffect(() => {
 		let runType;
@@ -1539,19 +1538,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			inDebugMode
 		});
 	}, [debugMode, inDebugMode])
-
-	useEffect(() => {
-		if (!runOnce) {
-			fetchComponentList();
-		}
-	}, []);
-
-	useEffect(() => {
-		const intervalId = setInterval(() => {
-			fetchComponentList();
-		}, 5000);
-		return () => clearInterval(intervalId);
-	}, [componentList]);
 
 	const dialogFuncMap = {
 		'displayDebug': setDisplayDebug,

@@ -33,6 +33,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
   shell: ILabShell;
   commands: any;
   serviceManager: ServiceManager;
+  fetchComponentsSignal: Signal<this, any>;
   saveXircuitSignal: Signal<this, any>;
   compileXircuitSignal: Signal<this, any>;
   runXircuitSignal: Signal<this, any>;
@@ -57,6 +58,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
     this.shell = options.shell;
     this.commands = options.commands;
     this.serviceManager = options.serviceManager;
+    this.fetchComponentsSignal = new Signal<this, any>(this);
     this.saveXircuitSignal = new Signal<this, any>(this);
     this.compileXircuitSignal = new Signal<this, any>(this);
     this.runXircuitSignal = new Signal<this, any>(this);
@@ -84,6 +86,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
       commands: this.commands,
       context: context,
       serviceManager: this.serviceManager,
+      fetchComponentsSignal: this.fetchComponentsSignal,
       saveXircuitSignal: this.saveXircuitSignal,
       compileXircuitSignal: this.compileXircuitSignal,
       runXircuitSignal: this.runXircuitSignal,

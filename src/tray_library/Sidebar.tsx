@@ -19,6 +19,7 @@ import {
 } from "react-accessible-accordion";
 
 import { requestAPI } from '../server/handler';
+import { XircuitFactory } from '../xircuitFactory';
 
 export const Body = styled.div`
   flex-grow: 1;
@@ -72,6 +73,7 @@ const colorList_general = [
 
 export interface SidebarProps {
     lab: JupyterFrontEnd;
+    factory: XircuitFactory;
 }
 
 async function fetchComponent(componentList: string[]) {
@@ -109,7 +111,6 @@ export default function Sidebar(props: SidebarProps) {
     const [category, setCategory] = React.useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [runOnce, setRunOnce] = useState(false);
-    const [dontFetchList, setDontFetchList] = useState(false);
 
     let handleOnChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setSearchTerm("");
@@ -143,17 +144,16 @@ export default function Sidebar(props: SidebarProps) {
         const response_1 = await ComponentList(props.lab.serviceManager);
 
         // get the header from the components
-        const response_2 = await fetchComponent(response_1[0]);
+        const response_2 = await fetchComponent(response_1);
 
         // to ensure the component list is empty before setting the component list
-        if (response_1[0].length > 0) {
+        if (response_1.length > 0) {
             setComponentList([]);
             setCategory([]);
         }
 
-        setComponentList(response_1[0]);
+        setComponentList(response_1);
         setCategory(response_2);
-        setDontFetchList(response_1[1])
     }
 
     useEffect(() => {
@@ -169,13 +169,18 @@ export default function Sidebar(props: SidebarProps) {
     }
 
     useEffect(() => {
-        if(!dontFetchList){
         const intervalId = setInterval(() => {
             fetchComponentList();
         }, 600000); // every 10 minutes should re-fetch the component list
         return () => clearInterval(intervalId);
-        }
-    }, [category, componentList, dontFetchList]);
+    }, [category, componentList]);
+
+    useEffect(() => {
+        const intervalId = setTimeout(() => {
+            props.factory.fetchComponentsSignal.emit(componentList);
+        }, 100); // Send component list to canvas once render or when refresh
+        return () => clearTimeout(intervalId);
+    },[componentList, handleRefreshOnClick]);
 
     return (
         <Body>

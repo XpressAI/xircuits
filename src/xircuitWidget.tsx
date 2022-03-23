@@ -18,6 +18,7 @@ export class XPipePanel extends ReactWidget {
   context: Context;
   xircuitsApp: XircuitsApplication;
   serviceManager: ServiceManager;
+  fetchComponentsSignal: Signal<this,any>;
   saveXircuitSignal: Signal<this, any>;
   compileXircuitSignal: Signal<this, any>;
   runXircuitSignal: Signal<this, any>;
@@ -43,6 +44,7 @@ export class XPipePanel extends ReactWidget {
     this.commands = options.commands;
     this.context = options.context;
     this.serviceManager = options.serviceManager;
+    this.fetchComponentsSignal = options.fetchComponentsSignal;
     this.saveXircuitSignal = options.saveXircuitSignal;
     this.compileXircuitSignal = options.compileXircuitSignal;
     this.runXircuitSignal = options.runXircuitSignal;
@@ -104,6 +106,7 @@ export class XPipePanel extends ReactWidget {
         commands={this.commands}
         widgetId={this.parent?.id}
         serviceManager={this.serviceManager}
+        fetchComponentsSignal={this.fetchComponentsSignal}
         saveXircuitSignal={this.saveXircuitSignal}
         compileXircuitSignal={this.compileXircuitSignal}
         runXircuitSignal={this.runXircuitSignal}
