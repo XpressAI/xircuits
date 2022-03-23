@@ -8,6 +8,7 @@ async function get_all_components_method() {
     const response = await requestAPI<any>('components/');
     const components = response["components"];
     const error_msg = response["error_msg"];
+    let error_occured : boolean = false;
 
     if(error_msg){
         showDialog({
@@ -17,12 +18,13 @@ async function get_all_components_method() {
             ),
             buttons: [Dialog.warnButton({ label: 'OK' })]
         });
+        error_occured = true;
     }
-    return components;
+    return [components, error_occured];
 }
 
 export default async function ComponentList(serviceManager: ServiceManager) {
-    let component_list_result: string[] = await get_all_components_method();
+    let component_list_result = await get_all_components_method();
     
     return component_list_result;
 }

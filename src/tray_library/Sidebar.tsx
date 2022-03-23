@@ -109,6 +109,7 @@ export default function Sidebar(props: SidebarProps) {
     const [category, setCategory] = React.useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [runOnce, setRunOnce] = useState(false);
+    const [dontFetchList, setDontFetchList] = useState(false);
 
     let handleOnChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setSearchTerm("");
@@ -142,16 +143,17 @@ export default function Sidebar(props: SidebarProps) {
         const response_1 = await ComponentList(props.lab.serviceManager);
 
         // get the header from the components
-        const response_2 = await fetchComponent(response_1);
+        const response_2 = await fetchComponent(response_1[0]);
 
         // to ensure the component list is empty before setting the component list
-        if (response_1.length > 0) {
+        if (response_1[0].length > 0) {
             setComponentList([]);
             setCategory([]);
         }
 
-        setComponentList(response_1);
+        setComponentList(response_1[0]);
         setCategory(response_2);
+        setDontFetchList(response_1[1])
     }
 
     useEffect(() => {
@@ -167,11 +169,13 @@ export default function Sidebar(props: SidebarProps) {
     }
 
     useEffect(() => {
+        if(!dontFetchList){
         const intervalId = setInterval(() => {
             fetchComponentList();
         }, 600000); // every 10 minutes should re-fetch the component list
         return () => clearInterval(intervalId);
-    }, [category, componentList]);
+        }
+    }, [category, componentList, dontFetchList]);
 
     return (
         <Body>
