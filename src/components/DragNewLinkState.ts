@@ -79,7 +79,8 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 					}
 
 					if (!this.config.allowLooseLinks) {
-						this.fireEvent();
+						const linkEvent = event.event;
+						this.fireEvent(linkEvent);
 						this.link.remove();
 						this.engine.repaintCanvas();
 					}
@@ -88,9 +89,9 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 		);
 	}
 
-	fireEvent = () => {
+	fireEvent = (linkEvent) => {
 		//@ts-ignore
-		this.engine.fireEvent({ link: this.link }, 'droppedLink');
+		this.engine.fireEvent({ link: this.link, linkEvent }, 'droppedLink');
 	};
 
 	/**

@@ -1596,7 +1596,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		// Disable the default context menu
 		event.preventDefault();
 
-		setActionPanelShown(false)
+		setActionPanelShown(false);
 		setIsComponentPanelShown(false);
 		const newPanelPosition = {
 			x: event.pageX,
@@ -1610,7 +1610,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	// Show the component panel from dropped link
 	const showComponentPanelFromLink = (event) => {
-		setActionPanelShown(false)
+		setActionPanelShown(false);
 		setIsComponentPanelShown(false);
 		const linkName = event.link.sourcePort.options.name;
 
@@ -1622,13 +1622,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			}
 		}
 
-		const newPosition = {
+		const newNodePosition = {
 			x: event.link.points[1].position.x,
 			y: event.link.points[1].position.y,
 		};
-		setLooseLinkData(event.link)
-		setNodePosition(newPosition);
-		setComponentPanelposition(newPosition);
+
+		const newPanelPosition = {
+			x: event.linkEvent.pageX,
+			y: event.linkEvent.pageY,
+		};
+		setLooseLinkData(event.link);
+		setNodePosition(newNodePosition);
+		setComponentPanelposition(newPanelPosition);
 		setIsComponentPanelShown(true);
 	};
 
