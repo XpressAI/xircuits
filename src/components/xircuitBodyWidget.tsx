@@ -1587,6 +1587,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [actionPanelShown, setActionPanelShown] = useState(false);
 	const [componentPanelposition, setComponentPanelposition] = useState({ x: 0, y: 0 });
 	const [actionPanelPosition, setActionPanelPosition] = useState({ x: 0, y: 0 });
+	const [nodePosition, setNodePosition] = useState({ x: 0, y: 0 });
 	const [looseLinkData, setLooseLinkData] = useState<any>();
 	const [isParameterLink, setIsParameterLink] = useState<boolean>(false);
 
@@ -1597,12 +1598,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		setActionPanelShown(false)
 		setIsComponentPanelShown(false);
-		const newPosition = {
+		const newPanelPosition = {
 			x: event.pageX,
 			y: event.pageY,
 		};
-
-		setComponentPanelposition(newPosition);
+		const node_position = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
+		setNodePosition(node_position);
+		setComponentPanelposition(newPanelPosition);
 		setIsComponentPanelShown(true);
 	};
 
@@ -1625,6 +1627,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			y: event.link.points[1].position.y,
 		};
 		setLooseLinkData(event.link)
+		setNodePosition(newPosition);
 		setComponentPanelposition(newPosition);
 		setIsComponentPanelShown(true);
 	};
@@ -1780,7 +1783,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						<ComponentsPanel
 							lab={app}
 							eng={xircuitsApp.getDiagramEngine()}
-							nodePosition={componentPanelposition}
+							nodePosition={nodePosition}
 							linkData={looseLinkData}
 							isParameter={isParameterLink}
 							key="component-panel"
