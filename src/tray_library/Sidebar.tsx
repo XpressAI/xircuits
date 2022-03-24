@@ -176,10 +176,10 @@ export default function Sidebar(props: SidebarProps) {
     }, [category, componentList]);
 
     useEffect(() => {
-        const intervalId = setTimeout(() => {
-            props.factory.fetchComponentsSignal.emit(componentList);
-        }, 100); // Send component list to canvas once render or when refresh
-        return () => clearTimeout(intervalId);
+        const intervalId = setInterval(async () => {
+            await props.factory.fetchComponentsSignal.emit(componentList);
+        }, 300); // Send component list to canvas once render or when refresh
+        return () => clearInterval(intervalId);
     },[componentList, handleRefreshOnClick]);
 
     return (
