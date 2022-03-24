@@ -9,6 +9,7 @@ bleach==4.1.0
 certifi==2020.12.5
 cffi==1.14.4
 chardet==4.0.0
+click==8.0.3
 colorama==0.4.4
 debugpy==1.4.3
 decorator==4.4.2
@@ -20,7 +21,9 @@ importlib-metadata==3.3.0
 ipykernel==6.4.1
 ipython>=7.31.1
 ipython-genutils==0.2.0
+itsdangerous==2.0.1
 jedi==0.18.0
+Jinja2==3.0.3
 json5==0.9.6
 jsonschema==3.2.0
 jupyter-client==6.1.7
