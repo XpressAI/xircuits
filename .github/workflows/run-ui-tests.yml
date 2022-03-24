@@ -46,6 +46,10 @@ jobs:
         nvm use 14.15.3
         npm install --global yarn
 
+    - name: Build Extension in Dev Mode
+      run: |
+        pip install -e .
+
     - name: Build Wheel
       run: |
         python -m pip install --upgrade pip
