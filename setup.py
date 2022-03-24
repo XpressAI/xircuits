@@ -48,8 +48,8 @@ version = (
 with open("requirements.txt", encoding='utf-8-sig') as f:
     required = f.read().splitlines()
 
-with open("requirements-min.txt", encoding='utf-8-sig') as f:
-    min_required = f.read().splitlines()
+with open("requirements-full.txt", encoding='utf-8-sig') as f:
+    full_required = f.read().splitlines()
 
 setup_args = dict(
     name=name,
@@ -65,7 +65,7 @@ setup_args = dict(
     packages=setuptools.find_packages(),
     install_requires=required,
     extras_require={
-        "min": min_required
+        "full": full_required
     },
     zip_safe=False,
     include_package_data=True,
