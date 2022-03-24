@@ -7,10 +7,15 @@ Xircuits is a Jupyterlab-based extension that enables visual, low-code, training
 
 
 ## Installation
-We recommend installing xircuits in a virtual environment. 
+We recommend installing xircuits in a virtual environment.
+```
+$ pip install xircuits[full]
+```
+If you would like to install just the core functions, use:
 ```
 $ pip install xircuits
 ```
+
 ### Launch
 ```
 $ xircuits
