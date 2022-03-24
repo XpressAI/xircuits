@@ -21,6 +21,9 @@ import { RunDialog } from '../dialog/RunDialog';
 import 'rc-dialog/assets/bootstrap.css';
 import { requestAPI } from '../server/handler';
 import { XircuitsApplication } from './XircuitsApp';
+import ComponentsPanel from '../context-menu/ComponentsPanel';
+import { GeneralComponentLibrary } from '../tray_library/GeneralComponentLib';
+import { NodeActionsPanel } from '../context-menu/NodeActionsPanel';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -99,6 +102,8 @@ export const commandIDs = {
 	pasteNode: 'Xircuit-editor:paste-node',
 	editNode: 'Xircuit-editor:edit-node',
 	deleteNode: 'Xircuit-editor:delete-node',
+	addNode: 'Xircuit-editor:add-node', 
+	connectNode: 'Xircuit-editor:connect-node', 
 	createArbitraryFile: 'Xircuit-editor:create-arbitrary-file',
 	openDebugger: 'Xircuit-debugger:open',
 	breakpointXircuit: 'Xircuit-editor:breakpoint-node',
@@ -185,7 +190,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				setSaved(false);
 			}
 		}, []);
-	
+
 	const customDeserializeModel = (modelContext: any, diagramEngine: DiagramEngine) => {
 
 		if (modelContext == null) {
@@ -199,45 +204,45 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let offsetX = modelContext["offsetX"];
 		let offsetY = modelContext["offsetY"];
 		let zoom = modelContext["zoom"];
-	
+
 		for (let nodeID in nodes) {
-	
-		  let node = nodes[nodeID];
-		  let newNode = new CustomNodeModel({
-			id: node.id, type: node.type, name: node.name, locked: node.locked,
-			color: node.color, extras: node.extras
-		  });
-		  newNode.setPosition(node.x, node.y);
-	
-		  for (let portID in node.ports) {
-	
-			let port = node.ports[portID];
-			if (port.alignment == "right") newNode.addOutPortEnhance(port.label, port.name, true, port.id);
-			if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name, true, port.id);
-	
-		  }
-		  tempModel.addAll(newNode);
-		  diagramEngine.setModel(tempModel);
-		}
-	
-		for (let linkID in links) {
-	
-	
-		  let link = links[linkID];
-	
-		  if (link.sourcePort && link.targetPort) {
-	
-			let newLink = new DefaultLinkModel();
-	
-			let sourcePort = tempModel.getNode(link.source).getPortFromID(link.sourcePort);
-			newLink.setSourcePort(sourcePort);
-	
-			let targetPort = tempModel.getNode(link.target).getPortFromID(link.targetPort);
-			newLink.setTargetPort(targetPort);
-	
-			tempModel.addAll(newLink);
+
+			let node = nodes[nodeID];
+			let newNode = new CustomNodeModel({
+				id: node.id, type: node.type, name: node.name, locked: node.locked,
+				color: node.color, extras: node.extras
+			});
+			newNode.setPosition(node.x, node.y);
+
+			for (let portID in node.ports) {
+
+				let port = node.ports[portID];
+				if (port.alignment == "right") newNode.addOutPortEnhance(port.label, port.name, true, port.id);
+				if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name, true, port.id);
+
+			}
+			tempModel.addAll(newNode);
 			diagramEngine.setModel(tempModel);
-		  }
+		}
+
+		for (let linkID in links) {
+
+
+			let link = links[linkID];
+
+			if (link.sourcePort && link.targetPort) {
+
+				let newLink = new DefaultLinkModel();
+
+				let sourcePort = tempModel.getNode(link.source).getPortFromID(link.sourcePort);
+				newLink.setSourcePort(sourcePort);
+
+				let targetPort = tempModel.getNode(link.target).getPortFromID(link.targetPort);
+				newLink.setTargetPort(targetPort);
+
+				tempModel.addAll(newLink);
+				diagramEngine.setModel(tempModel);
+			}
 		}
 
 		tempModel.registerListener({
@@ -281,7 +286,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		tempModel.setOffsetY(offsetY);
 		tempModel.setZoomLevel(zoom);
 		return tempModel;
-	  }
+	}
 
 	useEffect(() => {
 		const currentContext = contextRef.current;
@@ -302,6 +307,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					// Clear undo history when first time rendering
 					notInitialRender.current = true;
 					currentContext.model.sharedModel.clearUndoHistory();
+					// Register engine listener just once
+					xircuitsApp.getDiagramEngine().registerListener({
+						droppedLink: event => showComponentPanelFromLink(event),
+						hidePanel: () => hidePanel()
+					})
 				}
 			} catch (e) {
 				showErrorMessage('Error', <pre>{e}</pre>)
@@ -310,11 +320,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		currentContext.ready.then(changeHandler);
 		currentContext.model.contentChanged.connect(changeHandler);
-	
+
 		return (): void => {
-		  currentContext.model.contentChanged.disconnect(changeHandler);
+			currentContext.model.contentChanged.disconnect(changeHandler);
 		};
-	  }, []);
+	}, []);
 
 	const isJSON = (str) => {
 		try {
@@ -400,7 +410,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const getPythonCompiler = (debuggerMode?): string => {
-		let componentDB = new Map(componentList.map( x => [x["task"], x]))
+		let componentDB = new Map(componentList.map(x => [x["task"], x]))
 		let component_task = componentList.map(x => x["task"]);
 		let model = xircuitsApp.getDiagramEngine().getModel();
 		let nodeModels = model.getNodes();
@@ -436,10 +446,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		let python_paths = new Set();
 		for (let key in uniqueComponents) {
-			let component = componentDB.get(key) || {"python_path": null};
-			if(component["python_path"] != null) python_paths.add(component["python_path"]);
+			let component = componentDB.get(key) || { "python_path": null };
+			if (component["python_path"] != null) python_paths.add(component["python_path"]);
 		}
-		if(python_paths.size > 0){
+		if (python_paths.size > 0) {
 			pythonCode += "import sys\n"
 		}
 		python_paths.forEach((path: string) => {
@@ -459,7 +469,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		}
 
-		if(debuggerMode == true){
+		if (debuggerMode == true) {
 			pythonCode += "\napp = Flask(__name__)\n";
 			pythonCode += "input_data = []\n";
 			pythonCode += "continue_input_data = []\n";
@@ -514,11 +524,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							label = label.replace(/\s+/g, "_");
 							label = label.toLowerCase();
 
-							if(label.startsWith("★")){
+							if (label.startsWith("★")) {
 								const newLabel = label.split("★")[1];
 								label = newLabel;
 							}
-							
+
 							if (label == '▶') {
 							} else {
 								let portLinks = allPort[port].getLinks();
@@ -557,8 +567,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 											else {
 												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + sourcePortLabel + "\n";
 											}
-										  // Make sure the node id match between connected link and source node
-										  // Skip Hyperparameter Components
+											// Make sure the node id match between connected link and source node
+											// Skip Hyperparameter Components
 										} else if (linkSourceNodeId == sourceNodeId && !sourceNodeName.startsWith("Hyperparameter")) {
 											pythonCode += '    ' + bindingName + '.' + label + ' = ' + preBindingName + '.' + sourcePortLabel + '\n';
 										} else {
@@ -609,10 +619,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (debuggerMode == true) pythonCode += '    ' + 'debug_mode = args.debug_mode\n';
 
 		if (allNodes.length > 2) {
-			
-				pythonCode += '\n';
-				pythonCode += '    ' + 'next_component = c_1\n';
-				pythonCode += '    ' + 'while next_component:\n';
+
+			pythonCode += '\n';
+			pythonCode += '    ' + 'next_component = c_1\n';
+			pythonCode += '    ' + 'while next_component:\n';
 
 			if (debuggerMode == true) {
 				pythonCode += '        ' + 'if debug_mode:\n';
@@ -757,8 +767,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				if (inPorts[j].getOptions()["label"] == '▶' && Object.keys(inPorts[0].getLinks()).length != 0) {
 					continue
 				} else {
-					nodeModels[i].getOptions().extras["borderColor"]="red";
-					nodeModels[i].getOptions().extras["tip"]="Please make sure this node ▶ is properly connected ";
+					nodeModels[i].getOptions().extras["borderColor"] = "red";
+					nodeModels[i].getOptions().extras["tip"] = "Please make sure this node ▶ is properly connected ";
 					nodeModels[i].setSelected(true);
 					return false;
 				}
@@ -767,17 +777,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return true;
 	}
 
-	const checkAllCompulsoryInPortsConnected = (): boolean | null  => {
+	const checkAllCompulsoryInPortsConnected = (): boolean | null => {
 		let allNodes = getAllNodesFromStartToFinish();
 		for (let i = 0; i < allNodes.length; i++) {
-			for(let k = 0; k < allNodes[i]["portsIn"].length; k++){
+			for (let k = 0; k < allNodes[i]["portsIn"].length; k++) {
 				let node = allNodes[i]["portsIn"][k]
 				if (node.getOptions()["label"].startsWith("★") && Object.keys(node.getLinks()).length == 0) {
-					allNodes[i].getOptions().extras["borderColor"]="red";
-					allNodes[i].getOptions().extras["tip"]="Please make sure the [★]COMPULSORY InPorts are connected ";
+					allNodes[i].getOptions().extras["borderColor"] = "red";
+					allNodes[i].getOptions().extras["tip"] = "Please make sure the [★]COMPULSORY InPorts are connected ";
 					allNodes[i].setSelected(true);
 					return false;
-				} 
+				}
 			}
 		}
 		return true;
@@ -868,9 +878,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		let pythonCode = getPythonCompiler(debuggerMode);
 		let showOutput = false;
-		
+
 		// Only compile when 'Run' is chosen
-		if(runType == 'run'){
+		if (runType == 'run') {
 			commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
 			setCompiled(true);
 		}
@@ -914,7 +924,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-	 	saveAndCompileAndRun(false);
+		saveAndCompileAndRun(false);
 	}
 
 	const handleDebugClick = async () => {
@@ -1356,7 +1366,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-
 		alert("Testing");
 	}
 
@@ -1486,7 +1495,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			});
 		}
 
-		return {commandStr, addArgs};
+		return { commandStr, addArgs };
 	};
 
 
@@ -1559,6 +1568,82 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 	}
 
+	/**Component Panel & Node Action Panel Context Menu */
+	const [isComponentPanelShown, setIsComponentPanelShown] = useState(false);
+	const [actionPanelShown, setActionPanelShown] = useState(false);
+	const [componentPanelposition, setComponentPanelposition] = useState({ x: 0, y: 0 });
+	const [actionPanelPosition, setActionPanelPosition] = useState({ x: 0, y: 0 });
+	const [nodePosition, setNodePosition] = useState({ x: 0, y: 0 });
+	const [looseLinkData, setLooseLinkData] = useState<any>();
+	const [isParameterLink, setIsParameterLink] = useState<boolean>(false);
+
+	// Show the component panel context menu
+	const showComponentPanel = (event: React.MouseEvent<HTMLDivElement>) => {
+		// Disable the default context menu
+		event.preventDefault();
+
+		setActionPanelShown(false);
+		setIsComponentPanelShown(false);
+		const newPanelPosition = {
+			x: event.pageX,
+			y: event.pageY,
+		};
+		const node_position = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
+		setNodePosition(node_position);
+		setComponentPanelposition(newPanelPosition);
+		setIsComponentPanelShown(true);
+	};
+
+	// Show the component panel from dropped link
+	const showComponentPanelFromLink = (event) => {
+		setActionPanelShown(false);
+		setIsComponentPanelShown(false);
+		const linkName = event.link.sourcePort.options.name;
+
+		if (linkName.startsWith("parameter")) {
+			setIsParameterLink(true)
+			// Don't show panel when loose link from parameter outPort
+			if (linkName.includes("parameter-out")) {
+				return
+			}
+		}
+
+		const newNodePosition = {
+			x: event.link.points[1].position.x,
+			y: event.link.points[1].position.y,
+		};
+
+		const newPanelPosition = {
+			x: event.linkEvent.pageX,
+			y: event.linkEvent.pageY,
+		};
+		setLooseLinkData(event.link);
+		setNodePosition(newNodePosition);
+		setComponentPanelposition(newPanelPosition);
+		setIsComponentPanelShown(true);
+	};
+
+	// Hide component and node action panel
+	const hidePanel = () => {
+		setIsComponentPanelShown(false);
+		setActionPanelShown(false);
+		setLooseLinkData(null);
+		setIsParameterLink(false);
+	};
+
+	// Show the nodeActionPanel context menu
+	const showNodeActionPanel = (event: React.MouseEvent<HTMLDivElement>) => {
+		setActionPanelShown(false);
+		setIsComponentPanelShown(false);
+		const newPosition = {
+			x: event.pageX,
+			y: event.pageY,
+		};
+
+		setActionPanelPosition(newPosition);
+		setActionPanelShown(true);
+	};
+
 	return (
 		<Body>
 			{/* <Header>
@@ -1606,163 +1691,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 						if (current_node != undefined) {
 							if (current_node.header == "GENERAL") {
-								if (data.type === 'math') {
-
-									node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
-
-									node.addInPortEnhance('▶', 'in-0');
-									node.addInPortEnhance('A', 'in-1');
-									node.addInPortEnhance('B', 'in-2');
-
-									node.addOutPortEnhance('▶', 'out-0');
-									node.addOutPortEnhance('value', 'out-1');
-
-								} else if (data.type === 'convert') {
-
-									node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
-
-									node.addInPortEnhance('▶', 'in-0');
-									node.addInPortEnhance('model', 'parameter-string-in-1');
-
-									node.addOutPortEnhance('▶', 'out-0');
-									node.addOutPortEnhance('converted', 'out-1');
-
-								} else if (data.type === 'string') {
-
-									if ((data.name).startsWith("Literal")) {
-
-										let theResponse = window.prompt('Enter String Value (Without Quotes):');
-										node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
-										node.addOutPortEnhance(theResponse, 'out-0');
-
-									} else {
-
-										let theResponse = window.prompt('notice', 'Enter String Name (Without Quotes):');
-										node = new CustomNodeModel({ name: "Hyperparameter (String): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
-										node.addOutPortEnhance('▶', 'parameter-out-0');
-
-									}
-
-								} else if (data.type === 'int') {
-
-									if ((data.name).startsWith("Literal")) {
-
-										let theResponse = window.prompt('Enter Int Value (Without Quotes):');
-										node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
-										node.addOutPortEnhance(theResponse, 'out-0');
-
-									} else {
-
-										let theResponse = window.prompt('notice', 'Enter Int Name (Without Quotes):');
-										node = new CustomNodeModel({ name: "Hyperparameter (Int): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
-										node.addOutPortEnhance('▶', 'parameter-out-0');
-
-									}
-
-								} else if (data.type === 'float') {
-
-									if ((data.name).startsWith("Literal")) {
-
-										let theResponse = window.prompt('Enter Float Value (Without Quotes):');
-										node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
-										node.addOutPortEnhance(theResponse, 'out-0');
-
-									} else {
-
-										let theResponse = window.prompt('notice', 'Enter Float Name (Without Quotes):');
-										node = new CustomNodeModel({ name: "Hyperparameter (Float): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
-										node.addOutPortEnhance('▶', 'parameter-out-0');
-
-									}
-
-								} else if (data.type === 'boolean') {
-
-									if ((data.name).startsWith("Literal")) {
-
-										let portLabel = data.name.split(' ');
-										portLabel = portLabel[portLabel.length - 1];
-
-										node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
-										node.addOutPortEnhance(portLabel, 'out-0');
-
-									} else {
-
-										let theResponse = window.prompt('notice', 'Enter Boolean Name (Without Quotes):');
-										node = new CustomNodeModel({ name: "Hyperparameter (Boolean): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
-										node.addOutPortEnhance('▶', 'parameter-out-0');
-
-									}
-
-								} else if (data.type === 'list') {
-
-									if ((data.name).startsWith("Literal")) {
-
-										let theResponse = window.prompt('Enter List Values (Without [] Brackets):');
-										node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
-										node.addOutPortEnhance(theResponse, 'out-0');
-
-									} else {
-
-										let theResponse = window.prompt('notice', 'Enter List Name (Without Quotes):');
-										node = new CustomNodeModel({ name: "Hyperparameter (List): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
-										node.addOutPortEnhance('▶', 'parameter-out-0');
-
-									}
-
-								} else if (data.type === 'tuple') {
-
-									if ((data.name).startsWith("Literal")) {
-
-										let theResponse = window.prompt('Enter Tuple Values (Without () Brackets):');
-										node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
-										node.addOutPortEnhance(theResponse, 'out-0');
-
-									} else {
-
-										let theResponse = window.prompt('notice', 'Enter Tuple Name (Without Quotes):');
-										node = new CustomNodeModel({ name: "Hyperparameter (Tuple): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
-										node.addOutPortEnhance('▶', 'parameter-out-0');
-									}
-
-								} else if (data.type === 'dict') {
-
-									if ((data.name).startsWith("Literal")) {
-
-										let theResponse = window.prompt('Enter Dict Values (Without {} Brackets):');
-										node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
-										node.addOutPortEnhance(theResponse, 'out-0');
-
-									} else {
-
-										let theResponse = window.prompt('notice', 'Enter Dict Name (Without Quotes):');
-										node = new CustomNodeModel({ name: "Hyperparameter (Dict): " + theResponse, color: current_node["color"], extras: { "type": data.type } });
-										node.addOutPortEnhance('▶', 'parameter-out-0');
-
-									}
-
-								} else if (data.type === 'debug') {
-									node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
-									node.addInPortEnhance('▶', 'in-0');
-									node.addInPortEnhance('Data Set', 'parameter-in-1');
-									node.addOutPortEnhance('▶', 'out-0');
-
-								} else if (data.type === 'enough') {
-
-									node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
-
-									node.addInPortEnhance('▶', 'in-0');
-									node.addInPortEnhance('Target Accuracy', 'parameter-float-in-1');
-									node.addInPortEnhance('Max Retries', 'parameter-int-in-2');
-									node.addInPortEnhance('Metrics', 'parameter-string-in-3');
-
-									node.addOutPortEnhance('▶', 'out-0');
-									node.addOutPortEnhance('Should Retrain', 'out-1');
-
-								} else if (data.type === 'literal') {
-
-									node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
-									node.addOutPortEnhance('Value', 'out-0');
-								}
+								node = GeneralComponentLibrary({ name: data.name, color: current_node["color"], type: data.type });
 							} else if (current_node.header == "ADVANCED") {
 								node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
 								node.addInPortEnhance('▶', 'in-0');
@@ -1778,7 +1707,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 									let name = variable["name"];
 									let type = type_name_remappings[variable["type"]] || variable["type"];
 
-									switch (variable["kind"]){
+									switch (variable["kind"]) {
 										case "InCompArg":
 											node.addInPortEnhance(`★${name}`, `parameter-${type}-${name}`);
 											break;
@@ -1802,7 +1731,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							let point = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
 							node.setPosition(point);
 							xircuitsApp.getDiagramEngine().getModel().addNode(node);
-							if(node["name"].startsWith("Hyperparameter")){
+							if (node["name"].startsWith("Hyperparameter")) {
 								setInitialize(true);
 							}
 							setSaved(false);
@@ -1825,12 +1754,44 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 					onMouseDown={(event) => {
 						event.preventDefault();
+					}}
+					onContextMenu={showComponentPanel}
+					onClick={(event) => {
+						hidePanel();
+						if (event.ctrlKey || event.metaKey) {
+							showNodeActionPanel(event);
+						}
 					}}>
-
 					<DemoCanvasWidget>
 						<CanvasWidget engine={xircuitsApp.getDiagramEngine()} />
 					</DemoCanvasWidget>
 				</Layer>
+				{/**Add Component Panel(right-click)*/}
+				{isComponentPanelShown && (
+					<div
+						style={{ top: componentPanelposition.y, left: componentPanelposition.x }}
+						className="add-component-panel">
+						<ComponentsPanel
+							lab={app}
+							eng={xircuitsApp.getDiagramEngine()}
+							nodePosition={nodePosition}
+							linkData={looseLinkData}
+							isParameter={isParameterLink}
+							key="component-panel"
+						></ComponentsPanel>
+					</div>
+				)}
+				{/**Node Action Panel(ctrl + left-click)*/}
+				{actionPanelShown && (
+					<div
+						style={{ top: actionPanelPosition.y, left: actionPanelPosition.x }}
+						className="node-action-context-menu">
+						<NodeActionsPanel
+							app={app}
+							eng={xircuitsApp.getDiagramEngine()}
+						></NodeActionsPanel>
+					</div>
+				)}
 			</Content>
 		</Body>
 	);

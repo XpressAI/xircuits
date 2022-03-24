@@ -11,9 +11,9 @@ import { BaseModel, BaseModelGenerics } from '@projectstorm/react-canvas-core';
 import { copyIcon, cutIcon, pasteIcon, redoIcon, undoIcon } from '@jupyterlab/ui-components';
 
 /**
- * Add the commands for the xircuits's context menu.
+ * Add the commands for node actions.
  */
-export function addContextMenuCommands(
+export function addNodeActionCommands(
     app: JupyterFrontEnd,
     tracker: IXircuitsDocTracker,
     translator: ITranslator
@@ -146,6 +146,57 @@ export function addContextMenuCommands(
         }
     });
 
+    //Add command to add node
+    commands.addCommand(commandIDs.addNode, {
+        execute:  (args) =>{
+            const node = args['node'] as unknown as CustomNodeModel;
+            const nodePosition = args['nodePosition'] as any;
+
+            const widget = tracker.currentWidget?.content as XPipePanel;
+            node.setPosition(nodePosition);
+            widget.xircuitsApp.getDiagramEngine().getModel().addNode(node);
+        },
+        label: trans.__('Add node')
+    });
+
+    //Add command to connect node given link
+    commands.addCommand(commandIDs.connectNode, {
+        execute: (args) => {
+            const targetNode = args['targetNode'] as any;
+            const sourceLink = args['sourceLink'] as any;
+            const isParameterLink = args['isParameterLink'] as boolean;
+            const widget = tracker.currentWidget?.content as XPipePanel;
+
+            // Create new link to connect to new node automatically
+            let newLink = new DefaultLinkModel();
+            let sourcePort;
+            let targetPort;
+
+            // Get source link node port
+            const linkPort = sourceLink.getSourcePort();
+
+            // When '▶' of sourcePort from inPort, connect to '▶' outPort of target node
+            if (linkPort.getOptions()['name'] == "in-0") {
+                sourcePort = targetNode.getPorts()["out-0"];
+                targetPort = linkPort;
+            } else if (isParameterLink) {
+                // When looseLink is connected to parameter node
+                const parameterNodeName = targetNode.getOutPorts()[0].getOptions()['name']
+                sourcePort = targetNode.getPorts()[parameterNodeName];
+                targetPort = linkPort;
+            }
+            else {
+                // '▶' of sourcePort to '▶' of targetPort
+                sourcePort = linkPort;
+                targetPort = targetNode.getPorts()["in-0"];
+            }
+            newLink.setSourcePort(sourcePort);
+            newLink.setTargetPort(targetPort);
+            widget.xircuitsApp.getDiagramEngine().getModel().addLink(newLink);
+        },
+        label: trans.__('Link node')
+    });
+
     function cutNode(): void {
         const widget = tracker.currentWidget?.content as XPipePanel;
 
@@ -252,6 +303,14 @@ export function addContextMenuCommands(
         if (widget) {
             const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
             _.forEach(selectedEntities, (model) => {
+
+                if (!model.getOptions()["name"].startsWith("Literal")) {
+                    showDialog({
+                        title: 'Only Literal Node can be edited',
+                        buttons: [Dialog.warnButton({ label: 'OK' })]
+                    })
+                    return
+                }
 
                 let node = null;
                 let links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];

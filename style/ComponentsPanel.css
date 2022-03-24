@@ -1,0 +1,121 @@
+  /* -------------------------------------------------- */
+  /* ---------------- Components Panel ------------------ */
+  /* -------------------------------------------------- */
+
+  .title-panel{
+    color:#ffffff; 
+    padding-left: 10px;
+    padding-top: 5px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight:lighter;
+  }
+
+  .add-component-panel {
+    width: 250px;
+    height: 270px;
+    position: fixed;
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-top: 10px;
+    border-color: #000;
+    border-radius: 12px;
+    overflow-y: auto;
+  }
+  
+  .accordion__item_panel {
+    border-top: 3px ;
+    font-size: 11px;
+    padding-top: 1px;
+  }
+
+  .accordion__button_panel {
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    width: auto;
+    text-align: left;
+    padding-left: 5px;
+  }
+
+  .accordion__button_panel:hover {
+    background-color: rgb(36, 64, 110);
+  }
+
+  .accordion__button_panel:before {
+    display: inline-block;
+    content: "";
+    height: 4px;
+    width: 4px;
+    margin-right: 5px;
+    border-bottom: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    transform: rotate(-45deg);
+  }
+
+  .accordion__button_panel[aria-expanded="true"]::before,
+  .accordion__button_panel[aria-selected="true"]::before {
+    transform: rotate(45deg);
+  }
+
+  .tray-search{
+      font-size: x-small;
+      padding-left: 4px;
+      padding-right: 4px;
+  }
+  
+ /* -------------------------------------------------- */
+  /* ----------------Input text ---------------------- */
+  /* -------------------------------------------------- */
+
+  a {
+    text-decoration: none;
+  }
+  .search-input-panel {
+    top: 25%;
+    left: 25%;
+    height: 5px;
+    border-radius: 3px;
+    padding: 5px;
+    background: #e6e7e7;
+
+    margin: 5px 5px 5px;
+  }
+  .search-input__button-panel {
+    border-radius: 3px;
+    background: #eaebec;
+    color: rgb(30, 69, 131);
+    float: right;
+    width: 10px;
+    height: 10px;
+    justify-content: center;
+    align-items: center;
+  }
+  .search-input__text-input-panel {
+    border: none;
+    background: none;
+    outline: none;
+    float: left;
+    padding: 0;
+    color: #000000;
+    font-size: 10px;
+    line-height: 20px;
+    width: 0px;
+  }
+  ::placeholder {
+    padding-left: 7px;
+    color: #000000;
+  }
+  .search-input-panel > .search-input__text-input-panel {
+    width: 220px;
+  }
+  
+  .search-input__text-input-panel {
+    line-height: 10px;
+  }
+  .search-input-panel {
+    height: 10px;
+  }
+  .search-input__button-panel {
+    width: 100px;
+    height: 10px;
+  }
+  

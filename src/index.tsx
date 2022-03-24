@@ -23,7 +23,7 @@ import { OutputPanel } from './kernel/panel';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { runIcon, saveIcon } from '@jupyterlab/ui-components';
-import { addContextMenuCommands } from './commands/ContextMenu';
+import { addNodeActionCommands } from './commands/NodeActionCommands';
 import { Token } from '@lumino/coreutils';
 import { xircuitsIcon, debuggerIcon, componentLibIcon, changeFavicon, xircuitsFaviconLink } from './ui-components/icons';
 import { startRunOutputStr } from './kernel/RunOutput';
@@ -156,8 +156,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     restorer.add(sidebarDebugger, sidebarDebugger.id);
     app.shell.add(sidebarDebugger, 'right', { rank: 1001 });
 
-    // Additional commands for context menu
-    addContextMenuCommands(app, tracker, translator);
+    // Additional commands for node action
+    addNodeActionCommands(app, tracker, translator);
 
     // Add a command to open xircuits sidebar debugger
     app.commands.addCommand(commandIDs.openDebugger, {
