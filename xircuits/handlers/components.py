@@ -4,6 +4,7 @@ import pathlib
 import sys
 import ast
 from itertools import chain
+import traceback
 
 import tornado
 from jupyter_server.base.handlers import APIHandler
@@ -68,6 +69,7 @@ class ComponentsRouteHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
         components = []
+        error_msg = ""
 
         for id, c in DEFAULT_COMPONENTS.items():
             components.append({
@@ -95,7 +97,13 @@ class ComponentsRouteHandler(APIHandler):
                     if python_path.parent in default_paths:
                         python_path = None
 
-                    components.extend(chain.from_iterable(self.extract_components(f, directory, python_path) for f in python_files))
+                    try:
+                        components.extend(chain.from_iterable(self.extract_components(f, directory, python_path) for f in python_files))
+                    except Exception:
+                        error_msg = traceback.format_exc()
+                        pass
+                    finally:
+                        components.extend(chain.from_iterable(self.extract_components(f, directory, python_path) for f in python_files))
 
 
         components = list({(c["header"], c["task"]): c for c in components}.values())
@@ -105,7 +113,10 @@ class ComponentsRouteHandler(APIHandler):
             if c.get("color") is None:
                 c["color"] = COLOR_PALETTE[idx % len(COLOR_PALETTE)]
 
-        self.finish(json.dumps(components))
+        data = {"components": components,
+                "error_msg" : error_msg}
+
+        self.finish(json.dumps(data))
         
     def get_component_directories(self):
         paths = list(DEFAULT_COMPONENTS_PATHS)

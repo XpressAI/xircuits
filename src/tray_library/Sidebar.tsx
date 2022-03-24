@@ -19,6 +19,7 @@ import {
 } from "react-accessible-accordion";
 
 import { requestAPI } from '../server/handler';
+import { XircuitFactory } from '../xircuitFactory';
 
 export const Body = styled.div`
   flex-grow: 1;
@@ -72,6 +73,7 @@ const colorList_general = [
 
 export interface SidebarProps {
     lab: JupyterFrontEnd;
+    factory: XircuitFactory;
 }
 
 async function fetchComponent(componentList: string[]) {
@@ -172,6 +174,13 @@ export default function Sidebar(props: SidebarProps) {
         }, 600000); // every 10 minutes should re-fetch the component list
         return () => clearInterval(intervalId);
     }, [category, componentList]);
+
+    useEffect(() => {
+        const intervalId = setInterval(async () => {
+            await props.factory.fetchComponentsSignal.emit(componentList);
+        }, 300); // Send component list to canvas once render or when refresh
+        return () => clearInterval(intervalId);
+    },[componentList, handleRefreshOnClick]);
 
     return (
         <Body>
