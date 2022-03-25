@@ -7,6 +7,7 @@ import shutil
 import os
 from pathlib import Path
 from sys import platform
+from time import sleep
 
 def start_xircuits():
     print(
@@ -26,28 +27,28 @@ __   __  ___                _ _
     
     if platform == "win32":
         xai_component_path = Path(sys.executable).parents[1] / "Lib" / "site-packages" / "xai_components"
-        config_path = Path(sys.executable).parents[1] / "Lib" / "site-packages" / "xai_components" / ".xircuits"
+        config_path = str(xai_component_path) + "/.xircuits"
     
     else:  
         # the dir path for linux venv looks like : venv/lib/python3.9/site-packages/xircuits
-        venv_python_version = os.listdir("venv/lib")[0]
+        venv_name = sys.executable.split("/")[-3]
+        venv_python_version = os.listdir(venv_name+"/lib")[0]
         xai_component_path = Path(sys.executable).parents[1] / "lib" / venv_python_version / "site-packages" / "xai_components"
-        config_path = Path(sys.executable).parents[1] / "lib" / venv_python_version / "site-packages" / "xai_components" / ".xircuits"
+        config_path = str(xai_component_path) + "/.xircuits"
         
     current_path = Path(os.getcwd()) / "xai_components"
     current_config_path = Path(os.getcwd()) / ".xircuits"
-
 
     if not current_path.exists():
         val = input("Xircuits Component Library is not found. Would you like to load it in the current path (Y/N)? ")
         if val.lower() == ("y" or "yes"):
             shutil.copytree(xai_component_path, current_path, dirs_exist_ok=True)
             if not current_config_path.exists():
-            	shutil.copytree(config_path, current_config_path, dirs_exist_ok=True)
-        
+                shutil.copytree(config_path, current_config_path, dirs_exist_ok=True)
+    
+    sleep(0.1)
     os.system("jupyter lab")
 
 def main(argv=None):
 
-    #argv = argv or sys.argv[1:]
     start_xircuits()
