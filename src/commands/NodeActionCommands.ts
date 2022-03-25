@@ -31,6 +31,21 @@ export function addNodeActionCommands(
         );
     }
 
+    //Add command to open canvas's node its script
+    commands.addCommand(commandIDs.openScript, {
+        execute:  () =>{
+            const widget = tracker.currentWidget?.content as XPipePanel;
+            const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
+            _.forEach(selectedEntities, (model) => {
+                const filePath = model.extras.path
+                app.commands.execute(commandIDs.openDocManager, {
+                    path: filePath
+                });
+            });
+            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+        }
+    });
+
     //Add command to undo
     commands.addCommand(commandIDs.undo, {
         execute:  () =>{

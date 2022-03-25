@@ -218,7 +218,9 @@ export default function Sidebar(props: SidebarProps) {
                                                                     <TrayItemWidget
                                                                         model={{
                                                                             type: componentVal.type,
-                                                                            name: componentVal.task
+                                                                            name: componentVal.task,
+                                                                            color: componentVal.color,
+                                                                            path: componentVal.file_path
                                                                         }}
                                                                         name={componentVal.task}
                                                                         color={componentVal.color}
@@ -245,7 +247,12 @@ export default function Sidebar(props: SidebarProps) {
                                 return (
                                     <div key={`index-3-${i}`}>
                                         <TrayItemWidget
-                                            model={{ type: val.type, name: val.task }}
+                                            model={{ 
+                                                type: val.type, 
+                                                name: val.task,
+                                                color: val.color,
+                                                path: val.file_path
+                                            }}
                                             name={val.task}
                                             color={val.color}
                                             app={props.lab}
