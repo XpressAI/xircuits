@@ -1,5 +1,5 @@
 from xai_components.base import InArg, OutArg, Component, xai_component
-
+from IPython.utils import capture
 
 @xai_component
 class GetData(Component):
@@ -13,8 +13,8 @@ class GetData(Component):
 
         self.done = False
         self.dataset = InArg(None)
-        self.save_copy = InArg(None)
-        self.verbose = InArg(None)
+        self.save_copy = InArg(False)
+        self.verbose = InArg(True)
         
         self.out_dataset = OutArg(None)
 
@@ -29,11 +29,7 @@ class GetData(Component):
         if dataset is None:
             dataset = "index"
             print("Please choose a dataset...")
-        if  save_copy is None:
-             save_copy = False
-        if verbose is None:
-            verbose = True
-
+        
         load_dataset = get_data(dataset = dataset, save_copy=save_copy, verbose = verbose)
         print('Dataset shape: ' + str(load_dataset.shape))
 
@@ -57,7 +53,7 @@ class SampleTestData(Component):
 
         self.done = False
         self.in_dataset = InArg(None)
-        self.test_fraction = InArg(None)
+        self.test_fraction = InArg(0)
         self.seed = InArg(None)
         
         self.train_val_dataset = OutArg(None)
@@ -69,8 +65,6 @@ class SampleTestData(Component):
         test_fraction = self.test_fraction.value
         seed = self.seed.value
 
-        if  test_fraction is None:
-            test_fraction = 0
         if seed is None:
             print("Set the seed value for reproducibility.")
 
@@ -91,6 +85,13 @@ class SetupPyCaretEnvironment(Component):
     in_dataset: InArg[any] 
     target: InArg[str] #Binary or Multiclass. The Target type is automatically detected and shown.
     train_size_fraction : InArg[float] #Fraction of training dataset.
+    normalize:InArg[bool]
+    transformation:InArg[bool]
+    ignore_low_variance:InArg[bool]
+    remove_multicollinearity:InArg[bool]
+    multicollinearity_threshold:InArg[float]
+    bin_numeric_features:InArg[any]
+    group_features:InArg[any]
     seed : InArg[int] #You can use random_state for reproducibility.
 
 
@@ -98,8 +99,15 @@ class SetupPyCaretEnvironment(Component):
 
         self.done = False
         self.in_dataset = InArg(None)
-        self.target = InArg(None)
-        self.train_size_fraction = InArg(None)
+        self.target = InArg('default')
+        self.train_size_fraction = InArg(1)
+        self.normalize = InArg(False)
+        self.transformation = InArg(False)
+        self.ignore_low_variance = InArg(False)
+        self.remove_multicollinearity = InArg(False)
+        self.multicollinearity_threshold = InArg(0.9)
+        self.bin_numeric_features = InArg(None)
+        self.group_features = InArg(None)
         self.seed = InArg(None)
 
     def execute(self, ctx) -> None:
@@ -109,17 +117,34 @@ class SetupPyCaretEnvironment(Component):
         in_dataset = self.in_dataset.value
         target = self.target.value
         train_size_fraction = self.train_size_fraction.value
+        normalize = self.normalize.value
+        transformation = self.transformation.value
+        ignore_low_variance = self.ignore_low_variance.value
+        remove_multicollinearity = self.remove_multicollinearity.value
+        multicollinearity_threshold = self.multicollinearity_threshold.value
+        bin_numeric_features = self.bin_numeric_features.value
+        group_features = self.group_features.value
         seed = self.seed.value
-
-        if  target is None:
-            target = 'default'
-        if  train_size_fraction is None:
-            train_size_fraction = 1    
+   
         if seed is None:
             print("Set the seed value for reproducibility.")
+            
+        with capture.capture_output() as captured:
+            setup_pycaret = setup(data = in_dataset,
+             target = target,
+             train_size=train_size_fraction,
+             normalize =normalize,
+             transformation = transformation,
+             ignore_low_variance = ignore_low_variance,
+             remove_multicollinearity = remove_multicollinearity,
+             multicollinearity_threshold = multicollinearity_threshold,
+             bin_numeric_features = bin_numeric_features,
+             group_features = group_features,
+             session_id=seed,
+             silent=True)
 
-        setup_pycaret = setup(data = in_dataset, target = target,train_size=train_size_fraction,session_id=seed,silent=True)
-
+        captured.show()
+        
         self.done = True
 
 
@@ -131,7 +156,7 @@ class CompareModels(Component):
     def __init__(self):
 
         self.done = False
-        self.sort_by = InArg(None)
+        self.sort_by = InArg('Accuracy')
 
     def execute(self, ctx) -> None:
 
@@ -139,10 +164,9 @@ class CompareModels(Component):
     
         sort_by = self.sort_by.value
 
-        if sort_by is None:
-            sort_by = 'Accuracy'
-
-        best_model = compare_models(sort=sort_by)
+        with capture.capture_output() as captured:
+            best_model = compare_models(sort=sort_by)
+        captured.show()
 
         self.done = True
 
@@ -157,8 +181,8 @@ class CreateModel(Component):
     def __init__(self):
 
         self.done = False
-        self.model_id = InArg(None)
-        self.num_fold = InArg(None)
+        self.model_id = InArg('lr')
+        self.num_fold = InArg(10)
 
         self.out_created_model= OutArg(None)
 
@@ -169,12 +193,9 @@ class CreateModel(Component):
         model_id = self.model_id.value
         num_fold = self.num_fold.value
 
-        if model_id is None:
-            model_id = 'lr'
-        if num_fold is None:
-            num_fold = 10
-
-        created_model = create_model(estimator = model_id, fold = num_fold)
+        with capture.capture_output() as captured:
+            created_model = create_model(estimator = model_id, fold = num_fold)
+        captured.show()
         print(created_model)
 
         self.out_created_model.value = created_model
@@ -182,10 +203,10 @@ class CreateModel(Component):
         self.done = True
 
 
-
 @xai_component
 class TuneModel(Component):
     in_created_model:InArg[any]
+    optimize:InArg[str]
     early_stopping_patience:InArg[int]
     num_fold:InArg[int]
     n_iter:InArg[int]
@@ -196,18 +217,19 @@ class TuneModel(Component):
 
         self.done = False
         self.in_created_model = InArg(None)
+        self.optimize = InArg("Accuracy")
         self.early_stopping_patience = InArg(None)
-        self.num_fold = InArg(None)
-        self.n_iter = InArg(None)
-
+        self.num_fold = InArg(10)
+        self.n_iter = InArg(10)
 
         self.out_tuned_model= OutArg(None)
 
     def execute(self, ctx) -> None:
 
         from pycaret.classification import tune_model 
-    
+        from IPython.display import display
         in_created_model = self.in_created_model.value
+        optimize = self.optimize.value
         patience = self.early_stopping_patience.value
         num_fold = self.num_fold.value
         n_iter = self.n_iter.value
@@ -219,250 +241,154 @@ class TuneModel(Component):
             early_stopping=True
             patience=patience
 
-        if num_fold is None:
-            num_fold = 10
-        if n_iter is None:
-            n_iter = 10
-
-        tuned_model = tune_model(estimator = in_created_model,fold= num_fold,n_iter=n_iter,early_stopping=early_stopping,early_stopping_max_iters=patience)
+        with capture.capture_output() as captured:
+            tuned_model = tune_model(estimator = in_created_model,optimize = optimize, fold= num_fold,n_iter=n_iter,early_stopping=early_stopping,early_stopping_max_iters=patience)
+        
+        for o in captured.outputs:
+            display(o)
 
         self.out_tuned_model.value = tuned_model
-
+        
         self.done = True
 
 
+@xai_component
+class PlotModel(Component):
+    in_model:InArg[any]
+    plot_type:InArg[str]
 
-# @xai_component
-# class SparkReadPandas(Component):
+    out_tuned_model:OutArg[any]
 
-#     in_sparksession: InArg[any]
-#     pandas_dataframe: InArg[str]
-#     out_sparksession: OutArg[any]
-#     out_dataframe: OutArg[any]
+    def __init__(self):
 
+        self.done = False
+        self.in_model = InArg(None)
+        self.plot_type = InArg('auc')
 
-#     def __init__(self):
+        self.out_tuned_model= OutArg(None)
 
-#         self.done = False
-#         self.in_sparksession = InArg(None)
-#         self.pandas_dataframe = InArg(None)
-#         self.out_sparksession = OutArg(None)
+    def execute(self, ctx) -> None:
 
-#     def execute(self, ctx) -> None:
+        from pycaret.classification import plot_model 
+    
+        in_model = self.in_model.value
+        plot_type = self.plot_type.value
 
-#         spark = self.in_sparksession.value
-#         df = self.pandas_dataframe.value
-#         spark_df = spark.createDataFrame(df)
-#         spark_df.show()
+        with capture.capture_output() as captured:
+            plot_model = plot_model(in_model, plot = plot_type)
+        captured.show()
 
-#         self.out_sparksession.value = spark
-#         self.out_dataframe.value = spark_df
-
-#         self.done = True
-
-# @xai_component
-# class SparkReadFile(Component):
-
-#     in_sparksession: InArg[any]
-#     file_input: InArg[str]
-#     out_sparksession: OutArg[any]
-#     out_dataframe: OutArg[any]
-
-#     def __init__(self):
-
-#         self.done = False
-#         self.in_sparksession = InArg(None)
-#         self.file_input = InArg(None)
-#         self.out_sparksession = OutArg(None)
-#         self.out_dataframe = OutArg(None)
-
-
-#     def execute(self, ctx) -> None:
-
-#         spark = self.in_sparksession.value
-#         filepath = self.file_input.value
-#         ext = filepath.split(".")[-1]
-
-#         if ext == "csv":
-#             df = spark.read.load(filepath,
-#                      format="csv", sep=",", inferSchema="true", header="true")
-#             df.show()
-
-#         elif ext == "parquet":
-#             df = spark.read.load(filepath)
-#             df.show()
-
-#         elif ext == "orc":
-#             df = spark.read.orc(filepath)
-#             df.show()
-
-#         elif ext == "json":
-#             df = spark.read.load("filepath", format="json")
-
-#         else:
-#             print("Unrecognized file format! Please input json / csv / parquet / orc ")
-
-#         self.out_sparksession.value = spark
-#         self.out_dataframe.value = df
-#         self.done = True
-
-
-# @xai_component
-# class SparkReadCSV(Component):
-
-#     in_sparksession: InArg[any]
-#     file_input: InArg[str]
-#     separator: InArg[str]
-#     header: InArg[str]
-#     out_sparksession: OutArg[any]
-#     out_dataframe: OutArg[any]
-
-#     def __init__(self):
-
-#         self.done = False
-#         self.in_sparksession = InArg(None)
-#         self.file_input = InArg(None)
-#         self.separator = InArg(None)
-#         self.header = InArg(None)
-#         self.out_sparksession = OutArg(None)
-#         self.out_dataframe = OutArg(None)
-
-
-#     def execute(self, ctx) -> None:
-
-#         spark = self.in_sparksession.value
-#         filepath = self.file_input.value
-
-#         sep = self.separator.value if self.separator.value else ","
-#         header = self.header.value if self.header.value else "true"
+        self.out_tuned_model.value = in_model
         
-#         df = spark.read.load(filepath,
-#                  format="csv", sep=sep, inferSchema="true", header=header)
-
-#         df.show()
-
-#         self.out_sparksession.value = spark
-#         self.out_dataframe.value = df
-#         self.done = True
+        self.done = True
 
 
-# @xai_component
-# class SparkWriteFile(Component):
+@xai_component
+class FinalizeModel(Component):
+    in_tuned_model:InArg[any]
 
-#     dataframe: InArg[any]
-#     output_name: InArg[str]
-#     header: InArg[bool]
-#     out_sparksession: OutArg[any]
+    out_finalize_model:OutArg[any]
 
-#     def __init__(self):
+    def __init__(self):
 
-#         self.done = False
-#         self.dataframe = InArg(None)
-#         self.output_name = InArg(None)
-#         self.header = InArg(None)
-#         self.out_sparksession = OutArg(None)
-
-#     def execute(self, ctx) -> None:
-
-#         df = self.dataframe.value
-#         filepath = self.output_name.value
-#         ext = filepath.split(".")[-1]
-
-#         if ext == "csv":
-#             df.write.csv(filepath, header=True)
-#         elif ext == "parquet":
-#             df.write.parquet(filepath)
-#         elif ext == "orc":
-#             df.write.orc(filepath)
-#         else:
-#             print("Unrecognized file format! Please input csv / parquet / orc.")
-
-#         self.done = True
-
-# @xai_component
-# class SparkSQL(Component):
-
-#     in_sparksession: InArg[any]
-#     dataframe: InArg[any]
-#     table_name: InArg[str]
-#     sql_string: InArg[str]
-#     out_sparksession: OutArg[any]
-#     sql_dataframe: OutArg[any]
-
-
-#     def __init__(self):
-
-#         self.done = False
-#         self.in_sparksession = InArg(None)
-#         self.dataframe = InArg(None)
-#         self.table_name = InArg(None)
-
-#         self.sql_string = InArg(None)
-#         self.out_sparksession = OutArg(None)
-#         self.sql_dataframe = OutArg(None)
-
-#     def execute(self, ctx) -> None:
-
-#         spark = self.in_sparksession.value
-#         df = self.dataframe.value
-#         sql_string = self.sql_string.value
-#         table_name = self.table_name.value if self.table_name.value else ""
-
-#         if table_name:
-#             df.createOrReplaceTempView(table_name)
-
-#         else:
-#             #handler if user does not specify table name
-#             df.createOrReplaceTempView("tableA")
-#             sql_string = sql_string + " FROM tableA"
+        self.done = False
+        self.in_tuned_model = InArg(None)
         
-#         sql_df = spark.sql(sql_string)
-#         sql_df.show()
+        self.out_finalize_model= OutArg(None)
+
+    def execute(self, ctx) -> None:
+
+        from pycaret.classification import finalize_model 
+    
+        in_tuned_model = self.in_tuned_model.value
+
+        with capture.capture_output() as captured:
+            out_finalize_model = finalize_model(in_tuned_model)
+            print(out_finalize_model)
+        captured.show()
+
+        self.out_finalize_model.value = out_finalize_model
         
-#         self.out_sparksession.value = spark
-#         self.sql_dataframe.value = sql_df
-#         self.done = True
+        self.done = True
 
-# @xai_component
-# class SparkVisualize(Component):
+@xai_component
+class PredictModel(Component):
+    in_finalize_model:InArg[any]
+    predict_dataset:InArg[any]
 
-#     dataframe: InArg[any]
-#     plot_type: InArg[str]
-#     x_axis: InArg[str]
-#     y_axis: InArg[str]
-#     output_name: InArg[str]
+    out_finalize_model:OutArg[any]
 
-#     def __init__(self):
+    def __init__(self):
+
+        self.done = False
+        self.in_finalize_model = InArg(None)
+        self.predict_dataset = InArg(None)
+
+        self.out_finalize_model= OutArg(None)
+
+    def execute(self, ctx) -> None:
+
+        from pycaret.classification import predict_model 
+    
+        in_finalize_model = self.in_finalize_model.value
+        predict_dataset = self.predict_dataset.value
+
+        with capture.capture_output() as captured:
+            Prediction = predict_model(in_finalize_model, data= predict_dataset)  
+        captured.show()
+        print(Prediction[['default','Label','Score']].head())
+
+        self.out_finalize_model.value = in_finalize_model
         
-#         self.done = False
-#         self.dataframe = InArg(None)
-#         self.plot_type = InArg(None)
-#         self.x_axis = InArg(None)
-#         self.y_axis = InArg(None)    
-#         self.output_name = InArg(None)    
+        self.done = True
 
+@xai_component
+class SaveModel(Component):
+    in_finalize_model:InArg[any]
+    save_path:InArg[str]
+    model_only:InArg[bool]
 
-#     def execute(self, ctx) -> None:
+    def __init__(self):
 
-#         df = self.dataframe.value
-#         plot_type = self.plot_type.value if self.plot_type.value else "bar"
-#         output_name = self.output_name.value if self.output_name.value else "visual.png"
-#         x_axis = self.x_axis.value
-#         y_axis = self.y_axis.value
+        self.done = False
+        self.in_finalize_model = InArg(None)
+        self.save_path = InArg(None)
+        self.model_only = InArg(False)
 
-#         pd_df = df.toPandas()
+    def execute(self, ctx) -> None:
 
-#         if plot_type == 'bar':
-#             pd_df[x_axis].value_counts().plot(kind='bar')
+        from pycaret.classification import save_model 
+    
+        in_finalize_model = self.in_finalize_model.value
+        save_path = self.save_path.value
+        model_only = self.model_only.value
 
-#         elif plot_type == 'scatter':
-#             pd_df.plot(x=x_axis, y=y_axis, kind = 'scatter')    
-
-#         elif plot_type == 'line':
-
-#             pd_df.plot(x=x_axis, y=y_axis, kind = 'line')    
+        save_model(in_finalize_model,model_name=save_path,model_only=model_only)
         
-#         plt.tight_layout()
-#         plt.savefig(output_name)
-#         plt.show()
-#         self.done = True
+        self.done = True
+
+@xai_component
+class LoadModel(Component):
+    model_path:InArg[str]
+
+    model:OutArg[any]
+
+    def __init__(self):
+
+        self.done = False
+        self.model_path = InArg(None)
+
+        self.model= OutArg(None)
+        
+    def execute(self, ctx) -> None:
+
+        from pycaret.classification import load_model 
+    
+        model_path = self.model_path.value
+
+        loaded_model = load_model(model_name=model_path)
+        
+        self.model.value = loaded_model
+
+        self.done = True
+
