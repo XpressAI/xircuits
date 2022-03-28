@@ -1571,11 +1571,57 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	/**Component Panel & Node Action Panel Context Menu */
 	const [isComponentPanelShown, setIsComponentPanelShown] = useState(false);
 	const [actionPanelShown, setActionPanelShown] = useState(false);
-	const [componentPanelposition, setComponentPanelposition] = useState({ x: 0, y: 0 });
+	const [isPanelAtTop, setIsPanelAtTop] = useState<boolean>(true);
+	const [isPanelAtLeft, setIsPanelAtLeft] = useState<boolean>(true);
+	const [componentPanelPosition, setComponentPanelPosition] = useState({ x: 0, y: 0 });
 	const [actionPanelPosition, setActionPanelPosition] = useState({ x: 0, y: 0 });
 	const [nodePosition, setNodePosition] = useState({ x: 0, y: 0 });
 	const [looseLinkData, setLooseLinkData] = useState<any>();
 	const [isParameterLink, setIsParameterLink] = useState<boolean>(false);
+
+	// Component & Action panel position
+	const panelPosition = (event) => {
+		let newPanelPosition = {
+			x: event.pageX,
+			y: event.pageY,
+		};
+		let newActionPanelPosition = {
+			x: event.pageX,
+			y: event.pageY,
+		};
+		const canvas = event.view as any;
+		const newCenterPosition = {
+			x: canvas.innerWidth / 2,
+			y: canvas.innerHeight / 2,
+		}
+		if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
+			// Bottom right
+			setIsPanelAtTop(false);
+			setIsPanelAtLeft(false);
+			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y;
+			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x;
+			newActionPanelPosition.y = newPanelPosition.y + 60;
+			newActionPanelPosition.x = newPanelPosition.x - 25;
+		} else if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y < newCenterPosition.y) {
+			// Top right
+			setIsPanelAtTop(true);
+			setIsPanelAtLeft(false);
+			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x;
+			newActionPanelPosition.x = newPanelPosition.x - 25;
+		} else if (newPanelPosition.x < newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
+			// Bottom left
+			setIsPanelAtTop(false);
+			setIsPanelAtLeft(true);
+			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y;
+			newActionPanelPosition.y = newPanelPosition.y + 60;
+		} else {
+			// Top left
+			setIsPanelAtTop(true);
+			setIsPanelAtLeft(true);
+		}
+		setComponentPanelPosition(newPanelPosition);
+		setActionPanelPosition(newActionPanelPosition);
+	}
 
 	// Show the component panel context menu
 	const showComponentPanel = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -1584,13 +1630,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		setActionPanelShown(false);
 		setIsComponentPanelShown(false);
-		const newPanelPosition = {
-			x: event.pageX,
-			y: event.pageY,
-		};
+
 		const node_position = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
 		setNodePosition(node_position);
-		setComponentPanelposition(newPanelPosition);
+		panelPosition(event);
 		setIsComponentPanelShown(true);
 	};
 
@@ -1613,13 +1656,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			y: event.link.points[1].position.y,
 		};
 
-		const newPanelPosition = {
-			x: event.linkEvent.pageX,
-			y: event.linkEvent.pageY,
-		};
 		setLooseLinkData(event.link);
 		setNodePosition(newNodePosition);
-		setComponentPanelposition(newPanelPosition);
+		panelPosition(event.linkEvent);
 		setIsComponentPanelShown(true);
 	};
 
@@ -1635,12 +1674,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const showNodeActionPanel = (event: React.MouseEvent<HTMLDivElement>) => {
 		setActionPanelShown(false);
 		setIsComponentPanelShown(false);
-		const newPosition = {
-			x: event.pageX,
-			y: event.pageY,
-		};
 
-		setActionPanelPosition(newPosition);
+		panelPosition(event)
 		setActionPanelShown(true);
 	};
 
@@ -1769,7 +1804,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				{/**Add Component Panel(right-click)*/}
 				{isComponentPanelShown && (
 					<div
-						style={{ top: componentPanelposition.y, left: componentPanelposition.x }}
+						style={{ 
+							top: isPanelAtTop ? componentPanelPosition.y : null, 
+							bottom: !isPanelAtTop? componentPanelPosition.y : null, 
+							right: !isPanelAtLeft? componentPanelPosition.x : null, 
+							left: isPanelAtLeft? componentPanelPosition.x : null 
+						}}
 						className="add-component-panel">
 						<ComponentsPanel
 							lab={app}
@@ -1784,7 +1824,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				{/**Node Action Panel(ctrl + left-click)*/}
 				{actionPanelShown && (
 					<div
-						style={{ top: actionPanelPosition.y, left: actionPanelPosition.x }}
+						style={{ 
+							top: isPanelAtTop? actionPanelPosition.y : null,
+							bottom: !isPanelAtTop? actionPanelPosition.y : null, 
+							right: !isPanelAtLeft? actionPanelPosition.x : null,  
+							left: isPanelAtLeft? actionPanelPosition.x : null 
+						}}
 						className="node-action-context-menu">
 						<NodeActionsPanel
 							app={app}
