@@ -6877,6 +6877,23 @@
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
         "./src/components/xircuitbodywidget.tsx"
       ],
+      "./src/commands/contextmenu.ts": [
+        "./node_modules/@jupyterlab/application/lib/index.d.ts",
+        "./node_modules/@jupyterlab/apputils/lib/index.d.ts",
+        "./node_modules/@jupyterlab/translation/lib/index.d.ts",
+        "./node_modules/@jupyterlab/ui-components/lib/index.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
+        "./node_modules/@projectstorm/react-diagrams/dist/@types/index.d.ts",
+        "./src/components/customnodemodel.ts",
+        "./src/components/xircuitbodywidget.tsx",
+        "./src/index.tsx",
+        "./src/xircuitwidget.tsx"
+      ],
+      "./src/commands/customactionevent.tsx": [
+        "./node_modules/@jupyterlab/application/lib/index.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
+        "./src/components/xircuitbodywidget.tsx"
+      ],
       "./src/components/customnodefactory.tsx": [
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts",
@@ -10433,6 +10450,15 @@
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
         "./node_modules/@jupyterlab/translation/lib/index.d.ts",
         "./src/index.tsx"
+      ],
+      "./src/commands/contextmenu.ts": [
+        "./node_modules/@jupyterlab/application/lib/index.d.ts",
+        "./node_modules/@jupyterlab/translation/lib/index.d.ts",
+        "./src/index.tsx"
+      ],
+      "./src/commands/customactionevent.tsx": [
+        "./node_modules/@jupyterlab/application/lib/index.d.ts",
+        "./node_modules/@projectstorm/react-canvas-core/dist/@types/index.d.ts"
       ],
       "./src/commands/contextmenu.ts": [
         "./node_modules/@jupyterlab/application/lib/index.d.ts",
