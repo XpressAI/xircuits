@@ -107,6 +107,10 @@ export  class CustomPortModel extends DefaultPortModel  {
             let result = thisLinkedName.match(regEx);
 
             if(thisNodeModelType != result[1]){
+                // Skip 'any' type check
+                if(result[1] == 'any'){
+                    return;
+                }
 		        port.getNode().getOptions().extras["borderColor"]="red";
 		        port.getNode().getOptions().extras["tip"]="Port linked not correct data type (" + result[1] +")";
                 port.getNode().setSelected(true);
