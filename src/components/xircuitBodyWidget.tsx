@@ -192,103 +192,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			}
 		}, []);
 
-	const customDeserializeModel = (modelContext: any, diagramEngine: DiagramEngine) => {
-
-		if (modelContext == null) {
-			// When context empty, just return
-			return;
-		}
-
-		let tempModel = new DiagramModel();
-		let links = modelContext["layers"][0]["models"];
-		let nodes = modelContext["layers"][1]["models"];
-		let offsetX = modelContext["offsetX"];
-		let offsetY = modelContext["offsetY"];
-		let zoom = modelContext["zoom"];
-
-		for (let nodeID in nodes) {
-
-			let node = nodes[nodeID];
-			let newNode = new CustomNodeModel({
-				id: node.id, type: node.type, name: node.name, locked: node.locked,
-				color: node.color, extras: node.extras
-			});
-			newNode.setPosition(node.x, node.y);
-
-			for (let portID in node.ports) {
-
-				let port = node.ports[portID];
-				if (port.alignment == "right") newNode.addOutPortEnhance(port.label, port.name, true, port.id);
-				if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name, true, port.id);
-
-			}
-			tempModel.addAll(newNode);
-			diagramEngine.setModel(tempModel);
-		}
-
-		for (let linkID in links) {
-
-
-			let link = links[linkID];
-
-			if (link.sourcePort && link.targetPort) {
-
-				let newLink = new DefaultLinkModel();
-
-				let sourcePort = tempModel.getNode(link.source).getPortFromID(link.sourcePort);
-				newLink.setSourcePort(sourcePort);
-
-				let targetPort = tempModel.getNode(link.target).getPortFromID(link.targetPort);
-				newLink.setTargetPort(targetPort);
-
-				tempModel.addAll(newLink);
-				diagramEngine.setModel(tempModel);
-			}
-		}
-
-		tempModel.registerListener({
-			// Detect changes when node is dropped or deleted
-			nodesUpdated: () => {
-				// Add delay for links to disappear 
-				const timeout = setTimeout(() => {
-					onChange();
-					setInitialize(false);
-				}, 10)
-				return () => clearTimeout(timeout)
-			},
-			linksUpdated: function (event) {
-				event.link.registerListener({
-					/**
-					 * sourcePortChanged
-					 * Detect changes when link is connected
-					 */
-					sourcePortChanged: e => {
-						onChange();
-					},
-					/**
-					 * targetPortChanged
-					 * Detect changes when link is connected
-					 */
-					targetPortChanged: e => {
-						onChange();
-					},
-					/**
-					 * entityRemoved
-					 * Detect changes when new link is removed
-					 */
-					entityRemoved: e => {
-						onChange();
-					}
-				});
-			}
-		});
-
-		tempModel.setOffsetX(offsetX);
-		tempModel.setOffsetY(offsetY);
-		tempModel.setZoomLevel(zoom);
-		return tempModel;
-	}
-
 	useEffect(() => {
 		const currentContext = contextRef.current;
 
@@ -302,7 +205,43 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			try {
 				if (notInitialRender.current) {
 					const model: any = currentContext.model.toJSON();
-					let deserializedModel = customDeserializeModel(model, xircuitsApp.getDiagramEngine());
+					let deserializedModel = xircuitsApp.customDeserializeModel(model, xircuitsApp.getDiagramEngine());
+					deserializedModel.registerListener({
+						// Detect changes when node is dropped or deleted
+						nodesUpdated: () => {
+							// Add delay for links to disappear 
+							const timeout = setTimeout(() => {
+								onChange();
+								setInitialize(false);
+							}, 10)
+							return () => clearTimeout(timeout)
+						},
+						linksUpdated: function (event) {
+							event.link.registerListener({
+								/**
+								 * sourcePortChanged
+								 * Detect changes when link is connected
+								 */
+								sourcePortChanged: e => {
+									onChange();
+								},
+								/**
+								 * targetPortChanged
+								 * Detect changes when link is connected
+								 */
+								targetPortChanged: e => {
+									onChange();
+								},
+								/**
+								 * entityRemoved
+								 * Detect changes when new link is removed
+								 */
+								entityRemoved: e => {
+									onChange();
+								}
+							});
+						}
+					})
 					xircuitsApp.getDiagramEngine().setModel(deserializedModel);
 				} else {
 					// Clear undo history when first time rendering

@@ -5,6 +5,7 @@ import { ZoomCanvasAction } from '@projectstorm/react-canvas-core';
 import { CustomActionEvent } from '../commands/CustomActionEvent';
 import { JupyterFrontEnd } from '@jupyterlab/application';
 import { CustomDiagramState } from './CustomDiagramState'
+import { DefaultLinkModel } from '@projectstorm/react-diagrams';
 
 export class XircuitsApplication {
 
@@ -39,5 +40,64 @@ export class XircuitsApplication {
 
         public getDiagramEngine(): SRD.DiagramEngine {
                 return this.diagramEngine;
+        }
+
+        public customDeserializeModel = (modelContext: any, diagramEngine: SRD.DiagramEngine) => {
+
+                if (modelContext == null) {
+                        // When context empty, just return
+                        return;
+                }
+
+                let tempModel = new SRD.DiagramModel();
+                let links = modelContext["layers"][0]["models"];
+                let nodes = modelContext["layers"][1]["models"];
+                let offsetX = modelContext["offsetX"];
+                let offsetY = modelContext["offsetY"];
+                let zoom = modelContext["zoom"];
+
+                for (let nodeID in nodes) {
+
+                        let node = nodes[nodeID];
+                        let newNode = new CustomNodeModel({
+                                id: node.id, type: node.type, name: node.name, locked: node.locked,
+                                color: node.color, extras: node.extras
+                        });
+                        newNode.setPosition(node.x, node.y);
+
+                        for (let portID in node.ports) {
+
+                                let port = node.ports[portID];
+                                if (port.alignment == "right") newNode.addOutPortEnhance(port.label, port.name, true, port.id);
+                                if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name, true, port.id);
+
+                        }
+                        tempModel.addAll(newNode);
+                        diagramEngine.setModel(tempModel);
+                }
+
+                for (let linkID in links) {
+
+
+                        let link = links[linkID];
+
+                        if (link.sourcePort && link.targetPort) {
+
+                                let newLink = new DefaultLinkModel();
+
+                                let sourcePort = tempModel.getNode(link.source).getPortFromID(link.sourcePort);
+                                newLink.setSourcePort(sourcePort);
+
+                                let targetPort = tempModel.getNode(link.target).getPortFromID(link.targetPort);
+                                newLink.setTargetPort(targetPort);
+
+                                tempModel.addAll(newLink);
+                                diagramEngine.setModel(tempModel);
+                        }
+                }
+                tempModel.setOffsetX(offsetX);
+                tempModel.setOffsetY(offsetY);
+                tempModel.setZoomLevel(zoom);
+                return tempModel;
         }
 }
