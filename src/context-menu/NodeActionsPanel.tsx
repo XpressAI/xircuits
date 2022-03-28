@@ -53,6 +53,12 @@ export class NodeActionsPanel extends React.Component<NodeActionsPanelProps> {
 				</div>
 				<div className="option"
 					onClick={() => {
+						this.props.app.commands.execute(commandIDs.openScript)
+					}}>
+					Open Script
+				</div>
+				<div className="option"
+					onClick={() => {
 						this.props.app.commands.execute(commandIDs.deleteNode)
 					}}>
 					Delete

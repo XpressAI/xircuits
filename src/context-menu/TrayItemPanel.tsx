@@ -41,7 +41,7 @@ export class TrayItemPanel extends React.Component<TrayItemWidgetProps> {
 			if (current_node.header == "GENERAL") {
 				node = GeneralComponentLibrary({ name: current_node["task"], color: current_node["color"], type: current_node["type"] });
 			} else {
-				node = new CustomNodeModel({ name: current_node["task"], color: current_node["color"], extras: { "type": current_node["type"] } });
+				node = new CustomNodeModel({ name: current_node["task"], color: current_node["color"], extras: { "type": current_node["type"], "path": current_node["file_path"] } });
 				node.addInPortEnhance('▶', 'in-0');
 				node.addOutPortEnhance('▶', 'out-0');
 

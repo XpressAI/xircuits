@@ -95,6 +95,7 @@ export const commandIDs = {
 	runXircuit: 'Xircuit-editor:run-node',
 	debugXircuit: 'Xircuit-editor:debug-node',
 	lockXircuit: 'Xircuit-editor:lock-node',
+	openScript: 'Xircuit-editor:open-node-script',
 	undo: 'Xircuit-editor:undo',
 	redo: 'Xircuit-editor:redo',
 	cutNode: 'Xircuit-editor:cut-node',
@@ -1693,7 +1694,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							if (current_node.header == "GENERAL") {
 								node = GeneralComponentLibrary({ name: data.name, color: current_node["color"], type: data.type });
 							} else if (current_node.header == "ADVANCED") {
-								node = new CustomNodeModel({ name: data.name, color: current_node["color"], extras: { "type": data.type } });
+								node = new CustomNodeModel({ name: data.name, color: data.color, extras: { "type": data.type, "path": data.path } });
 								node.addInPortEnhance('▶', 'in-0');
 								node.addOutPortEnhance('▶', 'out-0');
 
