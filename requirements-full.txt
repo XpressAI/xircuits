@@ -95,3 +95,5 @@ webencodings==0.5.1
 websocket-client==1.2.1
 Werkzeug==2.0.2
 zipp==3.4.0
+pygithub
+tqdm

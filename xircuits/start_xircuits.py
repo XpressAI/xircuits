@@ -1,13 +1,16 @@
-
 # coding: utf-8
 """A wrapper to start xircuits and offer to start to XAI-components"""
 
-import sys
-import shutil
-import os
 from pathlib import Path
-from sys import platform
-from time import sleep
+from urllib import request
+import os
+from .handlers.request_folder import request_folder
+
+def init_xircuits():
+    url = "https://raw.githubusercontent.com/XpressAI/xircuits/master/.xircuits/config.ini"
+    path = ".xircuits"
+    os.mkdir(path)
+    request.urlretrieve(url, path+"/config.ini")
 
 def start_xircuits():
     print(
@@ -22,33 +25,19 @@ __   __  ___                _ _
 ======================================
 '''
     )
-    
-    # the current handler assumes that the user uses venv to install xircuits
-    
-    if platform == "win32":
-        xai_component_path = Path(sys.executable).parents[1] / "Lib" / "site-packages" / "xai_components"
-        config_path = str(xai_component_path) + "/.xircuits"
-    
-    else:  
-        # the dir path for linux venv looks like : venv/lib/python3.9/site-packages/xircuits
-        venv_name = sys.executable.split("/")[-3]
-        venv_python_version = os.listdir(venv_name+"/lib")[0]
-        xai_component_path = Path(sys.executable).parents[1] / "lib" / venv_python_version / "site-packages" / "xai_components"
-        config_path = str(xai_component_path) + "/.xircuits"
-        
-    current_path = Path(os.getcwd()) / "xai_components"
-    current_config_path = Path(os.getcwd()) / ".xircuits"
 
-    if not current_path.exists():
+    config_path = Path(os.getcwd()) / ".xircuits"
+    component_library_path = Path(os.getcwd()) / "xai_components"
+
+    if not config_path.exists():
+        init_xircuits()
+
+    if not component_library_path.exists():
         val = input("Xircuits Component Library is not found. Would you like to load it in the current path (Y/N)? ")
         if val.lower() == ("y" or "yes"):
-            shutil.copytree(xai_component_path, current_path, dirs_exist_ok=True)
-            if not current_config_path.exists():
-                shutil.copytree(config_path, current_config_path, dirs_exist_ok=True)
+            request_folder("xai_components")
     
-    sleep(0.1)
     os.system("jupyter lab")
 
 def main(argv=None):
-
     start_xircuits()
