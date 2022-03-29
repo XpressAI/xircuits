@@ -72,3 +72,5 @@ webencodings==0.5.1
 websocket-client==1.2.1
 zipp==3.4.0
 matplotlib
+pygithub
+tqdm
