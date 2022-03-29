@@ -9,7 +9,10 @@ def request_folder(folder, repo_name="XpressAi/Xircuits"):
     repo = g.get_repo(repo_name)
     base_url = "https://raw.githubusercontent.com/" + repo_name + "/master/"
 
-    os.mkdir(folder)
+    if not os.path.exists(folder):
+        os.mkdir(folder)
+    else:
+        print(folder + " already exists.")
 
     contents = repo.get_contents(folder)
     total_folders = sum(content.type=='dir' for content in contents)
