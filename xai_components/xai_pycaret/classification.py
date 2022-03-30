@@ -91,7 +91,7 @@ class SampleTestData(Component):
 
 """
 This component initializes the training environment and creates the transformation pipeline.
-Setup function must be called before executing any other function. It takes two mandatory 
+Setup component must be called before executing any other component. It takes two mandatory 
 parameters:data and target. All the other parameters are optional.
 """
 @xai_component
@@ -170,7 +170,7 @@ class SetupEnvironment(Component):
 
 '''
 This component trains and evaluates performance of all estimators available 
-in the model library using cross validation.The output of this function is 
+in the model library using cross validation.The output of this component is 
 a score grid with average cross validated scores. 
 '''
 @xai_component
@@ -206,7 +206,7 @@ class CompareModels(Component):
 
 '''
 This component trains and evaluates the performance of a given estimator 
-using cross validation.The output of this function is a score grid with 
+using cross validation.The output of this component is a score grid with 
 CV scores by fold.
 '''
 @xai_component
@@ -242,7 +242,7 @@ class CreateModel(Component):
 
 
 '''
-This component tunes the hyperparameters of a given estimator. The output of this function is
+This component tunes the hyperparameters of a given estimator. The output of this component is
 a score grid with CV scores by fold of the best selected model based on optimize parameter.
 '''
 @xai_component
@@ -509,7 +509,7 @@ class EnsembleModel(Component):
         self.done = True
 
 '''
-This component trains a Soft Voting / Majority Rule classifier for select models passed in the estimator_list param. 
+This component trains a Soft Voting / Majority Rule classifier for select models passed in the top_model list. 
 '''
 @xai_component
 class BlendModels(Component):
