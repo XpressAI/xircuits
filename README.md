@@ -1,7 +1,31 @@
-| **[Documentation](https://xircuits.io/docs/index)** |
-**[Dev Discord](https://discord.gg/vgEg2ZtxCw)** |
+<p align="center">
+<img src="https://user-images.githubusercontent.com/68586800/151280601-7ff2b7b2-10e5-4544-b3df-aa6a5a654dae.png" width="450"/>
+</p>
 
-![Xircuits](https://user-images.githubusercontent.com/68586800/151280601-7ff2b7b2-10e5-4544-b3df-aa6a5a654dae.png)
+<p align="center">
+  <a href="https://xircuits.io/">Docs</a> •
+  <a href="https://xircuits.io/docs/getting-started/Installation">Install</a> •
+  <a href="https://xircuits.io/docs/tutorials/tutorials">Tutorials</a> •
+  <a href="https://github.com/XpressAI/xircuits/blob/master/CONTRIBUTING.md">Contribute</a> •
+  <a href="https://blog.xpress.ai/">Blog</a> •
+  <a href="https://discord.com/invite/vgEg2ZtxCw">Discord</a>
+</p>
+
+<p>
+  <p align="center">
+    <a href="https://github.com/XpressAI/xircuits/blob/master/LICENSE">
+        <img alt="GitHub" src="https://img.shields.io/github/license/XpressAI/xircuits?color=brightgreen">
+    </a>
+    <a href="https://github.com/XpressAI/xircuits/releases">
+        <img alt="GitHub release" src="https://img.shields.io/github/release/XpressAI/xircuits.svg?color=yellow">
+    </a>
+    <a href="https://xircuits.io">
+        <img alt="Documentation" src="https://img.shields.io/website/http/certifai.ai.svg?color=orange">
+    </a>
+     <a>
+        <img alt="Python" src="https://img.shields.io/badge/python-3.9-blue">
+    </a>
+</p>
 
 Xircuits is a Jupyterlab-based extension that enables visual, low-code, training workflows. It allows anyone to easily create executable python code in seconds.
 
@@ -99,5 +123,13 @@ jupyter lab --watch
 ### PySpark
 ![spark submit](https://user-images.githubusercontent.com/68586800/156138662-f3181471-6433-49dd-a8c1-2f73eea14d11.png)
 
+### AutoML
+![automl](https://user-images.githubusercontent.com/68586800/160885831-50278dfd-3ad1-402c-a0f7-e233b163dbbc.gif)
 
+
+
+
+
+| **[Documentation](https://xircuits.io/docs/index)** |
+**[Dev Discord](https://discord.gg/vgEg2ZtxCw)** |
 
