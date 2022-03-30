@@ -10,16 +10,15 @@ import os
 @xai_component
 class LoadKerasModel(Component):
 
-    model_name: InArg[str] #true
-    include_top: InArg[bool] #true
-    weights:InArg[str] #"imagenet",
+    model_name: InArg[str]
+    include_top: InArg[bool] 
+    weights:InArg[str] 
     input_tensor: InArg[any]
     input_shape: InArg[any]
     pooling: InArg[any]
     classes: InArg[int]
     args: InArg[int]
 
-    #**kwargs
     model: OutArg[any]
 
     def __init__(self):
@@ -31,56 +30,26 @@ class LoadKerasModel(Component):
         self.pooling = InArg(None)
         self.classes = InArg(None)
         self.args = InArg(None)
+
         self.model = OutArg(None)
 
 
-    def execute(self, ctx) -> None:
-        model = None
-        model_name = (self.model_name.value).lower()
+    def execute(self) -> None:
 
-        if model_name == 'xception':
-            model = applications.Xception(weights='imagenet')
+        args = self.args.value if self.args.value else {}
 
-        if model_name == 'vgg16':
-            model = applications.VGG16(weights='imagenet')
-
-        if model_name == 'vgg19':
-            model = applications.VGG19(weights='imagenet')
-
-        if model_name == 'resnet50':
-            model = applications.ResNet50(weights='imagenet')
-
-        if model_name == 'resnet101':
-            model = applications.ResNet101(weights='imagenet')
-
-        if model_name == 'resnet152':
-            model = applications.ResNet152(weights='imagenet')
-
-        if model_name == 'inceptionv3':
-            model = applications.InceptionV3(weights='imagenet')
-
-        if model_name == 'mobilenet':
-            model = applications.MobileNet(weights='imagenet')
-
-        if model_name == 'mobilenetv2':
-            model = applications.MobileNetV2(weights='imagenet')
-
-        if model_name == 'densenet121':
-            model = applications.DenseNet121(weights='imagenet')
-
-        if model_name == 'densenet169':
-            model = applications.DenseNet169(weights='imagenet')
-
-        if model_name == 'densenet201':
-            model = applications.DenseNet201(weights='imagenet')
-
-        if model == None:
-            print("Keras model ", model_name, " not found.")
-
-        else:
+        try:
+            import tensorflow
+            model = getattr(tensorflow.keras.applications, self.model_name.value)(weights='imagenet', **args)
+            
             self.model.value = model
 
+        except Exception as e:
+            if self.model_name.value:
+                print(f"model_name:{e} not found!\nPlease refer to the official keras list of supported models: https://keras.io/api/applications/")
+
         self.done = True
+
 
 @xai_component
 class KerasPredict(Component):

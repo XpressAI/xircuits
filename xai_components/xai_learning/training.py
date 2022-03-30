@@ -213,7 +213,7 @@ class TrainTestSplit(Component):
 
 @xai_component(type="model")
 class Create1DInputModel(Component):
-    training_data: InArg[Tuple[np.array, np.array]]
+    training_data: InArg[any]
 
     model: OutArg[keras.Sequential]
 
@@ -244,7 +244,7 @@ class Create1DInputModel(Component):
 
 @xai_component(type="model")
 class Create2DInputModel(Component):
-    training_data: InArg[Tuple[np.array, np.array]]
+    training_data: InArg[any]
 
     model: OutArg[keras.Sequential]
     model_config: OutArg[dict]

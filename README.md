@@ -39,11 +39,9 @@ If you would like to install just the core functions, use:
 ```
 $ pip install xircuits
 ```
-
 ### Launch
 ```
 $ xircuits
-
 ```
 ### Download Examples
 ```
