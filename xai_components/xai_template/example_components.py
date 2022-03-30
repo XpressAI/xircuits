@@ -104,3 +104,15 @@ class HelloContext(Component):
         print(f"After Adding Context:\n{ctx}")
 
         self.done = True
+        
+@xai_component(color="red")
+class AddImport(Component):
+    import_str: InArg[str]
+
+    def __init__(self):
+
+        self.done = False
+
+    def execute(self, ctx) -> None:
+
+        self.done = True

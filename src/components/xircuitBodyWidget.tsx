@@ -401,6 +401,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			let current_node: any;
 			let package_name: string = "components";
 
+			const addImportNode = getNodeModelByName(nodeModels, 'AddImport');
+			if (componentName == 'AddImport') {
+				const importPortName = addImportNode['portsIn'][1].getOptions()['name']
+				const getImportPortLinks = addImportNode.getPorts()[importPortName].getLinks();
+				for (let portLink in getImportPortLinks) {
+					// Add value of import_str port for importing
+					const importLabel = getImportPortLinks[portLink].getSourcePort().getOptions()["label"];
+					pythonCode += importLabel + "\n";
+				}
+			}
+
 			if (component_exist != -1) {
 				current_node = componentList[component_exist];
 				package_name = current_node["package_name"];
