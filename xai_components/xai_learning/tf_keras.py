@@ -34,7 +34,7 @@ class LoadKerasModel(Component):
         self.model = OutArg(None)
 
 
-    def execute(self) -> None:
+    def execute(self,ctx) -> None:
 
         args = self.args.value if self.args.value else {}
 
