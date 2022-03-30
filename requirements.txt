@@ -29,7 +29,7 @@ entrypoints==0.4
 executing==0.8.3
 fonttools==4.31.2
 idna==3.3
-importlib==metadata==4.11.3
+importlib-metadata==4.11.3
 ipykernel==6.10.0
 ipython==8.2.0
 ipython-genutils==0.2.0
