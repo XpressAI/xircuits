@@ -57,7 +57,7 @@ pickleshare
 Pillow
 prometheus-client
 prompt-toolkit
-py4j.3
+py4j
 pycparser
 Pygments
 pyparsing
