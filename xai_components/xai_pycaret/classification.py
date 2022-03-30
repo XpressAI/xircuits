@@ -109,6 +109,7 @@ class SetupEnvironment(Component):
     seed : InArg[int] #You can use random_state for reproducibility.
     log_experiment:InArg[bool] #logging setup and training
     experiment_name:InArg[str] #Name of the experiment for logging.
+    use_gpu:InArg[bool]
 
     def __init__(self):
 
@@ -126,6 +127,7 @@ class SetupEnvironment(Component):
         self.seed = InArg(None)
         self.log_experiment = InArg(False)
         self.experiment_name = InArg('default')
+        self.use_gpu = InArg(False)
 
     def execute(self, ctx) -> None:
 
@@ -144,7 +146,8 @@ class SetupEnvironment(Component):
         seed = self.seed.value
         log_experiment = self.log_experiment.value
         experiment_name = self.experiment_name.value
-   
+        use_gpu = self.use_gpu.value
+
         if seed is None:
             print("Set the seed value for reproducibility.")
             
@@ -162,6 +165,7 @@ class SetupEnvironment(Component):
              session_id=seed,
              log_experiment = log_experiment,
              experiment_name = experiment_name,
+             use_gpu = use_gpu,
              silent=True)
 
         captured.show()
@@ -672,6 +676,7 @@ class Logging(Component):
         
     def execute(self, ctx) -> None:
         import subprocess
+        print("You can access the logs at localhost:5000")
         subprocess.run("mlflow ui")
 
         self.done = True
