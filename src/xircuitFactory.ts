@@ -216,7 +216,8 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.insertItem(2,'xircuits-add-revert', revertButton);
     widget.toolbar.insertItem(3,'xircuits-add-compile', compileButton);
     widget.toolbar.insertItem(4,'xircuits-add-run', runButton);
-    widget.toolbar.insertItem(5,'xircuits-add-debug', debugButton);
+    // TODO: Fix debugger
+    // widget.toolbar.insertItem(5,'xircuits-add-debug', debugButton);
     widget.toolbar.insertItem(6,'xircuits-add-lock', lockButton);
     widget.toolbar.insertItem(7,'xircuits-add-log', logButton);
     widget.toolbar.insertItem(8,'xircuits-add-test', testButton);
