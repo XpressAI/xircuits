@@ -43,7 +43,13 @@ $ pip install xircuits
 ### Launch
 ```
 $ xircuits
+
 ```
+### Download Examples
+```
+$ xircuits-examples
+```
+
 ## Development
 
 
@@ -111,25 +117,13 @@ jlpm run watch
 jupyter lab --watch
 ```
 
-
 ## Preview
 
-### Normal Workflow
-![HelloXircuits](https://user-images.githubusercontent.com/68586800/151285391-1d4f477c-4f82-44c8-8d4f-729e52f32c3e.gif)
-
 ### Machine Learning
-![XircuitKeras](https://user-images.githubusercontent.com/68586800/151285439-28a1ad93-4585-4fdb-8d73-41b5b7ba2044.gif)
+![ML example](https://user-images.githubusercontent.com/68586800/160897662-cfe31276-fe33-4400-b0a8-4f4b32263d2b.gif)
 
 ### PySpark
 ![spark submit](https://user-images.githubusercontent.com/68586800/156138662-f3181471-6433-49dd-a8c1-2f73eea14d11.png)
 
 ### AutoML
 ![automl](https://user-images.githubusercontent.com/68586800/160885831-50278dfd-3ad1-402c-a0f7-e233b163dbbc.gif)
-
-
-
-
-
-| **[Documentation](https://xircuits.io/docs/index)** |
-**[Dev Discord](https://discord.gg/vgEg2ZtxCw)** |
-
