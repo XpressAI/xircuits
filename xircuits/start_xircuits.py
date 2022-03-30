@@ -39,5 +39,9 @@ __   __  ___                _ _
     
     os.system("jupyter lab")
 
+def download_examples(argv=None):
+    request_folder("examples")
+    request_folder("Datasets")
+
 def main(argv=None):
     start_xircuits()
