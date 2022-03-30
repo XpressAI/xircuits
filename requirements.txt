@@ -65,8 +65,8 @@ testpath
 tomlkit
 tornado
 traitlets
-typing-extensions.3
-urllib3>=1.26.2
+typing-extensions
+urllib3
 wcwidth
 webencodings
 websocket-client
