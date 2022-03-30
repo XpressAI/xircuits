@@ -47,7 +47,7 @@ notebook
 numpy
 onnx
 onnx-tf
-opencv-python.64
+opencv-python
 packaging
 pandas
 pandocfilters
