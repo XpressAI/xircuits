@@ -5,7 +5,8 @@ import { ZoomCanvasAction } from '@projectstorm/react-canvas-core';
 import { CustomActionEvent } from '../commands/CustomActionEvent';
 import { JupyterFrontEnd } from '@jupyterlab/application';
 import { CustomDiagramState } from './CustomDiagramState'
-import { DefaultLinkModel } from '@projectstorm/react-diagrams';
+import { CustomLinkModel, TriangleLinkModel } from './link/CustomLinkModel';
+import { CustomLinkFactory, TriangleLinkFactory } from './link/CustomLinkFactory';
 
 export class XircuitsApplication {
 
@@ -18,9 +19,11 @@ export class XircuitsApplication {
                 this.diagramEngine = SRD.default({ registerDefaultZoomCanvasAction: false, registerDefaultDeleteItemsAction: false });
                 this.activeModel = new SRD.DiagramModel();
                 this.diagramEngine.getNodeFactories().registerFactory(new CustomNodeFactory(app));
+                this.diagramEngine.getLinkFactories().registerFactory(new CustomLinkFactory());
+                this.diagramEngine.getLinkFactories().registerFactory(new TriangleLinkFactory());
                 this.diagramEngine.getActionEventBus().registerAction(new ZoomCanvasAction({ inverseZoom: true }))
                 this.diagramEngine.getActionEventBus().registerAction(new CustomActionEvent({ app }));
-                this.diagramEngine.getStateMachine().pushState(new CustomDiagramState()); 
+                this.diagramEngine.getStateMachine().pushState(new CustomDiagramState());
 
                 let startNode = new CustomNodeModel({ name: 'Start', color: 'rgb(255,102,102)', extras: { "type": "Start" } });
                 startNode.addOutPortEnhance('▶', 'out-0');
@@ -83,12 +86,31 @@ export class XircuitsApplication {
 
                         if (link.sourcePort && link.targetPort) {
 
-                                let newLink = new DefaultLinkModel();
+                                let newLink = new CustomLinkModel();
+                                const newTriangleLink = new TriangleLinkModel();
+                                const sourceNode = tempModel.getNode(link.source);
+                                const targetNode = tempModel.getNode(link.target);
 
-                                let sourcePort = tempModel.getNode(link.source).getPortFromID(link.sourcePort);
+                                const sourcePort = sourceNode.getPortFromID(link.sourcePort);
+                                const sourcePortName = sourcePort.getOptions()['name'];
+                                const sourcePortTriangleName = 'out-0';
+                                if (sourcePortName == sourcePortTriangleName) {
+                                        if (sourceNode.getPorts()[sourcePortName].getOptions()['label'] == '▶') {
+                                                // When source port is '▶', use triangle animation link
+                                                newLink = newTriangleLink;
+                                        }
+                                }
                                 newLink.setSourcePort(sourcePort);
 
-                                let targetPort = tempModel.getNode(link.target).getPortFromID(link.targetPort);
+                                const targetPort = targetNode.getPortFromID(link.targetPort);
+                                const targetPortName = targetPort.getOptions()['name'];
+                                const targetPortTriangleName = 'in-0';
+                                if (targetPortName == targetPortTriangleName) {
+                                        if (targetNode.getPorts()[targetPortName].getOptions()['label'] == '▶') {
+                                                // When target port is '▶', use triangle animation link
+                                                newLink = newTriangleLink;
+                                        }
+                                }
                                 newLink.setTargetPort(targetPort);
 
                                 tempModel.addAll(newLink);
