@@ -180,6 +180,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const xircuitLogger = new Log(app);
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
+	const needAppend = useRef("");
 
 	const onChange = useCallback(
 		(): void => {
@@ -441,6 +442,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		}
 
+		// Reset appending values
+		needAppend.current = "";
 		pythonCode += '\n';
 
 		if (startNodeModel) {
@@ -486,21 +489,20 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 									let equalSign = ' = ';
 									let sourcePortLabelStructure;
 
-									if (port.startsWith("parameter")) {
-
-										if (sourceNodeName.startsWith("Literal")) {
-
-											if (sourceNodeType == 'string') {
-												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "'" + sourcePortLabel + "'\n";
+									// When port is 'any' type, append values if there's multiple link connected
+									if (port.includes('any')) {
+										if (needAppend.current == bindingName) {
+											switch (sourceNodeType) {
+												case "dict":
+													equalSign = ' |= '
+													break;
+												default:
+													equalSign = ' += '
+													break;
 											}
-
-											else if (sourceNodeType == 'list') {
-												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "[" + sourcePortLabel + "]" + "\n";
-											}
-
-											else if (sourceNodeType == 'tuple') {
-												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "(" + sourcePortLabel + ")" + "\n";
-											}
+										}
+										needAppend.current = bindingName;
+									}
 
 									if (port.startsWith("parameter")) {
 
