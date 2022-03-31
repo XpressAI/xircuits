@@ -80,6 +80,9 @@ export  class CustomPortModel extends DefaultPortModel  {
             console.log("port name: ", thisName);
             console.log("parameter port: ", port.getNode().getInPorts());
             if (Object.keys(port.getLinks()).length > 0){
+                if(thisName.includes("any")){
+                    return;
+                }
 		        port.getNode().getOptions().extras["borderColor"]="red";
 		        port.getNode().getOptions().extras["tip"]="Port has other link";
                 port.getNode().setSelected(true);
