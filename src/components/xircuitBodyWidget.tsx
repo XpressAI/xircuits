@@ -483,6 +483,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 									//Get the id of the node of the connected link
 									let linkSourceNodeId = allPort[port]["links"][portLink]["sourcePort"]["parent"]["options"]["id"];
+									let equalSign = ' = ';
+									let sourcePortLabelStructure;
 
 									if (port.startsWith("parameter")) {
 
@@ -500,17 +502,30 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "(" + sourcePortLabel + ")" + "\n";
 											}
 
-											else if (sourceNodeType == 'dict') {
-												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "{" + sourcePortLabel + "}" + "\n";
-											}
+									if (port.startsWith("parameter")) {
 
-											else {
-												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + sourcePortLabel + "\n";
+										if (sourceNodeName.startsWith("Literal")) {
+											switch (sourceNodeType) {
+												case "string":
+													sourcePortLabelStructure = "'" + sourcePortLabel + "'";
+													break;
+												case "list":
+													sourcePortLabelStructure = "[" + sourcePortLabel + "]";
+													break;
+												case "tuple":
+													sourcePortLabelStructure = "(" + sourcePortLabel + ")";
+													break;
+												case "dict":
+													sourcePortLabelStructure = "{" + sourcePortLabel + "}";
+													break;
+												default:
+													break;
 											}
+											pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + sourcePortLabelStructure + "\n";
+										} else if (linkSourceNodeId == sourceNodeId && !sourceNodeName.startsWith("Hyperparameter")) {
 											// Make sure the node id match between connected link and source node
 											// Skip Hyperparameter Components
-										} else if (linkSourceNodeId == sourceNodeId && !sourceNodeName.startsWith("Hyperparameter")) {
-											pythonCode += '    ' + bindingName + '.' + label + ' = ' + preBindingName + '.' + sourcePortLabel + '\n';
+											pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
 										} else {
 											sourcePortLabel = sourcePortLabel.replace(/\s+/g, "_");
 											sourcePortLabel = sourcePortLabel.toLowerCase();
@@ -518,11 +533,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 											let paramName = sourceNodeName[sourceNodeName.length - 1];
 											paramName = paramName.replace(/\s+/g, "_");
 											paramName = paramName.toLowerCase();
-											pythonCode += '    ' + bindingName + '.' + label + '.value = args.' + paramName + '\n';
+											pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + 'args.' + paramName + '\n';
 										}
 
 									} else {
-										pythonCode += '    ' + bindingName + '.' + label + ' = ' + preBindingName + '.' + sourcePortLabel + '\n';
+										pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
 									}
 								}
 							}
