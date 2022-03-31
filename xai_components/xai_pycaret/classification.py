@@ -9,7 +9,7 @@ Setup component must be called before executing any other component. It takes tw
 parameters:data and target. All the other parameters are optional.
 """
 @xai_component(color="blue")
-class SetupEnvironment(Component):
+class SetupClassification(Component):
     in_dataset: InArg[any] #Shape (n_samples, n_features), where n_samples is the number of samples and n_features is the number of features
     target: InArg[str] #Name of the target column to be passed in as a string. The target variable can be either binary or multiclass.
     train_size_fraction : InArg[float] #Proportion of the dataset to be used for training and validation. Should be between 0.0 and 1.0.
@@ -92,7 +92,7 @@ in the model library using cross validation.The output of this component is
 a score grid with average cross validated scores. 
 '''
 @xai_component(color="firebrick")
-class CompareModels(Component):
+class CompareModelsClassification(Component):
     sort_by:InArg[str] #The sort order of the score grid. 
     exclude:InArg[list] #To omit certain models from training and evaluation, pass a list containing model id in the exclude parameter.
     num_top:InArg[int] #Number of top_n models to return.
@@ -131,7 +131,7 @@ using cross validation.The output of this component is a score grid with
 CV scores by fold.
 '''
 @xai_component(color="orange")
-class CreateModel(Component):
+class CreateModelClassification(Component):
     model_id:InArg[str] #ID of an estimator available in model library or pass an untrained model object consistent with scikit-learn API
     num_fold:InArg[int] #Controls cross-validation. If None, the CV generator in the fold_strategy parameter of the setup function is used.
 
@@ -167,7 +167,7 @@ This component tunes the hyperparameters of a given model. The output of this co
 a score grid with CV scores by fold of the best selected model based on optimize parameter.
 '''
 @xai_component(color="salmon")
-class TuneModel(Component):
+class TuneModelClassification(Component):
     in_model:InArg[any] #Trained model object
     optimize:InArg[str] #Metric name to be evaluated for hyperparameter tuning.
     early_stopping_patience:InArg[int] #Maximum number of epochs to run for each sampled configuration.
@@ -231,7 +231,7 @@ This component analyzes the performance of a trained model on holdout set.
 It may require re-training the model in certain cases.
 '''
 @xai_component(color="springgreen")
-class PlotModel(Component):
+class PlotModelClassification(Component):
     in_model:InArg[any] #Trained model object
     plot_type:InArg[str] #plot name
     list_available_plots:InArg[bool] # list the available plots
@@ -280,7 +280,7 @@ class PlotModel(Component):
 This component trains a given estimator on the entire dataset including the holdout set.
 '''
 @xai_component(color='crimson')
-class FinalizeModel(Component):
+class FinalizeModelClassification(Component):
     in_model:InArg[any] #Trained model object
 
     out_finalize_model:OutArg[any] ##Trained model object
@@ -312,7 +312,7 @@ This component predicts Label and Score (probability of predicted class) using a
  When data is None, it predicts label and score on the holdout set
 '''
 @xai_component(color='darkviolet')
-class PredictModel(Component):
+class PredictModelClassification(Component):
     in_model:InArg[any] #Trained model object
     predict_dataset:InArg[any] #Shape (n_samples, n_features). All features used during training must be available in the unseen dataset.
 
@@ -347,7 +347,7 @@ This component saves the transformation pipeline and trained model object into t
  current working directory as a pickle file for later use.
 '''
 @xai_component(color='red')
-class SaveModel(Component):
+class SaveModelClassification(Component):
     in_model:InArg[any] #Trained model object
     save_path:InArg[str] #Name and saving path of the model.
     model_only:InArg[bool] #When set to True, only trained model object is saved instead of the entire pipeline.
@@ -376,7 +376,7 @@ class SaveModel(Component):
 This component loads a previously saved pipeline.
 '''
 @xai_component(color='red')
-class LoadModel(Component):
+class LoadModelClassification(Component):
     model_path:InArg[str] #Name and path of the saved model
 
     model:OutArg[any] #Trained model object
@@ -405,7 +405,7 @@ class LoadModel(Component):
 This component ensembles a given estimator. The output of this function is a score grid with CV scores by fold.
 '''
 @xai_component(color='gold')
-class EnsembleModel(Component):
+class EnsembleModelClassification(Component):
     in_model:InArg[any] #Trained model object
     method:InArg[str] #Method for ensembling base estimator. It can be ‘Bagging’ or ‘Boosting’.
     choose_better:InArg[bool] #When set to True, the returned object is always better performing. The metric used for comparison is defined by the optimize parameter.
@@ -448,7 +448,7 @@ class EnsembleModel(Component):
 This component trains a Soft Voting / Majority Rule classifier for select models passed in the top_model list. 
 '''
 @xai_component(color='greenyellow')
-class BlendModels(Component):
+class BlendModelsClassification(Component):
     top_models:InArg[any] #List of trained model objects from CompareModel component
     model_1:InArg[any] # first model to blend 
     model_2:InArg[any] # second model to blend 
@@ -504,7 +504,7 @@ This component trains a meta model over select estimators passed in the estimato
  The output of this function is a score grid with CV scores by fold
 '''
 @xai_component(color='lawngreen')
-class StackModels(Component):
+class StackModelsClassification(Component):
     top_models:InArg[any] #List of trained model objects from CompareModel component
     model_1:InArg[any] # first model to stack
     model_2:InArg[any] # first model to stack
@@ -562,8 +562,8 @@ class StackModels(Component):
 This component calibrates the probability of a given estimator using isotonic or logistic regression.
  The output of this function is a score grid with CV scores by fold. 
 '''
-@xai_component
-class CalibrateModel(Component):
+@xai_component(color='steelblue')
+class CalibrateModelClassification(Component):
     in_model:InArg[any] #Trained model object
     method:InArg[str] #The method to use for calibration. Can be ‘sigmoid’ which corresponds to Platt’s method or ‘isotonic’ which is a non-parametric approach.
     calibrate_fold:InArg[int] #Controls internal cross-validation. Can be an integer or a scikit-learn CV generator.
@@ -602,7 +602,7 @@ This component returns the best model out of all trained models in current sessi
 Metrics evaluated can be accessed using the get_metrics function.
 '''
 @xai_component
-class AutoML(Component):
+class AutoMLClassification(Component):
     optimize:InArg[str] #Metric to use for model selection. It also accepts custom metrics added using the add_metric function.
 
     best_model:OutArg[any] # best Trained Model object
