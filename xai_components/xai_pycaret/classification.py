@@ -2,99 +2,13 @@ from xai_components.base import InArg, OutArg, Component, xai_component
 from IPython.utils import capture
 
 
-"""
-This component loads sample datasets from git repository.
- List of available datasets can be checked using get_data('index')
-"""
-@xai_component
-class GetData(Component):
-    dataset: InArg[str]  #Index value of dataset.
-    save_copy: InArg[bool] #When set to true, it saves a copy in current working directory.
-    verbose: InArg[bool]  #When set to False, head of data is not displayed.
-    
-    out_dataset : OutArg[any] #Dataset
-
-    def __init__(self):
-
-        self.done = False
-        self.dataset = InArg(None)
-        self.save_copy = InArg(False)
-        self.verbose = InArg(True)
-        
-        self.out_dataset = OutArg(None)
-
-    def execute(self, ctx) -> None:
-
-        from pycaret.datasets import get_data
-
-        dataset = self.dataset.value
-        save_copy = self.save_copy.value
-        verbose = self.verbose.value
-
-        if dataset is None:
-            dataset = "index"
-            print("Please choose a dataset...")
-        
-        load_dataset = get_data(dataset = dataset, save_copy=save_copy, verbose = verbose)
-        print('Dataset shape: ' + str(load_dataset.shape))
-
-        self.out_dataset.value = load_dataset
-
-        self.done = True
-
-
-"""
-This component withheld sample from the original dataset to be used for predictions. 
-This should not be confused with a train/test split as this particular split 
-is performed to simulate a real life scenario.
-"""
-@xai_component
-class SampleTestData(Component):
-    in_dataset: InArg[any] 
-    test_fraction: InArg[float] #Fraction of testing dataset size.
-    seed : InArg[int] #You can use random_state for reproducibility.
-
-    train_val_dataset : OutArg[any] #train/val dataset for training and evaluation
-    test_Dataset: OutArg[any]  #test dataset for model prediction
-    
-
-    def __init__(self):
-
-        self.done = False
-        self.in_dataset = InArg(None)
-        self.test_fraction = InArg(0)
-        self.seed = InArg(None)
-        
-        self.train_val_dataset = OutArg(None)
-        self.test_Dataset = OutArg(None)
-
-    def execute(self, ctx) -> None:
-
-        in_dataset = self.in_dataset.value
-        test_fraction = self.test_fraction.value
-        seed = self.seed.value
-
-        if seed is None:
-            print("Set the seed value for reproducibility.")
-
-        train_val_dataset = in_dataset.sample(frac=1-test_fraction, random_state=seed)
-        test_Dataset = in_dataset.drop(train_val_dataset.index)
-
-        print('Data for Modeling: ' + str(train_val_dataset.shape))
-        print('Test Data For Predictions: ' + str(test_Dataset.shape))
-
-        self.train_val_dataset.value = train_val_dataset
-        self.test_Dataset.value = test_Dataset
-
-        self.done = True
-
 
 """
 This component initializes the training environment and creates the transformation pipeline.
 Setup component must be called before executing any other component. It takes two mandatory 
 parameters:data and target. All the other parameters are optional.
 """
-@xai_component
+@xai_component(color="blue")
 class SetupEnvironment(Component):
     in_dataset: InArg[any] #Shape (n_samples, n_features), where n_samples is the number of samples and n_features is the number of features
     target: InArg[str] #Name of the target column to be passed in as a string. The target variable can be either binary or multiclass.
@@ -177,9 +91,10 @@ This component trains and evaluates performance of all estimators available
 in the model library using cross validation.The output of this component is 
 a score grid with average cross validated scores. 
 '''
-@xai_component
+@xai_component(color="firebrick")
 class CompareModels(Component):
     sort_by:InArg[str] #The sort order of the score grid. 
+    exclude:InArg[list] #To omit certain models from training and evaluation, pass a list containing model id in the exclude parameter.
     num_top:InArg[int] #Number of top_n models to return.
 
     top_models:OutArg[any]
@@ -188,6 +103,7 @@ class CompareModels(Component):
 
         self.done = False
         self.sort_by = InArg('Accuracy')
+        self.exclude = InArg(None)
         self.num_top = InArg(1)
 
         self.top_models = OutArg(None)
@@ -197,10 +113,11 @@ class CompareModels(Component):
         from pycaret.classification import compare_models 
     
         sort_by = self.sort_by.value
+        exclude = self.exclude.value
         num_top = self.num_top.value
 
         with capture.capture_output() as captured:
-            best_model = compare_models(sort=sort_by,n_select = num_top)
+            best_model = compare_models(sort=sort_by,exclude = exclude,n_select = num_top)
         captured.show()
         print('Best '+str(num_top)+' Model:',best_model)
 
@@ -213,7 +130,7 @@ This component trains and evaluates the performance of a given estimator
 using cross validation.The output of this component is a score grid with 
 CV scores by fold.
 '''
-@xai_component
+@xai_component(color="orange")
 class CreateModel(Component):
     model_id:InArg[str] #ID of an estimator available in model library or pass an untrained model object consistent with scikit-learn API
     num_fold:InArg[int] #Controls cross-validation. If None, the CV generator in the fold_strategy parameter of the setup function is used.
@@ -246,10 +163,10 @@ class CreateModel(Component):
 
 
 '''
-This component tunes the hyperparameters of a given estimator. The output of this component is
+This component tunes the hyperparameters of a given model. The output of this component is
 a score grid with CV scores by fold of the best selected model based on optimize parameter.
 '''
-@xai_component
+@xai_component(color="salmon")
 class TuneModel(Component):
     in_model:InArg[any] #Trained model object
     optimize:InArg[str] #Metric name to be evaluated for hyperparameter tuning.
@@ -313,10 +230,11 @@ class TuneModel(Component):
 This component analyzes the performance of a trained model on holdout set. 
 It may require re-training the model in certain cases.
 '''
-@xai_component
+@xai_component(color="springgreen")
 class PlotModel(Component):
     in_model:InArg[any] #Trained model object
     plot_type:InArg[str] #plot name
+    list_available_plots:InArg[bool] # list the available plots
 
     out_model:OutArg[any]
 
@@ -325,19 +243,33 @@ class PlotModel(Component):
         self.done = False
         self.in_model = InArg(None)
         self.plot_type = InArg('auc')
+        self.list_available_plots=InArg(False)
 
         self.out_model= OutArg(None)
 
     def execute(self, ctx) -> None:
 
         from pycaret.classification import plot_model 
-    
+
+        plot = {'auc' : 'Area Under the Curve','threshold' : 'Discrimination Threshold','pr' : 'Precision Recall Curve',
+            'confusion_matrix' : 'Confusion Matrix','error' : 'Class Prediction Error','class_report' : 'Classification Report',
+            'boundary' : 'Decision Boundary','rfe' : 'Recursive Feature Selection','learning' : 'Learning Curve',
+            'manifold' : 'Manifold Learning','calibration' : 'Calibration Curve','vc' : 'Validation Curve',
+            'dimension' : 'Dimension Learning','feature' : 'Feature Importance','feature_all' : 'Feature Importance (All)',
+            'parameter' : 'Model Hyperparameter','lift' : 'Lift Curve','gain' : 'Gain Chart','tree' : 'Decision Tree','ks' : 'KS Statistic Plot'}
+
         in_model = self.in_model.value
         plot_type = self.plot_type.value
+        list_available_plots = self.list_available_plots.value
 
         with capture.capture_output() as captured:
             plot_model = plot_model(in_model, plot = plot_type)
         captured.show()
+
+        if list_available_plots is True:
+            print('List of available plots (plot Type - Plot Name):')
+            for key, value in plot.items():
+                print(key, ' - ', value)
 
         self.out_model.value = in_model
         
@@ -347,7 +279,7 @@ class PlotModel(Component):
 '''
 This component trains a given estimator on the entire dataset including the holdout set.
 '''
-@xai_component
+@xai_component(color='crimson')
 class FinalizeModel(Component):
     in_model:InArg[any] #Trained model object
 
@@ -379,7 +311,7 @@ class FinalizeModel(Component):
 This component predicts Label and Score (probability of predicted class) using a trained model.
  When data is None, it predicts label and score on the holdout set
 '''
-@xai_component
+@xai_component(color='darkviolet')
 class PredictModel(Component):
     in_model:InArg[any] #Trained model object
     predict_dataset:InArg[any] #Shape (n_samples, n_features). All features used during training must be available in the unseen dataset.
@@ -414,7 +346,7 @@ class PredictModel(Component):
 This component saves the transformation pipeline and trained model object into the
  current working directory as a pickle file for later use.
 '''
-@xai_component
+@xai_component(color='red')
 class SaveModel(Component):
     in_model:InArg[any] #Trained model object
     save_path:InArg[str] #Name and saving path of the model.
@@ -443,7 +375,7 @@ class SaveModel(Component):
 '''
 This component loads a previously saved pipeline.
 '''
-@xai_component
+@xai_component(color='red')
 class LoadModel(Component):
     model_path:InArg[str] #Name and path of the saved model
 
@@ -472,7 +404,7 @@ class LoadModel(Component):
 '''
 This component ensembles a given estimator. The output of this function is a score grid with CV scores by fold.
 '''
-@xai_component
+@xai_component(color='gold')
 class EnsembleModel(Component):
     in_model:InArg[any] #Trained model object
     method:InArg[str] #Method for ensembling base estimator. It can be ‘Bagging’ or ‘Boosting’.
@@ -515,7 +447,7 @@ class EnsembleModel(Component):
 '''
 This component trains a Soft Voting / Majority Rule classifier for select models passed in the top_model list. 
 '''
-@xai_component
+@xai_component(color='greenyellow')
 class BlendModels(Component):
     top_models:InArg[any] #List of trained model objects from CompareModel component
     model_1:InArg[any] # first model to blend 
@@ -571,7 +503,7 @@ class BlendModels(Component):
 This component trains a meta model over select estimators passed in the estimator_list parameter.
  The output of this function is a score grid with CV scores by fold
 '''
-@xai_component
+@xai_component(color='lawngreen')
 class StackModels(Component):
     top_models:InArg[any] #List of trained model objects from CompareModel component
     model_1:InArg[any] # first model to stack
@@ -664,22 +596,6 @@ class CalibrateModel(Component):
         
         self.done = True
 
-'''
-Logging all the trained models to MLflow, can access at localhost:5000
-'''
-@xai_component
-class Logging(Component):
-
-    def __init__(self):
-
-        self.done = False
-        
-    def execute(self, ctx) -> None:
-        import subprocess
-        print("You can access the logs at localhost:5000")
-        subprocess.run("mlflow ui")
-
-        self.done = True
 
 '''
 This component returns the best model out of all trained models in current session based on the optimize parameter. 
