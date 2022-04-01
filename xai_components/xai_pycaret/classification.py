@@ -20,6 +20,7 @@ class SetupClassification(Component):
     multicollinearity_threshold:InArg[float] #Threshold for correlated features. Ignored when remove_multicollinearity is not True.
     bin_numeric_features:InArg[any] #To convert numeric features into categorical,It takes a list of strings with column names that are related.
     group_features:InArg[any] #When the dataset contains features with related characteristics, group_features parameter can be used for feature extraction. It takes a list of strings with column names that are related.
+    ignore_features:InArg[list] #ignore_features param can be used to ignore features during model training. It takes a list of strings with column names that are to be ignored.
     seed : InArg[int] #You can use random_state for reproducibility.
     log_experiment:InArg[bool] #logging setup and training
     experiment_name:InArg[str] #Name of the experiment for logging.
@@ -38,6 +39,7 @@ class SetupClassification(Component):
         self.multicollinearity_threshold = InArg(0.9)
         self.bin_numeric_features = InArg(None)
         self.group_features = InArg(None)
+        self.ignore_features = InArg(None) 
         self.seed = InArg(None)
         self.log_experiment = InArg(False)
         self.experiment_name = InArg('default')
@@ -57,6 +59,7 @@ class SetupClassification(Component):
         multicollinearity_threshold = self.multicollinearity_threshold.value
         bin_numeric_features = self.bin_numeric_features.value
         group_features = self.group_features.value
+        ignore_features = self.ignore_features.value
         seed = self.seed.value
         log_experiment = self.log_experiment.value
         experiment_name = self.experiment_name.value
@@ -76,6 +79,7 @@ class SetupClassification(Component):
              multicollinearity_threshold = multicollinearity_threshold,
              bin_numeric_features = bin_numeric_features,
              group_features = group_features,
+             ignore_features = ignore_features,
              session_id=seed,
              log_experiment = log_experiment,
              experiment_name = experiment_name,
