@@ -10,3 +10,4 @@ requests
 jinja2
 y-py
 pygithub
+tqdm
