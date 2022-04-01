@@ -2,7 +2,7 @@ ipykernel
 packaging
 tornado
 jupyterlab
-jupyter-core
+jupyter-core==4.7.0
 jupyterlab-server
 jupyter_server
 notebook_shim
