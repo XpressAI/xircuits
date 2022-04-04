@@ -40,7 +40,7 @@ export class TrayItemPanel extends React.Component<TrayItemWidgetProps> {
 		let node: CustomNodeModel;
 		if (current_node != undefined) {
 			if (current_node.header == "GENERAL") {
-				node = GeneralComponentLibrary({ name: current_node["task"], color: current_node["color"], type: current_node["type"] });
+				node = GeneralComponentLibrary({ model: current_node });
 			} else {
 				node = AdvancedComponentLibrary({ model: current_node });
 			}

@@ -1667,7 +1667,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 						if (current_node != undefined) {
 							if (current_node.header == "GENERAL") {
-								node = GeneralComponentLibrary({ name: data.name, color: current_node["color"], type: data.type });
+								node = GeneralComponentLibrary({ model: current_node });
 							} else if (current_node.header == "ADVANCED") {
 								node = AdvancedComponentLibrary({ model: current_node });
 							}
