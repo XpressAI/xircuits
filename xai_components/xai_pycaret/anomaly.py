@@ -138,11 +138,11 @@ a score grid with CV scores by fold of the best selected model based on optimize
 @xai_component(color="salmon")
 class TuneModelAnomaly(Component):
     model_id:InArg[str] #Trained model object
-    supervised_target:InArg[str] 
-    supervised_type:InArg[str]
-    supervised_estimator:InArg[str]
-    method:InArg[str]
-    optimize:InArg[str]
+    supervised_target:InArg[str] #Name of the target column containing labels.
+    supervised_type:InArg[str] #Type of task. ‘classification’ or ‘regression’. Automatically inferred when None.
+    supervised_estimator:InArg[str] # the classification or regression model
+    method:InArg[str] #
+    optimize:InArg[str] #the classification or regression optimizer
     custom_grid:InArg[any] #To define custom search space for hyperparameters, pass a dictionary with parameter name and values to be iterated.
 
     out_tuned_model:OutArg[any]
@@ -187,7 +187,6 @@ class TuneModelAnomaly(Component):
         self.out_tuned_model.value = tuned_model
         
         self.done = True
-
 
 
 
