@@ -24,6 +24,7 @@ import { XircuitsApplication } from './XircuitsApp';
 import ComponentsPanel from '../context-menu/ComponentsPanel';
 import { GeneralComponentLibrary } from '../tray_library/GeneralComponentLib';
 import { NodeActionsPanel } from '../context-menu/NodeActionsPanel';
+import { AdvancedComponentLibrary } from '../tray_library/AdvanceComponentLib';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -1668,35 +1669,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							if (current_node.header == "GENERAL") {
 								node = GeneralComponentLibrary({ name: data.name, color: current_node["color"], type: data.type });
 							} else if (current_node.header == "ADVANCED") {
-								node = new CustomNodeModel({ name: data.name, color: data.color, extras: { "type": data.type, "path": data.path } });
-								node.addInPortEnhance('▶', 'in-0');
-								node.addOutPortEnhance('▶', 'out-0');
-
-								// TODO: Get rid of the remapping by using compatible type names everywhere
-								let type_name_remappings = {
-									"bool": "boolean",
-									"str": "string"
-								}
-
-								current_node["variables"].forEach(variable => {
-									let name = variable["name"];
-									let type = type_name_remappings[variable["type"]] || variable["type"];
-
-									switch (variable["kind"]) {
-										case "InCompArg":
-											node.addInPortEnhance(`★${name}`, `parameter-${type}-${name}`);
-											break;
-										case "InArg":
-											node.addInPortEnhance(name, `parameter-${type}-${name}`);
-											break;
-										case "OutArg":
-											node.addOutPortEnhance(name, `parameter-out-${type}-${name}`);
-											break;
-										default:
-											console.warn("Unknown variable kind for variable", variable)
-											break;
-									}
-								})
+								node = AdvancedComponentLibrary({ model: current_node });
 							}
 						}
 

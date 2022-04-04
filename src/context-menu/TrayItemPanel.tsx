@@ -7,6 +7,7 @@ import { DefaultLinkModel, DiagramEngine } from '@projectstorm/react-diagrams';
 import { CustomNodeModel } from '../components/CustomNodeModel';
 import { GeneralComponentLibrary } from '../tray_library/GeneralComponentLib';
 import { commandIDs } from '../components/xircuitBodyWidget';
+import { AdvancedComponentLibrary } from '../tray_library/AdvanceComponentLib';
 
 export interface TrayItemWidgetProps {
 	currentNode: any;
@@ -41,34 +42,7 @@ export class TrayItemPanel extends React.Component<TrayItemWidgetProps> {
 			if (current_node.header == "GENERAL") {
 				node = GeneralComponentLibrary({ name: current_node["task"], color: current_node["color"], type: current_node["type"] });
 			} else {
-				node = new CustomNodeModel({ name: current_node["task"], color: current_node["color"], extras: { "type": current_node["type"], "path": current_node["file_path"] } });
-				node.addInPortEnhance('▶', 'in-0');
-				node.addOutPortEnhance('▶', 'out-0');
-
-				let type_name_remappings = {
-					"bool": "boolean",
-					"str": "string"
-				}
-
-				current_node["variables"].forEach(variable => {
-					let name = variable["name"];
-					let type = type_name_remappings[variable["type"]] || variable["type"];
-
-					switch (variable["kind"]) {
-						case "InCompArg":
-							node.addInPortEnhance(`★${name}`, `parameter-${type}-${name}`);
-							break;
-						case "InArg":
-							node.addInPortEnhance(name, `parameter-${type}-${name}`);
-							break;
-						case "OutArg":
-							node.addOutPortEnhance(name, `parameter-out-${type}-${name}`);
-							break;
-						default:
-							console.warn("Unknown variable kind for variable", variable)
-							break;
-					}
-				})
+				node = AdvancedComponentLibrary({ model: current_node });
 			}
 		}
 		return node;
