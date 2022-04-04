@@ -50,7 +50,7 @@ export class TrayItemPanel extends React.Component<TrayItemWidgetProps> {
 
 	addNode(node) {
 		const nodePosition = this.props.nodePosition;
-		this.props.app.commands.execute(commandIDs.addNode, { node, nodePosition });
+		this.props.app.commands.execute(commandIDs.addNodeGivenPosition, { node, nodePosition });
 	}
 
 	connectLink(node) {
@@ -60,7 +60,7 @@ export class TrayItemPanel extends React.Component<TrayItemWidgetProps> {
 		const targetNode = node;
 		const sourceLink = this.props.linkData as any;
 		const isParameterLink = this.props.isParameter;
-		this.props.app.commands.execute(commandIDs.connectNode, { targetNode, sourceLink, isParameterLink  });
+		this.props.app.commands.execute(commandIDs.connectNodeByLink, { targetNode, sourceLink, isParameterLink  });
 	}
 
 	hidePanelEvent() {
