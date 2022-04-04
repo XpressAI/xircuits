@@ -31,16 +31,21 @@ export function addNodeActionCommands(
         );
     }
 
+    function selectedNode() {
+        const widget = tracker.currentWidget?.content as XPipePanel;
+        const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
+        let node;
+        selectedEntities.map((x) => node = x);
+        return node ?? null;
+    }
+
     //Add command to open canvas's node its script
     commands.addCommand(commandIDs.openScript, {
-        execute:  () =>{
+        execute: () => {
             const widget = tracker.currentWidget?.content as XPipePanel;
-            const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
-            _.forEach(selectedEntities, (model) => {
-                const filePath = model.extras.path
+            const node = selectedNode();
                 app.commands.execute(commandIDs.openDocManager, {
-                    path: filePath
-                });
+                path: node.extras.path
             });
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         }
@@ -48,7 +53,7 @@ export function addNodeActionCommands(
 
     //Add command to undo
     commands.addCommand(commandIDs.undo, {
-        execute:  () =>{
+        execute: () => {
             const widget = tracker.currentWidget?.content as XPipePanel;
             const model = widget.context.model.sharedModel;
 
@@ -134,14 +139,11 @@ export function addNodeActionCommands(
         execute: editLiteral,
         label: trans.__('Edit'),
         isEnabled: () => {
-            const widget = tracker.currentWidget?.content as XPipePanel;
-            const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
             let isNodeSelected: boolean;
-            _.forEach(selectedEntities, (model) => {
-                if (model.getOptions()["name"].startsWith("Literal")) {
+            const node = selectedNode();
+            if (node.getOptions()["name"].startsWith("Literal")) {
                     isNodeSelected = true;
                 }
-            });
             return isNodeSelected ?? false;
         }
     });
@@ -293,7 +295,7 @@ export function addNodeActionCommands(
                 modelInstance.setPosition(oldX + 10, oldY + 10)
                 model.addNode(modelInstance);
                 // Remove any empty/default node
-                if(modelInstance.getOptions()['type'] == 'default') model.removeNode(modelInstance)
+                if (modelInstance.getOptions()['type'] == 'default') model.removeNode(modelInstance)
                 modelInstance.setSelected(true);
             });
 
@@ -316,10 +318,9 @@ export function addNodeActionCommands(
         const widget = tracker.currentWidget?.content as XPipePanel;
 
         if (widget) {
-            const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
-            _.forEach(selectedEntities, (model) => {
+            const selected_node = selectedNode();
 
-                if (!model.getOptions()["name"].startsWith("Literal")) {
+            if (!selected_node.getOptions()["name"].startsWith("Literal")) {
                     showDialog({
                         title: 'Only Literal Node can be edited',
                         buttons: [Dialog.warnButton({ label: 'OK' })]
@@ -329,7 +330,7 @@ export function addNodeActionCommands(
 
                 let node = null;
                 let links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
-                let oldValue = model.getPorts()["out-0"].getOptions()["label"]
+            let oldValue = selected_node.getPorts()["out-0"].getOptions()["label"]
 
                 // Prompt the user to enter new value
                 let theResponse = window.prompt('Enter New Value (Without Quotes):', oldValue);
@@ -337,11 +338,11 @@ export function addNodeActionCommands(
                     // When Cancel is clicked or no input provided, just return
                     return
                 }
-                node = new CustomNodeModel({ name: model["name"], color: model["color"], extras: { "type": model["extras"]["type"] } });
+            node = new CustomNodeModel({ name: selected_node["name"], color: selected_node["color"], extras: { "type": selected_node["extras"]["type"] } });
                 node.addOutPortEnhance(theResponse, 'out-0');
 
                 // Set new node to old node position
-                let position = model.getPosition();
+            let position = selected_node.getPosition();
                 node.setPosition(position);
                 widget.xircuitsApp.getDiagramEngine().getModel().addNode(node);
 
@@ -359,7 +360,7 @@ export function addNodeActionCommands(
 
                         // This to make sure the new link came from the same literal node as previous link
                         let sourceLinkNodeId = link["sourcePort"].getParent().getID()
-                        let sourceNodeId = model.getOptions()["id"]
+                    let sourceNodeId = selected_node.getOptions()["id"]
                         if (sourceLinkNodeId == sourceNodeId) {
                             newLink.setTargetPort(link["targetPort"]);
                         }
@@ -369,8 +370,7 @@ export function addNodeActionCommands(
                 }
 
                 // Remove old node
-                model.remove();
-            });
+            selected_node.remove();
         }
     }
 
@@ -378,14 +378,13 @@ export function addNodeActionCommands(
         const widget = tracker.currentWidget?.content as XPipePanel;
 
         if (widget) {
-            const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
-            _.forEach(selectedEntities, (model) => {
-                if (model.getOptions()["name"] !== "undefined") {
-                    let modelName = model.getOptions()["name"];
+            const node = selectedNode();
+            if (node.getOptions()["name"] !== "undefined") {
+                let modelName = node.getOptions()["name"];
                     const errorMsg = `${modelName} node cannot be deleted!`
                     if (modelName !== 'Start' && modelName !== 'Finish') {
-                        if (!model.isLocked()) {
-                            model.remove()
+                    if (!node.isLocked()) {
+                        node.remove()
                         } else {
                             showDialog({
                                 title: 'Locked Node',
@@ -402,7 +401,6 @@ export function addNodeActionCommands(
                         });
                     }
                 }
-            });
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         }
     }
