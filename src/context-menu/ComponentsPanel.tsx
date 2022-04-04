@@ -133,8 +133,8 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
     }
 
     const fetchComponentList = async () => {
-        // get the component list by sending the jupyterlab frontend and base path
-        const response_1 = await ComponentList(props.lab.serviceManager);
+        // get the component list
+        const response_1 = await ComponentList();
 
         // get the header from the components
         const response_2 = await fetchComponent(response_1);
