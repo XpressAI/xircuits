@@ -110,7 +110,7 @@ class AddImport(Component):
     import_str: InArg[str]
 
     def __init__(self):
-
+        self.import_str = InArg.empty()
         self.done = False
 
     def execute(self, ctx) -> None:
