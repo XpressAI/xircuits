@@ -53,7 +53,7 @@ class SetupRegression(Component):
 
     def execute(self, ctx) -> None:
 
-        from pycaret.regression import setup
+        from pycaret.regression import setup , models
 
         in_dataset = self.in_dataset.value
         target = self.target.value
