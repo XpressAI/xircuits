@@ -521,6 +521,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 													sourcePortLabelStructure = "{" + sourcePortLabel + "}";
 													break;
 												default:
+													sourcePortLabelStructure = sourcePortLabel;
 													break;
 											}
 											pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + sourcePortLabelStructure + "\n";
