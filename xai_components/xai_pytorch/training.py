@@ -17,8 +17,8 @@ import torch.optim as optim
 
 @xai_component
 class ConvertTorchModelToOnnx(Component):
-    model: InArg[UNet]
-    device_name: InArg[UNet]
+    model: InArg[any] #UNet
+    device_name: InArg[any] #UNet
     
     input_model_path: InArg[str]
     output_model_path: InArg[str]
@@ -59,8 +59,8 @@ class ConvertTorchModelToOnnx(Component):
 
 @xai_component(type="model")
 class CreateUnetModel(Component):
-    train_data: InArg[torch.utils.data.DataLoader]
-    test_data: InArg[torch.utils.data.DataLoader]
+    train_data: InArg[any] #torch.utils.data.DataLoader
+    test_data: InArg[any] #torch.utils.data.DataLoader
     
     learning_rate: InArg[float]
     earlystop: InArg[int]
@@ -112,7 +112,7 @@ class CreateUnetModel(Component):
 
 @xai_component(type="split")
 class ImageTrainTestSplit(Component):
-    input_str: InArg[Tuple[str,str]]
+    input_str: InArg[any] #Tuple[str,str]
     split_ratio: InArg[float]
     random_seed: InArg[int]
     image_size: InArg[tuple]
@@ -197,8 +197,8 @@ class ImageTrainTestSplit(Component):
 
 @xai_component
 class PrepareUnetDataLoader(Component):
-    train_image_folder: InArg[Tuple[str, str]]
-    test_image_folder: InArg[Tuple[str, str]]
+    train_image_folder: InArg[any] #Tuple[str, str]
+    test_image_folder: InArg[any] #Tuple[str, str]
 
     training_image_size: InArg[tuple]
     batch_size: InArg[int]
@@ -253,11 +253,11 @@ class PrepareUnetDataLoader(Component):
 
 @xai_component
 class TrainUnet(Component):
-    train_data: InArg[torch.utils.data.DataLoader]
-    test_data: InArg[torch.utils.data.DataLoader]
-    model: InArg[UNet]
-    optimizer: InArg[optim.Adam]
-    early_stopping: InArg[EarlyStopping]
+    train_data: InArg[any] #torch.utils.data.DataLoader
+    test_data: InArg[any] #torch.utils.data.DataLoader
+    model: InArg[any] #UNet
+    optimizer: InArg[any] #optim.Adam
+    early_stopping: InArg[any] #EarlyStopping
     
     gpu: InArg[int]
     no_epochs: InArg[int]
