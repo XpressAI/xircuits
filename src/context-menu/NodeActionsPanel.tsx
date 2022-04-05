@@ -47,9 +47,9 @@ export class NodeActionsPanel extends React.Component<NodeActionsPanelProps> {
 				</div>
 				<div className="option"
 					onClick={() => {
-						this.props.app.commands.execute(commandIDs.renderSelectedNode)
+						this.props.app.commands.execute(commandIDs.reloadNode)
 					}}>
-					Render Node
+					Reload Node
 				</div>
 				<div className="option"
 					onClick={() => {

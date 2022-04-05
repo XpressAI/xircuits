@@ -102,7 +102,7 @@ export const commandIDs = {
 	cutNode: 'Xircuit-editor:cut-node',
 	copyNode: 'Xircuit-editor:copy-node',
 	pasteNode: 'Xircuit-editor:paste-node',
-	renderSelectedNode: 'Xircuit-editor:render-node',
+	reloadNode: 'Xircuit-editor:reload-node',
 	editNode: 'Xircuit-editor:edit-node',
 	deleteNode: 'Xircuit-editor:delete-node',
 	addNodeGivenPosition: 'Xircuit-editor:add-node', 

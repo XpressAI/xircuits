@@ -164,8 +164,8 @@ export function addNodeActionCommands(
         }
     });
 
-    //Add command to render selected node
-    commands.addCommand(commandIDs.renderSelectedNode, {
+    //Add command to reload selected node
+    commands.addCommand(commandIDs.reloadNode, {
         execute: async () => {
             const widget = tracker.currentWidget?.content as XPipePanel;
             const selected_node = selectedNode();
@@ -224,7 +224,7 @@ export function addNodeActionCommands(
             // Remove old node
             selected_node.remove();
         },
-        label: trans.__('Render node')
+        label: trans.__('Reload node')
     });
 
     //Add command to add node given position
