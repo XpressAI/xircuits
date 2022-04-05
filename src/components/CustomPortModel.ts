@@ -73,16 +73,15 @@ export  class CustomPortModel extends DefaultPortModel  {
         let thisNode = this.getNode();
         let thisNodeModelType = thisNode.getOptions()["extras"]["type"];
         let thisName = port.getName();
-
+        let thisPortType = thisName.split('-')[1];
 
         if (this.isParameterNode(thisNodeModelType) == true){
             // if the port you are trying to link ready has other links
             console.log("port name: ", thisName);
             console.log("parameter port: ", port.getNode().getInPorts());
             if (Object.keys(port.getLinks()).length > 0){
-                if(thisName.includes("any")){
-                    return;
-                }
+                // When port and link is the same type, just return
+                if(thisNodeModelType == thisPortType) return;
 		        port.getNode().getOptions().extras["borderColor"]="red";
 		        port.getNode().getOptions().extras["tip"]="Port has other link";
                 port.getNode().setSelected(true);
