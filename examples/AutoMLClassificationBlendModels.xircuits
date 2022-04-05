@@ -1075,6 +1075,7 @@
                 "0a6af97c-a55f-445d-85da-19c7a47da2d5": {
                     "id": "0a6af97c-a55f-445d-85da-19c7a47da2d5",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "Start",
                         "borderColor": "rgb(0,192,255)"
@@ -1120,6 +1121,7 @@
                 "f366a0b6-8c17-477b-ad82-803cc1eb4994": {
                     "id": "f366a0b6-8c17-477b-ad82-803cc1eb4994",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "Finish",
                         "borderColor": "rgb(0,192,255)"
@@ -1165,6 +1167,7 @@
                 "c5a68abb-c825-45d0-b79c-109481e4527d": {
                     "id": "c5a68abb-c825-45d0-b79c-109481e4527d",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -1197,6 +1200,7 @@
                 "c9b8602c-ea38-462f-9cb4-faf47ec739b2": {
                     "id": "c9b8602c-ea38-462f-9cb4-faf47ec739b2",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "float",
                         "borderColor": "rgb(0,192,255)"
@@ -1229,6 +1233,7 @@
                 "1bbe5762-a5da-4fc8-9313-a90d74a2786d": {
                     "id": "1bbe5762-a5da-4fc8-9313-a90d74a2786d",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "int",
                         "borderColor": "rgb(0,192,255)"
@@ -1261,6 +1266,7 @@
                 "32012999-7fc2-4076-92ec-e85260bbfc03": {
                     "id": "32012999-7fc2-4076-92ec-e85260bbfc03",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "boolean",
                         "borderColor": "rgb(0,192,255)"
@@ -1296,6 +1302,7 @@
                 "1dada0ef-d65e-4f25-8683-91b4e9eba7b7": {
                     "id": "1dada0ef-d65e-4f25-8683-91b4e9eba7b7",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -1328,6 +1335,7 @@
                 "0d16e508-4e43-4500-b355-1fe4444cc8ad": {
                     "id": "0d16e508-4e43-4500-b355-1fe4444cc8ad",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "float",
                         "borderColor": "rgb(0,192,255)"
@@ -1360,6 +1368,7 @@
                 "1ee05a2b-f384-4618-b4a3-708abf8dd425": {
                     "id": "1ee05a2b-f384-4618-b4a3-708abf8dd425",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "float",
                         "borderColor": "rgb(0,192,255)"
@@ -1392,6 +1401,7 @@
                 "095cdc77-ddd8-42b2-81e1-bb364b78676e": {
                     "id": "095cdc77-ddd8-42b2-81e1-bb364b78676e",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "list",
                         "borderColor": "rgb(0,192,255)"
@@ -1424,6 +1434,7 @@
                 "e6bd4986-5b6d-4bb3-b185-bb8204d9d447": {
                     "id": "e6bd4986-5b6d-4bb3-b185-bb8204d9d447",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "list",
                         "borderColor": "rgb(0,192,255)"
@@ -1456,6 +1467,7 @@
                 "26094f45-baf7-4252-90f0-a75b10b64e24": {
                     "id": "26094f45-baf7-4252-90f0-a75b10b64e24",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "int",
                         "borderColor": "rgb(0,192,255)"
@@ -1488,6 +1500,7 @@
                 "dd565503-e0af-4ead-88d4-9b616d0cc5ae": {
                     "id": "dd565503-e0af-4ead-88d4-9b616d0cc5ae",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "int",
                         "borderColor": "rgb(0,192,255)"
@@ -1520,6 +1533,7 @@
                 "9fbd82b6-af0e-4e0c-86a8-d8d4094a4c8d": {
                     "id": "9fbd82b6-af0e-4e0c-86a8-d8d4094a4c8d",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -1552,6 +1566,7 @@
                 "8dcdb287-32f4-45f1-a051-a1400a946af8": {
                     "id": "8dcdb287-32f4-45f1-a051-a1400a946af8",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -1584,6 +1599,7 @@
                 "d8c857dc-be0b-462f-989c-bea9e3d32efc": {
                     "id": "d8c857dc-be0b-462f-989c-bea9e3d32efc",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pycaret/classification.py",
@@ -1633,6 +1649,7 @@
                 "9afa02a7-425d-4f14-b249-6b9196b04610": {
                     "id": "9afa02a7-425d-4f14-b249-6b9196b04610",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "boolean",
                         "borderColor": "rgb(0,192,255)"
@@ -1665,6 +1682,7 @@
                 "11c0d76c-5bf5-4b5d-b05e-da34638808f0": {
                     "id": "11c0d76c-5bf5-4b5d-b05e-da34638808f0",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -1697,6 +1715,7 @@
                 "66723eca-4ccd-4ba1-b841-0cb3cb293a22": {
                     "id": "66723eca-4ccd-4ba1-b841-0cb3cb293a22",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -1729,6 +1748,7 @@
                 "e16c998d-0a9d-4a29-9cb1-1a41ef3858b3": {
                     "id": "e16c998d-0a9d-4a29-9cb1-1a41ef3858b3",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "boolean",
                         "borderColor": "rgb(0,192,255)"
@@ -1761,6 +1781,7 @@
                 "a7211595-316b-49f3-8dd4-690394636d03": {
                     "id": "a7211595-316b-49f3-8dd4-690394636d03",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -1793,6 +1814,7 @@
                 "82c916ba-3b47-41c4-872f-5df6afdfd5cb": {
                     "id": "82c916ba-3b47-41c4-872f-5df6afdfd5cb",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -1825,6 +1847,7 @@
                 "a1be0948-1c21-44b8-ab5e-964df17c18c3": {
                     "id": "a1be0948-1c21-44b8-ab5e-964df17c18c3",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -1857,6 +1880,7 @@
                 "2f1816bd-31de-4664-9911-71c64ee4cac7": {
                     "id": "2f1816bd-31de-4664-9911-71c64ee4cac7",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pycaret/utils.py",
@@ -1962,6 +1986,7 @@
                 "1c38461a-cd69-4abf-ae88-97b12978b71b": {
                     "id": "1c38461a-cd69-4abf-ae88-97b12978b71b",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pycaret/utils.py",
