@@ -175,12 +175,12 @@ class FlattenImageData(Component):
 
 @xai_component(type="split")
 class TrainTestSplit(Component):
-    dataset: InArg[Tuple[np.array, np.array]]
+    dataset: InArg[any] #Tuple[np.array, np.array]
     train_split: InArg[float]
     random_state: InArg[int]
     shuffle: InArg[bool]
-    train: OutArg[Tuple[np.array, np.array]]
-    test: OutArg[Tuple[np.array, np.array]]
+    train: OutArg[Tuple[np.array, np.array]] #Tuple[np.array, np.array]
+    test: OutArg[Tuple[np.array, np.array]] #Tuple[np.array, np.array]
 
     def __init__(self):
         self.done = False
@@ -297,8 +297,8 @@ class Create2DInputModel(Component):
 
 @xai_component(type="train")
 class TrainImageClassifier(Component):
-    model: InArg[keras.Sequential]
-    training_data: InArg[Tuple[np.array, np.array]]
+    model: InArg[any] #keras.Sequential
+    training_data: InArg[any] #Tuple[np.array, np.array]
     training_epochs: InArg[int]
 
     trained_model: OutArg[keras.Sequential]
@@ -337,8 +337,8 @@ class TrainImageClassifier(Component):
 
 @xai_component(type="eval")
 class EvaluateAccuracy(Component):
-    model: InArg[keras.Sequential]
-    eval_dataset: InArg[Tuple[np.array, np.array]]
+    model: InArg[any] #keras.Sequential
+    eval_dataset: InArg[any] #Tuple[np.array, np.array]
 
     metrics: OutArg[Dict[str, str]]
 
