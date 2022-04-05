@@ -82,8 +82,10 @@ export  class CustomPortModel extends DefaultPortModel  {
             if (Object.keys(port.getLinks()).length > 0){
                 // When port and link is the same type, just return
                 if(thisNodeModelType == thisPortType) return;
+                // When port is 'any' type, just return
+                if(thisName.includes("any")) return;
 		        port.getNode().getOptions().extras["borderColor"]="red";
-		        port.getNode().getOptions().extras["tip"]="Port has other link";
+		        port.getNode().getOptions().extras["tip"]=`Port only allow multiple link ${thisPortType} type`;
                 port.getNode().setSelected(true);
                 return false;
             }
