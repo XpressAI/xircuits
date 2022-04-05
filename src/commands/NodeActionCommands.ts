@@ -190,49 +190,55 @@ export function addNodeActionCommands(
             // Get all connected links
             let links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
 
-            // Update the links
-            for (let linkID in links) {
+            try {
+                // Update the links
+                for (let linkID in links) {
 
-                let link = links[linkID];
+                    let link = links[linkID];
 
-                if (link["sourcePort"] && link["targetPort"]) {
+                    if (link["sourcePort"] && link["targetPort"]) {
 
-                    const oldSourcePortLink = link['sourcePort'];
-                    const oldTargetPortLink = link['targetPort'];
-                    const sourcePortName = oldSourcePortLink.options.name;
-                    const targetPortName = oldTargetPortLink.options.name;
-                    const selectedNodeId = selected_node.getOptions()["id"];
-                    let newLink = new DefaultLinkModel();
+                        const oldSourcePortLink = link['sourcePort'];
+                        const oldTargetPortLink = link['targetPort'];
+                        const sourcePortName = oldSourcePortLink.options.name;
+                        const targetPortName = oldTargetPortLink.options.name;
+                        const selectedNodeId = selected_node.getOptions()["id"];
+                        let newLink = new DefaultLinkModel();
 
-                    // When old link came from outPorts of selected node
-                    if (oldSourcePortLink.parent.name == node.name) {
-                        // Set rendered node's outPorts as sourcePort
-                        let sourcePort = node.getPorts()[sourcePortName];
-                        newLink.setSourcePort(sourcePort);
+                        // When old link came from outPorts of selected node
+                        if (oldSourcePortLink.parent.name == node.name) {
+                            // Set rendered node's outPorts as sourcePort
+                            let sourcePort = node.getPorts()[sourcePortName];
+                            newLink.setSourcePort(sourcePort);
 
-                        // This to make sure the target new link came from the same node as previous link
-                        let sourceLinkNodeId = oldSourcePortLink.getParent().getID();
-                        if (sourceLinkNodeId == selectedNodeId) {
-                            newLink.setTargetPort(oldTargetPortLink);
+                            // This to make sure the target new link came from the same node as previous link
+                            let sourceLinkNodeId = oldSourcePortLink.getParent().getID();
+                            if (sourceLinkNodeId == selectedNodeId) {
+                                newLink.setTargetPort(oldTargetPortLink);
+                            }
                         }
-                    }
-                    // When old link came from inPorts of selected node
-                    else if (oldTargetPortLink.parent.name == node.name) {
-                        // This to make sure the source new link came from the same node as previous link
-                        let targetLinkNodeId = oldTargetPortLink.getParent().getID();
-                        if (targetLinkNodeId == selectedNodeId) {
-                            newLink.setSourcePort(oldSourcePortLink);
-                        }
+                        // When old link go to inPorts of selected node
+                        else if (oldTargetPortLink.parent.name == node.name) {
+                            // This to make sure the source new link came from the same node as previous link
+                            let targetLinkNodeId = oldTargetPortLink.getParent().getID();
+                            if (targetLinkNodeId == selectedNodeId) {
+                                newLink.setSourcePort(oldSourcePortLink);
+                            }
 
-                        // Set rendered node's inPorts as targetPort
-                        let targetPort = node.getPorts()[targetPortName];
-                        newLink.setTargetPort(targetPort);
+                            // Set rendered node's inPorts as targetPort
+                            let targetPort = node.getPorts()[targetPortName];
+                            newLink.setTargetPort(targetPort);
+                        }
+                        widget.xircuitsApp.getDiagramEngine().getModel().addLink(newLink);
                     }
-                    widget.xircuitsApp.getDiagramEngine().getModel().addLink(newLink);
                 }
+            } catch{
+                // No-op
             }
-            // Remove old node
-            selected_node.remove();
+            finally {
+                // Remove old node
+                selected_node.remove();
+            }
         },
         label: trans.__('Reload node')
     });
