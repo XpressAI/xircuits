@@ -98,6 +98,64 @@ class CreateModelNLP(Component):
 
 
 '''
+This component tunes the hyperparameters of a given model. The output of this component is
+a score grid with CV scores by fold of the best selected model based on optimize parameter.
+'''
+@xai_component(color="salmon")
+class TuneModelNLP(Component):
+    model_id:InArg[str] #Trained model object
+    multi_core:InArg[bool] # True would utilize all CPU cores to parallelize and speed up model training. Ignored when model is not ‘lda’.
+    supervised_target:InArg[str] #Name of the target column containing labels.
+    supervised_type:InArg[str] #Type of task. ‘classification’ or ‘regression’. Automatically inferred when None.
+    supervised_estimator:InArg[str] # the classification or regression model
+    optimize:InArg[str] #the classification or regression optimizer 
+    custom_grid:InArg[any] #To define custom search space for hyperparameters, pass a dictionary with parameter name and values to be iterated.
+
+    out_tuned_model:OutArg[any]
+
+    def __init__(self):
+
+        self.done = False
+        self.model_id = InArg(None)
+        self.multi_core = InArg(False)
+        self.supervised_target = InArg(None)
+        self.supervised_type = InArg(None)
+        self.supervised_estimator = InArg(None)
+        self.optimize = InArg(None)
+        self.custom_grid = InArg(None) 
+
+        self.out_tuned_model = OutArg(None)
+
+    def execute(self, ctx) -> None:
+
+        from pycaret.nlp import tune_model 
+        from IPython.display import display
+        import numpy as np
+
+        model_id = self.model_id.value
+        multi_core = self.multi_core.value
+        supervised_target = self.supervised_target.value
+        supervised_type = self.supervised_type.value
+        supervised_estimator = self.supervised_estimator.value
+        optimize = self.optimize.value
+        custom_grid = self.custom_grid.value
+
+        with capture.capture_output() as captured:
+            tuned_model = tune_model(model = model_id,
+                                    multi_core = multi_core,
+                                    supervised_target = supervised_target,
+                                    estimator = supervised_estimator,
+                                    optimize = optimize,
+                                    custom_grid = custom_grid)
+        captured.show()
+
+        self.out_tuned_model.value = tuned_model
+        
+        self.done = True
+
+
+
+'''
 This function assigns topic labels to the dataset for a given model.
 '''
 @xai_component(color="firebrick")
@@ -193,14 +251,12 @@ This component saves the transformation pipeline and trained model object into t
 class SaveModelNLP(Component):
     in_model:InArg[any] #Trained model object
     save_path:InArg[str] #Name and saving path of the model.
-    model_only:InArg[bool] #When set to True, only trained model object is saved instead of the entire pipeline.
 
     def __init__(self):
 
         self.done = False
         self.in_model = InArg(None)
         self.save_path = InArg(None)
-        self.model_only = InArg(False)
 
     def execute(self, ctx) -> None:
 
@@ -208,9 +264,8 @@ class SaveModelNLP(Component):
     
         in_model = self.in_model.value
         save_path = self.save_path.value
-        model_only = self.model_only.value
 
-        save_model(in_model,model_name=save_path,model_only=model_only)
+        save_model(in_model,model_name=save_path)
         
         self.done = True
 
