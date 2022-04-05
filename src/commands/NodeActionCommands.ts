@@ -169,6 +169,16 @@ export function addNodeActionCommands(
         execute: async () => {
             const widget = tracker.currentWidget?.content as XPipePanel;
             const selected_node = selectedNode();
+
+            // When a General Component is selected, just return
+            if (selected_node.name.startsWith("Literal") || selected_node.name.startsWith("Hyperparameter")) {
+                showDialog({
+                    title: `${selected_node.name} cannot be reloaded`,
+                    buttons: [Dialog.warnButton({ label: 'OK' })]
+                })
+                return
+            }
+
             const current_node = await fetchNodeByName(selected_node.name)
             const node = AdvancedComponentLibrary({ model: current_node });
             const nodePosition = selected_node.position;
