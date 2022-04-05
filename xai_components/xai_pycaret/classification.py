@@ -47,7 +47,7 @@ class SetupClassification(Component):
 
     def execute(self, ctx) -> None:
 
-        from pycaret.classification import setup
+        from pycaret.classification import setup , models
 
         in_dataset = self.in_dataset.value
         target = self.target.value
@@ -87,6 +87,9 @@ class SetupClassification(Component):
              silent=True)
 
         captured.show()
+
+        print("List of the Available Classification Models: ")
+        print(models())
         
         self.done = True
 

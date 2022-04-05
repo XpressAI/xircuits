@@ -133,3 +133,4 @@ dmypy.json
 node_modules/
 *.bundle.*
 labextension/
+mlruns/

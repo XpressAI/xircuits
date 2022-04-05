@@ -53,7 +53,7 @@ class SetupRegression(Component):
 
     def execute(self, ctx) -> None:
 
-        from pycaret.regression import setup
+        from pycaret.regression import setup , models
 
         in_dataset = self.in_dataset.value
         target = self.target.value
@@ -99,9 +99,11 @@ class SetupRegression(Component):
              experiment_name = experiment_name,
              use_gpu = use_gpu,
              silent=True)
-
         captured.show()
-        
+
+        print("List of the Available Regression models: ")
+        print(models())
+
         self.done = True
 
 
@@ -212,7 +214,6 @@ class TuneModelRegression(Component):
 
         from pycaret.regression import tune_model 
         from IPython.display import display
-        import numpy as np
 
         in_model = self.in_model.value
         optimize = self.optimize.value
@@ -244,7 +245,9 @@ class TuneModelRegression(Component):
         
         self.done = True
 
-
+'''
+This function analyzes the performance of a trained model.
+'''
 @xai_component(color="springgreen")
 class PlotModelRegression(Component):
     in_model:InArg[any] #Trained model object
