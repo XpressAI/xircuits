@@ -442,8 +442,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		}
 
-		// Reset appending values
-		needAppend.current = "";
 		pythonCode += '\n';
 
 		if (startNodeModel) {
@@ -458,6 +456,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					let bindingName = 'c_' + ++j;
 					let currentNodeModel = getNodeModelById(nodeModels, targetNodeId);
 					let allPort = currentNodeModel.getPorts();
+					// Reset appending values
+					needAppend.current = "";
+
 					for (let port in allPort) {
 
 						let portIn = allPort[port].getOptions().alignment == 'left';
