@@ -1,2 +1,3 @@
-pandas==1.3.5
+Cython
+gensim==3.8.2
 pycaret
