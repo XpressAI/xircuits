@@ -514,8 +514,8 @@ This component trains a meta model over select estimators passed in the estimato
 class StackModelsClassification(Component):
     top_models:InArg[any] #List of trained model objects from CompareModel component
     model_1:InArg[any] # first model to stack
-    model_2:InArg[any] # first model to stack
-    model_3:InArg[any] # first model to stack
+    model_2:InArg[any] # second model to stack
+    model_3:InArg[any] # third model to stack
     meta_model:InArg[any] #When None, Logistic Regression is trained as a meta model.
     method:InArg[str] #When set to ‘auto’, it will invoke, for each estimator, ‘predict_proba’, ‘decision_function’ or ‘predict’ in that order. 
     choose_better:InArg[bool] #When set to True, the returned object is always better performing. The metric used for comparison is defined by the optimize parameter.
