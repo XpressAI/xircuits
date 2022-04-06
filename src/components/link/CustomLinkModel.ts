@@ -1,5 +1,5 @@
 import { DefaultLinkModel } from '@projectstorm/react-diagrams';
-import { CustomPortModel } from '../CustomPortModel';
+import { CustomPortModel } from '../port/CustomPortModel';
 
 // Custom link
 export class CustomLinkModel extends DefaultLinkModel {

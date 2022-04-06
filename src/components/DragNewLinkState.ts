@@ -7,7 +7,7 @@ import {
 } from '@projectstorm/react-canvas-core';
 import { DiagramEngine, LinkModel } from '@projectstorm/react-diagrams';
 import { MouseEvent } from 'react';
-import { CustomPortModel } from './CustomPortModel';
+import { CustomPortModel } from './port/CustomPortModel';
 
 export interface DragNewLinkStateOptions {
 	/**

@@ -1,6 +1,6 @@
 import { DefaultNodeModel } from '@projectstorm/react-diagrams';
 import { BaseModelOptions, DeserializeEvent} from '@projectstorm/react-canvas-core';
-import {CustomPortModel} from "./CustomPortModel";
+import {CustomPortModel} from "./port/CustomPortModel";
 
 
 export interface CustomNodeModelOptions extends BaseModelOptions {
