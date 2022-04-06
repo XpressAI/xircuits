@@ -2293,10 +2293,9 @@
                 "54a12ee1-580f-40e0-88e1-522fc5a6e4cb": {
                     "id": "54a12ee1-580f-40e0-88e1-522fc5a6e4cb",
                     "type": "custom-node",
-                    "selected": false,
                     "extras": {
                         "type": "debug",
-                        "path": "xai_components/xai_pycaret/utils.py",
+                        "path": "xai_components/xai_pycaret/classification.py",
                         "borderColor": "rgb(0,192,255)"
                     },
                     "x": 1188.6408391162702,

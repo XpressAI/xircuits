@@ -7,7 +7,7 @@ Setup function must be called before executing any other function.
 It takes one mandatory parameter: data. All the other parameters are optional.
 """
 @xai_component(color="blue")
-class SetupAnomaly(Component):
+class SetupClustering(Component):
     in_dataset:InArg[any] #Shape (n_samples, n_features), where n_samples is the number of samples and n_features is the number of features
     preprocess:InArg[bool] # When set to False, no transformations are applied, Data must be ready for modeling (no missing values, no dates, categorical data encoding), when preprocess is set to False. 
     normalize:InArg[bool] #When set to True, it transforms the numeric features by scaling them to a given range. 
@@ -47,7 +47,7 @@ class SetupAnomaly(Component):
 
     def execute(self, ctx) -> None:
 
-        from pycaret.anomaly import setup , models
+        from pycaret.clustering import setup , models
 
         in_dataset = self.in_dataset.value
         preprocess = self.preprocess.value
@@ -90,7 +90,7 @@ class SetupAnomaly(Component):
 
         captured.show()
         
-        print("List of the Available Anomaly Detection models: ")
+        print("List of the Available Clustering models: ")
         print(models())
         
         self.done = True
@@ -101,9 +101,9 @@ This function trains a given model from the model library. All available
 models can be accessed using the models function.
 '''
 @xai_component(color="orange")
-class CreateModelAnomaly(Component):
+class CreateModelClustering(Component):
     model_id:InArg[str] #ID of an model available in the model library or pass an untrained model object consistent with scikit-learn API.
-    fraction:InArg[float] #The amount of contamination of the data set, i.e. the proportion of outliers in the data set. Used when fitting to define the threshold on the decision function.
+    num_clusters:InArg[int] #The amount of contamination of the data set, i.e. the proportion of outliers in the data set. Used when fitting to define the threshold on the decision function.
 
     out_created_model:OutArg[any] #Trained Model object
 
@@ -111,19 +111,19 @@ class CreateModelAnomaly(Component):
 
         self.done = False
         self.model_id = InArg('knn')
-        self.fraction = InArg(0.05)
+        self.num_clusters = InArg(4)
 
         self.out_created_model= OutArg(None)
 
     def execute(self, ctx) -> None:
 
-        from pycaret.anomaly import create_model 
+        from pycaret.clustering import create_model 
     
         model_id = self.model_id.value
-        fraction = self.fraction.value
+        num_clusters = self.num_clusters.value
 
         with capture.capture_output() as captured:
-            created_model = create_model(model = model_id, fraction = fraction)
+            created_model = create_model(model = model_id, num_clusters = num_clusters)
         captured.show()
         print(created_model)
 
@@ -141,8 +141,7 @@ class TuneModelAnomaly(Component):
     supervised_target:InArg[str] #Name of the target column containing labels.
     supervised_type:InArg[str] #Type of task. ‘classification’ or ‘regression’. Automatically inferred when None.
     supervised_estimator:InArg[str] # the classification or regression model
-    method:InArg[str] #
-    optimize:InArg[str] #the classification or regression optimizer
+    optimize:InArg[str] #the classification or regression optimizer 
     custom_grid:InArg[any] #To define custom search space for hyperparameters, pass a dictionary with parameter name and values to be iterated.
 
     out_tuned_model:OutArg[any]
@@ -154,11 +153,10 @@ class TuneModelAnomaly(Component):
         self.supervised_target = InArg(None)
         self.supervised_type = InArg(None)
         self.supervised_estimator = InArg(None)
-        self.method = InArg('drop')
         self.optimize = InArg(None)
         self.custom_grid = InArg(None) 
 
-        self.out_tuned_model= OutArg(None)
+        self.out_tuned_model = OutArg(None)
 
     def execute(self, ctx) -> None:
 
@@ -170,7 +168,6 @@ class TuneModelAnomaly(Component):
         supervised_target = self.supervised_target.value
         supervised_type = self.supervised_type.value
         supervised_estimator = self.supervised_estimator.value
-        method = self.method.value
         optimize = self.optimize.value
         custom_grid = self.custom_grid.value
 
@@ -179,7 +176,6 @@ class TuneModelAnomaly(Component):
                                     supervised_target = supervised_target,
                                     supervised_type = supervised_type,
                                     supervised_estimator = supervised_estimator,
-                                    method = method,
                                     optimize = optimize,
                                     custom_grid = custom_grid)
         captured.show()
@@ -188,14 +184,11 @@ class TuneModelAnomaly(Component):
         
         self.done = True
 
-
-
 '''
-This function assigns anomaly labels to the dataset for a given model.
-(1 = outlier, 0 = inlier).
+This function assigns cluster labels to the dataset for a given model.
 '''
 @xai_component(color="firebrick")
-class AssignModelAnomaly(Component):
+class AssignModelClustering(Component):
     in_model:InArg[any] #Trained Model Object
     
     out_model:OutArg[any] #Trained Model Object
@@ -208,7 +201,7 @@ class AssignModelAnomaly(Component):
 
     def execute(self, ctx) -> None:
 
-        from pycaret.anomaly import assign_model
+        from pycaret.clustering import assign_model
     
         in_model = self.in_model.value
 
@@ -221,11 +214,12 @@ class AssignModelAnomaly(Component):
 
         self.done = True
 
+
 '''
-This component generates anomaly labels on using a trained model.
+This function generates cluster labels using a trained model.
 '''
 @xai_component(color='darkviolet')
-class PredictModelAnomaly(Component):
+class PredictModelClustering(Component):
     in_model:InArg[any] #Trained model object
     predict_dataset:InArg[any] #Shape (n_samples, n_features) where n_samples is the number of samples and n_features is the number of features.
 
@@ -241,7 +235,7 @@ class PredictModelAnomaly(Component):
 
     def execute(self, ctx) -> None:
 
-        from pycaret.anomaly import predict_model 
+        from pycaret.clustering import predict_model 
     
         in_model = self.in_model.value
         predict_dataset = self.predict_dataset.value
@@ -256,13 +250,15 @@ class PredictModelAnomaly(Component):
         self.done = True
 
 
+
 '''
 This function analyzes the performance of a trained model.
 '''
 @xai_component(color="springgreen")
-class PlotModelAnomaly(Component):
+class PlotModelClustering(Component):
     in_model:InArg[any] #Trained model object
     plot_type:InArg[str] #plot name
+    feature:InArg[str] #Feature to be evaluated when plot = ‘distribution’. When plot type is ‘cluster’ or ‘tsne’ feature column is used as a hoverover tooltip and/or label when the label param is set to True. When the plot type is ‘cluster’ or ‘tsne’ and feature is None, first column of the dataset is used.
     list_available_plots:InArg[bool] # list the available plots
 
     out_model:OutArg[any]
@@ -271,23 +267,30 @@ class PlotModelAnomaly(Component):
 
         self.done = False
         self.in_model = InArg(None)
-        self.plot_type = InArg('tsne')
+        self.plot_type = InArg('cluster')
+        self.feature = InArg(None)
         self.list_available_plots=InArg(False)
 
         self.out_model= OutArg(None)
 
     def execute(self, ctx) -> None:
 
-        from pycaret.anomaly import plot_model 
+        from pycaret.clustering import plot_model 
     
-        plot={'tsne' : 't-SNE (3d) Dimension Plot','umap' : 'UMAP Dimensionality Plot'}
+        plot={'cluster' : 'Cluster PCA Plot (2d)',
+            'tsne' : 'Cluster TSnE (3d)',
+            'elbow' : 'Elbow Plot',
+            'silhouette' : 'Silhouette Plot',
+            'distance' : 'Distance Plot',
+            'distribution' : 'Distribution Plot'}
         
         in_model = self.in_model.value
         plot_type = self.plot_type.value
+        feature = self.feature.value
         list_available_plots = self.list_available_plots.value
 
         with capture.capture_output() as captured:
-            plot_model = plot_model(in_model, plot = plot_type)
+            plot_model = plot_model(in_model, plot = plot_type,feature = feature)
         captured.show()
 
         if list_available_plots is True:
@@ -305,7 +308,7 @@ This component saves the transformation pipeline and trained model object into t
  current working directory as a pickle file for later use.
 '''
 @xai_component(color='red')
-class SaveModelAnomaly(Component):
+class SaveModelClustering(Component):
     in_model:InArg[any] #Trained model object
     save_path:InArg[str] #Name and saving path of the model.
     model_only:InArg[bool] #When set to True, only trained model object is saved instead of the entire pipeline.
@@ -319,7 +322,7 @@ class SaveModelAnomaly(Component):
 
     def execute(self, ctx) -> None:
 
-        from pycaret.anomaly import save_model 
+        from pycaret.clustering import save_model 
     
         in_model = self.in_model.value
         save_path = self.save_path.value
@@ -334,7 +337,7 @@ class SaveModelAnomaly(Component):
 This component loads a previously saved pipeline.
 '''
 @xai_component(color='red')
-class LoadModelAnomaly(Component):
+class LoadModelClustering(Component):
     model_path:InArg[str] #Name and path of the saved model
 
     model:OutArg[any] #Trained model object
@@ -348,7 +351,7 @@ class LoadModelAnomaly(Component):
         
     def execute(self, ctx) -> None:
 
-        from pycaret.anomaly import load_model 
+        from pycaret.clustering import load_model 
     
         model_path = self.model_path.value
 
