@@ -489,9 +489,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 									let equalSign = ' = ';
 									let sourcePortLabelStructure;
 
-									// When port is 'any' type, append values if there's multiple link connected
-									if (port.includes('any')) {
-										if (needAppend.current == bindingName) {
+									// When port is 'any','string', 'list' and 'dict' type 
+									// append values if there's multiple link connected
+									if (port.includes('any') ||
+										port.includes('string') ||
+										port.includes('list') ||
+										port.includes('dict')
+									) {
+										if (needAppend.current == label) {
 											switch (sourceNodeType) {
 												case "dict":
 													equalSign = ' |= '
@@ -501,7 +506,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 													break;
 											}
 										}
-										needAppend.current = bindingName;
+										needAppend.current = label;
 									}
 
 									if (port.startsWith("parameter")) {
