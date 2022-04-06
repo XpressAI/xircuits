@@ -133,8 +133,8 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
     }
 
     const fetchComponentList = async () => {
-        // get the component list by sending the jupyterlab frontend and base path
-        const response_1 = await ComponentList(props.lab.serviceManager);
+        // get the component list
+        const response_1 = await ComponentList();
 
         // get the header from the components
         const response_2 = await fetchComponent(response_1);
@@ -169,7 +169,7 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
         <Body>
             <Content>
                 <TrayPanel>
-                    <div onBlur={focusInput}>
+                    <div>
                         <p className='title-panel'>Add Component</p>
                         <div className="search-input-panel" >
                             <input id='add-component-input' type="text" name="" value={searchTerm} placeholder="SEARCH" className="search-input__text-input-panel" autoFocus onChange={handleOnChange} />
@@ -195,7 +195,7 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
                             })
                         }
                     </div>
-                    <Accordion allowZeroExpanded>
+                    <Accordion allowZeroExpanded onBlur={focusInput}>
                         {
                             category.filter((val) => {
                                 if (searchTerm == "") {

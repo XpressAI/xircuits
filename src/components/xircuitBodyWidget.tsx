@@ -24,6 +24,7 @@ import { XircuitsApplication } from './XircuitsApp';
 import ComponentsPanel from '../context-menu/ComponentsPanel';
 import { GeneralComponentLibrary } from '../tray_library/GeneralComponentLib';
 import { NodeActionsPanel } from '../context-menu/NodeActionsPanel';
+import { AdvancedComponentLibrary } from '../tray_library/AdvanceComponentLib';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -101,10 +102,11 @@ export const commandIDs = {
 	cutNode: 'Xircuit-editor:cut-node',
 	copyNode: 'Xircuit-editor:copy-node',
 	pasteNode: 'Xircuit-editor:paste-node',
+	reloadNode: 'Xircuit-editor:reload-node',
 	editNode: 'Xircuit-editor:edit-node',
 	deleteNode: 'Xircuit-editor:delete-node',
-	addNode: 'Xircuit-editor:add-node', 
-	connectNode: 'Xircuit-editor:connect-node', 
+	addNodeGivenPosition: 'Xircuit-editor:add-node', 
+	connectNodeByLink: 'Xircuit-editor:connect-node', 
 	createArbitraryFile: 'Xircuit-editor:create-arbitrary-file',
 	openDebugger: 'Xircuit-debugger:open',
 	breakpointXircuit: 'Xircuit-editor:breakpoint-node',
@@ -400,6 +402,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			let component_exist = component_task.indexOf(componentName);
 			let current_node: any;
 			let package_name: string = "components";
+
+			const addImportNode = getNodeModelByName(nodeModels, 'AddImport');
+			if (componentName == 'AddImport') {
+				const importPortName = addImportNode['portsIn'][1].getOptions()['name']
+				const getImportPortLinks = addImportNode.getPorts()[importPortName].getLinks();
+				for (let portLink in getImportPortLinks) {
+					// Add value of import_str port for importing
+					const importLabel = getImportPortLinks[portLink].getSourcePort().getOptions()["label"];
+					pythonCode += importLabel + "\n";
+				}
+			}
 
 			if (component_exist != -1) {
 				current_node = componentList[component_exist];
@@ -1666,37 +1679,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 						if (current_node != undefined) {
 							if (current_node.header == "GENERAL") {
-								node = GeneralComponentLibrary({ name: data.name, color: current_node["color"], type: data.type });
+								node = GeneralComponentLibrary({ model: current_node });
 							} else if (current_node.header == "ADVANCED") {
-								node = new CustomNodeModel({ name: data.name, color: data.color, extras: { "type": data.type, "path": data.path } });
-								node.addInPortEnhance('▶', 'in-0');
-								node.addOutPortEnhance('▶', 'out-0');
-
-								// TODO: Get rid of the remapping by using compatible type names everywhere
-								let type_name_remappings = {
-									"bool": "boolean",
-									"str": "string"
-								}
-
-								current_node["variables"].forEach(variable => {
-									let name = variable["name"];
-									let type = type_name_remappings[variable["type"]] || variable["type"];
-
-									switch (variable["kind"]) {
-										case "InCompArg":
-											node.addInPortEnhance(`★${name}`, `parameter-${type}-${name}`);
-											break;
-										case "InArg":
-											node.addInPortEnhance(name, `parameter-${type}-${name}`);
-											break;
-										case "OutArg":
-											node.addOutPortEnhance(name, `parameter-out-${type}-${name}`);
-											break;
-										default:
-											console.warn("Unknown variable kind for variable", variable)
-											break;
-									}
-								})
+								node = AdvancedComponentLibrary({ model: current_node });
 							}
 						}
 
