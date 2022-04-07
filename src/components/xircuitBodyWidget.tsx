@@ -503,10 +503,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 									let equalSign = ' = ';
 									let sourcePortLabelStructure;
 
-									// When port is 'any','string', 'list' and 'dict' type 
+									// When port is 'string', 'list' and 'dict' type 
 									// append values if there's multiple link connected
-									if (port.includes('any') ||
-										port.includes('string') ||
+									if (port.includes('string') ||
 										port.includes('list') ||
 										port.includes('dict')
 									) {
