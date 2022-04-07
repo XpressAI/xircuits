@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as _ from 'lodash';
 import { DiagramEngine } from '@projectstorm/react-diagrams-core';
-import { DefaultNodeModel ,DefaultPortLabel} from '@projectstorm/react-diagrams';
+import { DefaultNodeModel } from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from 'react-image-gallery';
@@ -11,6 +11,7 @@ import 'krc-pagination/styles.css';
 import Toggle from 'react-toggle'
 import { JupyterFrontEnd } from '@jupyterlab/application';
 import { commandIDs } from './xircuitBodyWidget';
+import { CustomPortLabel } from './port/CustomPortLabel';
 
 
 var S;
@@ -75,7 +76,7 @@ export interface DefaultNodeProps {
 export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
 
     generatePort = (port) => {
-        return <DefaultPortLabel engine={this.props.engine} port={port} key={port.getID()} />;
+        return <CustomPortLabel engine={this.props.engine} port={port} key={port.getID()} node={this.props.node} />;
     };
     element:Object;
     state = {

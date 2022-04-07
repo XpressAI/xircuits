@@ -27,6 +27,8 @@
     </a>
 </p>
 
+![frontpage](https://user-images.githubusercontent.com/68586800/160965807-ba0fb65d-3912-4155-96fd-010ae082830b.gif)
+
 Xircuits is a Jupyterlab-based extension that enables visual, low-code, training workflows. It allows anyone to easily create executable python code in seconds.
 
 
