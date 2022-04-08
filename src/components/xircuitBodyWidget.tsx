@@ -182,6 +182,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const xircuitLogger = new Log(app);
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
+	const needAppend = useRef("");
 
 	const onChange = useCallback(
 		(): void => {
@@ -468,6 +469,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					let bindingName = 'c_' + ++j;
 					let currentNodeModel = getNodeModelById(nodeModels, targetNodeId);
 					let allPort = currentNodeModel.getPorts();
+					// Reset appending values
+					needAppend.current = "";
+
 					for (let port in allPort) {
 
 						let portIn = allPort[port].getOptions().alignment == 'left';
@@ -496,34 +500,53 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 									//Get the id of the node of the connected link
 									let linkSourceNodeId = allPort[port]["links"][portLink]["sourcePort"]["parent"]["options"]["id"];
+									let equalSign = ' = ';
+									let sourcePortLabelStructure;
+
+									// When port is 'string', 'list' and 'dict' type 
+									// append values if there's multiple link connected
+									if (port.includes('string') ||
+										port.includes('list') ||
+										port.includes('dict')
+									) {
+										if (needAppend.current == label) {
+											switch (sourceNodeType) {
+												case "dict":
+													equalSign = ' |= '
+													break;
+												default:
+													equalSign = ' += '
+													break;
+											}
+										}
+										needAppend.current = label;
+									}
 
 									if (port.startsWith("parameter")) {
 
 										if (sourceNodeName.startsWith("Literal")) {
-
-											if (sourceNodeType == 'string') {
-												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "'" + sourcePortLabel + "'\n";
+											switch (sourceNodeType) {
+												case "string":
+													sourcePortLabelStructure = "'" + sourcePortLabel + "'";
+													break;
+												case "list":
+													sourcePortLabelStructure = "[" + sourcePortLabel + "]";
+													break;
+												case "tuple":
+													sourcePortLabelStructure = "(" + sourcePortLabel + ")";
+													break;
+												case "dict":
+													sourcePortLabelStructure = "{" + sourcePortLabel + "}";
+													break;
+												default:
+													sourcePortLabelStructure = sourcePortLabel;
+													break;
 											}
-
-											else if (sourceNodeType == 'list') {
-												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "[" + sourcePortLabel + "]" + "\n";
-											}
-
-											else if (sourceNodeType == 'tuple') {
-												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "(" + sourcePortLabel + ")" + "\n";
-											}
-
-											else if (sourceNodeType == 'dict') {
-												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + "{" + sourcePortLabel + "}" + "\n";
-											}
-
-											else {
-												pythonCode += '    ' + bindingName + '.' + label + '.value = ' + sourcePortLabel + "\n";
-											}
+											pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + sourcePortLabelStructure + "\n";
+										} else if (linkSourceNodeId == sourceNodeId && !sourceNodeName.startsWith("Hyperparameter")) {
 											// Make sure the node id match between connected link and source node
 											// Skip Hyperparameter Components
-										} else if (linkSourceNodeId == sourceNodeId && !sourceNodeName.startsWith("Hyperparameter")) {
-											pythonCode += '    ' + bindingName + '.' + label + ' = ' + preBindingName + '.' + sourcePortLabel + '\n';
+											pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
 										} else {
 											sourcePortLabel = sourcePortLabel.replace(/\s+/g, "_");
 											sourcePortLabel = sourcePortLabel.toLowerCase();
@@ -531,11 +554,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 											let paramName = sourceNodeName[sourceNodeName.length - 1];
 											paramName = paramName.replace(/\s+/g, "_");
 											paramName = paramName.toLowerCase();
-											pythonCode += '    ' + bindingName + '.' + label + '.value = args.' + paramName + '\n';
+											pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + 'args.' + paramName + '\n';
 										}
 
 									} else {
-										pythonCode += '    ' + bindingName + '.' + label + ' = ' + preBindingName + '.' + sourcePortLabel + '\n';
+										pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
 									}
 								}
 							}
