@@ -250,38 +250,47 @@ class Augmentation(Component):
 @xai_component
 class LoadTFModel(Component):
 
-    model_name: InCompArg[str]
-    include_top: InCompArg[bool] 
-    input_shape: InCompArg[tuple]
+    model_name:InCompArg[str]
+    model_function_name:InCompArg[str]
+    include_top:InCompArg[bool] 
+    input_shape:InCompArg[tuple]
     weights:InArg[str] 
-    input_tensor: InArg[any]
-    pooling: InArg[any]
-    classes: InArg[int]
-    args: InArg[dict]
+    input_tensor:InArg[any]
+    pooling:InArg[any]
+    classes:InArg[int]
+    args:InArg[dict]
+    pre_processing:InArg[bool]
+    model_summary:InArg[bool]
 
 
     def __init__(self):
         self.done = False
-        self.model_name = InArg(None)
-        self.include_top = InArg(True)
+        self.model_name = InCompArg(None)
+        self.model_function_name=InCompArg(None)
+        self.include_top = InCompArg(True)
         self.weights = InArg('imagenet')
         self.input_tensor = InArg(None)
-        self.input_shape = InArg(None)
+        self.input_shape = InCompArg(None)
         self.pooling = InArg(None)
         self.classes = InArg(1000)
+        self.pre_processing = InArg(True)
         self.args = InArg({})
+        self.model_summary = InArg(False) 
 
 
     def execute(self,ctx) -> None:
 
         model_name = self.model_name.value 
+        model_function_name = self.model_function_name.value
         include_top = self.include_top.value 
         weights = self.weights.value 
         input_tensor = self.input_tensor.value
         input_shape = self.input_shape.value
         pooling = self.pooling.value 
         classes = self.classes.value 
+        pre_processing = self.pre_processing.value
         args = self.args.value
+        model_summary = self.model_summary.value
 
         try:
             base_model = getattr(tf.keras.applications,model_name)(include_top = include_top,
@@ -291,11 +300,205 @@ class LoadTFModel(Component):
                                                                         pooling = pooling,
                                                                         classes = classes,
                                                                         **args)
-            
             ctx.update({'base_model':base_model})
 
+            if model_summary is True:
+                base_model.summary()
+
+            if pre_processing is True:
+                preprocess = 'preprocess_input'
+                preprocess_input = getattr(tf.keras.applications,model_function_name)
+                preprocess_input = getattr(preprocess_input,preprocess)
+                print("processssss",preprocess_input)
+                ctx.update({'preprocess_input':preprocess_input})
+
         except Exception as e:
-            if self.model_name.value:
+            if model_name:
                 print(f"model_name:{e} not found!\nPlease refer to the official keras list of supported models: https://www.tensorflow.org/api_docs/python/tf/keras/applications")
 
+        ctx.update({'shape':input_shape})
+
+        self.done = True
+
+
+
+@xai_component(color='red')
+class BinaryClassifierHead(Component):
+    verbose:InArg[bool]
+    def __init__(self):
+        
+        self.done = False
+        self.verbose = InArg(False)
+
+    def execute(self, ctx) -> None:
+        
+        global_average_layer = tf.keras.layers.GlobalAveragePooling2D()
+        prediction_layer = tf.keras.layers.Dense(1)
+
+        ctx.update({'global_average_layer':global_average_layer,
+                    'prediction_layer':prediction_layer})
+
+        if self.verbose.value is True:
+            Train_dataset=ctx['training_dataset']
+            image_batch, label_batch = next(iter(Train_dataset))
+            base_model = ctx['base_model']
+            feature_batch = base_model(image_batch)
+            print(f"\nFeature Extraction Model's Output Shape:{feature_batch.shape}\n")
+            feature_batch_average = global_average_layer(feature_batch)
+            print(f"Feature Average Pooling (2D) layer's Output Shape:{feature_batch_average.shape}\n")
+            prediction_batch = prediction_layer(feature_batch_average)
+            print(f"prediction layer's Output Shape:{prediction_batch.shape}\n")
+
+        self.done = True
+
+
+@xai_component(color='red')
+class MulticlassClassifierHead(Component):
+    num_classes:InCompArg[int]
+    verbose:InArg[bool]
+
+    def __init__(self):
+        self.done = False
+        self.num_classes = InCompArg(None)
+        self.verbose = InArg(False)
+        
+    def execute(self, ctx) -> None:
+        
+        num_classes = self.num_classes.value
+        global_average_layer = tf.keras.layers.GlobalAveragePooling2D()
+        prediction_layer = tf.keras.layers.Dense(num_classes)
+
+        ctx.update({'global_average_layer':global_average_layer,
+                    'prediction_layer':prediction_layer})
+
+        if self.verbose.value is True:
+            Train_dataset=ctx['training_dataset']
+            image_batch, label_batch = next(iter(Train_dataset))
+            base_model = ctx['base_model']
+            feature_batch = base_model(image_batch)
+            print(f"\nFeature Extraction Model's Output Shape:{feature_batch.shape}\n")
+            feature_batch_average = global_average_layer(feature_batch)
+            print(f"Feature Average Pooling (2D) layer's Output Shape:{feature_batch_average.shape}\n")
+            prediction_batch = prediction_layer(feature_batch_average)
+            print(f"prediction layer's Output Shape:{prediction_batch.shape}\n")
+
+        self.done = True
+
+
+@xai_component(color='red')
+class BuildModel(Component):
+    augmentation:InArg[bool]
+    preprocess_input:InArg[bool]
+    dropout_rate:InArg[float]
+
+    model:OutArg[any]
+
+    def __init__(self):
+        self.done = False
+        self.augmentation = InArg(False)
+        self.preprocess_input = InArg(False)
+        self.dropout_rate = InArg(None)
+
+        self.model = OutArg(None)
+
+    def execute(self, ctx) -> None:
+        
+        augmentation = self.augmentation.value
+        preprocess_input = self.preprocess_input.value
+        dropout_rate = self.dropout_rate.value
+        
+        augmentation_layer = None
+        preprocess_layer = None
+
+        input_shape = ctx['shape']
+
+        if augmentation is True:
+                try:
+                    augmentation_layer = ctx['augmentation']
+                except: pass
+        if preprocess_input is True:
+            try:
+                preprocess_layer = ctx['preprocess_input']
+            except: pass
+
+        base_model = ctx['base_model']
+        global_average_layer = ctx['global_average_layer']
+        prediction_layer = ctx['prediction_layer']
+
+        inputs = tf.keras.Input(shape=input_shape)
+        
+        if (augmentation_layer is not None) & (preprocess_layer is not None):
+            x = augmentation_layer(inputs)
+            x = preprocess_layer(x)
+            x = base_model(x, training=False)
+        elif preprocess_layer is not None:
+            x = preprocess_layer(inputs)
+            x = base_model(x, training=False)
+        else:
+            x = base_model(inputs, training=False)
+            
+        x = global_average_layer(x)
+
+        if dropout_rate is not None:
+            x = tf.keras.layers.Dropout(dropout_rate)(x)
+
+        outputs = prediction_layer(x)
+        model = tf.keras.Model(inputs, outputs)
+        model.summary()
+        self.model.value = model
+
+        self.done = True
+
+
+@xai_component(color='red')
+class CompileModel(Component):
+    built_model:InCompArg[any]
+    optimizer:InArg[str]
+    loss:InArg[str]
+    metrics:InArg[list]
+    learning_rate:InArg[float]
+
+    compiled_model:OutArg[any]
+
+    def __init__(self):
+        
+        self.done = False
+        self.built_model = InCompArg(None)
+        self.optimizer = InArg(None)
+        self.loss = InArg(None)
+        self.metrics = InArg('accuracy')
+        self.learning_rate = InArg(0.0001)
+
+        self.compiled_model = OutArg(any)
+
+    def execute(self, ctx) -> None:
+        
+        model = self.built_model.value
+        optimizer = self.optimizer.value    
+        loss = self.loss.value
+        metrics = self.metrics.value
+        learning_rate = self.learning_rate.value
+
+        getattr(model,'compile')(optimizer = getattr(tf.keras.optimizers,optimizer)(learning_rate=learning_rate),
+                                loss = getattr(tf.keras.losses,loss)(from_logits=True),
+                                metrics = metrics )
+
+        self.compiled_model.value = model 
+        self.done = True
+
+
+@xai_component(color='red')
+class EvaluateModel(Component):
+    compiled_model:InCompArg[any]
+
+    def __init__(self):
+        
+        self.done = False
+        self.compiled_model = InCompArg(None)
+    def execute(self, ctx) -> None:
+        model = self.compiled_model.value 
+        validation_dataset = ctx['validation_dataset']
+        loss0, accuracy0 = model.evaluate(validation_dataset)
+        print("initial loss: {:.2f}".format(loss0))
+        print("initial accuracy: {:.2f}".format(accuracy0))
         self.done = True
