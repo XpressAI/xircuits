@@ -1,6 +1,6 @@
 from tqdm import tqdm
 import os
-from urllib import request
+from urllib import request, parse
 
 def request_folder(folder, repo_name="XpressAi/Xircuits", branch="master"):
     from github import Github
@@ -26,7 +26,7 @@ def request_folder(folder, repo_name="XpressAi/Xircuits", branch="master"):
             contents.extend(repo.get_contents(file_content.path))
 
         else:
-            file_url = base_url + "/" + file_content.path
+            file_url = base_url + "/" + parse.quote(file_content.path)
             urls.update({file_url: file_content.path})
 
     for url in tqdm(urls):
