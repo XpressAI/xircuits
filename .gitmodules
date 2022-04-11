@@ -1,3 +1,6 @@
 [submodule "xai_components/xai_pycaret"]
 	path = xai_components/xai_pycaret
 	url = https://github.com/XpressAI/xai-pycaret
+[submodule "xai_components/xai_modelstash"]
+	path = xai_components/xai_modelstash
+	url = https://github.com/XpressAI/xai-modelstash
