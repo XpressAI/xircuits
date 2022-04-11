@@ -391,7 +391,6 @@ class BuildModel(Component):
     preprocess_input:InArg[bool]
     dropout_rate:InArg[float]
 
-    model:OutArg[any]
 
     def __init__(self):
         self.done = False
@@ -399,7 +398,7 @@ class BuildModel(Component):
         self.preprocess_input = InArg(False)
         self.dropout_rate = InArg(None)
 
-        self.model = OutArg(None)
+        
 
     def execute(self, ctx) -> None:
         
@@ -445,14 +444,13 @@ class BuildModel(Component):
         outputs = prediction_layer(x)
         model = tf.keras.Model(inputs, outputs)
         model.summary()
-        self.model.value = model
+        ctx.update({'built_model':model})
 
         self.done = True
 
 
 @xai_component(color='red')
 class CompileModel(Component):
-    built_model:InCompArg[any]
     optimizer:InArg[str]
     loss:InArg[str]
     metrics:InArg[list]
@@ -463,7 +461,6 @@ class CompileModel(Component):
     def __init__(self):
         
         self.done = False
-        self.built_model = InCompArg(None)
         self.optimizer = InArg(None)
         self.loss = InArg(None)
         self.metrics = InArg('accuracy')
@@ -473,7 +470,7 @@ class CompileModel(Component):
 
     def execute(self, ctx) -> None:
         
-        model = self.built_model.value
+        model = ctx['built_model']
         optimizer = self.optimizer.value    
         loss = self.loss.value
         metrics = self.metrics.value
@@ -483,22 +480,159 @@ class CompileModel(Component):
                                 loss = getattr(tf.keras.losses,loss)(from_logits=True),
                                 metrics = metrics )
 
+        print("Model compiled, Number of trainable layers :",len(model.trainable_variables))
         self.compiled_model.value = model 
         self.done = True
 
 
 @xai_component(color='red')
 class EvaluateModel(Component):
+    model:InCompArg[any]
+
+    def __init__(self):
+        
+        self.done = False
+        self.model = InCompArg(None)
+
+    def execute(self, ctx) -> None:
+        model = self.model.value 
+        validation_dataset = ctx['validation_dataset']
+        loss0, accuracy0 = model.evaluate(validation_dataset)
+        print("loss: {:.2f}".format(loss0))
+        print("accuracy: {:.2f}".format(accuracy0))
+        self.done = True
+
+
+@xai_component(color='green')
+class FreezeModelLayer(Component):
+    freeze_all:InCompArg[bool]
+    fine_tune_at:InArg[int]
+
+    def __init__(self):
+        
+        self.done = False
+        self.freeze_all = InCompArg(None)
+        self.fine_tune_at = InArg(None)
+
+    def execute(self, ctx) -> None:
+        
+        freeze_all = self.freeze_all.value
+        fine_tune_at = self.fine_tune_at.value
+        base_model = ctx['base_model']
+
+        print("Number of layers in the base model: ", len(base_model.layers))
+        if freeze_all is True:
+            base_model.trainable = False
+        else:
+            base_model.trainable = True
+            for layer in base_model.layers[:fine_tune_at]:
+                layer.trainable = False
+
+        self.done = True
+
+
+@xai_component(color='yellow')
+class TrainModel(Component):
     compiled_model:InCompArg[any]
+    num_epochs:InArg[int]
+    resume_training:InArg[any]
+
+    model:OutArg[any]
+    training_history:OutArg[any]
 
     def __init__(self):
         
         self.done = False
         self.compiled_model = InCompArg(None)
+        self.num_epochs = InArg(None)
+        self.resume_training = InArg(None)
+
+        self.model = OutArg(None)
+        self.training_history = OutArg(None)
+
     def execute(self, ctx) -> None:
-        model = self.compiled_model.value 
-        validation_dataset = ctx['validation_dataset']
-        loss0, accuracy0 = model.evaluate(validation_dataset)
-        print("initial loss: {:.2f}".format(loss0))
-        print("initial accuracy: {:.2f}".format(accuracy0))
+        
+        model = self.compiled_model.value
+        train_dataset = ctx['training_dataset']
+        validation_data = ctx['validation_dataset']
+        num_epochs = self.num_epochs.value
+        resume_training = self.resume_training.value
+
+        if resume_training is not None:
+            initial_epoch = resume_training.epoch[-1]
+            num_epochs = num_epochs + resume_training.epoch[-1]
+        else:
+            initial_epoch = 0
+
+        history = model.fit(train_dataset,
+                    epochs=num_epochs,
+                    initial_epoch = initial_epoch,
+                    validation_data=validation_data)
+
+        self.model.value = model
+        self.training_history.value = history
+
+        self.done = True
+
+
+@xai_component(color='purple')
+class PlotTrainingMetrics(Component):
+    training_history:InArg[any]
+
+    def __init__(self):
+        
+        self.done = False
+        self.training_history = InArg(None)
+
+    def execute(self, ctx) -> None:
+        
+        history = self.training_history.value 
+
+        acc = history.history['accuracy']
+        val_acc = history.history['val_accuracy']
+
+        loss = history.history['loss']
+        val_loss = history.history['val_loss']
+
+        plt.figure(figsize=(8, 8))
+        plt.subplot(2, 1, 1)
+        plt.plot(acc, label='Training Accuracy')
+        plt.plot(val_acc, label='Validation Accuracy')
+        plt.legend(loc='lower right')
+        plt.ylabel('Accuracy')
+        plt.ylim([min(plt.ylim()),1])
+        plt.title('Training and Validation Accuracy')
+
+        plt.subplot(2, 1, 2)
+        plt.plot(loss, label='Training Loss')
+        plt.plot(val_loss, label='Validation Loss')
+        plt.legend(loc='upper right')
+        plt.ylabel('Cross Entropy')
+        plt.ylim([0,1.0])
+        plt.title('Training and Validation Loss')
+        plt.xlabel('epoch')
+        plt.show()
+
+        self.done = True
+
+
+@xai_component(color='navy')
+class SaveTFModel(Component):
+
+    model: InArg[any]
+    model_name: InArg[str]
+
+    def __init__(self):
+        self.done = False
+        self.model = InArg(None)
+        self.model_name = InArg(None)
+
+    def execute(self, ctx) -> None:
+        import sys
+
+        model = self.model.value
+        model_name = self.model_name.value +'.h5' 
+        model.save(model_name)
+        print(f"Saving TF h5 model at: {model_name}")
+        
         self.done = True
