@@ -4,6 +4,8 @@
 from pathlib import Path
 from urllib import request
 import os
+import argparse
+
 from .handlers.request_folder import request_folder
 
 def init_xircuits():
@@ -39,9 +41,17 @@ __   __  ___                _ _
     
     os.system("jupyter lab")
 
-def download_examples(argv=None):
-    request_folder("examples")
-    request_folder("Datasets")
+
+def download_examples():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-branch', nargs='?', help='pull examples from a xircuits branch')
+
+    args = parser.parse_args()
+    branch_name = args.branch if args.branch else "master"
+
+    request_folder("examples", branch=branch_name)
+    request_folder("Datasets", branch=branch_name)
+    
 
 def main(argv=None):
     start_xircuits()
