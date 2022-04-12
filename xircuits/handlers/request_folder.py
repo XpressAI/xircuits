@@ -1,21 +1,21 @@
 from tqdm import tqdm
 import os
 from urllib import request, parse
+from github import Github
+
 
 def request_folder(folder, repo_name="XpressAi/Xircuits", branch="master"):
-    from github import Github
-    print("Downloading " + folder + " from " + repo_name)
+    print("Downloading " + folder + " from " + repo_name + " branch " + branch)
     g = Github()
     repo = g.get_repo(repo_name)
-    base_url = "https://raw.githubusercontent.com/" + repo_name + "/" + branch
+    contents = repo.get_contents(folder, ref=branch)
 
     if not os.path.exists(folder):
         os.mkdir(folder)
     else:
         print(folder + " already exists.")
-
-    contents = repo.get_contents(folder)
-        
+    
+    base_url = "https://raw.githubusercontent.com/" + repo_name + "/" + branch    
     urls = {}
     
     while len(contents)>0:
