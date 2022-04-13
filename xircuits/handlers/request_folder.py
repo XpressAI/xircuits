@@ -30,4 +30,7 @@ def request_folder(folder, repo_name="XpressAi/Xircuits", branch="master"):
             urls.update({file_url: file_content.path})
 
     for url in tqdm(urls):
-        request.urlretrieve(url, urls[url])
+        try:
+            request.urlretrieve(url, urls[url])
+        except:
+            print("Error in retriving file " + urls[url] + "Skipping...")
