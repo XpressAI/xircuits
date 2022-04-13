@@ -7,8 +7,13 @@ from github import Github
 def request_folder(folder, repo_name="XpressAi/Xircuits", branch="master"):
     print("Downloading " + folder + " from " + repo_name + " branch " + branch)
     g = Github()
-    repo = g.get_repo(repo_name)
-    contents = repo.get_contents(folder, ref=branch)
+    
+    try:
+        repo = g.get_repo(repo_name)
+        contents = repo.get_contents(folder, ref=branch)
+    except:
+       print(folder + " from " + repo_name + " branch " + branch + " does not exist!")
+       return 
 
     if not os.path.exists(folder):
         os.mkdir(folder)
