@@ -50,7 +50,7 @@ def download_examples():
     branch_name = args.branch if args.branch else "master"
 
     request_folder("examples", branch=branch_name)
-    request_folder("Datasets", branch=branch_name)
+    request_folder("datasets", branch=branch_name)
     
 
 def main(argv=None):
@@ -59,5 +59,5 @@ def main(argv=None):
 
     args = parser.parse_args()
     branch_name = args.branch if args.branch else "master"
-    
+
     start_xircuits(branch_name)

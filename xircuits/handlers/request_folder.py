@@ -33,4 +33,4 @@ def request_folder(folder, repo_name="XpressAi/Xircuits", branch="master"):
         try:
             request.urlretrieve(url, urls[url])
         except:
-            print("Error in retriving file " + urls[url] + "Skipping...")
+            print("Error in retriving file " + urls[url] + ". Skipping...")
