@@ -1,21 +1,26 @@
 from tqdm import tqdm
 import os
-from urllib import request
+from urllib import request, parse
+from github import Github
 
-def request_folder(folder, repo_name="XpressAi/Xircuits"):
-    from github import Github
-    print("Downloading " + folder + " from " + repo_name)
+
+def request_folder(folder, repo_name="XpressAi/Xircuits", branch="master"):
+    print("Downloading " + folder + " from " + repo_name + " branch " + branch)
     g = Github()
-    repo = g.get_repo(repo_name)
-    base_url = "https://raw.githubusercontent.com/" + repo_name + "/master/"
+    
+    try:
+        repo = g.get_repo(repo_name)
+        contents = repo.get_contents(folder, ref=branch)
+    except:
+       print(folder + " from " + repo_name + " branch " + branch + " does not exist!")
+       return 
 
     if not os.path.exists(folder):
         os.mkdir(folder)
     else:
         print(folder + " already exists.")
-
-    contents = repo.get_contents(folder)
-        
+    
+    base_url = "https://raw.githubusercontent.com/" + repo_name + "/" + branch    
     urls = {}
     
     while len(contents)>0:
@@ -26,8 +31,11 @@ def request_folder(folder, repo_name="XpressAi/Xircuits"):
             contents.extend(repo.get_contents(file_content.path))
 
         else:
-            file_url = base_url + "/" + file_content.path
+            file_url = base_url + "/" + parse.quote(file_content.path)
             urls.update({file_url: file_content.path})
 
     for url in tqdm(urls):
-        request.urlretrieve(url, urls[url])
+        try:
+            request.urlretrieve(url, urls[url])
+        except:
+            print("Error in retriving file " + urls[url] + ". Skipping...")
