@@ -294,6 +294,22 @@ export function addNodeActionCommands(
         label: trans.__('Link node')
     });
 
+    //Add command to add comment node at given position
+    commands.addCommand(commandIDs.addCommentNode, {
+        execute: (args) => {
+            const widget = tracker.currentWidget?.content as XPipePanel;
+
+            // Prompt the user to enter new value for commenting
+            let theResponse = window.prompt('Enter Comment:');
+            let node = new CustomNodeModel({ name: 'Comment', color: 'rgb(255,255,255)', extras: { "type": 'comment', 'commentInput': theResponse, 'dimension': {width: 200, height: 100}} });
+
+            const nodePosition = args['nodePosition'] as any;
+            node.setPosition(nodePosition);
+            widget.xircuitsApp.getDiagramEngine().getModel().addNode(node);
+        },
+        label: trans.__('Add Comment')
+    });
+
     function cutNode(): void {
         const widget = tracker.currentWidget?.content as XPipePanel;
 
