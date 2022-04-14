@@ -7,12 +7,12 @@ export const CommentDialog = ({
 
     return (
         <form>
-            <h3 style={{ marginTop: 0, marginBottom: 5 }}>Comment:</h3>
+            <h3 style={{ marginTop: 0, marginBottom: 5 }}>Comment Input:</h3>
             <div>
                 <><div>
                     <div>
                         <TextareaAutosize
-                            placeholder='Comment here'
+                            placeholder='Add your message here'
                             minRows={3}
                             maxRows={15}
                             defaultValue={commentInput}
