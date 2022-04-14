@@ -12,7 +12,11 @@ import Toggle from 'react-toggle'
 import { JupyterFrontEnd } from '@jupyterlab/application';
 import { commandIDs } from './xircuitBodyWidget';
 import { CustomPortLabel } from './port/CustomPortLabel';
-
+import TextareaAutosize from 'react-textarea-autosize';
+import { Dialog } from '@jupyterlab/apputils';
+import { formDialogWidget } from '../dialog/formDialogwidget';
+import { showFormDialog } from '../dialog/FormDialog';
+import { CommentDialog } from '../dialog/CommentDialog';
 
 var S;
 (function (S) {
@@ -37,6 +41,18 @@ var S;
     S.TitleName = styled.div`
 		flex-grow: 1;
 		padding: 5px 5px;
+	`;
+
+    S.CommentContainer = styled.div<{ selected: boolean;  }>`
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 5px;
+		font-family: sans-serif;
+		color: white;
+		border: solid 2px black;
+		overflow: visible;
+		font-size: 12px;
+        border: solid 2px ${(p) => p.selected ? 'rgb(0,192,255)':'black'};
+        padding: 5px;
 	`;
 
     S.Ports = styled.div`
@@ -83,6 +99,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
 
         isTooltipActive: false,
         nodeDeletable: false,
+        commentInput: this.props.node['extras']['commentInput'],
 
         imageGalleryItems:[
         {
@@ -132,6 +149,10 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         })
     }
 
+    handleOnChangeCanvas(){
+        this.props.engine.fireEvent({}, 'onChange');
+    }
+
     /**
      * Allow to edit Literal Component
      */
@@ -141,7 +162,32 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         }
         this.props.app.commands.execute(commandIDs.editNode)
     }
-    
+
+    dialogOptions: Partial<Dialog.IOptions<any>> = {
+        body: formDialogWidget(
+                <CommentDialog commentInput={this.state.commentInput}/>
+        ),
+        buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Submit') })]
+    };
+
+    /**
+     * Allow to edit Comment Component
+     */
+    async handleEditComment(){
+        let dialogResult = await showFormDialog(this.dialogOptions)
+
+        if (dialogResult["button"]["label"] == 'Cancel') {
+			// When Cancel is clicked on the dialog, just return
+			return false;
+		}
+        const newVal = dialogResult["value"]['']
+        //  update value both in internal component state
+        this.setState({ commentInput: newVal });
+        // and in model object
+        this.props.node['extras']['commentInput'] = newVal;
+        this.handleOnChangeCanvas();
+    }
+
     render() {
 
         if(this.props.node.getOptions().extras["tip"]!=undefined&&this.props.node.getOptions().extras["tip"]!=""){
@@ -216,6 +262,25 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                         <S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
                     </S.Ports>
                 </S.Node>
+            );
+        } 
+        else if (this.props.node['extras']['type'] == 'comment') {
+            return (
+                <S.CommentContainer
+                    onDoubleClick={this.handleEditComment.bind(this)}
+                    selected={this.props.node.isSelected()}>
+                    <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
+                    <div data-no-drag>
+                        <TextareaAutosize
+                            id='comment-input-textarea'
+                            placeholder='Add your message here.'
+                            minRows={3}
+                            maxRows={15}
+                            value={this.state.commentInput}
+                            className='comment-component-textarea'
+                        />
+                    </div>
+                </S.CommentContainer>
             );
         }
         else if(this.props.node.getOptions()["name"] !== 'Start' && this.props.node.getOptions()["name"] !== 'Finish'){

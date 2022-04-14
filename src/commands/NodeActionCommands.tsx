@@ -10,6 +10,10 @@ import { DefaultLinkModel } from '@projectstorm/react-diagrams';
 import { BaseModel, BaseModelGenerics } from '@projectstorm/react-canvas-core';
 import { copyIcon, cutIcon, pasteIcon, redoIcon, undoIcon } from '@jupyterlab/ui-components';
 import { AdvancedComponentLibrary, fetchNodeByName } from '../tray_library/AdvanceComponentLib';
+import { formDialogWidget } from '../dialog/formDialogwidget';
+import { CommentDialog } from '../dialog/CommentDialog';
+import React from 'react';
+import { showFormDialog } from '../dialog/FormDialog';
 
 /**
  * Add the commands for node actions.
@@ -294,6 +298,34 @@ export function addNodeActionCommands(
         label: trans.__('Link node')
     });
 
+    //Add command to add comment node at given position
+    commands.addCommand(commandIDs.addCommentNode, {
+        execute: async (args) => {
+            const widget = tracker.currentWidget?.content as XPipePanel;
+            
+            const dialogOptions: Partial<Dialog.IOptions<any>> = {
+                body: formDialogWidget(
+                        <CommentDialog commentInput={""}/>
+                ),
+                buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Submit') })]
+            };
+
+            // Prompt the user to enter input for commenting
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (dialogResult["button"]["label"] == 'Cancel') {
+                // When Cancel is clicked on the dialog, just return
+                return false;
+            }
+            const commentVal = dialogResult["value"][''];
+            let node = new CustomNodeModel({ name: 'Comment:', color: 'rgb(255,255,255)', extras: { "type": 'comment', 'commentInput': commentVal} });
+
+            const nodePosition = args['nodePosition'] as any;
+            node.setPosition(nodePosition);
+            widget.xircuitsApp.getDiagramEngine().getModel().addNode(node);
+        },
+        label: trans.__('Add Comment')
+    });
+
     function cutNode(): void {
         const widget = tracker.currentWidget?.content as XPipePanel;
 
@@ -459,6 +491,10 @@ export function addNodeActionCommands(
 
         if (widget) {
             const node = selectedNode();
+            if (!node) {
+                // When no node selected, just return
+                return;
+            }
             if (node.getOptions()["name"] !== "undefined") {
                 let modelName = node.getOptions()["name"];
                 const errorMsg = `${modelName} node cannot be deleted!`

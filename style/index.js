@@ -3,3 +3,4 @@ import './toggle.css';
 import './Sidebar.css';
 import './ComponentsPanel.css';
 import './NodeActionPanel.css';
+import './Comment.css';

@@ -7,9 +7,10 @@ import {
 	ActionEvent,
 	DragCanvasState
 } from '@projectstorm/react-canvas-core';
-import { DragNewLinkState } from './DragNewLinkState';
-import { DiagramEngine, DragDiagramItemsState } from '@projectstorm/react-diagrams';
-import { CustomPortModel } from './port/CustomPortModel';
+import { DragNewLinkState } from '../DragNewLinkState';
+import { DiagramEngine } from '@projectstorm/react-diagrams';
+import { CustomPortModel } from '../port/CustomPortModel';
+import { DragDiagramItemsState } from './DragDiagramItemsState';
 
 export class CustomDiagramState extends State<DiagramEngine> {
 	dragCanvas: DragCanvasState;
@@ -18,7 +19,7 @@ export class CustomDiagramState extends State<DiagramEngine> {
 
 	constructor() {
 		super({
-			name: 'default-diagrams'
+			name: 'custom-diagrams'
 		});
 		this.childStates = [new SelectingState()];
 		this.dragCanvas = new DragCanvasState();

@@ -106,7 +106,8 @@ export const commandIDs = {
 	editNode: 'Xircuit-editor:edit-node',
 	deleteNode: 'Xircuit-editor:delete-node',
 	addNodeGivenPosition: 'Xircuit-editor:add-node', 
-	connectNodeByLink: 'Xircuit-editor:connect-node', 
+	connectNodeByLink: 'Xircuit-editor:connect-node',
+	addCommentNode: 'Xircuit-editor:add-comment-node',
 	createArbitraryFile: 'Xircuit-editor:create-arbitrary-file',
 	openDebugger: 'Xircuit-debugger:open',
 	breakpointXircuit: 'Xircuit-editor:breakpoint-node',
@@ -253,7 +254,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					// Register engine listener just once
 					xircuitsApp.getDiagramEngine().registerListener({
 						droppedLink: event => showComponentPanelFromLink(event),
-						hidePanel: () => hidePanel()
+						hidePanel: () => hidePanel(),
+						onChange: () => onChange()
 					})
 				}
 			} catch (e) {
@@ -1576,27 +1578,23 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			setIsPanelAtLeft(false);
 			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y;
 			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x;
-			newActionPanelPosition.y = newPanelPosition.y + 60;
-			newActionPanelPosition.x = newPanelPosition.x - 25;
 		} else if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y < newCenterPosition.y) {
 			// Top right
 			setIsPanelAtTop(true);
 			setIsPanelAtLeft(false);
 			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x;
-			newActionPanelPosition.x = newPanelPosition.x - 25;
 		} else if (newPanelPosition.x < newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
 			// Bottom left
 			setIsPanelAtTop(false);
 			setIsPanelAtLeft(true);
 			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y;
-			newActionPanelPosition.y = newPanelPosition.y + 60;
 		} else {
 			// Top left
 			setIsPanelAtTop(true);
 			setIsPanelAtLeft(true);
 		}
 		setComponentPanelPosition(newPanelPosition);
-		setActionPanelPosition(newActionPanelPosition);
+		setActionPanelPosition(newPanelPosition);
 	}
 
 	// Show the component panel context menu
@@ -1651,6 +1649,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setActionPanelShown(false);
 		setIsComponentPanelShown(false);
 
+		const node_position = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
+		setNodePosition(node_position);
 		panelPosition(event)
 		setActionPanelShown(true);
 	};
@@ -1782,6 +1782,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						<NodeActionsPanel
 							app={app}
 							eng={xircuitsApp.getDiagramEngine()}
+							nodePosition={nodePosition}
 						></NodeActionsPanel>
 					</div>
 				)}

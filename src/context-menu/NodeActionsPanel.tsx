@@ -8,11 +8,10 @@ import { commandIDs } from '../components/xircuitBodyWidget';
 export interface NodeActionsPanelProps {
 	app: JupyterFrontEnd;
 	eng: DiagramEngine;
+	nodePosition?: {x: number, y: number};
 }
 
 export const ActionPanel = styled.div`
-	width: 90px;
-	height: 100px;
 	border-color: #000;
 	border-radius: 25px;
 	border-top: 10px;
@@ -80,6 +79,12 @@ export class NodeActionsPanel extends React.Component<NodeActionsPanelProps> {
 						this.props.app.commands.execute(commandIDs.redo)
 					}}>
 					Redo
+				</div>
+				<div className="option"
+					onClick={() => {
+						this.props.app.commands.execute(commandIDs.addCommentNode,{nodePosition: this.props.nodePosition})
+					}}>
+					Add Comment
 				</div>
 			</ActionPanel>
 		);

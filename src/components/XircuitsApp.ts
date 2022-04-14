@@ -4,7 +4,7 @@ import { CustomNodeModel } from './CustomNodeModel';
 import { ZoomCanvasAction } from '@projectstorm/react-canvas-core';
 import { CustomActionEvent } from '../commands/CustomActionEvent';
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import { CustomDiagramState } from './CustomDiagramState'
+import { CustomDiagramState } from './state/CustomDiagramState'
 import { CustomLinkModel, TriangleLinkModel } from './link/CustomLinkModel';
 import { CustomLinkFactory, TriangleLinkFactory } from './link/CustomLinkFactory';
 
