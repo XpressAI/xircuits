@@ -317,7 +317,7 @@ export function addNodeActionCommands(
                 return false;
             }
             const commentVal = dialogResult["value"][''];
-            let node = new CustomNodeModel({ name: 'Comment Box', color: 'rgb(255,255,255)', extras: { "type": 'comment', 'commentInput': commentVal} });
+            let node = new CustomNodeModel({ name: 'Comment:', color: 'rgb(255,255,255)', extras: { "type": 'comment', 'commentInput': commentVal} });
 
             const nodePosition = args['nodePosition'] as any;
             node.setPosition(nodePosition);
