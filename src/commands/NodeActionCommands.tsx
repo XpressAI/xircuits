@@ -10,6 +10,10 @@ import { DefaultLinkModel } from '@projectstorm/react-diagrams';
 import { BaseModel, BaseModelGenerics } from '@projectstorm/react-canvas-core';
 import { copyIcon, cutIcon, pasteIcon, redoIcon, undoIcon } from '@jupyterlab/ui-components';
 import { AdvancedComponentLibrary, fetchNodeByName } from '../tray_library/AdvanceComponentLib';
+import { formDialogWidget } from '../dialog/formDialogwidget';
+import { CommentDialog } from '../dialog/CommentDialog';
+import React from 'react';
+import { showFormDialog } from '../dialog/FormDialog';
 
 /**
  * Add the commands for node actions.
@@ -296,12 +300,24 @@ export function addNodeActionCommands(
 
     //Add command to add comment node at given position
     commands.addCommand(commandIDs.addCommentNode, {
-        execute: (args) => {
+        execute: async (args) => {
             const widget = tracker.currentWidget?.content as XPipePanel;
+            
+            const dialogOptions: Partial<Dialog.IOptions<any>> = {
+                body: formDialogWidget(
+                        <CommentDialog commentInput={""}/>
+                ),
+                buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Submit') })]
+            };
 
-            // Prompt the user to enter new value for commenting
-            let theResponse = window.prompt('Enter Comment:');
-            let node = new CustomNodeModel({ name: 'Comment', color: 'rgb(255,255,255)', extras: { "type": 'comment', 'commentInput': theResponse, 'dimension': {width: 200, height: 100}} });
+            // Prompt the user to enter input for commenting
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (dialogResult["button"]["label"] == 'Cancel') {
+                // When Cancel is clicked on the dialog, just return
+                return false;
+            }
+            const commentVal = dialogResult["value"][''];
+            let node = new CustomNodeModel({ name: 'Comment', color: 'rgb(255,255,255)', extras: { "type": 'comment', 'commentInput': commentVal} });
 
             const nodePosition = args['nodePosition'] as any;
             node.setPosition(nodePosition);
