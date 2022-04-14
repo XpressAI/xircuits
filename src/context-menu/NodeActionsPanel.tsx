@@ -12,8 +12,6 @@ export interface NodeActionsPanelProps {
 }
 
 export const ActionPanel = styled.div`
-	width: 90px;
-	height: 100px;
 	border-color: #000;
 	border-radius: 25px;
 	border-top: 10px;
