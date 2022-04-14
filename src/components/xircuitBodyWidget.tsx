@@ -254,7 +254,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					// Register engine listener just once
 					xircuitsApp.getDiagramEngine().registerListener({
 						droppedLink: event => showComponentPanelFromLink(event),
-						hidePanel: () => hidePanel()
+						hidePanel: () => hidePanel(),
+						onChange: () => onChange()
 					})
 				}
 			} catch (e) {

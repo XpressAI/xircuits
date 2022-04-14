@@ -142,6 +142,10 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         })
     }
 
+    handleOnChangeCanvas(){
+        this.props.engine.fireEvent({}, 'onChange');
+    }
+
     /**
      * Allow to edit Literal Component
      */
@@ -151,7 +155,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         }
         this.props.app.commands.execute(commandIDs.editNode)
     }
-    
+
     dialogOptions: Partial<Dialog.IOptions<any>> = {
         body: formDialogWidget(
                 <CommentDialog commentInput={this.state.commentInput}/>
@@ -174,6 +178,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         this.setState({ commentInput: newVal });
         // and in model object
         this.props.node['extras']['commentInput'] = newVal;
+        this.handleOnChangeCanvas();
     }
 
     render() {
