@@ -44,6 +44,13 @@ var S;
 	`;
 
     S.CommentContainer = styled.div<{ selected: boolean;  }>`
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 5px;
+		font-family: sans-serif;
+		color: white;
+		border: solid 2px black;
+		overflow: visible;
+		font-size: 12px;
         border: solid 2px ${(p) => p.selected ? 'rgb(0,192,255)':'black'};
         padding: 5px;
 	`;
@@ -262,10 +269,11 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                 <S.CommentContainer
                     onDoubleClick={this.handleEditComment.bind(this)}
                     selected={this.props.node.isSelected()}>
+                    <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
                     <div data-no-drag>
                         <TextareaAutosize
                             id='comment-input-textarea'
-                            placeholder='Comment here'
+                            placeholder='Add your message here.'
                             minRows={3}
                             maxRows={15}
                             value={this.state.commentInput}
