@@ -1651,6 +1651,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setActionPanelShown(false);
 		setIsComponentPanelShown(false);
 
+		const node_position = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
+		setNodePosition(node_position);
 		panelPosition(event)
 		setActionPanelShown(true);
 	};
@@ -1782,6 +1784,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						<NodeActionsPanel
 							app={app}
 							eng={xircuitsApp.getDiagramEngine()}
+							nodePosition={nodePosition}
 						></NodeActionsPanel>
 					</div>
 				)}
