@@ -475,6 +475,10 @@ export function addNodeActionCommands(
 
         if (widget) {
             const node = selectedNode();
+            if (!node) {
+                // When no node selected, just return
+                return;
+            }
             if (node.getOptions()["name"] !== "undefined") {
                 let modelName = node.getOptions()["name"];
                 const errorMsg = `${modelName} node cannot be deleted!`
