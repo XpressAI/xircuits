@@ -220,7 +220,8 @@ export default function Sidebar(props: SidebarProps) {
                                                                             type: componentVal.type,
                                                                             name: componentVal.task,
                                                                             color: componentVal.color,
-                                                                            path: componentVal.file_path
+                                                                            path: componentVal.file_path,
+                                                                            docstring: componentVal.docstring
                                                                         }}
                                                                         name={componentVal.task}
                                                                         color={componentVal.color}
@@ -251,7 +252,8 @@ export default function Sidebar(props: SidebarProps) {
                                                 type: val.type, 
                                                 name: val.task,
                                                 color: val.color,
-                                                path: val.file_path
+                                                path: val.file_path,
+                                                docstring: val.docstring
                                             }}
                                             name={val.task}
                                             color={val.color}
