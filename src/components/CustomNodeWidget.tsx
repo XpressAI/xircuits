@@ -53,6 +53,14 @@ var S;
 		font-size: 12px;
         border: solid 2px ${(p) => p.selected ? 'rgb(0,192,255)':'black'};
         padding: 5px;
+    `;
+
+    S.DescriptionName = styled.div<{ color:string }>`
+        color: ${(p) => p.color ?? 'rgb(0, 0, 0)'};
+        text-align: justify;
+        font-family: 'Roboto', sans-serif;
+        font-weight: 700;
+        font-size: 13px;
 	`;
 
     S.Ports = styled.div`
@@ -100,6 +108,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         isTooltipActive: false,
         nodeDeletable: false,
         commentInput: this.props.node['extras']['commentInput'],
+        showDescription: false,
 
         imageGalleryItems:[
         {
@@ -188,6 +197,31 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         this.handleOnChangeCanvas();
     }
 
+    tooltipStyle = {
+        style: {
+            background: 'rgb(255,255,255)',
+            maxWidth: 450,
+            maxHeight: 250,
+            borderRadius: 10,
+            border: '2px solid rgba(0, 253, 232,.5)',
+            padding: '20px 20px 0px 20px',
+            overflow: 'auto',
+            boxShadow: '5px 5px 3px rgba(0,0,0,.5)'
+        },
+        arrowStyle: {
+            visibility:'hidden'
+        }
+    }
+    /**
+     * Show/Hide Component's Description Tooltip
+     */
+     handleDescription() {
+         const noDescription = <i>No description provided</i>;
+         const nodeDescription = this.props.node['extras']['description'];
+         this.props.node.getOptions().extras["descrpt"] = nodeDescription ?? noDescription;
+         this.setState({showDescription:!this.state.showDescription});
+    }
+    
     render() {
 
         if(this.props.node.getOptions().extras["tip"]!=undefined&&this.props.node.getOptions().extras["tip"]!=""){
@@ -286,11 +320,17 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         else if(this.props.node.getOptions()["name"] !== 'Start' && this.props.node.getOptions()["name"] !== 'Finish'){
             return (
                 <S.Node
+                    ref={(element) => { this.element = element }}
                     borderColor={this.props.node.getOptions().extras["borderColor"]}
                     data-default-node-name={this.props.node.getOptions().name}
                     selected={this.props.node.isSelected()}
                     background={this.props.node.getOptions().color}
                     onDoubleClick={this.handleEditLiteral.bind(this)}>
+                    <ToolTip active={this.state.showDescription} position="top" arrow="center" tooltipTimeout={0} parent={this.element} style={this.tooltipStyle}>
+                        <S.DescriptionName color={this.props.node.getOptions().color}>{this.props.node.getOptions()["name"]}</S.DescriptionName>
+                        <p className='description-title'>Description:</p>
+                        <pre className='description-text'>{this.props.node.getOptions().extras["descrpt"]}</pre>
+                    </ToolTip>
                     <S.Title>
                         <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
                         <label>
@@ -298,6 +338,12 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                                 className='lock'
                                 checked={this.props.node.isLocked()}
                                 onChange={this.handleDeletableNode.bind(this, 'nodeDeletable')}
+                            />
+                            <Toggle
+                                className='description'
+                                name='Description'
+                                checked={this.state.showDescription}
+                                onChange={this.handleDescription.bind(this)}
                             />
                         </label>
                     </S.Title>

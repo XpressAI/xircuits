@@ -148,3 +148,11 @@ background-color: #128D15;
 .lock.react-toggle--checked .react-toggle-track {
     background: url(../style/icons/lock-nodes.svg) no-repeat;
 }
+
+.description.react-toggle .react-toggle-track {
+    background: url(../style/icons/3-vertical-dot.svg) no-repeat;
+}
+
+.description.react-toggle--checked .react-toggle-track {
+    background: url(../style/icons/3-vertical-dot.svg) #FAFAFA no-repeat;
+}
