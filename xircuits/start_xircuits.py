@@ -7,15 +7,58 @@ import os
 import argparse
 
 from .handlers.request_folder import request_folder
+from .handlers.request_submodule import request_submodule_library
 
 def init_xircuits():
+
     url = "https://raw.githubusercontent.com/XpressAI/xircuits/master/.xircuits/config.ini"
     path = ".xircuits"
     os.mkdir(path)
     request.urlretrieve(url, path+"/config.ini")
 
-def start_xircuits(branch_name):
-    print(
+
+def download_examples():
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--branch', nargs='?', default="master", help='pull files from a xircuits branch')
+
+    args = parser.parse_args()
+
+    request_folder("examples", branch=args.branch)
+    request_folder("datasets", branch=args.branch)
+
+
+def download_component_library():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--branch', nargs='?', default="master", help='pull files from a xircuits branch')
+    parser.add_argument('--lib', nargs='*', help='pull component library from a xircuits branch')
+
+    args = parser.parse_args()
+    if not args.lib:
+        request_folder("xai_components", branch="master")
+    else:
+        request_submodule_library(args.lib)
+
+
+def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--branch', nargs='?', default="master", help='pull files from a xircuits branch')
+
+    args = parser.parse_args()
+    branch_name = args.branch
+
+    component_library_path = Path(os.getcwd()) / "xai_components"
+
+    if not component_library_path.exists():
+        val = input("Xircuits Component Library is not found. Would you like to load it in the current path (Y/N)? ")
+        if val.lower() == ("y" or "yes"):
+            request_folder("xai_components", branch=branch_name)
+    
+    os.system("jupyter lab")
+
+print(
 '''
 ======================================
 __   __  ___                _ _       
@@ -26,38 +69,8 @@ __   __  ___                _ _
                                       
 ======================================
 '''
-    )
+)
 
-    config_path = Path(os.getcwd()) / ".xircuits"
-    component_library_path = Path(os.getcwd()) / "xai_components"
-
-    if not config_path.exists():
+config_path = Path(os.getcwd()) / ".xircuits"
+if not config_path.exists():
         init_xircuits()
-
-    if not component_library_path.exists():
-        val = input("Xircuits Component Library is not found. Would you like to load it in the current path (Y/N)? ")
-        if val.lower() == ("y" or "yes"):
-            request_folder("xai_components", branch=branch_name)
-    
-    os.system("jupyter lab")
-
-
-def download_examples():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--branch', nargs='?', help='pull files from a xircuits branch')
-
-    args = parser.parse_args()
-    branch_name = args.branch if args.branch else "master"
-
-    request_folder("examples", branch=branch_name)
-    request_folder("datasets", branch=branch_name)
-    
-
-def main(argv=None):
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--branch', nargs='?', help='pull files from a xircuits branch')
-
-    args = parser.parse_args()
-    branch_name = args.branch if args.branch else "master"
-
-    start_xircuits(branch_name)
