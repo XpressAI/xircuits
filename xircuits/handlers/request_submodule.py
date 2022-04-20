@@ -14,8 +14,8 @@ def get_submodule_config(user_query):
     
     submodule_keys = [submodule for submodule in config.sections() if user_query in submodule]
     if len(submodule_keys) == 0:
-        print(user_query + " submodule not found.")
-        sys.exit()
+        print(user_query + " component library submodule not found.")
+        return
         
     if len(submodule_keys) > 1:
         print("Multiple '" + user_query + "' found. Returning first instance.")

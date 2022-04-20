@@ -32,13 +32,14 @@ def download_component_library():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--branch', nargs='?', default="master", help='pull files from a xircuits branch')
-    parser.add_argument('--lib', nargs='*', help='pull component library from a xircuits branch')
+    parser.add_argument('--sublib', nargs='*', help='pull component library from a xircuits submodule')
 
     args = parser.parse_args()
-    if not args.lib:
-        request_folder("xai_components", branch="master")
+    if not args.sublib:
+        request_folder("xai_components", branch=args.branch)
     else:
-        request_submodule_library(args.lib)
+        for component_lib in args.sublib:
+            request_submodule_library(component_lib)
 
 
 def main():
