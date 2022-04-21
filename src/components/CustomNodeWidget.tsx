@@ -223,43 +223,43 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         if (this.props.node.getOptions()["name"] !== 'Start' && this.props.node.getOptions()["name"] !== 'Finish') {
             return (
                 <>
-                <S.Node
-                    onMouseEnter={this.showTooltip.bind(this)}
-                    onMouseLeave={this.hideTooltip.bind(this)}
+                    <S.Node
+                        onMouseEnter={this.showTooltip.bind(this)}
+                        onMouseLeave={this.hideTooltip.bind(this)}
                         ref={(element) => this.element = element}
                         // Data for description's tooltip
                         data-tip data-for={this.props.node.getOptions().id}
-                    borderColor={this.props.node.getOptions().extras["borderColor"]}
-                    data-default-node-name={this.props.node.getOptions().name}
-                    selected={this.props.node.isSelected()}
+                        borderColor={this.props.node.getOptions().extras["borderColor"]}
+                        data-default-node-name={this.props.node.getOptions().name}
+                        selected={this.props.node.isSelected()}
                         background={this.props.node.getOptions().color}
                         onDoubleClick={this.handleEditLiteral.bind(this)}>
                         {(this.props.node.getOptions().extras["tip"] != undefined && this.props.node.getOptions().extras["tip"] != "") ?
                             <ToolTip active={this.state.isTooltipActive} position="bottom" arrow="center" parent={this.element} style={this.errorTooltipStyle}>
-                        <p>{this.props.node.getOptions().extras["tip"]}</p>
-                    </ToolTip>
+                                <p>{this.props.node.getOptions().extras["tip"]}</p>
+                            </ToolTip>
                             : null}
-                    <S.Title>
-                        <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
-                        <label>
-                            <Toggle
-                                className='lock'
-                                checked={this.props.node.isLocked()}
-                                onChange={this.handleDeletableNode.bind(this, 'nodeDeletable')}
-                            />
+                        <S.Title>
+                            <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
+                            <label>
+                                <Toggle
+                                    className='lock'
+                                    checked={this.props.node.isLocked()}
+                                    onChange={this.handleDeletableNode.bind(this, 'nodeDeletable')}
+                                />
                                 <Toggle
                                     className='description'
                                     name='Description'
                                     checked={this.state.showDescription}
                                     onChange={this.handleDescription.bind(this)}
                                 />
-                        </label>
-                    </S.Title>
-                    <S.Ports>
-                        <S.PortsContainer>{_.map(this.props.node.getInPorts(), this.generatePort)}</S.PortsContainer>
-                        <S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
-                    </S.Ports>
-                </S.Node>
+                            </label>
+                        </S.Title>
+                        <S.Ports>
+                            <S.PortsContainer>{_.map(this.props.node.getInPorts(), this.generatePort)}</S.PortsContainer>
+                            <S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
+                        </S.Ports>
+                    </S.Node>
                     {this.state.showDescription && <ReactTooltip
                         id={this.props.node.getOptions().id}
                         className='description-tooltip' arrowColor='rgb(255, 255, 255)' effect='solid' clickable
@@ -338,43 +338,6 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                         />
                     </div>
                 </S.CommentContainer>
-            );
-        }
-        else if(this.props.node.getOptions()["name"] !== 'Start' && this.props.node.getOptions()["name"] !== 'Finish'){
-            return (
-                <S.Node
-                    ref={(element) => { this.element = element }}
-                    borderColor={this.props.node.getOptions().extras["borderColor"]}
-                    data-default-node-name={this.props.node.getOptions().name}
-                    selected={this.props.node.isSelected()}
-                    background={this.props.node.getOptions().color}
-                    onDoubleClick={this.handleEditLiteral.bind(this)}>
-                    <ToolTip active={this.state.showDescription} position="top" arrow="center" tooltipTimeout={0} parent={this.element} style={this.tooltipStyle}>
-                        <S.DescriptionName color={this.props.node.getOptions().color}>{this.props.node.getOptions()["name"]}</S.DescriptionName>
-                        <p className='description-title'>Description:</p>
-                        <pre className='description-text'>{this.props.node.getOptions().extras["descrpt"]}</pre>
-                    </ToolTip>
-                    <S.Title>
-                        <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
-                        <label>
-                            <Toggle
-                                className='lock'
-                                checked={this.props.node.isLocked()}
-                                onChange={this.handleDeletableNode.bind(this, 'nodeDeletable')}
-                            />
-                            <Toggle
-                                className='description'
-                                name='Description'
-                                checked={this.state.showDescription}
-                                onChange={this.handleDescription.bind(this)}
-                            />
-                        </label>
-                    </S.Title>
-                    <S.Ports>
-                        <S.PortsContainer>{_.map(this.props.node.getInPorts(), this.generatePort)}</S.PortsContainer>
-                        <S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
-                    </S.Ports>
-                </S.Node>
             );
         }
         return (
