@@ -198,19 +198,16 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         this.handleOnChangeCanvas();
     }
 
-    tooltipStyle = {
+    errorTooltipStyle = {
         style: {
             background: 'rgb(255,255,255)',
-            maxWidth: 450,
-            maxHeight: 250,
             borderRadius: 10,
-            border: '2px solid rgba(0, 253, 232,.5)',
-            padding: '20px 20px 0px 20px',
-            overflow: 'auto',
-            boxShadow: '5px 5px 3px rgba(0,0,0,.5)'
+            border: '2px solid rgba(255, 0, 0, .9)',
+            boxShadow: '5px 5px 3px rgba(0,0,0,.5)',  
         },
         arrowStyle: {
-            visibility:'hidden'
+            color: 'rgba(255, 0, 0, .9)',
+            borderColor: false
         }
     }
 
@@ -237,8 +234,11 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                     selected={this.props.node.isSelected()}
                         background={this.props.node.getOptions().color}
                         onDoubleClick={this.handleEditLiteral.bind(this)}>
+                        {(this.props.node.getOptions().extras["tip"] != undefined && this.props.node.getOptions().extras["tip"] != "") ?
+                            <ToolTip active={this.state.isTooltipActive} position="bottom" arrow="center" parent={this.element} style={this.errorTooltipStyle}>
                         <p>{this.props.node.getOptions().extras["tip"]}</p>
                     </ToolTip>
+                            : null}
                     <S.Title>
                         <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
                         <label>
