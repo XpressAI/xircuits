@@ -17,6 +17,7 @@ import { Dialog } from '@jupyterlab/apputils';
 import { formDialogWidget } from '../dialog/formDialogwidget';
 import { showFormDialog } from '../dialog/FormDialog';
 import { CommentDialog } from '../dialog/CommentDialog';
+import ReactTooltip from 'react-tooltip';
 
 var S;
 (function (S) {
@@ -212,29 +213,30 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
             visibility:'hidden'
         }
     }
+
     /**
      * Show/Hide Component's Description Tooltip
      */
-     handleDescription() {
-         const noDescription = <i>No description provided</i>;
-         const nodeDescription = this.props.node['extras']['description'];
-         this.props.node.getOptions().extras["descrpt"] = nodeDescription ?? noDescription;
-         this.setState({showDescription:!this.state.showDescription});
+    async handleDescription() {
+        await this.setState({ showDescription: !this.state.showDescription });
+        ReactTooltip.show(this.element as Element)
     }
     
     render() {
-
-        if(this.props.node.getOptions().extras["tip"]!=undefined&&this.props.node.getOptions().extras["tip"]!=""){
+        if (this.props.node.getOptions()["name"] !== 'Start' && this.props.node.getOptions()["name"] !== 'Finish') {
             return (
+                <>
                 <S.Node
                     onMouseEnter={this.showTooltip.bind(this)}
                     onMouseLeave={this.hideTooltip.bind(this)}
-                    ref={(element) => { this.element = element }}
+                        ref={(element) => this.element = element}
+                        // Data for description's tooltip
+                        data-tip data-for={this.props.node.getOptions().id}
                     borderColor={this.props.node.getOptions().extras["borderColor"]}
                     data-default-node-name={this.props.node.getOptions().name}
                     selected={this.props.node.isSelected()}
-                    background={this.props.node.getOptions().color}>
-                    <ToolTip active={this.state.isTooltipActive} position="top" arrow="center" parent={this.element}>
+                        background={this.props.node.getOptions().color}
+                        onDoubleClick={this.handleEditLiteral.bind(this)}>
                         <p>{this.props.node.getOptions().extras["tip"]}</p>
                     </ToolTip>
                     <S.Title>
@@ -245,6 +247,12 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                                 checked={this.props.node.isLocked()}
                                 onChange={this.handleDeletableNode.bind(this, 'nodeDeletable')}
                             />
+                                <Toggle
+                                    className='description'
+                                    name='Description'
+                                    checked={this.state.showDescription}
+                                    onChange={this.handleDescription.bind(this)}
+                                />
                         </label>
                     </S.Title>
                     <S.Ports>
@@ -252,6 +260,21 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                         <S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
                     </S.Ports>
                 </S.Node>
+                    {this.state.showDescription && <ReactTooltip
+                        id={this.props.node.getOptions().id}
+                        className='description-tooltip' arrowColor='rgb(255, 255, 255)' effect='solid' clickable
+                        afterShow={() => { this.setState({ showDescription: true }) }}
+                        afterHide={() => { this.setState({ showDescription: false }) }}
+                        delayHide={60000}
+                        getContent={() =>
+                            <div className='description-container'>
+                                <S.DescriptionName color={this.props.node.getOptions().color}>{this.props.node.getOptions()["name"]}</S.DescriptionName>
+                                <p className='description-title'>Description:</p>
+                                <pre data-no-drag className='description-text'>{this.props.node['extras']['description'] ?? <i>No description provided</i>}</pre>
+                            </div>
+                        }
+                    />}
+                </>
             );
         }
         else if(this.props.node.getOptions().extras["imageGalleryItems"] != undefined){

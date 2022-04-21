@@ -1,9 +1,25 @@
+.description-tooltip{
+    background-color: rgb(255, 255, 255) !important;
+    box-shadow: 5px 5px 3px rgba(0,0,0,.5) !important;
+    border: 2px solid rgba(0, 253, 232, .5) !important;
+    border-radius: 10 !important;
+    opacity: 0.99 !important;
+}
+
+.description-container{
+    max-width: 450px;
+    max-height: 250px;
+    overflow: auto;
+}
+
 .description-text{
     text-align: justify;
     font-family: sans-serif;
-    font-weight: 400;
+    font-weight: 500;
     font-size: 11px;
-    white-space:pre-wrap;
+    white-space: pre-wrap;
+    cursor: default;
+    color: rgb(0, 0, 0);
 }
 
 .description-title{
@@ -11,4 +27,5 @@
     font-family: 'Roboto', sans-serif;
     font-weight: 700;
     font-size: 13px;
+    color: rgb(0, 0, 0);
 }
