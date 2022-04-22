@@ -3,7 +3,7 @@
 ## Status
 Accepted
 
-Proposed by: Fahreza (13/01/2022)
+Proposed by: Fahreza (12/04/2022)
 
 Discussed with: Eduardo Gonzalez
 
@@ -31,6 +31,7 @@ This has been implemented in https://github.com/XpressAI/xircuits/pull/148
 * Improves scalability and reduce maintainability costs.
 * Component library authors to have more control over their own component libraries.
 * Improves the housekeeping of the examples.
+* Users can modify the submodules and update if needed.
 
 ### Disadvantages
 * Require an extra step to fetch component submodules.
