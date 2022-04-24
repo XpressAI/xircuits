@@ -28,7 +28,7 @@ def request_folder(folder, repo_name="XpressAi/Xircuits", branch="master"):
         if file_content.type=='dir':
             if not os.path.exists(file_content.path):
                 os.mkdir(file_content.path)
-            contents.extend(repo.get_contents(file_content.path))
+            contents.extend(repo.get_contents(file_content.path, ref=branch))
 
         else:
             file_url = base_url + "/" + parse.quote(file_content.path)
