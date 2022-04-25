@@ -1,9 +1,10 @@
-from tqdm import tqdm
-import os
-from urllib import request, parse
-from github import Github
+from urllib import request
 from git import Repo
-import sys
+from git.remote import RemoteProgress
+
+class Progress(RemoteProgress):
+    def update(self, *args):
+        print(self._cur_line, end='\r', flush=True)
 
 def get_submodule_config(user_query):
     
@@ -43,5 +44,4 @@ def request_submodule_library(component_library_query):
     submodule_path, submodule_url = get_submodule_config(component_library_query)
     
     print("Cloning " + submodule_path + " from " + submodule_url)
-    Repo.clone_from(submodule_url, submodule_path)
-
+    Repo.clone_from(submodule_url, submodule_path, progress=Progress())
