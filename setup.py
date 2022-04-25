@@ -89,7 +89,8 @@ setup_args = dict(
     entry_points ={
         'console_scripts': [
             'xircuits = xircuits.start_xircuits:main',
-            'xircuits-examples = xircuits.start_xircuits:download_examples'
+            'xircuits-examples = xircuits.start_xircuits:download_examples',
+            'xircuits-components = xircuits.start_xircuits:download_component_library'
             ]}
 )
 
