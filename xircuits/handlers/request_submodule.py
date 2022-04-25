@@ -41,5 +41,7 @@ def request_submodule_library(component_library_query):
         component_library_query = "xai_components/" + component_library_query
     
     submodule_path, submodule_url = get_submodule_config(component_library_query)
+    
+    print("Cloning " + submodule_path + " from " + submodule_url)
     Repo.clone_from(submodule_url, submodule_path)
 
