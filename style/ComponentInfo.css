@@ -28,4 +28,21 @@
     font-weight: 700;
     font-size: 13px;
     color: rgb(0, 0, 0);
+/* Close button*/
+.close {
+    background-color: transparent;
+    position: absolute;
+    top: 4px;
+    right: 17px;
+    font-size: 20px;
+    border-radius: 50%;
+    border: none;
+}
+.close:hover,
+.close:focus {
+    color: rgb(255, 255, 255);
+    background-color: #616161;
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
 }

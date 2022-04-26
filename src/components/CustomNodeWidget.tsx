@@ -271,6 +271,14 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                         delayUpdate={5000}
                         getContent={() =>
                             <div data-no-drag style={{ cursor: 'default' }}>
+                                <button
+                                    type="button"
+                                    className="close"
+                                    data-dismiss="modal"
+                                    aria-label="Close"
+                                    onClick={() => { this.setState({ showDescription: false }); }}>
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                                 <S.DescriptionName color={this.props.node.getOptions().color}>{this.props.node.getOptions()["name"]}</S.DescriptionName>
                                 <p className='description-title'>Description:</p>
                                 <div className='description-container'>
