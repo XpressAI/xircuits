@@ -30,6 +30,26 @@
     color: rgb(0, 0, 0);
     padding-bottom: 5px;
 }
+
+.error-tooltip{
+    background: rgb(255, 255, 255) !important;
+    border-radius: 10px !important;
+    border: 2px solid rgba(255, 0, 0, .9) !important;
+    box-shadow: 5px 5px 3px rgba(0,0,0,.5) !important;
+}
+
+.error-text{
+    color: rgb(0, 0, 0);
+    width: 250px;
+    text-align: center;
+    padding-right: 10px;
+    cursor: default;
+}
+
+.error-container .close{
+    right: 5px;
+}
+
 /* Close button*/
 .close {
     background-color: transparent;

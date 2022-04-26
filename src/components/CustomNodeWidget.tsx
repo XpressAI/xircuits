@@ -198,25 +198,18 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         this.handleOnChangeCanvas();
     }
 
-    errorTooltipStyle = {
-        style: {
-            background: 'rgb(255,255,255)',
-            borderRadius: 10,
-            border: '2px solid rgba(255, 0, 0, .9)',
-            boxShadow: '5px 5px 3px rgba(0,0,0,.5)',  
-        },
-        arrowStyle: {
-            color: 'rgba(255, 0, 0, .9)',
-            borderColor: false
-        }
-    }
-
     /**
      * Show/Hide Component's Description Tooltip
      */
     async handleDescription() {
         await this.setState({ showDescription: !this.state.showDescription });
         ReactTooltip.show(this.element as Element)
+    }
+
+    // Hide Error Tooltip
+    hideErrorTooltip(){
+        delete this.props.node.getOptions().extras["tip"];
+        this.props.node.getOptions().extras["borderColor"]="rgb(0,192,255)";
     }
     
     render() {
@@ -233,11 +226,6 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                         selected={this.props.node.isSelected()}
                         background={this.props.node.getOptions().color}
                         onDoubleClick={this.handleEditLiteral.bind(this)}>
-                        {(this.props.node.getOptions().extras["tip"] != undefined && this.props.node.getOptions().extras["tip"] != "") ?
-                            <ToolTip active={this.state.isTooltipActive} position="bottom" arrow="center" parent={this.element} style={this.errorTooltipStyle}>
-                                <p>{this.props.node.getOptions().extras["tip"]}</p>
-                            </ToolTip>
-                            : null}
                         <S.Title>
                             <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
                             <label>
@@ -283,7 +271,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                                 <p className='description-title'>Description:</p>
                                 <div className='description-container'>
                                     <pre className='description-text'>{this.props.node['extras']['description'] ?? <i>No description provided</i>}</pre>
-                            </div>
+                                </div>
                             </div>}
                         overridePosition={(
                             { left, top },
@@ -301,7 +289,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                             else if (refNode == 'bottom') {
                                 newPositionX = newPositionX - 200 + (nodeDimension.x / 2);
                                 newPositionY = newPositionY + 85 + nodeDimension.y;
-                        }
+                            }
                             else if (refNode == 'right') {
                                 newPositionX = newPositionX + 40 + nodeDimension.x;
                                 newPositionY = newPositionY - 30;
@@ -317,6 +305,46 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                             return { top, left }
                         }}
                     />}
+                    {/** Error Tooltip */}
+                    {(this.props.node.getOptions().extras["tip"] != undefined && this.props.node.getOptions().extras["tip"] != "") ?
+                        <ReactTooltip
+                            id={this.props.node.getOptions().id}
+                            clickable
+                            place='bottom'
+                            className='error-tooltip'
+                            arrowColor='rgba(255, 0, 0, .9)'
+                            delayHide={100}
+                            delayUpdate={50}
+                            getContent={() =>
+                                <div data-no-drag className='error-container'>
+                                    <p className='error-text'>{this.props.node.getOptions().extras["tip"]}</p>
+                                    <button
+                                        type="button"
+                                        className="close"
+                                        data-dismiss="modal"
+                                        aria-label="Close"
+                                        onClick={this.hideErrorTooltip.bind(this)}>
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            }
+                            overridePosition={({ left, top }) => {
+                                const currentNode = this.props.node;
+                                const nodeDimension = { x: currentNode.width, y: currentNode.height };
+                                const nodePosition = { x: currentNode.getX(), y: currentNode.getY() };
+                                let newPositionX = nodePosition.x;
+                                let newPositionY = nodePosition.y;
+                                newPositionX = newPositionX - 110 + (nodeDimension.x / 2);
+                                newPositionY = newPositionY + 90 + nodeDimension.y;
+
+                                const tooltipPosition = this.props.engine.getRelativePoint(newPositionX, newPositionY);
+
+                                left = tooltipPosition.x;
+                                top = tooltipPosition.y;
+                                return { top, left }
+                            }}
+                        />
+                        : null}
                 </>
             );
         }
