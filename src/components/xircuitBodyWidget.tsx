@@ -234,6 +234,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								 * Detect changes when link is connected
 								 */
 								targetPortChanged: e => {
+									linkObviousPort(e.entity as DefaultLinkModel);
 									onChange();
 								},
 								/**
@@ -321,6 +322,57 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			}
 		}
 		return null;
+	}
+
+	const linkObviousPort = (link: DefaultLinkModel) => {
+		const sourcePort = link.getSourcePort();
+		const targetPort = link.getTargetPort();
+		const sourceNode = sourcePort.getNode();
+		const targetNode = targetPort.getNode();
+		if (sourcePort.getOptions()['label'] != '▶' && targetPort.getOptions()['label'] != '▶') {
+			// When it's not ▶ being linked, just return
+			return;
+		}
+		if (sourceNode['portsOut'].length <= 1) {
+			// When node got no outputPort, just return
+			return;
+		}
+
+		const outPorts = sourceNode['portsOut'];
+		const inPorts = targetNode['portsIn'];
+		const newLink = new DefaultLinkModel();
+
+		for (let outPortIndex in outPorts) {
+			const outPort = outPorts[outPortIndex];
+			const outPortName = outPort.getOptions()['name'];
+			const outPortLabel = outPort.getOptions()['label'];
+			const outPortType = outPort.getOptions()['type'];
+			const outPortLabelArray: string[] = outPortLabel.split('_')
+			if (outPort.getOptions()['label'] == '▶') {
+				// Skip ▶ outPort
+				continue
+			}
+
+			for (let inPortIndex in inPorts) {
+				const inPort = inPorts[inPortIndex];
+				const inPortName = inPort.getOptions()['name'];
+				const inPortLabel = inPort.getOptions()['label'];
+				const inPortType = inPort.getOptions()['type'];
+				const inPortLabelArray: string[] = inPortLabel.split('_');
+				const intersection = outPortLabelArray.filter(element => inPortLabelArray.includes(element));
+
+				if (outPortLabel == inPortLabel && outPortType == inPortType || intersection.length >= 1) {
+					// Set sourcePort
+					let sourcePort = sourceNode.getPorts()[outPortName];
+					newLink.setSourcePort(sourcePort);
+					// Set targetPort
+					let targetPort = targetNode.getPorts()[inPortName];
+					newLink.setTargetPort(targetPort);
+					continue
+				}
+				xircuitsApp.getDiagramEngine().getModel().addLink(newLink);
+			}
+		}
 	}
 
 	const getAllNodesFromStartToFinish = (): NodeModel[] | null => {
