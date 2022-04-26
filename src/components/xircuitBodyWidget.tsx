@@ -338,14 +338,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		const outPorts = sourceNode['portsOut'];
 		const inPorts = targetNode['portsIn'];
-		const newLink = new DefaultLinkModel();
 
 		for (let outPortIndex in outPorts) {
 			const outPort = outPorts[outPortIndex];
 			const outPortName = outPort.getOptions()['name'];
 			const outPortLabel = outPort.getOptions()['label'];
 			const outPortType = outPort.getOptions()['type'];
-			const outPortLabelArray: string[] = outPortLabel.split('_')
+			const outPortLabelArray: string[] = outPortLabel.split('_');
 			if (outPort.getOptions()['label'] == '▶') {
 				// Skip ▶ outPort
 				continue
@@ -360,15 +359,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				const intersection = outPortLabelArray.filter(element => inPortLabelArray.includes(element));
 
 				if (outPortLabel == inPortLabel && outPortType == inPortType || intersection.length >= 1) {
+					// Create new link
+					const newLink = new DefaultLinkModel();
 					// Set sourcePort
-					let sourcePort = sourceNode.getPorts()[outPortName];
+					const sourcePort = sourceNode.getPorts()[outPortName];
 					newLink.setSourcePort(sourcePort);
 					// Set targetPort
-					let targetPort = targetNode.getPorts()[inPortName];
+					const targetPort = targetNode.getPorts()[inPortName];
 					newLink.setTargetPort(targetPort);
-					continue
+
+					xircuitsApp.getDiagramEngine().getModel().addLink(newLink);
+					break;
 				}
-				xircuitsApp.getDiagramEngine().getModel().addLink(newLink);
 			}
 		}
 	}
