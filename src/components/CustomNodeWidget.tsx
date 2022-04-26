@@ -226,9 +226,8 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                     <S.Node
                         onMouseEnter={this.showTooltip.bind(this)}
                         onMouseLeave={this.hideTooltip.bind(this)}
-                        ref={(element) => this.element = element}
-                        // Data for description's tooltip
-                        data-tip data-for={this.props.node.getOptions().id}
+                        ref={(element) => { this.element = element }}
+                        data-tip data-for={this.props.node.getOptions().id} // Data for tooltip
                         borderColor={this.props.node.getOptions().extras["borderColor"]}
                         data-default-node-name={this.props.node.getOptions().name}
                         selected={this.props.node.isSelected()}
@@ -260,19 +259,55 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                             <S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
                         </S.Ports>
                     </S.Node>
+                    {/** Description Tooltip */}
                     {this.state.showDescription && <ReactTooltip
                         id={this.props.node.getOptions().id}
-                        className='description-tooltip' arrowColor='rgb(255, 255, 255)' effect='solid' clickable
+                        className='description-tooltip'
+                        arrowColor='rgb(255, 255, 255)'
+                        clickable
                         afterShow={() => { this.setState({ showDescription: true }) }}
                         afterHide={() => { this.setState({ showDescription: false }) }}
                         delayHide={60000}
+                        delayUpdate={5000}
                         getContent={() =>
-                            <div className='description-container'>
+                            <div data-no-drag style={{ cursor: 'default' }}>
                                 <S.DescriptionName color={this.props.node.getOptions().color}>{this.props.node.getOptions()["name"]}</S.DescriptionName>
                                 <p className='description-title'>Description:</p>
-                                <pre data-no-drag className='description-text'>{this.props.node['extras']['description'] ?? <i>No description provided</i>}</pre>
+                                <div className='description-container'>
+                                    <pre className='description-text'>{this.props.node['extras']['description'] ?? <i>No description provided</i>}</pre>
                             </div>
+                            </div>}
+                        overridePosition={(
+                            { left, top },
+                            currentEvent, currentTarget, node, refNode) => {
+                            const currentNode = this.props.node;
+                            const nodeDimension = { x: currentNode.width, y: currentNode.height };
+                            const nodePosition = { x: currentNode.getX(), y: currentNode.getY() };
+                            let newPositionX = nodePosition.x;
+                            let newPositionY = nodePosition.y;
+
+                            if (refNode == 'top') {
+                                newPositionX = newPositionX - 200 + (nodeDimension.x / 2);
+                                newPositionY = newPositionY - 220;
+                            }
+                            else if (refNode == 'bottom') {
+                                newPositionX = newPositionX - 200 + (nodeDimension.x / 2);
+                                newPositionY = newPositionY + 85 + nodeDimension.y;
                         }
+                            else if (refNode == 'right') {
+                                newPositionX = newPositionX + 40 + nodeDimension.x;
+                                newPositionY = newPositionY - 30;
+                            }
+                            else if (refNode == 'left') {
+                                newPositionX = newPositionX - 450;
+                                newPositionY = newPositionY - 30;
+                            }
+                            const tooltipPosition = this.props.engine.getRelativePoint(newPositionX, newPositionY);
+
+                            left = tooltipPosition.x;
+                            top = tooltipPosition.y;
+                            return { top, left }
+                        }}
                     />}
                 </>
             );
