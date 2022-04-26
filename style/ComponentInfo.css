@@ -7,18 +7,18 @@
 }
 
 .description-container{
-    max-width: 450px;
-    max-height: 250px;
+    width: 450px;
+    height: 250px;
     overflow: auto;
+    position: relative;
 }
 
 .description-text{
     text-align: justify;
     font-family: sans-serif;
     font-weight: 500;
-    font-size: 11px;
+    font-size: 12px;
     white-space: pre-wrap;
-    cursor: default;
     color: rgb(0, 0, 0);
 }
 
@@ -28,6 +28,8 @@
     font-weight: 700;
     font-size: 13px;
     color: rgb(0, 0, 0);
+    padding-bottom: 5px;
+}
 /* Close button*/
 .close {
     background-color: transparent;
