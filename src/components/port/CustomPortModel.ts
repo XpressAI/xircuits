@@ -73,7 +73,9 @@ export  class CustomPortModel extends DefaultPortModel  {
         let thisNode = this.getNode();
         let thisNodeModelType = thisNode.getOptions()["extras"]["type"];
         let thisName = port.getName();
+        let sourcePortName = thisPort.getName();
         let thisPortType = thisName.split('-')[1];
+        let sourcePortType = sourcePortName.split('-')[2];
 
         if (this.isParameterNode(thisNodeModelType) == true){
             // if the port you are trying to link ready has other links
@@ -127,8 +129,8 @@ export  class CustomPortModel extends DefaultPortModel  {
 
         }else{
             if (thisName.startsWith("parameter")){
-                // Skip 'any' type check
-                if(thisName.includes('any')){
+                // Skip 'any' or same type check
+                if(thisPortType == 'any' || thisPortType == sourcePortType){
                     return
                 }
 		        port.getNode().getOptions().extras["borderColor"]="red";
