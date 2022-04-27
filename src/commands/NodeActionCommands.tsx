@@ -290,12 +290,73 @@ export function addNodeActionCommands(
                 // '▶' of sourcePort to '▶' of targetPort
                 sourcePort = linkPort;
                 targetPort = targetNode.getPorts()["in-0"];
+                app.commands.execute(commandIDs.connectLinkToObviousPorts, { sourceLink, targetNode });
             }
             newLink.setSourcePort(sourcePort);
             newLink.setTargetPort(targetPort);
             widget.xircuitsApp.getDiagramEngine().getModel().addLink(newLink);
         },
         label: trans.__('Link node')
+    });
+
+    //Add command to connect link to obvious port given link and target node
+    commands.addCommand(commandIDs.connectLinkToObviousPorts, {
+        execute: (args) => {
+            const sourceLink = args['sourceLink'] as unknown as DefaultLinkModel;
+            const widget = tracker.currentWidget?.content as XPipePanel;
+            const sourcePort = sourceLink.getSourcePort();
+            const targetPort = sourceLink.getTargetPort();
+            const sourceNode = sourcePort.getNode();
+            const targetNode = args['targetNode'] as any ?? targetPort.getNode();
+            const outPorts = sourceNode['portsOut'];
+            const inPorts = targetNode['portsIn'];
+
+            if (sourcePort.getOptions()['label'] != '▶' && targetPort.getOptions()['label'] != '▶') {
+                // When it's not ▶ being linked, just return
+                return;
+            }
+            if (sourceNode['portsOut'].length <= 1) {
+                // When node got no outputPort, just return
+                return;
+            }
+
+            for (let outPortIndex in outPorts) {
+                const outPort = outPorts[outPortIndex];
+                const outPortName = outPort.getOptions()['name'];
+                const outPortLabel = outPort.getOptions()['label'];
+                const outPortType = outPort.getOptions()['type'];
+                const outPortLabelArr: string[] = outPortLabel.split('_');
+                if (outPort.getOptions()['label'] == '▶') {
+                    // Skip ▶ outPort
+                    continue
+                };
+
+                for (let inPortIndex in inPorts) {
+                    const inPort = inPorts[inPortIndex];
+                    const inPortName = inPort.getOptions()['name'];
+                    const inPortLabel = inPort.getOptions()['label'];
+                    const inPortType = inPort.getOptions()['type'];
+                    const inPortLabelArr: string[] = inPortLabel.split('_');
+                    // Compare if there is similarity for each word
+                    const intersection = outPortLabelArr.filter(element => inPortLabelArr.includes(element));
+
+                    if (outPortLabel == inPortLabel && outPortType == inPortType || intersection.length >= 1) {
+                        // Create new link
+                        const newLink = new DefaultLinkModel();
+                        // Set sourcePort
+                        const sourcePort = sourceNode.getPorts()[outPortName];
+                        newLink.setSourcePort(sourcePort);
+                        // Set targetPort
+                        const targetPort = targetNode.getPorts()[inPortName];
+                        newLink.setTargetPort(targetPort);
+
+                        widget.xircuitsApp.getDiagramEngine().getModel().addLink(newLink);
+                        break;
+                    }
+                }
+            }
+        },
+        label: trans.__('Link obvious ports')
     });
 
     //Add command to add comment node at given position
