@@ -105,6 +105,7 @@ export const commandIDs = {
 	deleteNode: 'Xircuit-editor:delete-node',
 	addNodeGivenPosition: 'Xircuit-editor:add-node', 
 	connectNodeByLink: 'Xircuit-editor:connect-node',
+	connectLinkToObviousPorts: 'Xircuit-editor:connect-obvious-link',
 	addCommentNode: 'Xircuit-editor:add-comment-node',
 	createArbitraryFile: 'Xircuit-editor:create-arbitrary-file',
 	openDebugger: 'Xircuit-debugger:open',
@@ -232,7 +233,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								 * Detect changes when link is connected
 								 */
 								targetPortChanged: e => {
-									linkObviousPort(e.entity as DefaultLinkModel);
+									const sourceLink = e.entity as any;
+									app.commands.execute(commandIDs.connectLinkToObviousPorts, { sourceLink });
 									onChange();
 								},
 								/**
