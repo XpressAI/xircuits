@@ -1,7 +1,7 @@
 import React, { FC, useState, useCallback, useEffect, useRef } from 'react';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
-import { LinkModel, DiagramModel, DiagramEngine, DefaultLinkModel } from '@projectstorm/react-diagrams';
+import { DefaultLinkModel, LinkModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
 import { Dialog, showDialog, showErrorMessage } from '@jupyterlab/apputils';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
@@ -10,11 +10,9 @@ import {
 	DocumentRegistry
 } from '@jupyterlab/docregistry';
 import styled from '@emotion/styled';
-import { CustomNodeModel } from "./CustomNodeModel";
 import { XPipePanel } from '../xircuitWidget';
 import { Log } from '../log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
-import ComponentList from '../tray_library/Component';
 import { formDialogWidget } from '../dialog/formDialogwidget';
 import { showFormDialog } from '../dialog/FormDialog';
 import { RunDialog } from '../dialog/RunDialog';
@@ -107,6 +105,7 @@ export const commandIDs = {
 	deleteNode: 'Xircuit-editor:delete-node',
 	addNodeGivenPosition: 'Xircuit-editor:add-node', 
 	connectNodeByLink: 'Xircuit-editor:connect-node',
+	connectLinkToObviousPorts: 'Xircuit-editor:connect-obvious-link',
 	addCommentNode: 'Xircuit-editor:add-comment-node',
 	createArbitraryFile: 'Xircuit-editor:create-arbitrary-file',
 	openDebugger: 'Xircuit-debugger:open',
@@ -234,6 +233,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								 * Detect changes when link is connected
 								 */
 								targetPortChanged: e => {
+									const sourceLink = e.entity as any;
+									app.commands.execute(commandIDs.connectLinkToObviousPorts, { sourceLink });
 									onChange();
 								},
 								/**
