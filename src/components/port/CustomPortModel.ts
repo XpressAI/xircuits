@@ -130,7 +130,7 @@ export  class CustomPortModel extends DefaultPortModel  {
         }else{
             if (thisName.startsWith("parameter")){
                 // Skip 'any' type check for both in and out ports or same type check
-                if(thisPortType || sourcePortType == 'any' || thisPortType == sourcePortType){
+                if(thisPortType == 'any' || sourcePortType == 'any' || thisPortType == sourcePortType){
                     return
                 }
 		        port.getNode().getOptions().extras["borderColor"]="red";
