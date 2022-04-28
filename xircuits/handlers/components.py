@@ -157,6 +157,8 @@ class ComponentsRouteHandler(APIHandler):
             for v in node.body if is_arg(v)
         ]
 
+        docstring = ast.get_docstring(node)
+
         output = {
             "class": name,
             "package_name": ("xai_components." if python_path is None else "") + file_path.as_posix().replace("/", ".")[:-3],
@@ -167,7 +169,8 @@ class ComponentsRouteHandler(APIHandler):
             "header": GROUP_ADVANCED,
             "category": category,
             "type": "debug",
-            "variables": variables
+            "variables": variables,
+            "docstring": docstring
         }
         output.update(keywords)
 

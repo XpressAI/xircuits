@@ -1,0 +1,70 @@
+.description-tooltip{
+    background-color: rgb(255, 255, 255) !important;
+    box-shadow: 5px 5px 3px rgba(0,0,0,.5) !important;
+    border: 2px solid rgba(0, 253, 232, .5) !important;
+    border-radius: 10 !important;
+    opacity: 0.99 !important;
+}
+
+.description-container{
+    width: 450px;
+    height: 250px;
+    overflow: auto;
+    position: relative;
+}
+
+.description-text{
+    text-align: justify;
+    font-family: sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    white-space: pre-wrap;
+    color: rgb(0, 0, 0);
+}
+
+.description-title{
+    text-align: justify;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: rgb(0, 0, 0);
+    padding-bottom: 5px;
+}
+
+.error-tooltip{
+    background: rgb(255, 255, 255) !important;
+    border-radius: 10px !important;
+    border: 2px solid rgba(255, 0, 0, .9) !important;
+    box-shadow: 5px 5px 3px rgba(0,0,0,.5) !important;
+}
+
+.error-text{
+    color: rgb(0, 0, 0);
+    width: 250px;
+    text-align: center;
+    padding-right: 10px;
+    cursor: default;
+}
+
+.error-container .close{
+    right: 5px;
+}
+
+/* Close button*/
+.close {
+    background-color: transparent;
+    position: absolute;
+    top: 4px;
+    right: 17px;
+    font-size: 20px;
+    border-radius: 50%;
+    border: none;
+}
+.close:hover,
+.close:focus {
+    color: rgb(255, 255, 255);
+    background-color: #616161;
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+}

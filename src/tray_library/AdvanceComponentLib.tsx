@@ -30,7 +30,8 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
         color: nodeData.color,
         extras: {
             "type": nodeData.type,
-            "path": nodeData.file_path
+            "path": nodeData.file_path,
+            "description": nodeData.docstring
         }
     });
     node.addInPortEnhance('▶', 'in-0');
@@ -42,7 +43,7 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
         "str": "string"
     }
 
-    props.model["variables"].forEach(variable => {
+    nodeData["variables"].forEach(variable => {
         let name = variable["name"];
         let type = type_name_remappings[variable["type"]] || variable["type"];
 

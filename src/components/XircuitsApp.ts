@@ -3,7 +3,7 @@ import { CustomNodeFactory } from "./CustomNodeFactory";
 import { CustomNodeModel } from './CustomNodeModel';
 import { ZoomCanvasAction } from '@projectstorm/react-canvas-core';
 import { CustomActionEvent } from '../commands/CustomActionEvent';
-import { JupyterFrontEnd } from '@jupyterlab/application';
+import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { CustomDiagramState } from './state/CustomDiagramState'
 import { CustomLinkModel, TriangleLinkModel } from './link/CustomLinkModel';
 import { CustomLinkFactory, TriangleLinkFactory } from './link/CustomLinkFactory';
@@ -14,11 +14,11 @@ export class XircuitsApplication {
 
         protected diagramEngine: SRD.DiagramEngine;
 
-        constructor(app: JupyterFrontEnd) {
+        constructor(app: JupyterFrontEnd, shell: ILabShell) {
 
                 this.diagramEngine = SRD.default({ registerDefaultZoomCanvasAction: false, registerDefaultDeleteItemsAction: false });
                 this.activeModel = new SRD.DiagramModel();
-                this.diagramEngine.getNodeFactories().registerFactory(new CustomNodeFactory(app));
+                this.diagramEngine.getNodeFactories().registerFactory(new CustomNodeFactory(app, shell));
                 this.diagramEngine.getLinkFactories().registerFactory(new CustomLinkFactory());
                 this.diagramEngine.getLinkFactories().registerFactory(new TriangleLinkFactory());
                 this.diagramEngine.getActionEventBus().registerAction(new ZoomCanvasAction({ inverseZoom: true }))

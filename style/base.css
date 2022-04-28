@@ -36,22 +36,3 @@
 .jp-debugger-toolbar-panel {
   flex: 0 0 auto;
 }
-
-/* Close button for image viewer*/
-.close {
-  color: #fff;
-  background-color: #999;
-  position: absolute;
-  top: -22px;
-  right: -17px;
-  font-size: 20px;
-  border-radius: 50%;
-  border: 2px solid #333;
-}
-.close:hover,
-.close:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-  outline: none;
-}
