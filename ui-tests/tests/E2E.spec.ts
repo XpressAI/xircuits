@@ -25,9 +25,9 @@ test('Should complete E2E test', async ({
     dialog.dismiss().catch(() => {});
   });
 
-  await page.locator("xpath=//*[contains(@title, 'Save Xircuits')]").first().click();
+  await page.locator("xpath=//*[contains(@title, 'Save (Ctrl+S)')]").first().click();
   await page.locator("xpath=//*[contains(@title, 'Compile Xircuits')]").first().click();
-  await page.locator("xpath=//*[contains(@title, 'Run Xircuits')]").first().click();
+  await page.locator("xpath=//*[contains(@title, 'Compile and Run Xircuits')]").first().click();
 
   // Start Xircuits
   await page.locator('button:has-text("Start")').click();

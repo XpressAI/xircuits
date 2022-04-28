@@ -232,7 +232,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
      */
     let testButton = new ToolbarButton({
       icon: editIcon,
-      tooltip: 'For testing purpose',
+      tooltip: 'For testing purposes',
       onClick: (): void => {
         this.commands.execute(commandIDs.testXircuit)
       }
@@ -243,7 +243,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
      */
     let compileButton = new ToolbarButton({
       icon: checkIcon,
-      tooltip: 'Compile',
+      tooltip: 'Compile Xircuits',
       onClick: (): void => {
         this.commands.execute(commandIDs.compileXircuit);
       }
@@ -254,7 +254,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
      */
     let compileAndRunButton = new ToolbarButton({
       icon: runIcon,
-      tooltip: 'Compile and Run',
+      tooltip: 'Compile and Run Xircuits',
       onClick: (): void => {
         this.commands.execute(commandIDs.runXircuit);
       }
