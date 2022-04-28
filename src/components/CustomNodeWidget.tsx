@@ -9,7 +9,7 @@ import ToolTip from 'react-portal-tooltip';
 import { Pagination } from "krc-pagination";
 import 'krc-pagination/styles.css';
 import Toggle from 'react-toggle'
-import { JupyterFrontEnd } from '@jupyterlab/application';
+import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { commandIDs } from './xircuitBodyWidget';
 import { CustomPortLabel } from './port/CustomPortLabel';
 import TextareaAutosize from 'react-textarea-autosize';
@@ -92,6 +92,7 @@ export interface DefaultNodeProps {
     node: DefaultNodeModel;
     engine: DiagramEngine;
     app: JupyterFrontEnd;
+    shell : ILabShell;
 }
 
 /**
@@ -281,22 +282,29 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                             const nodePosition = { x: currentNode.getX(), y: currentNode.getY() };
                             let newPositionX = nodePosition.x;
                             let newPositionY = nodePosition.y;
+                            let offset = 0;
+
+                            if (!this.props.shell.leftCollapsed) {
+                                // Some weird offset happened when left sidebar opened, need to add this
+                                let leftSidebar = document.getElementById('jp-left-stack');
+                                offset = leftSidebar.clientWidth + 2;
+                            }
 
                             if (refNode == 'top') {
-                                newPositionX = newPositionX - 200 + (nodeDimension.x / 2);
+                                newPositionX = newPositionX - 208 + offset + (nodeDimension.x / 2);
                                 newPositionY = newPositionY - 220;
                             }
                             else if (refNode == 'bottom') {
-                                newPositionX = newPositionX - 200 + (nodeDimension.x / 2);
+                                newPositionX = newPositionX - 208 + offset + (nodeDimension.x / 2);
                                 newPositionY = newPositionY + 85 + nodeDimension.y;
                             }
                             else if (refNode == 'right') {
-                                newPositionX = newPositionX + 40 + nodeDimension.x;
-                                newPositionY = newPositionY - 30;
+                                newPositionX = newPositionX + 40 + offset + nodeDimension.x;
+                                newPositionY = newPositionY - 66 + (nodeDimension.y / 2);
                             }
                             else if (refNode == 'left') {
-                                newPositionX = newPositionX - 450;
-                                newPositionY = newPositionY - 30;
+                                newPositionX = newPositionX - 450 + offset;
+                                newPositionY = newPositionY - 66 + (nodeDimension.y / 2);
                             }
                             const tooltipPosition = this.props.engine.getRelativePoint(newPositionX, newPositionY);
 
