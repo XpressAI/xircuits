@@ -1600,9 +1600,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	// Show the component panel context menu
 	const showComponentPanel = (event: React.MouseEvent<HTMLDivElement>) => {
-		// Disable the default context menu
-		event.preventDefault();
-
 		setActionPanelShown(false);
 		setIsComponentPanelShown(false);
 
@@ -1647,6 +1644,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	// Show the nodeActionPanel context menu
 	const showNodeActionPanel = (event: React.MouseEvent<HTMLDivElement>) => {
+		// Disable the default context menu
+		event.preventDefault();
+
 		setActionPanelShown(false);
 		setIsComponentPanelShown(false);
 
@@ -1739,11 +1739,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					onMouseDown={(event) => {
 						event.preventDefault();
 					}}
-					onContextMenu={showComponentPanel}
+					onContextMenu={showNodeActionPanel}
 					onClick={(event) => {
 						hidePanel();
 						if (event.ctrlKey || event.metaKey) {
-							showNodeActionPanel(event);
+							showComponentPanel(event);
 						}
 					}}>
 					<DemoCanvasWidget>
