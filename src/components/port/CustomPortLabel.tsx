@@ -21,22 +21,22 @@ namespace S {
 		flex-grow: 1;
 	`;
 
-	export const SymbolContainer = styled.div<{ symbolType: string; selected: boolean; }>`
+	export const SymbolContainer = styled.div<{ symbolType: string; selected: boolean; isOutPort: boolean }>`
         width: 17px;
 		height: 15px;
 		border: 5px hidden;
 		background: ${(p) => (p.selected ? 'white' : 'rgba(0, 0, 0, 0.2)')};
-		border-radius: 0px 20px 20px 0px;
+		border-radius: ${(p) => (p.isOutPort ? '20px 0px 0px 20px' : '0px 20px 20px 0px')} ;
 		display: ${(p) => p.symbolType == null ? 'none' : 'visible'};
 		text-align: center;
 	`;
 
-	export const Symbol = styled.div`
+	export const Symbol = styled.div<{ isOutPort: boolean }>`
 		color: black;
 		font-weight: bold;
 		font-size: 9px;
 		font-family: Helvetica, Arial, sans-serif;
-		padding-top: 3px;
+		padding:${(p) => (p.isOutPort ? '3px 0px 0px 2px' : '3px 2px 0px 0px')};
 	`;
 
 	export const Port = styled.div`
@@ -51,8 +51,16 @@ namespace S {
 
 export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 	render() {
-		let portType = this.props.port.getOptions().name.split("-")[1];
+		let portName = this.props.port.getOptions().name;
+		let portType;
 		let symbolLabel;
+		let isOutPort;
+		if(portName.includes('parameter-out')){
+			portType = portName.split("-")[2];
+			isOutPort = true;
+		} else {
+			portType = portName.split("-")[1];
+		}
 
 		switch (portType) {
 			case "string":
@@ -97,8 +105,8 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 		}
 
 		const symbol = (
-			<S.SymbolContainer symbolType={symbolLabel} selected={portHasLink}>
-				<S.Symbol>
+			<S.SymbolContainer symbolType={symbolLabel} selected={portHasLink} isOutPort={isOutPort}>
+				<S.Symbol isOutPort={isOutPort}>
 					{symbolLabel}
 				</S.Symbol>
 			</S.SymbolContainer>);
