@@ -342,7 +342,15 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                                 const nodePosition = { x: currentNode.getX(), y: currentNode.getY() };
                                 let newPositionX = nodePosition.x;
                                 let newPositionY = nodePosition.y;
-                                newPositionX = newPositionX - 110 + (nodeDimension.x / 2);
+                                let offset = 0;
+
+                                if (!this.props.shell.leftCollapsed) {
+                                    // Some weird offset happened when left sidebar opened, need to add this
+                                    let leftSidebar = document.getElementById('jp-left-stack');
+                                    offset = leftSidebar.clientWidth + 2;
+                                }
+
+                                newPositionX = newPositionX - 110 + offset + (nodeDimension.x / 2);
                                 newPositionY = newPositionY + 90 + nodeDimension.y;
 
                                 const tooltipPosition = this.props.engine.getRelativePoint(newPositionX, newPositionY);
