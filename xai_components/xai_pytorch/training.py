@@ -237,7 +237,7 @@ class PrepareUnetDataLoader(Component):
                                                    pin_memory=pin_memory_bool
                                                    )
 
-        tests_set = UNetDataset(image_dir=str(self.train_image_folder.value[0]), masks_dir=str(self.train_image_folder.value[1]))
+        tests_set = UNetDataset(image_dir=str(self.test_image_folder.value[0]), masks_dir=str(self.test_image_folder.value[1]))
         tests_loader = torch.utils.data.DataLoader(tests_set,
                                                    batch_size=image_batch_size,
                                                    shuffle=shuffle_bool,
