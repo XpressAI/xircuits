@@ -355,7 +355,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				if (getTargetNode) {
 					let nodeModel = getNodeModelById(nodeModels, getTargetNode);
 
-					if (nodeModel['name'] == 'Branch') {
+					if (nodeModel['extras']['type'] == 'Branch') {
 						branchNodeIds.push(nodeModel.getID());
 					}
 
@@ -363,14 +363,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						sourceNodeModelId = nodeModel.getID();
 						retNodeModels.push(nodeModel);
 						if (nodeModel['name'] == 'Finish' && branchNodeIds.length != 0) {
+							branchNodeIds.pop();
 							let branchNodeModel = getNodeModelById(nodeModels, getBranchNode);
+							if (branchNodeModel['extras']['type'] == 'Branch') {
+								// When there's continuous branch node, add the new branch node id
+								branchNodeIds.push(branchNodeModel.getID());
+							}
 
 							// When If False ▶ have no node, just skip
 							if (branchNodeModel == null) continue;
 
 							retNodeModels.push(branchNodeModel);
 							sourceNodeModelId = getBranchNode;
-							branchNodeIds.pop();
 						}
 					}
 				}
