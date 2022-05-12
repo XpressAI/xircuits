@@ -302,6 +302,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return null;
 	}
 
+	const getTargetBranchNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
+		for (let i = 0; i < linkModels.length; i++) {
+			let linkModel = linkModels[i];
+			if (linkModel.getSourcePort().getNode().getID() === sourceId && linkModel.getSourcePort().getOptions()["label"] == 'If False ▶') {
+				return linkModel.getTargetPort().getNode().getID();
+			}
+		}
+		return null;
+	}
+
 	const getNodeModelByName = (nodeModels: any[], name: string): NodeModel | null => {
 		for (let i = 0; i < nodeModels.length; i++) {
 			let nodeModel = nodeModels[i];
@@ -335,17 +345,33 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (startNodeModel) {
 			let sourceNodeModelId = startNodeModel.getID();
 			let retNodeModels: NodeModel[] = [];
+			let branchNodeIds: string[] = [];
 			retNodeModels.push(startNodeModel);
 
 			while (getTargetNodeModelId(model.getLinks(), sourceNodeModelId) != null) {
-				let getTargetNode = getTargetNodeModelId(model.getLinks(), sourceNodeModelId)
+				let getTargetNode = getTargetNodeModelId(model.getLinks(), sourceNodeModelId);
+				let getBranchNode = getTargetBranchNodeModelId(model.getLinks(), branchNodeIds[0]);
 
 				if (getTargetNode) {
 					let nodeModel = getNodeModelById(nodeModels, getTargetNode);
 
+					if (nodeModel['name'] == 'Branch') {
+						branchNodeIds.push(nodeModel.getID());
+					}
+
 					if (nodeModel) {
 						sourceNodeModelId = nodeModel.getID();
-						retNodeModels.push(nodeModel)
+						retNodeModels.push(nodeModel);
+						if (nodeModel['name'] == 'Finish' && branchNodeIds.length != 0) {
+							let branchNodeModel = getNodeModelById(nodeModels, getBranchNode);
+
+							// When If False ▶ have no node, just skip
+							if (branchNodeModel == null) continue;
+
+							retNodeModels.push(branchNodeModel);
+							sourceNodeModelId = getBranchNode;
+							branchNodeIds.pop();
+						}
 					}
 				}
 			}
