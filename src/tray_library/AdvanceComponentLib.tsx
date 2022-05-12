@@ -34,8 +34,15 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
             "description": nodeData.docstring
         }
     });
+    if (nodeData.type == 'Branch') {
+        node.addInPortEnhance('▶', 'in-0');
+        node.addOutPortEnhance('If True  ▶', 'out-0');
+        node.addOutPortEnhance('If False ▶', 'out-1');
+    }
+    else {
     node.addInPortEnhance('▶', 'in-0');
     node.addOutPortEnhance('▶', 'out-0');
+    }
 
     // TODO: Get rid of the remapping by using compatible type names everywhere
     let type_name_remappings = {

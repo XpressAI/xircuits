@@ -85,13 +85,12 @@ class BranchComponent(BaseComponent):
     when_true: BaseComponent
     when_false: BaseComponent
 
-    condition: InArg[bool]
-
     def do(self, ctx) -> BaseComponent:
-        if self.condition.value:
-            return self.when_true
+        print(f"\nExecuting: {self.__class__.__name__}")
+        if self.condition.value or self.condition.value is None:
+            return self.condition, self.when_true
         else:
-            return self.when_false
+            return self.condition, self.when_false
 
 
 @xai_component(type="if")
