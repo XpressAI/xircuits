@@ -311,6 +311,10 @@ export function addNodeActionCommands(
             const outPorts = sourceNode['portsOut'];
             const inPorts = targetNode['portsIn'];
 
+            if (targetPort == null) {
+                // When branch outport being linked, just return
+                return;
+            }
             if (sourcePort.getOptions()['label'] != '▶' && targetPort.getOptions()['label'] != '▶') {
                 // When it's not ▶ being linked, just return
                 return;
