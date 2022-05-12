@@ -810,6 +810,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			if (inPorts != 0) {
 				if(outPorts != 0) {
 					if (outPorts[j].getOptions()["label"] == 'If True  ▶' && Object.keys(outPorts[0].getLinks()).length == 0) {
+						let falseLinks = nodeModels[i]['ports']['out-1']['links']
+						for (let linkID in falseLinks) {
+							let link = falseLinks[linkID];
+							if (Object.keys(falseLinks).length != 0) {
+								// Some weird behaviour where it's getting node from If False port when linking using If True port
+								// Must delete the If False link
+								xircuitsApp.getDiagramEngine().getModel().removeLink(link);
+								xircuitsApp.getDiagramEngine().repaintCanvas();
+							}
+						}
+
 						// When If True ▶ has no link, show error tooltip
 						nodeModels[i].getOptions().extras["borderColor"] = "red";
 						nodeModels[i].getOptions().extras["tip"] = "Please make sure this Branch If True ▶ is properly connected ";
