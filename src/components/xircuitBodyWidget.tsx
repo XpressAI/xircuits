@@ -465,8 +465,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		pythonCode += '    ' + 'ctx = {}\n';
 		pythonCode += '    ' + "ctx['args'] = args\n\n";
 
+		let actualNodesNum = 0;
 		for (let i = 0; i < allNodes.length; i++) {
-
+			actualNodesNum++;
 			let nodeType = allNodes[i]["extras"]["type"];
 
 			if (nodeType == 'Start' ||
@@ -475,27 +476,39 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				nodeType === 'int' ||
 				nodeType === 'float' ||
 				nodeType === 'string') {
-			} else {
-				let bindingName = 'c_' + i;
+				// Skip these type of node
+				actualNodesNum--;
+			}
+			else {
+				let bindingName = 'c_' + actualNodesNum;
 				let componentName = allNodes[i]["name"];
 				componentName = componentName.replace(/\s+/g, "");
 				pythonCode += '    ' + bindingName + ' = ' + componentName + '()\n';
 			}
-
 		}
 
 		pythonCode += '\n';
 
 		if (startNodeModel) {
-			let sourceNodeModelId = startNodeModel.getID();
 			let j = 0;
 
-			while (getTargetNodeModelId(model.getLinks(), sourceNodeModelId) != null) {
-				let targetNodeId = getTargetNodeModelId(model.getLinks(), sourceNodeModelId)
+			for (let i = 0; i < allNodes.length; i++) {
+				j++;
+				let nodeType = allNodes[i]["extras"]["type"];
 
-				if (targetNodeId) {
+				if (nodeType == 'Start' ||
+					nodeType == 'Finish' ||
+					nodeType === 'boolean' ||
+					nodeType === 'int' ||
+					nodeType === 'float' ||
+					nodeType === 'string') {
+					// Skip these type of node
+					j--;
+					continue;
+				}
 
-					let bindingName = 'c_' + ++j;
+				let bindingName = 'c_' + j;
+				let targetNodeId = allNodes[i].getOptions()['id'];
 					let currentNodeModel = getNodeModelById(nodeModels, targetNodeId);
 					let allPort = currentNodeModel.getPorts();
 					// Reset appending values
@@ -591,34 +604,58 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 									}
 								}
 							}
-						} else {
 						}
-
 					}
-
-					if (currentNodeModel) {
-						sourceNodeModelId = currentNodeModel.getID();
-					}
-				}
-
 			}
 		}
 
 		pythonCode += '\n';
 
+		let actualNodesNumber = 0;
 		for (let i = 0; i < allNodes.length; i++) {
-
+			actualNodesNumber++;
 			let nodeType = allNodes[i]["extras"]["type"];
-			let bindingName = 'c_' + i;
-			let nextBindingName = 'c_' + (i + 1);
+			let bindingName = 'c_' + actualNodesNumber;
+			let nextBindingName = 'c_' + (actualNodesNumber + 1);
 
-			if (nodeType == 'Start' || nodeType == 'Finish') {
-			} else if (i == (allNodes.length - 2)) {
+			if (nodeType == 'Start') {
+				actualNodesNumber--;
+			} else if (nodeType == 'Finish') {
+				actualNodesNumber--;
+				bindingName = 'c_' + actualNodesNumber;
 				pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
-			} else {
+			}
+			else if (nodeType == 'Branch') {
+				let trueBranchLink = allNodes[i]['ports']['out-0']['links'] as any;
+				let falseBranchLink = allNodes[i]['ports']['out-1']['links'] as any;
+
+				if (allNodes[i + 1]['name'] == 'Finish') {
+					// When next node after port If True  ▶ is Finish node, set to None
+					nextBindingName = 'None\n';
+				}
+				
+				if (Object.keys(trueBranchLink).length != 0) {
+					pythonCode += '    ' + bindingName + '.when_true = ' + nextBindingName + '\n';
+					
+					if (Object.keys(falseBranchLink).length != 0) {
+						let falseBranchNodeIndex = actualNodesNumber - 1; // 1 is Start node
+						let falseBranchBindingName;
+						for (let j = i; j < allNodes.length; j++) {
+							falseBranchNodeIndex++;
+							if (allNodes[j]['name'] == 'Finish') {
+								// Stop counting node after port If True  ▶ reach Finish node
+								break;
+							}
+						}
+						falseBranchBindingName = 'c_' + falseBranchNodeIndex;
+						pythonCode += '    ' + bindingName + '.when_false = ' + falseBranchBindingName + '\n';
+					}
+				}
+			}
+			else {
+				if (allNodes[i + 1]["extras"]["type"] == 'Finish') continue; // When next node is Finish, just skip
 				pythonCode += '    ' + bindingName + '.next = ' + nextBindingName + '\n';
 			}
-
 		}
 
 		if (debuggerMode == true) pythonCode += '    ' + 'debug_mode = args.debug_mode\n';
