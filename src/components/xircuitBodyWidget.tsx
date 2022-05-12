@@ -804,9 +804,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		for (let i = 0; i < nodeModels.length; i++) {
 			let inPorts = nodeModels[i]["portsIn"];
+			let outPorts = nodeModels[i]["portsOut"];
 			let j = 0;
 			if (inPorts != 0) {
-				if (inPorts[j].getOptions()["label"] == '▶' && Object.keys(inPorts[0].getLinks()).length != 0) {
+				if(outPorts != 0) {
+					if (outPorts[j].getOptions()["label"] == 'If True  ▶' && Object.keys(outPorts[0].getLinks()).length == 0) {
+						// When If True ▶ has no link, show error tooltip
+						nodeModels[i].getOptions().extras["borderColor"] = "red";
+						nodeModels[i].getOptions().extras["tip"] = "Please make sure this Branch If True ▶ is properly connected ";
+						nodeModels[i].setSelected(true);
+						return false;
+					}
+				} else if (inPorts[j].getOptions()["label"] == '▶' && Object.keys(inPorts[0].getLinks()).length != 0) {
 					continue
 				} else {
 					nodeModels[i].getOptions().extras["borderColor"] = "red";
