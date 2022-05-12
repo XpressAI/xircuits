@@ -12,13 +12,12 @@ export const RunDialog = ({
 	childFloatNodes
 }): JSX.Element => {
 
-	const [checked, setChecked] = useState<boolean[]>([false]);
+	const [checked, setChecked] = useState<boolean[]>([true]);
 
 	const handleChecked = (e, i) => {
 		let newChecked = [...checked];
 		newChecked[i] = e;
 		setChecked(newChecked);
-		console.log("Boolean change: ", checked)
 	};
 
 	return (
@@ -60,7 +59,7 @@ export const RunDialog = ({
 				<div key={`index-${i}`}>{boolNode}
 					<div>
 						<Switch
-							checked={checked[i] || false}
+							checked={checked[i] ?? true}
 							name={boolNode}
 							onChange={(e) => handleChecked(e, i)}
 							handleDiameter={25}
