@@ -55,10 +55,7 @@ export  class CustomPortModel extends DefaultPortModel  {
             //console.log("Loop detected.");
             return false;
         }
-        port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-        delete port.getNode().getOptions().extras["tip"];
-        this.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-        delete this.getNode().getOptions().extras["tip"];
+        this.removeErrorTooltip(this, port);
         return true;
     }
 
@@ -145,10 +142,7 @@ export  class CustomPortModel extends DefaultPortModel  {
             }
             //return(!(thisName.startsWith("parameter")) && !(Object.keys(port.getLinks()).length > 0));
         }
-        port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-        delete port.getNode().getOptions().extras["tip"];
-        thisPort.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-        delete thisPort.getNode().getOptions().extras["tip"];
+        this.removeErrorTooltip;
         return true;
     }
 
@@ -173,24 +167,24 @@ export  class CustomPortModel extends DefaultPortModel  {
         let thisNodeModelType = thisNode.getOptions()["extras"]["type"];
 
         if (this.isParameterNode(thisNodeModelType)){
-            port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-            delete port.getNode().getOptions().extras["tip"];
-            thisPort.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-            delete thisPort.getNode().getOptions().extras["tip"];
+            this.removeErrorTooltip;
             return true;
         }
 
         if (!(thisPortLabel.endsWith('▶')) && portLabel != '▶'){
-            port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-            delete port.getNode().getOptions().extras["tip"];
-            thisPort.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-            delete thisPort.getNode().getOptions().extras["tip"];
+            this.removeErrorTooltip;
             return true;
-        }else{
+            this.removeErrorTooltip;
             return (portLabel === '▶' && thisPortLabel.endsWith('▶') && !(Object.keys(thisPort.getLinks()).length > 1));
         }
     }
 
+    removeErrorTooltip = (thisPort, port) => {
+        port.getNode().getOptions().extras["borderColor"] = "rgb(0,192,255)";
+        delete port.getNode().getOptions().extras["tip"];
+        thisPort.getNode().getOptions().extras["borderColor"] = "rgb(0,192,255)";
+        delete thisPort.getNode().getOptions().extras["tip"];
+    }
 
     getCircularReplacer = ()=> {
         var seen = [];
