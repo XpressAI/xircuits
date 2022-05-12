@@ -7,3 +7,7 @@ class Branch(BranchComponent):
     def __init__(self):
 
         self.condition = InArg.empty()
+
+@xai_component(type="Finish", color="rgb(255,102,102)")
+class Finish(BranchComponent):
+    pass

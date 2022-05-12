@@ -39,9 +39,12 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
         node.addOutPortEnhance('If True  ▶', 'out-0');
         node.addOutPortEnhance('If False ▶', 'out-1');
     }
+    else if (nodeData.type == 'Finish') {
+        node.addInPortEnhance('▶', 'in-0');
+    }
     else {
-    node.addInPortEnhance('▶', 'in-0');
-    node.addOutPortEnhance('▶', 'out-0');
+        node.addInPortEnhance('▶', 'in-0');
+        node.addOutPortEnhance('▶', 'out-0');
     }
 
     // TODO: Get rid of the remapping by using compatible type names everywhere
