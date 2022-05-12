@@ -93,20 +93,25 @@ export class XircuitsApplication {
 
                                 const sourcePort = sourceNode.getPortFromID(link.sourcePort);
                                 const sourcePortName = sourcePort.getOptions()['name'];
-                                const sourcePortTriangleName = 'out-0';
-                                if (sourcePortName == sourcePortTriangleName) {
-                                        if (sourceNode.getPorts()[sourcePortName].getOptions()['label'] == '▶') {
-                                                // When source port is '▶', use triangle animation link
-                                                newLink = newTriangleLink;
+                                const sourcePortLabel = sourceNode.getPorts()[sourcePortName].getOptions()['label'];
+                                if (sourcePortName == 'out-0' || 'out-1') {
+                                        // When source port is '▶', use triangle animation link
+                                        switch (sourcePortLabel) {
+                                                case '▶':
+                                                case 'If True  ▶':
+                                                case 'If False ▶':
+                                                        newLink = newTriangleLink;
+                                                        break;
                                         }
                                 }
                                 newLink.setSourcePort(sourcePort);
 
                                 const targetPort = targetNode.getPortFromID(link.targetPort);
                                 const targetPortName = targetPort.getOptions()['name'];
+                                const targetPortLabel = targetNode.getPorts()[targetPortName].getOptions()['label'];
                                 const targetPortTriangleName = 'in-0';
                                 if (targetPortName == targetPortTriangleName) {
-                                        if (targetNode.getPorts()[targetPortName].getOptions()['label'] == '▶') {
+                                        if (targetPortLabel == '▶') {
                                                 // When target port is '▶', use triangle animation link
                                                 newLink = newTriangleLink;
                                         }

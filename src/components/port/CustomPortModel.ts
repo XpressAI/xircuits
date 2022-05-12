@@ -174,7 +174,13 @@ export  class CustomPortModel extends DefaultPortModel  {
         if (!(thisPortLabel.endsWith('▶')) && portLabel != '▶'){
             this.removeErrorTooltip;
             return true;
+        } 
+        else if(thisPortLabel == 'If True  ▶' || thisPortLabel == 'If False ▶'){
             this.removeErrorTooltip;
+            return (portLabel === '▶' && thisPortLabel.endsWith('If True  ▶') && !(Object.keys(thisPort.getLinks()).length > 1) ||
+            portLabel === '▶' && thisPortLabel.endsWith('If False ▶') && !(Object.keys(thisPort.getLinks()).length > 1));
+        }
+        else{            
             return (portLabel === '▶' && thisPortLabel.endsWith('▶') && !(Object.keys(thisPort.getLinks()).length > 1));
         }
     }
@@ -233,7 +239,10 @@ export  class CustomPortModel extends DefaultPortModel  {
                 
                 let portLabel = inPorts[i].getOptions()["label"];
 
-                if (portLabel === "▶"){
+                if (portLabel === "▶" ||
+                    portLabel === 'If True  ▶' ||
+                    portLabel === 'If False ▶'
+                ) {
                     let portLink = inPorts[i].getLinks();
                     //check if port has any links
                     if (Object.keys(portLink).length !== 1){
@@ -271,7 +280,10 @@ export  class CustomPortModel extends DefaultPortModel  {
                 
                 let portLabel = outPorts[i].getOptions()["label"];
 
-                if (portLabel === "▶"){
+                if (portLabel === "▶" ||
+                    portLabel === 'If True  ▶' ||
+                    portLabel === 'If False ▶'
+                ) {
                     let portLink = outPorts[i].getLinks();
                     //check if port has any links
                     if (Object.keys(portLink).length !== 1){
