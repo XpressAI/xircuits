@@ -365,14 +365,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						if (nodeModel['name'] == 'Finish' && branchNodeIds.length != 0) {
 							branchNodeIds.pop();
 							let branchNodeModel = getNodeModelById(nodeModels, getBranchNode);
+							// When If False ▶ have no node, just skip
+							if (branchNodeModel == null) continue;
+
 							if (branchNodeModel['extras']['type'] == 'Branch') {
 								// When there's continuous branch node, add the new branch node id
 								branchNodeIds.push(branchNodeModel.getID());
 							}
-
-							// When If False ▶ have no node, just skip
-							if (branchNodeModel == null) continue;
-
 							retNodeModels.push(branchNodeModel);
 							sourceNodeModelId = getBranchNode;
 						}
