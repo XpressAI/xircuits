@@ -806,6 +806,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	const checkAllNodesConnected = (): boolean | null => {
 		let nodeModels = xircuitsApp.getDiagramEngine().getModel().getNodes();
+		let allNodes = getAllNodesFromStartToFinish();
+		let lastNode = allNodes[allNodes.length - 1];
+		if (lastNode['name'] != 'Finish') {
+			// When last node is not Finish node, check failed and show error tooltip
+			lastNode.getOptions().extras["borderColor"] = "red";
+			lastNode.getOptions().extras["tip"] = `Please make sure this ${lastNode['name']} end with Finish node`;
+			lastNode.setSelected(true);
+			return false;
+		}
 
 		for (let i = 0; i < nodeModels.length; i++) {
 			let inPorts = nodeModels[i]["portsIn"];
