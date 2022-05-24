@@ -302,10 +302,30 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return null;
 	}
 
-	const getTargetBranchNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
+	const getTargetTrueBranchNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
+		for (let i = 0; i < linkModels.length; i++) {
+			let linkModel = linkModels[i];
+			if (linkModel.getSourcePort().getNode().getID() === sourceId && linkModel.getSourcePort().getOptions()["label"] == 'If True  ▶') {
+				return linkModel.getTargetPort().getNode().getID();
+			}
+		}
+		return null;
+	}
+
+	const getTargetFalseBranchNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
 		for (let i = 0; i < linkModels.length; i++) {
 			let linkModel = linkModels[i];
 			if (linkModel.getSourcePort().getNode().getID() === sourceId && linkModel.getSourcePort().getOptions()["label"] == 'If False ▶') {
+				return linkModel.getTargetPort().getNode().getID();
+			}
+		}
+		return null;
+	}
+
+	const getTargetFinishedBranchNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
+		for (let i = 0; i < linkModels.length; i++) {
+			let linkModel = linkModels[i];
+			if (linkModel.getSourcePort().getNode().getID() === sourceId && linkModel.getSourcePort().getOptions()["label"] == 'Finished ▶') {
 				return linkModel.getTargetPort().getNode().getID();
 			}
 		}
@@ -332,6 +352,41 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			}
 		}
 		return null;
+	}
+
+	const getTargetNodeFromBranch = (nodeModel) => {
+		let model = xircuitsApp.getDiagramEngine().getModel();
+		let nodeModels = model.getNodes();
+		const trueBranchLink = nodeModel['ports']['out-1']['links'] as any;
+		const falseBranchLink = nodeModel['ports']['out-2']['links'] as any;
+		const getTrueBranchNodeId = getTargetTrueBranchNodeModelId(model.getLinks(), nodeModel.getID());
+		const getFalseBranchNodeId = getTargetFalseBranchNodeModelId(model.getLinks(), nodeModel.getID());
+		const getFinishedBranchNodeId = getTargetFinishedBranchNodeModelId(model.getLinks(), nodeModel.getID());
+		const trueNodeModel = getNodeModelById(nodeModels, getTrueBranchNodeId);
+		const falseNodeModel = getNodeModelById(nodeModels, getFalseBranchNodeId);
+		const finishedNodeModel = getNodeModelById(nodeModels, getFinishedBranchNodeId);
+		let nodeId : string;
+		let tempNodeModel;
+		let falseBranchWorkflow: boolean = false;
+		let onlyFinishedWorkflow: boolean = false;
+
+		if (Object.keys(trueBranchLink).length != 0) {
+			// Set initial node when If True port has nodes
+			nodeId = getTrueBranchNodeId;
+			tempNodeModel = trueNodeModel;
+		}
+		else if (Object.keys(falseBranchLink).length != 0) {
+			// Start If False connection when If True port has no nodes
+			nodeId = getFalseBranchNodeId;
+			tempNodeModel = falseNodeModel;
+			falseBranchWorkflow = true;
+		} else {
+			// When there's no nodes from If True and False port, just run finished port
+			nodeId = getFinishedBranchNodeId;
+			tempNodeModel = finishedNodeModel;
+			onlyFinishedWorkflow = true;
+		}
+		return {nodeId, tempNodeModel, falseBranchWorkflow, onlyFinishedWorkflow}
 	}
 
 	const getAllNodesFromStartToFinish = (): NodeModel[] | null => {
