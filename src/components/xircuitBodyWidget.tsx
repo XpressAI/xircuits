@@ -392,6 +392,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const getAllNodesFromStartToFinish = (): NodeModel[] | null => {
 		let model = xircuitsApp.getDiagramEngine().getModel();
 		let nodeModels = model.getNodes();
+		let branchNodeIds: string[] = [];
+		let falseBranchWorkflow: boolean = false;
+		let onlyFinishedWorkflow: boolean = false;
+		let branchTargetNode: {
+			nodeId: string, 
+			tempNodeModel: any, 
+			falseBranchWorkflow: boolean, 
+			onlyFinishedWorkflow: boolean
+		}
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 		if (startNodeModel == null) {
 			startNodeModel = getNodeModelByName(nodeModels, '🔴Start');
@@ -400,36 +409,77 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (startNodeModel) {
 			let sourceNodeModelId = startNodeModel.getID();
 			let retNodeModels: NodeModel[] = [];
-			let branchNodeIds: string[] = [];
 			retNodeModels.push(startNodeModel);
 
-			while (getTargetNodeModelId(model.getLinks(), sourceNodeModelId) != null) {
+			// Iterate through each node 
+			while (getTargetNodeModelId(model.getLinks(), sourceNodeModelId) != null || branchNodeIds.length != 0) {
 				let getTargetNode = getTargetNodeModelId(model.getLinks(), sourceNodeModelId);
-				let getBranchNode = getTargetBranchNodeModelId(model.getLinks(), branchNodeIds[0]);
+				let getFalseBranchNode = getTargetFalseBranchNodeModelId(model.getLinks(), branchNodeIds[branchNodeIds.length - 1]);
+				let getFinishedBranchNode = getTargetFinishedBranchNodeModelId(model.getLinks(), branchNodeIds[branchNodeIds.length - 1]);
+				let falseBranchNodeModel = getNodeModelById(nodeModels, getFalseBranchNode);
+				let finishBranchNodeModel = getNodeModelById(nodeModels, getFinishedBranchNode);
+
+				const finishedWorkflow = () => {
+					branchNodeIds.pop();
+					retNodeModels.push(finishBranchNodeModel);
+					sourceNodeModelId = getFinishedBranchNode;
+					falseBranchWorkflow = false;
+					onlyFinishedWorkflow = false;
+				}
+
+				if (getTargetNode == null && onlyFinishedWorkflow) {
+					// When both If True/False ▶ have no node, just skip
+					branchNodeIds.pop();
+					onlyFinishedWorkflow = false;
+					continue;
+				}
+
+				// False branch
+				if (getTargetNode == null) {
+					if (falseBranchWorkflow || falseBranchNodeModel == null) {
+						// When already when through False branch, go to Finished workflow
+						// When If False ▶ have no node, just skip to Finished
+						finishedWorkflow();
+						continue;
+					}
+					retNodeModels.push(falseBranchNodeModel);
+					sourceNodeModelId = getFalseBranchNode;
+					falseBranchWorkflow = true;
+					continue;
+				}
 
 				if (getTargetNode) {
-					let nodeModel = getNodeModelById(nodeModels, getTargetNode);
+					const nodeModel = getNodeModelById(nodeModels, getTargetNode);
+					let nodeId : string;
+					let tempNodeModel;
 
 					if (nodeModel['extras']['type'] == 'Branch') {
 						branchNodeIds.push(nodeModel.getID());
+						retNodeModels.push(nodeModel);
+
+						branchTargetNode = getTargetNodeFromBranch(nodeModel);
+						nodeId = branchTargetNode.nodeId;
+						tempNodeModel = branchTargetNode.tempNodeModel;
+						falseBranchWorkflow = branchTargetNode.falseBranchWorkflow;
+						onlyFinishedWorkflow = branchTargetNode.onlyFinishedWorkflow;
+
+						if (tempNodeModel['extras']['type'] == 'Branch') {
+							branchNodeIds.push(nodeId);
+							retNodeModels.push(tempNodeModel);
+							branchTargetNode = getTargetNodeFromBranch(tempNodeModel);
+							nodeId = branchTargetNode.nodeId;
+							tempNodeModel = branchTargetNode.tempNodeModel;
+							falseBranchWorkflow = branchTargetNode.falseBranchWorkflow;
+							onlyFinishedWorkflow = branchTargetNode.onlyFinishedWorkflow;
+						}
+						sourceNodeModelId = nodeId;
+						retNodeModels.push(tempNodeModel);
+						continue;
 					}
 
 					if (nodeModel) {
 						sourceNodeModelId = nodeModel.getID();
 						retNodeModels.push(nodeModel);
-						if (nodeModel['name'] == 'Finish' && branchNodeIds.length != 0) {
-							branchNodeIds.pop();
-							let branchNodeModel = getNodeModelById(nodeModels, getBranchNode);
-							// When If False ▶ have no node, just skip
-							if (branchNodeModel == null) continue;
-
-							if (branchNodeModel['extras']['type'] == 'Branch') {
-								// When there's continuous branch node, add the new branch node id
-								branchNodeIds.push(branchNodeModel.getID());
-							}
-							retNodeModels.push(branchNodeModel);
-							sourceNodeModelId = getBranchNode;
-						}
 					}
 				}
 			}
