@@ -563,7 +563,7 @@ export function addNodeActionCommands(
             if (node.getOptions()["name"] !== "undefined") {
                 let modelName = node.getOptions()["name"];
                 const errorMsg = `${modelName} node cannot be deleted!`
-                if (modelName !== 'Start') {
+                if (modelName !== 'Start' && modelName !== 'Finish') {
                     if (!node.isLocked()) {
                         node.remove()
                     } else {
