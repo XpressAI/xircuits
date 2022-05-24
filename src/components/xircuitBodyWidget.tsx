@@ -975,6 +975,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			}
 		return true;
 	}
+
+	const checkAllNodesConnected = (): boolean | null => {
+		let allNodes = getAllNodesFromStartToFinish();
+		let lastNode = allNodes[allNodes.length - 1];
+		
+		if (lastNode['name'] != 'Finish') {
+			// When last node is not Finish node, check failed and show error tooltip
+			lastNode.getOptions().extras["borderColor"] = "red";
+			lastNode.getOptions().extras["tip"] = `Please make sure this ${lastNode['name']} node end with Finish node`;
+			lastNode.setSelected(true);
+			return false;
 		}
 		return true;
 	}
@@ -1014,12 +1025,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		let allNodesConnected = checkAllNodesConnected();
-
 		if (!saved) {
 			alert("Please save before compiling.");
 			return;
 		}
+
+		let finishedPortConnected = checkBranchFinishedPortConnected();
+		if (!finishedPortConnected) {
+			alert("Please connect all Branch's Finished port.");
+			return;
+		}
+
+		let allNodesConnected = checkAllNodesConnected();
 
 		if (!allNodesConnected) {
 			alert("Please connect all the nodes before compiling.");
@@ -1062,6 +1079,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		// compile
+		let finishedPortConnected = checkBranchFinishedPortConnected();
+		if (!finishedPortConnected) {
+			alert("Please connect all Branch's Finished port.");
+			return;
+		} 
+
 		let allNodesConnected = checkAllNodesConnected();
 		let allCompulsoryNodesConnected = checkAllCompulsoryInPortsConnected();
 
