@@ -958,51 +958,23 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return pythonCode;
 	}
 
-	const checkAllNodesConnected = (): boolean | null => {
+	const checkBranchFinishedPortConnected = (): boolean | null => {
 		let nodeModels = xircuitsApp.getDiagramEngine().getModel().getNodes();
-		let allNodes = getAllNodesFromStartToFinish();
-		let lastNode = allNodes[allNodes.length - 1];
-		if (lastNode['name'] != 'Finish') {
-			// When last node is not Finish node, check failed and show error tooltip
-			lastNode.getOptions().extras["borderColor"] = "red";
-			lastNode.getOptions().extras["tip"] = `Please make sure this ${lastNode['name']} end with Finish node`;
-			lastNode.setSelected(true);
-			return false;
-		}
-
 		for (let i = 0; i < nodeModels.length; i++) {
-			let inPorts = nodeModels[i]["portsIn"];
 			let outPorts = nodeModels[i]["portsOut"];
-			let j = 0;
-			if (inPorts != 0) {
-				if(outPorts != 0) {
-					if (outPorts[j].getOptions()["label"] == 'If True  ▶' && Object.keys(outPorts[0].getLinks()).length == 0) {
-						let falseLinks = nodeModels[i]['ports']['out-1']['links']
-						for (let linkID in falseLinks) {
-							let link = falseLinks[linkID];
-							if (Object.keys(falseLinks).length != 0) {
-								// Some weird behaviour where it's getting node from If False port when linking using If True port
-								// Must delete the If False link
-								xircuitsApp.getDiagramEngine().getModel().removeLink(link);
-								xircuitsApp.getDiagramEngine().repaintCanvas();
-							}
-						}
-
-						// When If True ▶ has no link, show error tooltip
+			let branchNodeType = nodeModels[i]['extras']['type']
+			if (branchNodeType == 'Branch') {
+				if (outPorts[2].getOptions()["label"] == 'Finished ▶' && Object.keys(outPorts[2].getLinks()).length == 0) {
+					// When Finished ▶ has no link, show error tooltip
 						nodeModels[i].getOptions().extras["borderColor"] = "red";
-						nodeModels[i].getOptions().extras["tip"] = "Please make sure this Branch If True ▶ is properly connected ";
+					nodeModels[i].getOptions().extras["tip"] = "Please make sure this Branch Finished ▶ is properly connected ";
 						nodeModels[i].setSelected(true);
 						return false;
 					}
-				} else if (inPorts[j].getOptions()["label"] == '▶' && Object.keys(inPorts[0].getLinks()).length != 0) {
-					continue
-				} else {
-					nodeModels[i].getOptions().extras["borderColor"] = "red";
-					nodeModels[i].getOptions().extras["tip"] = "Please make sure this node ▶ is properly connected ";
-					nodeModels[i].setSelected(true);
-					return false;
 				}
 			}
+		return true;
+	}
 		}
 		return true;
 	}
