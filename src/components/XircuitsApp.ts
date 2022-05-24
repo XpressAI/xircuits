@@ -94,12 +94,13 @@ export class XircuitsApplication {
                                 const sourcePort = sourceNode.getPortFromID(link.sourcePort);
                                 const sourcePortName = sourcePort.getOptions()['name'];
                                 const sourcePortLabel = sourceNode.getPorts()[sourcePortName].getOptions()['label'];
-                                if (sourcePortName == 'out-0' || 'out-1') {
+                                if (sourcePortName == 'out-0' || 'out-1' || 'out-2') {
                                         // When source port is '▶', use triangle animation link
                                         switch (sourcePortLabel) {
                                                 case '▶':
                                                 case 'If True  ▶':
                                                 case 'If False ▶':
+                                                case 'Finished ▶':
                                                         newLink = newTriangleLink;
                                                         break;
                                         }

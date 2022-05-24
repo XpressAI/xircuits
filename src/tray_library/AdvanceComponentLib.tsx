@@ -36,8 +36,9 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
     });
     if (nodeData.type == 'Branch') {
         node.addInPortEnhance('▶', 'in-0');
-        node.addOutPortEnhance('If True  ▶', 'out-0');
-        node.addOutPortEnhance('If False ▶', 'out-1');
+        node.addOutPortEnhance('If True  ▶', 'out-1');
+        node.addOutPortEnhance('If False ▶', 'out-2');
+        node.addOutPortEnhance('Finished ▶', 'out-0');
     }
     else if (nodeData.type == 'Finish') {
         node.addInPortEnhance('▶', 'in-0');
