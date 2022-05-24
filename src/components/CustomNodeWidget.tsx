@@ -214,7 +214,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
     }
     
     render() {
-        if (this.props.node.getOptions()["name"] !== 'Start' && this.props.node.getOptions()["name"] !== 'Finish') {
+        if (this.props.node.getOptions()["name"] !== 'Start') {
             return (
                 <>
                     <S.Node

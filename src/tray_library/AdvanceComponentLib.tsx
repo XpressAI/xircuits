@@ -39,11 +39,7 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
         node.addOutPortEnhance('If True  ▶', 'out-1');
         node.addOutPortEnhance('If False ▶', 'out-2');
         node.addOutPortEnhance('Finished ▶', 'out-0');
-    }
-    else if (nodeData.type == 'Finish') {
-        node.addInPortEnhance('▶', 'in-0');
-    }
-    else {
+    } else {
         node.addInPortEnhance('▶', 'in-0');
         node.addOutPortEnhance('▶', 'out-0');
     }
