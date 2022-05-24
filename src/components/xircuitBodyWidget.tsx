@@ -720,49 +720,99 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		pythonCode += '\n';
 
-		let actualNodesNumber = 0;
-		for (let i = 0; i < allNodes.length; i++) {
-			actualNodesNumber++;
+		for (let i = 1; i < allNodes.length; i++) {
 			let nodeType = allNodes[i]["extras"]["type"];
-			let bindingName = 'c_' + actualNodesNumber;
-			let nextBindingName = 'c_' + (actualNodesNumber + 1);
+			let bindingName = 'c_' + i;
+			let nextBindingName = 'c_' + (i + 1);
 
 			if (nodeType == 'Start') {
-				actualNodesNumber--;
 			} else if (nodeType == 'Finish') {
-				actualNodesNumber--;
-				bindingName = 'c_' + actualNodesNumber;
+				bindingName = 'c_' + (i - 1);
 				pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
 			}
 			else if (nodeType == 'Branch') {
-				let trueBranchLink = allNodes[i]['ports']['out-0']['links'] as any;
-				let falseBranchLink = allNodes[i]['ports']['out-1']['links'] as any;
+				let trueBranchLink = allNodes[i]['ports']['out-1']['links'] as any;
+				let falseBranchLink = allNodes[i]['ports']['out-2']['links'] as any;
+				let finishedBranchLink = allNodes[i]['ports']['out-0']['links'] as any;
 
-				if (allNodes[i + 1]['name'] == 'Finish') {
-					// When next node after port If True  ▶ is Finish node, set to None
-					nextBindingName = 'None\n';
-				}
-				
-				if (Object.keys(trueBranchLink).length != 0) {
-					pythonCode += '    ' + bindingName + '.when_true = ' + nextBindingName + '\n';
-					
-					if (Object.keys(falseBranchLink).length != 0) {
-						let falseBranchNodeIndex = actualNodesNumber - 1; // 1 is Start node
-						let falseBranchBindingName;
-						for (let j = i; j < allNodes.length; j++) {
-							falseBranchNodeIndex++;
-							if (allNodes[j]['name'] == 'Finish') {
-								// Stop counting node after port If True  ▶ reach Finish node
-								break;
+				const finishedBranchBindingIndex = (finishedBranch?: boolean) => {
+					let branchTargetNodeIndex;
+					let branchBindingName;
+
+					for (let j = 0; j < allNodes.length; j++) {
+						if (!finishedBranch) {
+							for (let linkID in falseBranchLink) {
+								let falseLink = falseBranchLink[linkID];
+								if (falseLink['targetPort']['parent'].getID() == allNodes[j].getID()) {
+									branchTargetNodeIndex = j;
+								}
+							}
+						} else {
+							for (let linkID in finishedBranchLink) {
+								let finishedLink = finishedBranchLink[linkID];
+								if (finishedLink['targetPort']['parent'].getID() == allNodes[j].getID()) {
+									branchTargetNodeIndex = j;
+								}
 							}
 						}
-						falseBranchBindingName = 'c_' + falseBranchNodeIndex;
-						pythonCode += '    ' + bindingName + '.when_false = ' + falseBranchBindingName + '\n';
 					}
+					branchBindingName = 'c_' + branchTargetNodeIndex;
+					return branchBindingName;
+				}
+				
+				let finishedBranchBindingName = finishedBranchBindingIndex(true);
+				let falseBranchBindingName = finishedBranchBindingIndex(false);
+
+				if (Object.keys(falseBranchLink).length == 0 && Object.keys(trueBranchLink).length == 0) {
+					// When both If True/False not connected
+					pythonCode += '    ' + bindingName + '.when_true = ' + nextBindingName + '\n';
+					pythonCode += '    ' + bindingName + '.when_false = ' + nextBindingName + '\n';
+				} else if (Object.keys(trueBranchLink).length == 0) {
+					// When If True have no nodes but If False is connected
+					pythonCode += '    ' + bindingName + '.when_true = ' + finishedBranchBindingName + '\n';
+					pythonCode += '    ' + bindingName + '.when_false = ' + nextBindingName + '\n';
+				} else if (Object.keys(falseBranchLink).length == 0) {
+					// When If False have no nodes but If True is connected
+					pythonCode += '    ' + bindingName + '.when_true = ' + nextBindingName + '\n';
+					pythonCode += '    ' + bindingName + '.when_false = ' + finishedBranchBindingName + '\n';
+				} 
+				else {
+					pythonCode += '    ' + bindingName + '.when_true = ' + nextBindingName + '\n';
+					pythonCode += '    ' + bindingName + '.when_false = ' + falseBranchBindingName + '\n';
 				}
 			}
 			else {
-				if (allNodes[i + 1]["extras"]["type"] == 'Finish') continue; // When next node is Finish, just skip
+				let nodeLink = allNodes[i]['ports']['out-0']['links'];
+				let nextNodeSourceLinks = allNodes[i + 1]['ports']['in-0']['links']
+					
+				// When next node is Finish, just skip
+				if (allNodes[i + 1]['extras']['type'] == 'Finish') continue;
+
+				// Check whether next node is empty
+				if (Object.keys(nodeLink).length == 0) {
+					for (let linkID in nextNodeSourceLinks) {
+						let link = nextNodeSourceLinks[linkID];
+						// Check whether source link is from If False ▶ port
+						if (link['sourcePort'].getOptions()['label'] == 'If False ▶') {
+							let finishedBranchNodeIndex = i;
+							let finishedBranchBindingName;
+							for (let j = i + 1; j < allNodes.length; j++) {
+								let falseBranchNodeLink = allNodes[j]['ports']['out-0']['links'];
+								finishedBranchNodeIndex++;
+								if (Object.keys(falseBranchNodeLink).length == 0) {
+									// Stop counting node after port If False ▶ lost connection
+									finishedBranchNodeIndex++;
+									finishedBranchBindingName = 'c_' + finishedBranchNodeIndex;
+									pythonCode += '    ' + bindingName + '.next = ' + finishedBranchBindingName + '\n';
+								break;
+							}
+						}
+						} else if (link['sourcePort'].getOptions()['label'] == 'Finished ▶') {
+							pythonCode += '    ' + bindingName + '.next = ' + nextBindingName + '\n';
+					}
+				}
+					continue;
+			}
 				pythonCode += '    ' + bindingName + '.next = ' + nextBindingName + '\n';
 			}
 		}
