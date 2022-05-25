@@ -46,15 +46,43 @@ export function addNodeActionCommands(
         return node ?? null;
     }
 
-    //Add command to open canvas's node its script
+    //Add command to open node's script at specific line
     commands.addCommand(commandIDs.openScript, {
-        execute: () => {
-            const widget = tracker.currentWidget?.content as XPipePanel;
+        execute: async () => {
             const node = selectedNode();
-            app.commands.execute(commandIDs.openDocManager, {
-                path: node.extras.path
+            const nodePath = node.extras.path;
+            const className: string = 'class ' + node.name;
+
+            // Need to delete opened file first
+            docmanager.closeFile(nodePath);
+
+            // Open node's file name
+            const newWidget = await app.commands.execute(
+                commandIDs.openDocManager,
+                {
+                    path: nodePath
+                }
+            );
+            newWidget.context.ready.then(() => {
+                // Wait for search widget render
+                setTimeout(() => {
+                    // Search class name
+                    app.commands.execute('documentsearch:start', {
+                        searchText: className
+                    }).then(() => {
+                        // Force pressed 'Enter' key
+                        let inputField = document.getElementsByClassName('jp-DocumentSearch-input');
+                        const keyboardEvent = new KeyboardEvent('keydown', {
+                            code: 'Enter',
+                            key: 'Enter',
+                            keyCode: 13,
+                            view: window,
+                            bubbles: true
+                        });
+                        inputField[inputField.length - 1].dispatchEvent(keyboardEvent);
+                    })
+                }, 5)
             });
-            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         }
     });
 
