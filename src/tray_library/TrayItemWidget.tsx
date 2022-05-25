@@ -3,6 +3,7 @@ import * as React from 'react';
 import styled from '@emotion/styled';
 
 import { JupyterFrontEnd } from '@jupyterlab/application';
+import { commandIDs } from '../components/xircuitBodyWidget';
 
 export interface TrayItemWidgetProps {
 	model: any;
@@ -41,17 +42,19 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 				onClick={(event) => {
 					if (event.ctrlKey || event.metaKey) {
 						const { commands } = this.props.app;
-						commands.execute('docmanager:open', {
-							path: this.props.path
+						commands.execute(commandIDs.openScript, {
+							nodePath: this.props.path,
+							nodeName: this.props.name
 						});
 					}
 					this.forceUpdate();
 				}}
-				onDoubleClick={(event) => {
+				onDoubleClick={() => {
 					if (this.props.path != "") {
 						const { commands } = this.props.app;
-						commands.execute('docmanager:open', {
-							path: this.props.path
+						commands.execute(commandIDs.openScript, {
+							nodePath: this.props.path,
+							nodeName: this.props.name
 						});
 					}
 					this.forceUpdate();

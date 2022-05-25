@@ -48,10 +48,10 @@ export function addNodeActionCommands(
 
     //Add command to open node's script at specific line
     commands.addCommand(commandIDs.openScript, {
-        execute: async () => {
+        execute: async (args) => {
             const node = selectedNode();
-            const nodePath = node.extras.path;
-            const className: string = 'class ' + node.name;
+            const nodePath = args['nodePath'] as string ?? node.extras.path;
+            const className: string = 'class ' + args['nodeName'] as string ?? node.name;
 
             // Need to delete opened file first
             docmanager.closeFile(nodePath);
