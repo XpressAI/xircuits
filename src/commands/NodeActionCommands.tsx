@@ -51,8 +51,17 @@ export function addNodeActionCommands(
         execute: async (args) => {
             const node = selectedNode();
             const nodePath = args['nodePath'] as string ?? node.extras.path;
-            const className: string = 'class ' + args['nodeName'] as string ?? node.name;
+            const nodeName = args['nodeName'] as string ?? node.name;
+            const className: string = 'class ' + nodeName;
 
+            if (node.name.startsWith('Literal') || node.name.startsWith('Hyperparameter')) {
+                showDialog({
+                    title: `${node.name} don't have its own script`,
+                    buttons: [Dialog.warnButton({ label: 'OK' })]
+                })
+                return;
+            }
+            
             // Need to delete opened file first
             docmanager.closeFile(nodePath);
 
