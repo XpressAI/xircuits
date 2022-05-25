@@ -157,7 +157,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     app.shell.add(sidebarDebugger, 'right', { rank: 1001 });
 
     // Additional commands for node action
-    addNodeActionCommands(app, tracker, translator);
+    addNodeActionCommands(app, tracker, docmanager, translator);
 
     // Add a command to open xircuits sidebar debugger
     app.commands.addCommand(commandIDs.openDebugger, {

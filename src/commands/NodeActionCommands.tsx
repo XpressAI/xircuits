@@ -14,6 +14,7 @@ import { formDialogWidget } from '../dialog/formDialogwidget';
 import { CommentDialog } from '../dialog/CommentDialog';
 import React from 'react';
 import { showFormDialog } from '../dialog/FormDialog';
+import { IDocumentManager } from '@jupyterlab/docmanager';
 
 /**
  * Add the commands for node actions.
@@ -21,6 +22,7 @@ import { showFormDialog } from '../dialog/FormDialog';
 export function addNodeActionCommands(
     app: JupyterFrontEnd,
     tracker: IXircuitsDocTracker,
+    docmanager: IDocumentManager,
     translator: ITranslator
 ): void {
     const trans = translator.load('jupyterlab');
