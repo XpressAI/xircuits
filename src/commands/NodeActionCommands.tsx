@@ -14,7 +14,6 @@ import { formDialogWidget } from '../dialog/formDialogwidget';
 import { CommentDialog } from '../dialog/CommentDialog';
 import React from 'react';
 import { showFormDialog } from '../dialog/FormDialog';
-import { IDocumentManager } from '@jupyterlab/docmanager';
 
 /**
  * Add the commands for node actions.
@@ -22,7 +21,6 @@ import { IDocumentManager } from '@jupyterlab/docmanager';
 export function addNodeActionCommands(
     app: JupyterFrontEnd,
     tracker: IXircuitsDocTracker,
-    docmanager: IDocumentManager,
     translator: ITranslator
 ): void {
     const trans = translator.load('jupyterlab');
@@ -62,9 +60,6 @@ export function addNodeActionCommands(
                 return;
             }
             
-            // Need to delete opened file first
-            docmanager.closeFile(nodePath);
-
             // Open node's file name
             const newWidget = await app.commands.execute(
                 commandIDs.openDocManager,
