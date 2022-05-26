@@ -52,14 +52,14 @@ export function addNodeActionCommands(
             const nodeName = args['nodeName'] as string ?? node.name;
             const nodeLineNo = args['nodeLineNo'] as number ?? node.extras.lineNo;
 
-            if (node.name.startsWith('Literal') || node.name.startsWith('Hyperparameter')) {
+            if (nodeName.startsWith('Literal') || nodeName.startsWith('Hyperparameter')) {
                 showDialog({
                     title: `${node.name} don't have its own script`,
                     buttons: [Dialog.warnButton({ label: 'OK' })]
                 })
                 return;
             }
-            
+
             // Open node's file name
             const newWidget = await app.commands.execute(
                 commandIDs.openDocManager,
@@ -68,24 +68,10 @@ export function addNodeActionCommands(
                 }
             );
             newWidget.context.ready.then(() => {
-                // Wait for search widget render
-                setTimeout(() => {
-                    // Search class name
-                    app.commands.execute('documentsearch:start', {
-                        searchText: className
-                    }).then(() => {
-                        // Force pressed 'Enter' key
-                        let inputField = document.getElementsByClassName('jp-DocumentSearch-input');
-                        const keyboardEvent = new KeyboardEvent('keydown', {
-                            code: 'Enter',
-                            key: 'Enter',
-                            keyCode: 13,
-                            view: window,
-                            bubbles: true
-                        });
-                        inputField[inputField.length - 1].dispatchEvent(keyboardEvent);
-                    })
-                }, 5)
+                // Go to node's line
+                app.commands.execute('codemirror:go-to-line', {
+                    line: nodeLineNo
+                })
             });
         }
     });
