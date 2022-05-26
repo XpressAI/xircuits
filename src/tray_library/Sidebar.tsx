@@ -221,12 +221,14 @@ export default function Sidebar(props: SidebarProps) {
                                                                             name: componentVal.task,
                                                                             color: componentVal.color,
                                                                             path: componentVal.file_path,
-                                                                            docstring: componentVal.docstring
+                                                                            docstring: componentVal.docstring,
+                                                                            lineNo: componentVal.lineno
                                                                         }}
                                                                         name={componentVal.task}
                                                                         color={componentVal.color}
                                                                         app={props.lab}
-                                                                        path={componentVal.file_path} />
+                                                                        path={componentVal.file_path}
+                                                                        lineNo= {componentVal.lineno}/>
                                                                 </div>
                                                             );
                                                         }
@@ -253,12 +255,14 @@ export default function Sidebar(props: SidebarProps) {
                                                 name: val.task,
                                                 color: val.color,
                                                 path: val.file_path,
-                                                docstring: val.docstring
+                                                docstring: val.docstring,
+                                                lineNo: val.lineno
                                             }}
                                             name={val.task}
                                             color={val.color}
                                             app={props.lab}
-                                            path={val.file_path} />
+                                            path={val.file_path}
+                                            lineNo= {val.lineno} />
                                     </div>
                                 );
                             })

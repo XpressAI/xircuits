@@ -31,7 +31,8 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
         extras: {
             "type": nodeData.type,
             "path": nodeData.file_path,
-            "description": nodeData.docstring
+            "description": nodeData.docstring,
+            "lineNo": nodeData.lineno
         }
     });
     node.addInPortEnhance('▶', 'in-0');

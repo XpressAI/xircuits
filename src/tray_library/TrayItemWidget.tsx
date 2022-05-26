@@ -11,6 +11,7 @@ export interface TrayItemWidgetProps {
 	name: string;
 	path: string;
 	app: JupyterFrontEnd;
+	lineNo: number;
 }
 
 interface TrayStyledProps {
@@ -44,8 +45,10 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 						const { commands } = this.props.app;
 						commands.execute(commandIDs.openScript, {
 							nodePath: this.props.path,
-							nodeName: this.props.name
+							nodeName: this.props.name,
+							nodeLineNo: this.props.lineNo
 						});
+						
 					}
 					this.forceUpdate();
 				}}
@@ -54,7 +57,8 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 						const { commands } = this.props.app;
 						commands.execute(commandIDs.openScript, {
 							nodePath: this.props.path,
-							nodeName: this.props.name
+							nodeName: this.props.name,
+							nodeLineNo: this.props.lineNo
 						});
 					}
 					this.forceUpdate();

@@ -75,8 +75,10 @@ export class TrayItemPanel extends React.Component<TrayItemWidgetProps> {
 				onClick={(event) => {
 					if (event.ctrlKey || event.metaKey) {
 						const { commands } = this.props.app;
-						commands.execute('docmanager:open', {
-							path: this.props.currentNode["file_path"]
+						commands.execute(commandIDs.openScript, {
+							nodePath: this.props.currentNode["file_path"],
+							nodeName: this.props.currentNode["class"],
+							nodeLineNo: this.props.currentNode["lineno"]
 						});
 						return;
 					}

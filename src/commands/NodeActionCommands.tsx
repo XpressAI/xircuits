@@ -50,7 +50,7 @@ export function addNodeActionCommands(
             const node = selectedNode();
             const nodePath = args['nodePath'] as string ?? node.extras.path;
             const nodeName = args['nodeName'] as string ?? node.name;
-            const className: string = 'class ' + nodeName;
+            const nodeLineNo = args['nodeLineNo'] as number ?? node.extras.lineNo;
 
             if (node.name.startsWith('Literal') || node.name.startsWith('Hyperparameter')) {
                 showDialog({
