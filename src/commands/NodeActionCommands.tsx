@@ -68,9 +68,13 @@ export function addNodeActionCommands(
                 }
             );
             newWidget.context.ready.then(() => {
-                // Go to node's line
+                // Go to end of node's line first before go to its class
                 app.commands.execute('codemirror:go-to-line', {
-                    line: nodeLineNo
+                    line: nodeLineNo[0].end_lineno
+                }).then(() => {
+                    app.commands.execute('codemirror:go-to-line', {
+                        line: nodeLineNo[0].lineno
+                    })
                 })
             });
         }

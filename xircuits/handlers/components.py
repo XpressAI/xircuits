@@ -158,7 +158,12 @@ class ComponentsRouteHandler(APIHandler):
         ]
 
         docstring = ast.get_docstring(node)
-        lineno = node.lineno
+        lineno = [
+            {
+                "lineno": node.lineno,
+                "end_lineno": node.end_lineno
+            }
+        ]
 
         output = {
             "class": name,
