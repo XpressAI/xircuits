@@ -158,6 +158,12 @@ class ComponentsRouteHandler(APIHandler):
         ]
 
         docstring = ast.get_docstring(node)
+        lineno = [
+            {
+                "lineno": node.lineno,
+                "end_lineno": node.end_lineno
+            }
+        ]
 
         output = {
             "class": name,
@@ -170,7 +176,8 @@ class ComponentsRouteHandler(APIHandler):
             "category": category,
             "type": "debug",
             "variables": variables,
-            "docstring": docstring
+            "docstring": docstring,
+            "lineno" : lineno
         }
         output.update(keywords)
 

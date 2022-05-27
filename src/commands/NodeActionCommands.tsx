@@ -44,15 +44,39 @@ export function addNodeActionCommands(
         return node ?? null;
     }
 
-    //Add command to open canvas's node its script
+    //Add command to open node's script at specific line
     commands.addCommand(commandIDs.openScript, {
-        execute: () => {
-            const widget = tracker.currentWidget?.content as XPipePanel;
+        execute: async (args) => {
             const node = selectedNode();
-            app.commands.execute(commandIDs.openDocManager, {
-                path: node.extras.path
+            const nodePath = args['nodePath'] as string ?? node.extras.path;
+            const nodeName = args['nodeName'] as string ?? node.name;
+            const nodeLineNo = args['nodeLineNo'] as number ?? node.extras.lineNo;
+
+            if (nodeName.startsWith('Literal') || nodeName.startsWith('Hyperparameter')) {
+                showDialog({
+                    title: `${node.name} don't have its own script`,
+                    buttons: [Dialog.warnButton({ label: 'OK' })]
+                })
+                return;
+            }
+
+            // Open node's file name
+            const newWidget = await app.commands.execute(
+                commandIDs.openDocManager,
+                {
+                    path: nodePath
+                }
+            );
+            newWidget.context.ready.then(() => {
+                // Go to end of node's line first before go to its class
+                app.commands.execute('codemirror:go-to-line', {
+                    line: nodeLineNo[0].end_lineno
+                }).then(() => {
+                    app.commands.execute('codemirror:go-to-line', {
+                        line: nodeLineNo[0].lineno
+                    })
+                })
             });
-            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         }
     });
 
