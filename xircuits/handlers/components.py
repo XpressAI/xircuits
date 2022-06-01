@@ -74,7 +74,6 @@ def remove_prefix(input_str, prefix):
         return input_str
 
 def read_orig_code(node: ast.AST, lines):
-    print(ast.dump(node))
     line_from = node.lineno - 1
     col_from = node.col_offset
 
