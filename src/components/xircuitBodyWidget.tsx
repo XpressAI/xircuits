@@ -420,7 +420,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				let finishBranchNodeModel = getNodeModelById(nodeModels, getFinishedBranchNode);
 
 				const finishedWorkflow = () => {
+					// Remove the last added branch Ids from list
 					branchNodeIds.pop();
+
+					if (finishBranchNodeModel['name'] == 'Branch') {
+						// When the first node at Finished port is Branch, add its Id
+						branchNodeIds.push(finishBranchNodeModel.getID());
+					}
+
 					retNodeModels.push(finishBranchNodeModel);
 					sourceNodeModelId = getFinishedBranchNode;
 					falseBranchWorkflow = false;
@@ -462,16 +469,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						tempNodeModel = branchTargetNode.tempNodeModel;
 						falseBranchWorkflow = branchTargetNode.falseBranchWorkflow;
 						onlyFinishedWorkflow = branchTargetNode.onlyFinishedWorkflow;
-
-						if (tempNodeModel['extras']['type'] == 'Branch') {
-							branchNodeIds.push(nodeId);
-							retNodeModels.push(tempNodeModel);
-							branchTargetNode = getTargetNodeFromBranch(tempNodeModel);
-							nodeId = branchTargetNode.nodeId;
-							tempNodeModel = branchTargetNode.tempNodeModel;
-							falseBranchWorkflow = branchTargetNode.falseBranchWorkflow;
-							onlyFinishedWorkflow = branchTargetNode.onlyFinishedWorkflow;
-						}
 						sourceNodeModelId = nodeId;
 						retNodeModels.push(tempNodeModel);
 						continue;
