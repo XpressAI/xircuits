@@ -735,9 +735,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				const finishedBranchBindingIndex = (finishedBranch?: boolean) => {
 					let branchTargetNodeIndex;
 					let branchBindingName;
+					let isFinish: boolean = false;
 
 					for (let j = 0; j < allNodes.length; j++) {
 						if (!finishedBranch) {
+							// False branch
 							for (let linkID in falseBranchLink) {
 								let falseLink = falseBranchLink[linkID];
 								if (falseLink['targetPort']['parent'].getID() == allNodes[j].getID()) {
@@ -745,30 +747,38 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								}
 							}
 						} else {
+							// Finished branch
 							for (let linkID in finishedBranchLink) {
 								let finishedLink = finishedBranchLink[linkID];
 								if (finishedLink['targetPort']['parent'].getID() == allNodes[j].getID()) {
 									branchTargetNodeIndex = j;
+								} else if (finishedLink.getTargetPort().getParent()['extras']['type'] === 'Finish') {
+									isFinish = true;
 								}
 							}
 						}
 					}
 					branchBindingName = 'c_' + branchTargetNodeIndex;
-					return branchBindingName;
+					return {branchBindingName, isFinish};
 				}
 				
-				let finishedBranchBindingName = finishedBranchBindingIndex(true);
-				let falseBranchBindingName = finishedBranchBindingIndex(false);
+				let finishedBranchBindingName = finishedBranchBindingIndex(true).branchBindingName;
+				let falseBranchBindingName = finishedBranchBindingIndex(false).branchBindingName;
+				// When first node of Finished port is Finish node, end process
+				let isFinish = finishedBranchBindingIndex(true).isFinish;
 
 				if (Object.keys(falseBranchLink).length == 0 && Object.keys(trueBranchLink).length == 0) {
+					if (isFinish) nextBindingName = 'None';
 					// When both If True/False not connected
 					pythonCode += '    ' + bindingName + '.when_true = ' + nextBindingName + '\n';
 					pythonCode += '    ' + bindingName + '.when_false = ' + nextBindingName + '\n';
 				} else if (Object.keys(trueBranchLink).length == 0) {
+					if (isFinish) finishedBranchBindingName = 'None';
 					// When If True have no nodes but If False is connected
 					pythonCode += '    ' + bindingName + '.when_true = ' + finishedBranchBindingName + '\n';
 					pythonCode += '    ' + bindingName + '.when_false = ' + nextBindingName + '\n';
 				} else if (Object.keys(falseBranchLink).length == 0) {
+					if (isFinish) finishedBranchBindingName = 'None';
 					// When If False have no nodes but If True is connected
 					pythonCode += '    ' + bindingName + '.when_true = ' + nextBindingName + '\n';
 					pythonCode += '    ' + bindingName + '.when_false = ' + finishedBranchBindingName + '\n';
@@ -797,6 +807,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								let falseBranchNodeLink = allNodes[j]['ports']['out-0']['links'];
 								finishedBranchNodeIndex++;
 								if (Object.keys(falseBranchNodeLink).length == 0) {
+									if (allNodes[j + 1]['extras']['type'] == 'Finish') {
+										// When next node in Finished ▶ port is Finish, just end
+										pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
+										break;
+									}
 									// Stop counting node after port If False ▶ lost connection
 									finishedBranchNodeIndex++;
 									finishedBranchBindingName = 'c_' + finishedBranchNodeIndex;
