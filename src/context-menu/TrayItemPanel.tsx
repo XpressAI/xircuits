@@ -14,7 +14,7 @@ export interface TrayItemWidgetProps {
 	app: JupyterFrontEnd;
 	eng: DiagramEngine;
 	nodePosition?: {x: number, y: number};
-	linkData?: DefaultLinkModel;
+	linkData?: any;
 	isParameter?: boolean;
 }
 

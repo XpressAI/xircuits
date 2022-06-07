@@ -301,7 +301,7 @@ export function addNodeActionCommands(
             let targetPort;
 
             // Get source link node port
-            const linkPort = sourceLink.getSourcePort();
+            const linkPort = sourceLink.sourcePort;
 
             // When '▶' of sourcePort from inPort, connect to '▶' outPort of target node
             if (linkPort.getOptions()['name'] == "in-0") {
@@ -317,7 +317,7 @@ export function addNodeActionCommands(
                 // '▶' of sourcePort to '▶' of targetPort
                 sourcePort = linkPort;
                 targetPort = targetNode.getPorts()["in-0"];
-                app.commands.execute(commandIDs.connectLinkToObviousPorts, { sourceLink, targetNode });
+                app.commands.execute(commandIDs.connectLinkToObviousPorts, { droppedSourceLink:sourceLink, targetNode });
             }
             newLink.setSourcePort(sourcePort);
             newLink.setTargetPort(targetPort);
@@ -329,10 +329,12 @@ export function addNodeActionCommands(
     //Add command to connect link to obvious port given link and target node
     commands.addCommand(commandIDs.connectLinkToObviousPorts, {
         execute: (args) => {
-            const sourceLink = args['sourceLink'] as unknown as DefaultLinkModel;
             const widget = tracker.currentWidget?.content as XPipePanel;
-            const sourcePort = sourceLink.getSourcePort();
-            const targetPort = sourceLink.getTargetPort();
+            const draggedLink = args['draggedLink'] as any;
+            const droppedSourceLink = args['droppedSourceLink'] as any;
+            // Check whether link is dropped or dragged
+            const sourcePort = droppedSourceLink == undefined ? draggedLink.getSourcePort() : droppedSourceLink.sourcePort;
+            const targetPort = droppedSourceLink == undefined ? draggedLink.getTargetPort() : droppedSourceLink.link.getTargetPort();
             const sourceNode = sourcePort.getNode();
             const targetNode = args['targetNode'] as any ?? targetPort.getNode();
             const outPorts = sourceNode['portsOut'];
