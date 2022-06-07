@@ -234,7 +234,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								 */
 								targetPortChanged: e => {
 									const sourceLink = e.entity as any;
-									app.commands.execute(commandIDs.connectLinkToObviousPorts, { sourceLink });
+									app.commands.execute(commandIDs.connectLinkToObviousPorts, { draggedLink: sourceLink });
 									onChange();
 								},
 								/**
@@ -1554,8 +1554,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [isPanelAtLeft, setIsPanelAtLeft] = useState<boolean>(true);
 	const [componentPanelPosition, setComponentPanelPosition] = useState({ x: 0, y: 0 });
 	const [actionPanelPosition, setActionPanelPosition] = useState({ x: 0, y: 0 });
-	const [nodePosition, setNodePosition] = useState({ x: 0, y: 0 });
-	const [looseLinkData, setLooseLinkData] = useState<any>();
+	const [nodePosition, setNodePosition] = useState<any>();
+	const [looseLinkData, setLooseLinkData] = useState<any>({});
 	const [isParameterLink, setIsParameterLink] = useState<boolean>(false);
 
 	// Component & Action panel position
@@ -1623,13 +1623,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			}
 		}
 
-		const newNodePosition = {
-			x: event.link.points[1].position.x,
-			y: event.link.points[1].position.y,
-		};
-
-		setLooseLinkData(event.link);
-		setNodePosition(newNodePosition);
+		setLooseLinkData({link: event.link, sourcePort: event.sourcePort});
+		setNodePosition(event.linkEvent);
 		panelPosition(event.linkEvent);
 		setIsComponentPanelShown(true);
 	};
