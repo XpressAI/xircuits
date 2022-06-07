@@ -278,7 +278,10 @@ export function addNodeActionCommands(
             const nodePosition = args['nodePosition'] as any;
 
             const widget = tracker.currentWidget?.content as XPipePanel;
-            node.setPosition(nodePosition);
+
+            const canvasNodePosition = widget.xircuitsApp.getDiagramEngine().getRelativeMousePoint(nodePosition)
+            node.setPosition(canvasNodePosition);
+
             widget.xircuitsApp.getDiagramEngine().getModel().addNode(node);
         },
         label: trans.__('Add node')
