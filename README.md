@@ -87,7 +87,7 @@ Created a cool component library? All your colleagues need to do is to drop your
 And many more.
 
 ## Installation
-You will need python 3.9+ to install xircuits. We recommend installing in a virtual environment.
+You will need python 3.8+ to install xircuits. We recommend installing in a virtual environment.
 ```
 $ pip install xircuits[full]
 ```
