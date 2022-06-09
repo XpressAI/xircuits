@@ -279,7 +279,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     function doSparkSubmit(path: string, command: string, msg: string, url){
 
       try {
-        let spark_submit_str = command + " " + path;
+        let spark_submit_str = command + path;
         let code_str = "\nfrom subprocess import Popen, PIPE\n\n";
 
         code_str += `spark_submit_str= "${spark_submit_str}"\n`;
