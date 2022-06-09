@@ -33,7 +33,7 @@ class GetConfigRouteHandler(APIHandler):
                 "run_type": spark_cfg["name"],
                 "command" : spark_cfg["command"],
                 "msg" : spark_cfg["msg"],
-                "export" : spark_cfg["export"]
+                "url" : spark_cfg["url"]
             })
 
         data = {"cfg": configurations}
