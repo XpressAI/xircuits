@@ -320,7 +320,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
           // Run spark submit when run type is Spark Submit
           if (runType == 'spark-submit') {
-            code += doSparkSubmit(model_path, addArgs);
+            code += doSparkSubmit(model_path, addArgs['command']);
           }
 
           outputPanel.execute(code, xircuitsLogger);
