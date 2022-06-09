@@ -1348,8 +1348,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const getConfigRunType = async () => {
 		const configuration = await getConfig("SPARK");
 		setSparkSubmitkNodes(configuration["cfg"]);
-		console.log(configuration["cfg"]);
-		
 	}
 
 	const hideRcDialog = () => {
