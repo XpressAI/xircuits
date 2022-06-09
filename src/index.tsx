@@ -276,6 +276,28 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     };
 
+    function doSparkSubmit(path: string, config: string){
+
+      try {
+        let spark_submit_str = config + " " + path;
+        let code_str = "\nfrom subprocess import Popen, PIPE\n\n";
+
+        code_str += `spark_submit_str= "${spark_submit_str}"\n`;
+        code_str += "p=Popen(spark_submit_str, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)\n";
+        code_str += "print('Spark Submit is running...\\n')\n";
+        code_str += "print('Please go to http://localhost:8088/ for more details\\n')\n";
+        code_str += "print('Also, you can go to Kraftboard to check the benchmarks\\n')\n";
+        code_str += "for line in p.stdout:\n";
+        code_str += "    " + "print(line.rstrip())\n\n";
+        code_str += "if p.returncode != 0:\n";
+        code_str += "    " + "print(p.stderr.read())";
+
+        return code_str;
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
     // Execute xircuits python script and display at output panel
     app.commands.addCommand(commandIDs.executeToOutputPanel, {
       execute: async args => {
@@ -294,25 +316,11 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
         outputPanel.session.ready.then(async () => {
           let code = startRunOutputStr();
-          code += "%run " + model_path + message + debug_mode;
+          if (runType != 'spark-submit') code += "%run " + model_path + message + debug_mode;
 
           // Run spark submit when run type is Spark Submit
           if (runType == 'spark-submit') {
-            const request = await requestToSparkSubmit(model_path, addArgs);
-            const errorMsg = request["stderr"];
-            const outputMsg = request["stdout"];
-            let msg = "";
-
-            // Display the errors if there no output
-            if (outputMsg != 0) {
-              msg = outputMsg;
-            } else {
-              msg = errorMsg;
-            }
-
-            // Display the multi-line message
-            const outputCode = `"""${msg}"""`;
-            code = `print(${outputCode})`;
+            code += doSparkSubmit(model_path, addArgs);
           }
 
           outputPanel.execute(code, xircuitsLogger);
