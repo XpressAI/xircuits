@@ -35,7 +35,7 @@ class SparkSubmitRouteHandler(APIHandler):
         #     process=subprocess.Popen(spark_submit_str,stdout=subprocess.PIPE,stderr=subprocess.PIPE, env=export_str,universal_newlines=True, shell=True)
         #     stdout = process.communicate()
         # else:
-        process=subprocess.Popen(spark_submit_str,stdout=subprocess.PIPE,stderr=subprocess.PIPE,env=dict(os.environ, PATH="path"),universal_newlines=True, shell=True)
+        process=subprocess.Popen(spark_submit_str,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True, shell=True)
         stdout,stderr = process.communicate()
 
         data = {
