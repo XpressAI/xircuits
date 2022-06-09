@@ -2,6 +2,7 @@ import * as NumericInput from "react-numeric-input";
 import TextareaAutosize from 'react-textarea-autosize';
 import React, { useState } from 'react';
 import Switch from "react-switch";
+import { HTMLSelect } from "@jupyterlab/ui-components";
 
 export const RunDialog = ({
 	lastAddedArgsSparkSubmit,
@@ -13,6 +14,8 @@ export const RunDialog = ({
 }): JSX.Element => {
 
 	const [checked, setChecked] = useState<boolean[]>([false]);
+	const [runType, setRunType] = useState(childSparkSubmitNodes[0].run_type);
+	const [addArgs, setAddArgs] = useState(childSparkSubmitNodes[0].command);
 
 	const handleChecked = (e, i) => {
 		let newChecked = [...checked];
@@ -21,20 +24,49 @@ export const RunDialog = ({
 		console.log("Boolean change: ", checked)
 	};
 
+	/**
+     * Handle `change` events for the HTMLSelect component.
+     */
+	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
+        let type = event.target.value;
+		setRunType(type);
+		childSparkSubmitNodes.map(spark => {
+			if (spark.run_type == type) setAddArgs(spark.command);
+		})
+	};
+
 	return (
 		<form>
 			<h3 style={{ marginTop: 0, marginBottom: 5 }}>Hyperparameter:</h3>
 			<div>
 				{childSparkSubmitNodes.length != 0 ?
-					<><div><h4 style={{ marginTop: 2, marginBottom: 0 }}>Spark Submit</h4></div><div>{childSparkSubmitNodes}
+					<><div><h4 style={{ marginTop: 2, marginBottom: 0 }}>Spark Submit</h4></div><div>Available Run Type:
 						<div>
-							<TextareaAutosize
-								defaultValue={lastAddedArgsSparkSubmit}
-								minRows={3}
-								maxRows={8}
-								name={childSparkSubmitNodes}
-								style={{ width: 205, fontSize: 12 }}
-								autoFocus />
+							<HTMLSelect
+								onChange={(e) => handleChange(e)}
+								value={runType}
+								aria-label={'Run type'}
+								title={'Select the run type'}
+								name='runType'
+							>
+								{childSparkSubmitNodes.map(spark => (
+									<option key={spark.run_type} value={spark.run_type}>
+										{(spark.run_type)}
+									</option>
+								))}
+							</HTMLSelect>
+							<div />
+							<div>Configuration:
+								<div>
+									<TextareaAutosize
+										value={addArgs}
+										minRows={3}
+										maxRows={8}
+										name='command'
+										style={{ width: 205, fontSize: 12 }}
+										readOnly />
+								</div>
+							</div>
 						</div>
 					</div></>
 					: null}

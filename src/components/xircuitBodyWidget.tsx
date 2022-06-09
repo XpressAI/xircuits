@@ -161,7 +161,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [displaySavedAndCompiled, setDisplaySavedAndCompiled] = useState(false);
 	const [displayDebug, setDisplayDebug] = useState(false);
 	const [displayHyperparameter, setDisplayHyperparameter] = useState(false);
-	const [sparkSubmitNodes, setSparkSubmitkNodes] = useState<string>("");
+	const [sparkSubmitNodes, setSparkSubmitkNodes] = useState<any>("");
 	const [stringNodes, setStringNodes] = useState<string[]>(["experiment name"]);
 	const [intNodes, setIntNodes] = useState<string[]>([]);
 	const [floatNodes, setFloatNodes] = useState<string[]>([]);
@@ -1423,8 +1423,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		let commandStr = ' ';
 		// Added arguments for spark submit
-		let addArgs = dialogResult["value"][sparkSubmitNodes] ?? "";
-		setAddedArgSparkSubmit(addArgs);
+		let addArgs
+		let run_type = dialogResult["value"]['runType'] ?? "";
+		sparkSubmitNodes.map(spark => {
+			if (spark.run_type == run_type) {
+				addArgs = spark;
+				setAddedArgSparkSubmit(spark)
+			}
+		})
 
 		stringNodes.forEach((param) => {
 			if (param == 'experiment name') {
