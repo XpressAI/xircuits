@@ -14,7 +14,7 @@ def get_config():
         ".xircuits/config.ini"])
     return config
 
-class HandleConfigRouteHandler(APIHandler):
+class GetConfigRouteHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
         self.finish(json.dumps({"data": "This is /get/config endpoint!"}))
@@ -22,14 +22,19 @@ class HandleConfigRouteHandler(APIHandler):
     @tornado.web.authenticated
     def post(self):
         input_data = self.get_json_body()
-
+        configurations = []
         cfg = get_config()
 
         config_request = input_data["config_request"]
-        config_cfg = str(cfg['DEV'][config_request]).replace('"', "")
+        config_spark = str(cfg['CONFIGURATION'][config_request]).split('\n')
+        for id, spark in enumerate(config_spark):
+            spark_cfg = cfg[spark]
+            configurations.append({
+                "run_type": spark_cfg["name"],
+                "command" : spark_cfg["command"],
+                "msg" : spark_cfg["msg"],
+                "export" : spark_cfg["export"]
+            })
 
-        if config_cfg == '""' or config_cfg == "''":
-            config_cfg = ""
-
-        data = {"cfg": config_cfg}
+        data = {"cfg": configurations}
         self.finish(json.dumps(data))

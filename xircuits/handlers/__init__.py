@@ -2,7 +2,7 @@ from jupyter_server.utils import url_path_join
 
 from .compile import CompileFileRouteHandler
 from .components import ComponentsRouteHandler
-from .config import HandleConfigRouteHandler
+from .config import GetConfigRouteHandler
 from .debugger import DebuggerRouteHandler
 from .spark_submit import SparkSubmitRouteHandler
 
@@ -23,7 +23,8 @@ def setup_handlers(web_app, url_path):
         ),
         (
             url_path_join(base_url, url_path, "get/config"),
-            HandleConfigRouteHandler
+            GetConfigRouteHandler
+        ),
         ),
         (
             url_path_join(base_url, url_path, "components/"),

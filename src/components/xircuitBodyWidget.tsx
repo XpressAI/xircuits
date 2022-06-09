@@ -1345,7 +1345,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		alert("Testing");
+	const getConfigRunType = async () => {
+		const configuration = await getConfig("SPARK");
+		setSparkSubmitkNodes(configuration["cfg"]);
+		console.log(configuration["cfg"]);
+		
 	}
 
 	const hideRcDialog = () => {
@@ -1355,7 +1359,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	useEffect(() => {
 		// Only enable added arguments when in 'Spark Submit' mode
 		if (runType == 'spark-submit') {
-			setSparkSubmitkNodes("Added Arguments")
+			getConfigRunType();
 		} else {
 			setSparkSubmitkNodes("")
 		}
