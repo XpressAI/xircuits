@@ -1,6 +1,6 @@
 import * as NumericInput from "react-numeric-input";
 import TextareaAutosize from 'react-textarea-autosize';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Switch from "react-switch";
 import { HTMLSelect } from "@jupyterlab/ui-components";
 
@@ -14,8 +14,8 @@ export const RunDialog = ({
 }): JSX.Element => {
 
 	const [checked, setChecked] = useState<boolean[]>([false]);
-	const [runType, setRunType] = useState(childSparkSubmitNodes[0].run_type);
-	const [addArgs, setAddArgs] = useState(childSparkSubmitNodes[0].command);
+	const [runType, setRunType] = useState("");
+	const [addArgs, setAddArgs] = useState("");
 
 	const handleChecked = (e, i) => {
 		let newChecked = [...checked];
@@ -34,6 +34,13 @@ export const RunDialog = ({
 			if (spark.run_type == type) setAddArgs(spark.command);
 		})
 	};
+
+	useEffect(()=>{
+		if(childSparkSubmitNodes.length != 0) {
+			setRunType(childSparkSubmitNodes[0].run_type);
+			setAddArgs(childSparkSubmitNodes[0].command);
+		}
+	},[])
 
 	return (
 		<form>
