@@ -1347,7 +1347,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 		alert("Testing");
 	}
-	
+
 	const getConfigRunType = async () => {
 		const configuration = await getConfig("SPARK");
 		setSparkSubmitkNodes(configuration["cfg"]);
