@@ -1423,7 +1423,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		// Added arguments for spark submit
 		let addArgs
 		let run_type = dialogResult["value"]['runType'] ?? "";
-		if (sparkSubmitNodes.length != 0){
+		if (sparkSubmitNodes.length != 0) {
 		sparkSubmitNodes.map(spark => {
 			if (spark.run_type == run_type) {
 				addArgs = spark;
