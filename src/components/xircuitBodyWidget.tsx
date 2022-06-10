@@ -184,222 +184,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const notInitialRender = useRef(false);
 	const needAppend = useRef("");
 
-		const dialogFuncMap = {
-		'displayDebug': setDisplayDebug,
-		'displayHyperparameter': setDisplayHyperparameter,
-		'displaySavedAndCompiled': setDisplaySavedAndCompiled
-	}
-
-	const onClick = (name: string) => {
-		dialogFuncMap[`${name}`](true);
-	}
-
-	const onHide = (name: string) => {
-		dialogFuncMap[`${name}`](false);
-		if (name == "displayHyperparameter") {
-			setStringNodes(["name"]);
-			setIntNodes([]);
-			setFloatNodes([]);
-			setBoolNodes([]);
-		}
-	}
-
-	/**Component Panel & Node Action Panel Context Menu */
-	const [isComponentPanelShown, setIsComponentPanelShown] = useState(false);
-	const [actionPanelShown, setActionPanelShown] = useState(false);
-	const [isPanelAtTop, setIsPanelAtTop] = useState<boolean>(true);
-	const [isPanelAtLeft, setIsPanelAtLeft] = useState<boolean>(true);
-	const [componentPanelPosition, setComponentPanelPosition] = useState({ x: 0, y: 0 });
-	const [actionPanelPosition, setActionPanelPosition] = useState({ x: 0, y: 0 });
-	const [nodePosition, setNodePosition] = useState<any>();
-	const [looseLinkData, setLooseLinkData] = useState<any>({});
-	const [isParameterLink, setIsParameterLink] = useState<boolean>(false);
-
-	// Component & Action panel position
-	const panelPosition = (event) => {
-		let newPanelPosition = {
-			x: event.pageX,
-			y: event.pageY,
-		};
-		let newActionPanelPosition = {
-			x: event.pageX,
-			y: event.pageY,
-		};
-		const canvas = event.view as any;
-		const newCenterPosition = {
-			x: canvas.innerWidth / 2,
-			y: canvas.innerHeight / 2,
-		}
-		if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
-			// Bottom right
-			setIsPanelAtTop(false);
-			setIsPanelAtLeft(false);
-			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y;
-			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x;
-		} else if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y < newCenterPosition.y) {
-			// Top right
-			setIsPanelAtTop(true);
-			setIsPanelAtLeft(false);
-			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x;
-		} else if (newPanelPosition.x < newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
-			// Bottom left
-			setIsPanelAtTop(false);
-			setIsPanelAtLeft(true);
-			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y;
-		} else {
-			// Top left
-			setIsPanelAtTop(true);
-			setIsPanelAtLeft(true);
-		}
-		setComponentPanelPosition(newPanelPosition);
-		setActionPanelPosition(newPanelPosition);
-	}
-
-	const handleRunDialog = async () => {
-		let title = 'Run';
-		const dialogOptions: Partial<Dialog.IOptions<any>> = {
-			title,
-			body: formDialogWidget(
-				<RunDialog
-					lastAddedArgsSparkSubmit={addedArgSparkSubmit}
-					childSparkSubmitNodes={sparkSubmitNodes}
-					childStringNodes={stringNodes}
-					childBoolNodes={boolNodes}
-					childIntNodes={intNodes}
-					childFloatNodes={floatNodes}
-				/>
-			),
-			buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Start') })],
-			defaultButton: 1,
-			focusNodeSelector: '#name'
-		};
-		const dialogResult = await showFormDialog(dialogOptions);
-
-		if (dialogResult["button"]["label"] == 'Cancel') {
-			// When Cancel is clicked on the dialog, just return
-			return false;
-		}
-
-		let commandStr = ' ';
-		// Added arguments for spark submit
-		let addArgs;
-		let run_type = dialogResult["value"]['runType'] ?? "";
-		if (sparkSubmitNodes.length != 0){
-		sparkSubmitNodes.map(spark => {
-			if (spark.run_type == run_type) {
-				addArgs = spark;
-				setAddedArgSparkSubmit(spark)
-			}
-		})
-		}
-
-		stringNodes.forEach((param) => {
-			if (param == 'experiment name') {
-				var dt = new Date();
-
-				let dateTime = `${dt.getFullYear().toString().padStart(4, '0')}-${(
-					dt.getMonth() + 1).toString().padStart(2, '0')}-${dt.getDate().toString().padStart(2, '0')} ${dt.getHours().toString().padStart(2, '0')}:${dt.getMinutes().toString().padStart(2, '0')}:${dt.getSeconds().toString().padStart(2, '0')}`
-
-				xircuitLogger.info(param + ": " + dateTime);
-			}
-			else {
-				if (dialogResult["value"][param]) {
-					xircuitLogger.info(param + ": " + dialogResult["value"][param]);
-					let filteredParam = param.replace(/\s+/g, "_");
-					filteredParam = filteredParam.toLowerCase();
-					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] + ' ';
-				}
-			}
-		});
-
-		if (boolNodes) {
-			boolNodes.forEach((param) => {
-				xircuitLogger.info(param + ": " + dialogResult["value"][param]);
-				if (dialogResult["value"][param]) {
-					let filteredParam = param.replace(/\s+/g, "_");
-					filteredParam = filteredParam.toLowerCase();
-					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] + ' ';
-				}
-			});
-		}
-
-		if (intNodes) {
-			intNodes.forEach((param) => {
-				xircuitLogger.info(param + ": " + dialogResult["value"][param]);
-				if (dialogResult["value"][param]) {
-					let filteredParam = param.replace(/\s+/g, "_");
-					filteredParam = filteredParam.toLowerCase();
-					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] + ' ';
-				}
-			});
-		}
-
-		if (floatNodes) {
-			floatNodes.forEach((param) => {
-				xircuitLogger.info(param + ": " + dialogResult["value"][param]);
-				if (dialogResult["value"][param]) {
-					let filteredParam = param.replace(/\s+/g, "_");
-					filteredParam = filteredParam.toLowerCase();
-					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] + ' ';
-				}
-			});
-		}
-
-		return { commandStr, addArgs };
-	};
-
-	// Show the component panel context menu
-	const showComponentPanel = (event: React.MouseEvent<HTMLDivElement>) => {
-		setActionPanelShown(false);
-		setIsComponentPanelShown(false);
-
-		const node_position = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
-		setNodePosition(node_position);
-		panelPosition(event);
-		setIsComponentPanelShown(true);
-	};
-
-	// Show the component panel from dropped link
-	const showComponentPanelFromLink = (event) => {
-		setActionPanelShown(false);
-		setIsComponentPanelShown(false);
-		const linkName = event.link.sourcePort.options.name;
-
-		if (linkName.startsWith("parameter")) {
-			setIsParameterLink(true)
-			// Don't show panel when loose link from parameter outPort
-			if (linkName.includes("parameter-out")) {
-				return
-			}
-		}
-
-		setLooseLinkData({link: event.link, sourcePort: event.sourcePort});
-		setNodePosition(event.linkEvent);
-		panelPosition(event.linkEvent);
-		setIsComponentPanelShown(true);
-	};
-
-	// Hide component and node action panel
-	const hidePanel = () => {
-		setIsComponentPanelShown(false);
-		setActionPanelShown(false);
-		setLooseLinkData(null);
-		setIsParameterLink(false);
-	};
-
-	// Show the nodeActionPanel context menu
-	const showNodeActionPanel = (event: React.MouseEvent<HTMLDivElement>) => {
-		// Disable the default context menu
-		event.preventDefault();
-
-		setActionPanelShown(false);
-		setIsComponentPanelShown(false);
-
-		const node_position = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
-		setNodePosition(node_position);
-		panelPosition(event)
-		setActionPanelShown(true);
-	};
 	const onChange = useCallback(
 		(): void => {
 			if (contextRef.current.isReady) {
@@ -1561,6 +1345,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
+		alert("Testing");
+	}
+	
 	const getConfigRunType = async () => {
 		const configuration = await getConfig("SPARK");
 		setSparkSubmitkNodes(configuration["cfg"]);
@@ -1751,10 +1538,163 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			debugMode,
 			inDebugMode
 		});
-	}, [debugMode, inDebugMode])}
+	}, [debugMode, inDebugMode])
+
+	const dialogFuncMap = {
+		'displayDebug': setDisplayDebug,
+		'displayHyperparameter': setDisplayHyperparameter,
+		'displaySavedAndCompiled': setDisplaySavedAndCompiled
+	}
+
+	const onClick = (name: string) => {
+		dialogFuncMap[`${name}`](true);
+	}
+
+	const onHide = (name: string) => {
+		dialogFuncMap[`${name}`](false);
+		if (name == "displayHyperparameter") {
+			setStringNodes(["name"]);
+			setIntNodes([]);
+			setFloatNodes([]);
+			setBoolNodes([]);
+		}
+	}
+
+	/**Component Panel & Node Action Panel Context Menu */
+	const [isComponentPanelShown, setIsComponentPanelShown] = useState(false);
+	const [actionPanelShown, setActionPanelShown] = useState(false);
+	const [isPanelAtTop, setIsPanelAtTop] = useState<boolean>(true);
+	const [isPanelAtLeft, setIsPanelAtLeft] = useState<boolean>(true);
+	const [componentPanelPosition, setComponentPanelPosition] = useState({ x: 0, y: 0 });
+	const [actionPanelPosition, setActionPanelPosition] = useState({ x: 0, y: 0 });
+	const [nodePosition, setNodePosition] = useState<any>();
+	const [looseLinkData, setLooseLinkData] = useState<any>({});
+	const [isParameterLink, setIsParameterLink] = useState<boolean>(false);
+
+	// Component & Action panel position
+	const panelPosition = (event) => {
+		let newPanelPosition = {
+			x: event.pageX,
+			y: event.pageY,
+		};
+		let newActionPanelPosition = {
+			x: event.pageX,
+			y: event.pageY,
+		};
+		const canvas = event.view as any;
+		const newCenterPosition = {
+			x: canvas.innerWidth / 2,
+			y: canvas.innerHeight / 2,
+		}
+		if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
+			// Bottom right
+			setIsPanelAtTop(false);
+			setIsPanelAtLeft(false);
+			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y;
+			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x;
+		} else if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y < newCenterPosition.y) {
+			// Top right
+			setIsPanelAtTop(true);
+			setIsPanelAtLeft(false);
+			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x;
+		} else if (newPanelPosition.x < newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
+			// Bottom left
+			setIsPanelAtTop(false);
+			setIsPanelAtLeft(true);
+			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y;
+		} else {
+			// Top left
+			setIsPanelAtTop(true);
+			setIsPanelAtLeft(true);
+		}
+		setComponentPanelPosition(newPanelPosition);
+		setActionPanelPosition(newPanelPosition);
+	}
+
+	// Show the component panel context menu
+	const showComponentPanel = (event: React.MouseEvent<HTMLDivElement>) => {
+		setActionPanelShown(false);
+		setIsComponentPanelShown(false);
+
+		const node_position = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
+		setNodePosition(node_position);
+		panelPosition(event);
+		setIsComponentPanelShown(true);
+	};
+
+	// Show the component panel from dropped link
+	const showComponentPanelFromLink = (event) => {
+		setActionPanelShown(false);
+		setIsComponentPanelShown(false);
+		const linkName = event.link.sourcePort.options.name;
+
+		if (linkName.startsWith("parameter")) {
+			setIsParameterLink(true)
+			// Don't show panel when loose link from parameter outPort
+			if (linkName.includes("parameter-out")) {
+				return
+			}
+		}
+
+		setLooseLinkData({link: event.link, sourcePort: event.sourcePort});
+		setNodePosition(event.linkEvent);
+		panelPosition(event.linkEvent);
+		setIsComponentPanelShown(true);
+	};
+
+	// Hide component and node action panel
+	const hidePanel = () => {
+		setIsComponentPanelShown(false);
+		setActionPanelShown(false);
+		setLooseLinkData(null);
+		setIsParameterLink(false);
+	};
+
+	// Show the nodeActionPanel context menu
+	const showNodeActionPanel = (event: React.MouseEvent<HTMLDivElement>) => {
+		// Disable the default context menu
+		event.preventDefault();
+
+		setActionPanelShown(false);
+		setIsComponentPanelShown(false);
+
+		const node_position = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
+		setNodePosition(node_position);
+		panelPosition(event)
+		setActionPanelShown(true);
+	};
 
 	return (
 		<Body>
+			{/* <Header>
+				<RcDialog
+					visible={displayRcDialog}
+					animation="slide-fade"
+					maskAnimation="fade"
+					onClose={hideRcDialog}
+					style={{ width: 600 }}
+					title={(
+						<div
+							style={{
+								width: '100%',
+								cursor: 'pointer',
+							}}
+							onMouseOver={() => {
+								if (disableRcDialog){
+									setDisableRcDialog(false)
+								}
+							}}
+							onMouseOut={() => {
+								setDisableRcDialog(true)
+							}}
+							onFocus={ () => {} }
+							onBlur={ () => {}}
+							// end
+						>Image Viewer</div>
+					)}
+					modalRender={modal => <Draggable disabled={disableRcDialog}>{modal}</Draggable>}>
+				</RcDialog>
+			</Header> */}
 			<Content>
 				<Layer
 					onDrop={async (event) => {

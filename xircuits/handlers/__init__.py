@@ -25,7 +25,6 @@ def setup_handlers(web_app, url_path):
             url_path_join(base_url, url_path, "get/config"),
             GetConfigRouteHandler
         ),
-        ),
         (
             url_path_join(base_url, url_path, "components/"),
             ComponentsRouteHandler
