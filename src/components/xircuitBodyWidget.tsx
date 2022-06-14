@@ -533,7 +533,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 													if (sourceNodeName.includes('Multi')){
 														sourcePortLabelStructure = '"""' + sourcePortLabel + '"""';
 													} else {
-													sourcePortLabelStructure = "'" + sourcePortLabel + "'";
+														sourcePortLabelStructure = "'" + sourcePortLabel + "'";
 													}
 													break;
 												case "list":
@@ -1688,7 +1688,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			</Header> */}
 			<Content>
 				<Layer
-					onDrop={(event) => {
+					onDrop={async (event) => {
 						var data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
 
 						let component_task = componentList.map(x => x["task"]);
@@ -1702,7 +1702,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 						if (current_node != undefined) {
 							if (current_node.header == "GENERAL") {
-								node = GeneralComponentLibrary({ model: current_node });
+								node = await GeneralComponentLibrary({ model: current_node });
 							} else if (current_node.header == "ADVANCED") {
 								node = AdvancedComponentLibrary({ model: current_node });
 							}
