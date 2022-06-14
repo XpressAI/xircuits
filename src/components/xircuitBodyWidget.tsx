@@ -530,7 +530,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 										if (sourceNodeName.startsWith("Literal")) {
 											switch (sourceNodeType) {
 												case "string":
+													if (sourceNodeName.includes('Multi')){
+														sourcePortLabelStructure = '"""' + sourcePortLabel + '"""';
+													} else {
 													sourcePortLabelStructure = "'" + sourcePortLabel + "'";
+													}
 													break;
 												case "list":
 													sourcePortLabelStructure = "[" + sourcePortLabel + "]";

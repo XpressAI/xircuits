@@ -1,10 +1,14 @@
 import { CustomNodeModel } from "../components/CustomNodeModel";
-
+import { formDialogWidget } from "../dialog/formDialogwidget";
+import { Dialog } from '@jupyterlab/apputils';
+import { MultiStrDialog } from "../dialog/MultiStringDialog";
+import { showFormDialog } from "../dialog/FormDialog";
+import React from "react";
 interface GeneralComponentLibraryProps{
     model : any;
 }
 
-export function GeneralComponentLibrary(props: GeneralComponentLibraryProps){
+export async function GeneralComponentLibrary(props: GeneralComponentLibraryProps){
     let node = null;
     const nodeData = props.model;
     const nodeName = nodeData.task;
@@ -33,13 +37,34 @@ export function GeneralComponentLibrary(props: GeneralComponentLibraryProps){
     // } else 
     if (nodeData.type === 'string') {
 
-        if ((nodeName).startsWith("Literal")) {
+        if ((nodeName).startsWith("Literal Multi")) {
+            let multiStr;
+            let title = 'Multi-String';
+            const dialogOptions: Partial<Dialog.IOptions<any>> = {
+                title,
+                body: formDialogWidget(
+                    <MultiStrDialog oldValue={""}/>
+                ),
+                buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Submit') })],
+                defaultButton: 1
+            };
+            const dialogResult = await showFormDialog(dialogOptions);
+            multiStr = dialogResult["value"]['multi-str'];
+            console.log(multiStr);
+            
+            node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
+            
+            node.addOutPortEnhance(multiStr, 'out-0');
+            console.log(node);
+            
+        } else if ((nodeName).startsWith("Literal")) {
 
             let theResponse = window.prompt('Enter String Value (Without Quotes):');
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance(theResponse, 'out-0');
 
-        } else {
+        }
+         else {
 
             let theResponse = window.prompt('notice', 'Enter String Name (Without Quotes):');
             node = new CustomNodeModel({ name: "Hyperparameter (String): " + theResponse, color: nodeData.color, extras: { "type": nodeData.type } });
