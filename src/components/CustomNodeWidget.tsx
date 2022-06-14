@@ -68,6 +68,8 @@ var S;
 	`;
 
     S.PortsContainer = styled.div`
+        max-width: 640px;
+        white-space: pre;
 		flex-grow: 1;
 		display: flex;
 		flex-direction: column;
