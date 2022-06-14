@@ -14,6 +14,7 @@ import { formDialogWidget } from '../dialog/formDialogwidget';
 import { CommentDialog } from '../dialog/CommentDialog';
 import React from 'react';
 import { showFormDialog } from '../dialog/FormDialog';
+import { MultiStrDialog } from '../dialog/MultiStringDialog';
 
 /**
  * Add the commands for node actions.
@@ -516,7 +517,7 @@ export function addNodeActionCommands(
         }
     }
 
-    function editLiteral(): void {
+    async function editLiteral(): Promise<void> {
         const widget = tracker.currentWidget?.content as XPipePanel;
 
         if (widget) {
@@ -533,15 +534,35 @@ export function addNodeActionCommands(
             let node = null;
             let links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
             let oldValue = selected_node.getPorts()["out-0"].getOptions()["label"]
+            let strContent: string;
+            if (selected_node["name"].includes('Multi')) {
+                let title = 'Update Multi-String';
+                const dialogOptions: Partial<Dialog.IOptions<any>> = {
+                    title,
+                    body: formDialogWidget(
+                        <MultiStrDialog oldValue={oldValue}/>
+                    ),
+                    buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Submit') })],
+                    defaultButton: 1
+                };
+                const dialogResult = await showFormDialog(dialogOptions);
+                if (dialogResult["button"]["label"] == 'Cancel') {
+                    // When Cancel is clicked on the dialog, just return
+                    return;
+                }
 
-            // Prompt the user to enter new value
-            let theResponse = window.prompt('Enter New Value (Without Quotes):', oldValue);
-            if (theResponse == null || theResponse == "" || theResponse == oldValue) {
-                // When Cancel is clicked or no input provided, just return
-                return
+                strContent = dialogResult["value"]['multi-str'];
+            } else {
+                // Prompt the user to enter new value
+                strContent = window.prompt('Enter New Value (Without Quotes):', oldValue);
+                if (strContent == null || strContent == "" || strContent == oldValue) {
+                    // When Cancel is clicked or no input provided, just return
+                    return
+                }
             }
+
             node = new CustomNodeModel({ name: selected_node["name"], color: selected_node["color"], extras: { "type": selected_node["extras"]["type"] } });
-            node.addOutPortEnhance(theResponse, 'out-0');
+            node.addOutPortEnhance(strContent, 'out-0');
 
             // Set new node to old node position
             let position = selected_node.getPosition();
