@@ -13,23 +13,27 @@ export class DragDiagramItemsState extends MoveItemsState<DiagramEngine> {
       new Action({
         type: InputType.MOUSE_UP,
         fire: event => {
-          const item = this.engine.getMouseElement(event.event as MouseEvent<Element, globalThis.MouseEvent>);
-          if (item instanceof PortModel) {
-            _.forEach(this.initialPositions, position => {
-              if (position.item instanceof PointModel) {
-                const link = position.item.getParent() as LinkModel;
+          try {
+            const item = this.engine.getMouseElement(event.event as MouseEvent<Element, globalThis.MouseEvent>);
+            if (item instanceof PortModel) {
+              _.forEach(this.initialPositions, position => {
+                if (position.item instanceof PointModel) {
+                  const link = position.item.getParent() as LinkModel;
 
-                // only care about the last links
-                if (link.getLastPoint() !== position.item) {
-                  return;
+                  // only care about the last links
+                  if (link.getLastPoint() !== position.item) {
+                    return;
+                  }
+                  if (link.getSourcePort().canLinkToPort(item)) {
+                    link.setTargetPort(item);
+                    item.reportPosition();
+                    this.engine.repaintCanvas();
+                  }
                 }
-                if (link.getSourcePort().canLinkToPort(item)) {
-                  link.setTargetPort(item);
-                  item.reportPosition();
-                  this.engine.repaintCanvas();
-                }
-              }
-            });
+              });
+            }
+          } catch (e) {
+            // No-op
           }
         }
       })

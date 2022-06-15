@@ -20,6 +20,8 @@ export class MoveItemsState<E extends CanvasEngine = CanvasEngine> extends Abstr
       item: BaseModel;
     };
   } = {};
+  initialPosition: Point;
+  finalPosition: Point;
 
   constructor() {
     super({
@@ -51,10 +53,31 @@ export class MoveItemsState<E extends CanvasEngine = CanvasEngine> extends Abstr
           }
           element.setSelected(true);
           this.engine.repaintCanvas();
+          this.initialPosition = element['position'];
+        }
+      })
+    );
+
+    this.registerAction(
+      new Action({
+        type: InputType.MOUSE_UP,
+        fire: () => {
+          // When node in the same position, just return
+          if (
+            this.initialPosition.x === this.finalPosition.x &&
+            this.initialPosition.y === this.finalPosition.y
+          ) {
+            return;
+          }
+          this.fireEvent();
         }
       })
     );
   }
+
+  fireEvent = () => {
+		this.engine.fireEvent({}, 'onChange');
+	};
 
   activated(previous: State) {
     super.activated(previous);
@@ -78,6 +101,7 @@ export class MoveItemsState<E extends CanvasEngine = CanvasEngine> extends Abstr
 
         const pos = this.initialPositions[item.getID()].point;
         item.setPosition(model.getGridPosition(pos.x + event.virtualDisplacementX), model.getGridPosition(pos.y + event.virtualDisplacementY));
+        this.finalPosition = item.getPosition();
       }
     }
     this.engine.repaintCanvas();
