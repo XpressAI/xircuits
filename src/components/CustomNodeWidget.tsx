@@ -12,7 +12,6 @@ import Toggle from 'react-toggle'
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { commandIDs } from './xircuitBodyWidget';
 import { CustomPortLabel } from './port/CustomPortLabel';
-import TextareaAutosize from 'react-textarea-autosize';
 import { Dialog } from '@jupyterlab/apputils';
 import { formDialogWidget } from '../dialog/formDialogwidget';
 import { showFormDialog } from '../dialog/FormDialog';
@@ -45,12 +44,11 @@ var S;
 	`;
 
     S.CommentContainer = styled.div<{ selected: boolean;  }>`
-        background: rgba(0, 0, 0, 0.3);
+        background: rgba(0, 0, 0, 0.1);
         border-radius: 5px;
 		font-family: sans-serif;
-		color: white;
+		color: rgb(255, 255, 255);
 		border: solid 2px black;
-		overflow: visible;
 		font-size: 12px;
         border: solid 2px ${(p) => p.selected ? 'rgb(0,192,255)':'black'};
         padding: 5px;

@@ -16,7 +16,7 @@ export const CommentDialog = ({
                             minRows={3}
                             maxRows={15}
                             defaultValue={commentInput}
-                            style={{ width: 250, height: 100, fontSize: 14, whiteSpace: 'pre', }}
+                            style={{ width: 450, height: 250, fontSize: 14, whiteSpace: 'pre'}}
                             autoFocus />
                     </div>
                 </div></>
