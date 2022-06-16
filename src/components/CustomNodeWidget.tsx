@@ -44,7 +44,7 @@ var S;
 	`;
 
     S.CommentContainer = styled.div<{ selected: boolean;  }>`
-        background: rgba(0, 0, 0, 0.1);
+        background: rgba(0, 0, 0, 0.3);
         border-radius: 5px;
 		font-family: sans-serif;
 		color: rgb(255, 255, 255);
