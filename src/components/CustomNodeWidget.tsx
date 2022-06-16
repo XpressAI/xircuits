@@ -214,7 +214,19 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
     }
     
     render() {
-        if (this.props.node.getOptions()["name"] !== 'Start' && this.props.node.getOptions()["name"] !== 'Finish') {
+        if (this.props.node['extras']['type'] == 'comment') {
+            return (
+                <S.CommentContainer
+                    onDoubleClick={this.handleEditComment.bind(this)}
+                    selected={this.props.node.isSelected()}>
+                    <S.TitleName><b>{this.props.node.getOptions().name}</b></S.TitleName>
+                    <div className='comment-component-content'>
+                        {this.state.commentInput}
+                    </div>
+                </S.CommentContainer>
+            );
+        }
+        else if (this.props.node.getOptions()["name"] !== 'Start' && this.props.node.getOptions()["name"] !== 'Finish') {
             return (
                 <>
                     <S.Node
@@ -406,25 +418,6 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                         <S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
                     </S.Ports>
                 </S.Node>
-            );
-        } 
-        else if (this.props.node['extras']['type'] == 'comment') {
-            return (
-                <S.CommentContainer
-                    onDoubleClick={this.handleEditComment.bind(this)}
-                    selected={this.props.node.isSelected()}>
-                    <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
-                    <div data-no-drag>
-                        <TextareaAutosize
-                            id='comment-input-textarea'
-                            placeholder='Add your message here.'
-                            minRows={3}
-                            maxRows={15}
-                            value={this.state.commentInput}
-                            className='comment-component-textarea'
-                        />
-                    </div>
-                </S.CommentContainer>
             );
         }
         return (
