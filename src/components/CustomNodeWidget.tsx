@@ -176,7 +176,8 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         body: formDialogWidget(
                 <CommentDialog commentInput={this.state.commentInput}/>
         ),
-        buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Submit') })]
+        buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Submit') })],
+	focusNodeSelector: 'textarea'
     };
 
     /**
