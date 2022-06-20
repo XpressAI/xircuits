@@ -13,11 +13,10 @@ export const CommentDialog = ({
                     <div>
                         <TextareaAutosize
                             placeholder='Add your message here'
-                            minRows={3}
-                            maxRows={15}
+                            minRows={15}
                             defaultValue={commentInput}
-                            style={{ width: 250, height: 100, fontSize: 14, whiteSpace: 'pre', }}
-                            autoFocus />
+                            style={{ width: 500, height: 250, fontSize: 14, whiteSpace: 'pre'}} 
+                            autoFocus/>
                     </div>
                 </div></>
             </div>
