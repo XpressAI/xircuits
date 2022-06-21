@@ -1,11 +1,16 @@
 import { CustomNodeModel } from "../components/CustomNodeModel";
-import { formDialogWidget } from "../dialog/formDialogwidget";
-import { Dialog } from '@jupyterlab/apputils';
-import { MultiStrDialog } from "../dialog/MultiStringDialog";
+import { literalAndHyperDialog } from "../dialog/MultiStringDialog";
 import { showFormDialog } from "../dialog/FormDialog";
-import React from "react";
 interface GeneralComponentLibraryProps{
     model : any;
+}
+
+function cancelDialog(dialogResult) {
+    if (dialogResult["button"]["label"] == 'Cancel') {
+        // When Cancel is clicked on the dialog, just return
+        return true;
+    }
+    return false
 }
 
 export async function GeneralComponentLibrary(props: GeneralComponentLibraryProps){
@@ -37,37 +42,22 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
     // } else 
     if (nodeData.type === 'string') {
 
-        if ((nodeName).startsWith("Literal Multi")) {
-            let multiStr;
-            let title = 'Multi-String';
-            const dialogOptions: Partial<Dialog.IOptions<any>> = {
-                title,
-                body: formDialogWidget(
-                    <MultiStrDialog oldValue={""}/>
-                ),
-                buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Submit') })],
-                defaultButton: 1
-            };
+        if ((nodeName).startsWith("Literal")) {
+            const dialogOptions = literalAndHyperDialog('String', "", 'String', false ,'textarea');
             const dialogResult = await showFormDialog(dialogOptions);
-            multiStr = dialogResult["value"]['multi-str'];
-            console.log(multiStr);
-            
-            node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-            
-            node.addOutPortEnhance(multiStr, 'out-0');
-            console.log(node);
-            
-        } else if ((nodeName).startsWith("Literal")) {
+            if (cancelDialog(dialogResult)) return;
+            const strValue = dialogResult["value"]['String'];
 
-            let theResponse = window.prompt('Enter String Value (Without Quotes):');
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-            node.addOutPortEnhance(theResponse, 'out-0');
-
+            node.addOutPortEnhance(strValue, 'out-0');
         }
-         else {
+        else {
 
-            let theResponse = window.prompt('notice', 'Enter String Name (Without Quotes):');
-            node = new CustomNodeModel({ name: "Hyperparameter (String): " + theResponse, color: nodeData.color, extras: { "type": nodeData.type } });
+            const dialogOptions = literalAndHyperDialog('String', "", 'String', false);
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (cancelDialog(dialogResult)) return;
+            const strValue = dialogResult["value"]['String'];
+            node = new CustomNodeModel({ name: "Hyperparameter (String): " + strValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
 
         }
@@ -76,14 +66,19 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            let theResponse = window.prompt('Enter Int Value (Without Quotes):');
+            const dialogOptions = literalAndHyperDialog('Integer', "", 'Integer');
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (cancelDialog(dialogResult)) return;
+            const intValue = dialogResult["value"]['Integer'];
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-            node.addOutPortEnhance(theResponse, 'out-0');
+            node.addOutPortEnhance(intValue, 'out-0');
 
         } else {
-
-            let theResponse = window.prompt('notice', 'Enter Int Name (Without Quotes):');
-            node = new CustomNodeModel({ name: "Hyperparameter (Int): " + theResponse, color: nodeData.color, extras: { "type": nodeData.type } });
+            const dialogOptions = literalAndHyperDialog('Integer', "", 'Integer');
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (cancelDialog(dialogResult)) return;
+            const intValue = dialogResult["value"]['Integer'];
+            node = new CustomNodeModel({ name: "Hyperparameter (Int): " + intValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
 
         }
@@ -92,14 +87,20 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            let theResponse = window.prompt('Enter Float Value (Without Quotes):');
+            const dialogOptions = literalAndHyperDialog('Float', "", 'Float');
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (cancelDialog(dialogResult)) return;
+            const floatValue = dialogResult["value"]['Float'];
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-            node.addOutPortEnhance(theResponse, 'out-0');
+            node.addOutPortEnhance(floatValue, 'out-0');
 
         } else {
 
-            let theResponse = window.prompt('notice', 'Enter Float Name (Without Quotes):');
-            node = new CustomNodeModel({ name: "Hyperparameter (Float): " + theResponse, color: nodeData.color, extras: { "type": nodeData.type } });
+            const dialogOptions = literalAndHyperDialog('Float', "", 'Float');
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (cancelDialog(dialogResult)) return;
+            const floatValue = dialogResult["value"]['Float'];
+            node = new CustomNodeModel({ name: "Hyperparameter (Float): " + floatValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
 
         }
@@ -116,8 +117,11 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         } else {
 
-            let theResponse = window.prompt('notice', 'Enter Boolean Name (Without Quotes):');
-            node = new CustomNodeModel({ name: "Hyperparameter (Boolean): " + theResponse, color: nodeData.color, extras: { "type": nodeData.type } });
+            const dialogOptions = literalAndHyperDialog('Boolean', "", 'Boolean');
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (cancelDialog(dialogResult)) return;
+            const boolValue = dialogResult["value"]['Boolean'];
+            node = new CustomNodeModel({ name: "Hyperparameter (Boolean): " + boolValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
 
         }
@@ -126,14 +130,20 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            let theResponse = window.prompt('Enter List Values (Without [] Brackets):');
+            const dialogOptions = literalAndHyperDialog('List', "", 'List', true);
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (cancelDialog(dialogResult)) return;
+            const listValue = dialogResult["value"]['List'];
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-            node.addOutPortEnhance(theResponse, 'out-0');
+            node.addOutPortEnhance(listValue, 'out-0');
 
         } else {
 
-            let theResponse = window.prompt('notice', 'Enter List Name (Without Quotes):');
-            node = new CustomNodeModel({ name: "Hyperparameter (List): " + theResponse, color: nodeData.color, extras: { "type": nodeData.type } });
+            const dialogOptions = literalAndHyperDialog('List', "", 'List');
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (cancelDialog(dialogResult)) return;
+            const listValue = dialogResult["value"]['List'];
+            node = new CustomNodeModel({ name: "Hyperparameter (List): " + listValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
 
         }
@@ -142,14 +152,20 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            let theResponse = window.prompt('Enter Tuple Values (Without () Brackets):');
+            const dialogOptions = literalAndHyperDialog('Tuple', "", 'Tuple', true);
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (cancelDialog(dialogResult)) return;
+            const tupleValue = dialogResult["value"]['Tuple'];
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-            node.addOutPortEnhance(theResponse, 'out-0');
+            node.addOutPortEnhance(tupleValue, 'out-0');
 
         } else {
 
-            let theResponse = window.prompt('notice', 'Enter Tuple Name (Without Quotes):');
-            node = new CustomNodeModel({ name: "Hyperparameter (Tuple): " + theResponse, color: nodeData.color, extras: { "type": nodeData.type } });
+            const dialogOptions = literalAndHyperDialog('Tuple', "", 'Tuple');
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (cancelDialog(dialogResult)) return;
+            const tupleValue = dialogResult["value"]['Tuple'];
+            node = new CustomNodeModel({ name: "Hyperparameter (Tuple): " + tupleValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
         }
 
@@ -157,14 +173,20 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            let theResponse = window.prompt('Enter Dict Values (Without {} Brackets):');
+            const dialogOptions = literalAndHyperDialog('Dict', "", 'Dict', true);
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (cancelDialog(dialogResult)) return;
+            const dictValue = dialogResult["value"]['Dict'];
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-            node.addOutPortEnhance(theResponse, 'out-0');
+            node.addOutPortEnhance(dictValue, 'out-0');
 
         } else {
 
-            let theResponse = window.prompt('notice', 'Enter Dict Name (Without Quotes):');
-            node = new CustomNodeModel({ name: "Hyperparameter (Dict): " + theResponse, color: nodeData.color, extras: { "type": nodeData.type } });
+            const dialogOptions = literalAndHyperDialog('Dict', "", 'Dict');
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (cancelDialog(dialogResult)) return;
+            const dictValue = dialogResult["value"]['Dict'];
+            node = new CustomNodeModel({ name: "Hyperparameter (Dict): " + dictValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
 
         }
@@ -187,10 +209,11 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
     //     node.addOutPortEnhance('▶', 'out-0');
     //     node.addOutPortEnhance('Should Retrain', 'out-1');
 
-    } else if (nodeData.type === 'literal') {
+    } 
+    // else if (nodeData.type === 'literal') {
 
-        node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-        node.addOutPortEnhance('Value', 'out-0');
-    }
+    //     node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
+    //     node.addOutPortEnhance('Value', 'out-0');
+    // }
     return node;
 }
