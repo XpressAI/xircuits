@@ -226,6 +226,24 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                     </div>
                 </S.CommentContainer>
             );
+        } 
+        else if (this.props.node.getOptions()["name"].startsWith('Literal')) {
+            return (
+                <S.Node
+                    borderColor={this.props.node.getOptions().extras["borderColor"]}
+                    data-default-node-name={this.props.node.getOptions().name}
+                    selected={this.props.node.isSelected()}
+                    background={this.props.node.getOptions().color}
+                    onDoubleClick={this.handleEditLiteral.bind(this)}>
+                    <S.Title>
+                        <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
+                    </S.Title>
+                    <S.Ports>
+                        <S.PortsContainer>{_.map(this.props.node.getInPorts(), this.generatePort)}</S.PortsContainer>
+                        <S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
+                    </S.Ports>
+                </S.Node>
+            );
         }
         else if (this.props.node.getOptions()["name"] !== 'Start' && this.props.node.getOptions()["name"] !== 'Finish') {
             return (
