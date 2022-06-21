@@ -36,3 +36,12 @@
 .jp-debugger-toolbar-panel {
   flex: 0 0 auto;
 }
+
+input[type=number] {
+  line-height: 35px;
+}
+
+input[type=number]::-webkit-inner-spin-button {
+  width: 35px;
+  height: 35px;
+}
