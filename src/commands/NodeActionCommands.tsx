@@ -14,7 +14,7 @@ import { formDialogWidget } from '../dialog/formDialogwidget';
 import { CommentDialog } from '../dialog/CommentDialog';
 import React from 'react';
 import { showFormDialog } from '../dialog/FormDialog';
-import { MultiStrDialog } from '../dialog/MultiStringDialog';
+import { literalAndHyperDialog } from '../dialog/MultiStringDialog';
 
 /**
  * Add the commands for node actions.
@@ -532,34 +532,33 @@ export function addNodeActionCommands(
             }
 
             let node = null;
-            let links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
-            let oldValue = selected_node.getPorts()["out-0"].getOptions()["label"]
-            let strContent: string;
-            if (selected_node["name"].includes('Multi')) {
-                let title = 'Update Multi-String';
-                const dialogOptions: Partial<Dialog.IOptions<any>> = {
-                    title,
-                    body: formDialogWidget(
-                        <MultiStrDialog oldValue={oldValue}/>
-                    ),
-                    buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Submit') })],
-                    defaultButton: 1
-                };
-                const dialogResult = await showFormDialog(dialogOptions);
-                if (dialogResult["button"]["label"] == 'Cancel') {
-                    // When Cancel is clicked on the dialog, just return
+            const links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
+            const oldValue = selected_node.getPorts()["out-0"].getOptions()["label"];
+            const literalType = selected_node["name"].split(" ")[1];
+            let isStoreDataType: boolean = false;
+            let isTextareaInput: string = "";
+            
+            switch(literalType){
+                case "String":
+                    isTextareaInput = 'textarea';
+                    break;
+                case "List":
+                case "Tuple":
+                case "Dict":
+                    isStoreDataType = true;
+                    break;
+                case "True":
+                case "False":
                     return;
-                }
-
-                strContent = dialogResult["value"]['multi-str'];
-            } else {
-                // Prompt the user to enter new value
-                strContent = window.prompt('Enter New Value (Without Quotes):', oldValue);
-                if (strContent == null || strContent == "" || strContent == oldValue) {
-                    // When Cancel is clicked or no input provided, just return
-                    return
-                }
             }
+            const newTitle = `Update ${literalType}`;
+            const dialogOptions = literalAndHyperDialog(newTitle, oldValue, literalType, isStoreDataType, isTextareaInput);
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (dialogResult["button"]["label"] == 'Cancel') {
+                // When Cancel is clicked on the dialog, just return
+                return;
+            }
+            const strContent: string = dialogResult["value"][newTitle];
 
             node = new CustomNodeModel({ name: selected_node["name"], color: selected_node["color"], extras: { "type": selected_node["extras"]["type"] } });
             node.addOutPortEnhance(strContent, 'out-0');
