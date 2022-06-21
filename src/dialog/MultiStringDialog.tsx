@@ -65,7 +65,7 @@ export const LiteralAndHyperparameterDialog = ({ title, oldValue, type, isStoreD
 					name={title}
 					type="number"
 					step={type == 'Float' ? "0.01" : "1"}
-					style={{ width: 350 }}
+					style={{ width: 150 }}
 					defaultValue={oldValue} />
 			);
 		} else if (type == 'Boolean') {
@@ -101,7 +101,7 @@ export const LiteralAndHyperparameterDialog = ({ title, oldValue, type, isStoreD
 		<form>
 			{type != 'Boolean' ?
 				<h3 style={{ marginTop: 0, marginBottom: 5 }}>
-					Enter {type} Name ({isStoreDataType ? 'Without Brackets' : 'Without Quotes'}):
+					Enter {type} Value ({isStoreDataType ? 'Without Brackets' : 'Without Quotes'}):
 				</h3>
 				: null}
 			<DictExample />
