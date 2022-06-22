@@ -17,7 +17,8 @@ export function literalAndHyperDialog(titleName: string, oldValue: any, type: st
 				inputType={inputType} />
 		),
 		buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Submit') })],
-		focusNodeSelector: inputType ?? 'input'
+		defaultButton: 1,
+		focusNodeSelector: inputType == 'textarea' ? 'textarea' : 'input'
 	};
 	return dialogOptions;
 }
