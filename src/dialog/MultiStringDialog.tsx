@@ -40,7 +40,7 @@ export const LiteralAndHyperparameterDialog = ({ title, oldValue, type, isStoreD
 		} else if (type == 'List' || type == 'Tuple') {
 			return (
 				<h5 style={{ marginTop: 0, marginBottom: 5 }}>
-					For Example: "a", "b", c
+					For Example: "a", "b", "c"
 				</h5>
 			);
 		}
@@ -65,6 +65,7 @@ export const LiteralAndHyperparameterDialog = ({ title, oldValue, type, isStoreD
 					name={title}
 					type="number"
 					step={type == 'Float' ? "0.01" : "1"}
+					placeholder={type == 'Float' ? "0.00" : "0"}
 					style={{ width: 150 }}
 					defaultValue={oldValue} />
 			);

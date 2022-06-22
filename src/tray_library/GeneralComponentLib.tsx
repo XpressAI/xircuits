@@ -53,7 +53,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
         }
         else {
 
-            const dialogOptions = literalAndHyperDialog('String', "", 'String', false);
+            const dialogOptions = literalAndHyperDialog('String', "", 'String');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             const strValue = dialogResult["value"]['String'];
