@@ -14,7 +14,7 @@ import { formDialogWidget } from '../dialog/formDialogwidget';
 import { CommentDialog } from '../dialog/CommentDialog';
 import React from 'react';
 import { showFormDialog } from '../dialog/FormDialog';
-import { literalAndHyperDialog } from '../dialog/MultiStringDialog';
+import { inputDialog } from '../dialog/LiteralInputDialog';
 
 /**
  * Add the commands for node actions.
@@ -552,7 +552,7 @@ export function addNodeActionCommands(
                     return;
             }
             const newTitle = `Update ${literalType}`;
-            const dialogOptions = literalAndHyperDialog(newTitle, oldValue, literalType, isStoreDataType, isTextareaInput);
+            const dialogOptions = inputDialog(newTitle, oldValue, literalType, isStoreDataType, isTextareaInput);
             const dialogResult = await showFormDialog(dialogOptions);
             if (dialogResult["button"]["label"] == 'Cancel') {
                 // When Cancel is clicked on the dialog, just return

@@ -1,15 +1,15 @@
 import TextareaAutosize from 'react-textarea-autosize';
 import React, { useState } from 'react';
-import { formDialogWidget } from "../dialog/formDialogwidget";
+import { formDialogWidget } from "./formDialogwidget";
 import { Dialog } from '@jupyterlab/apputils';
 import Switch from "react-switch";
 
-export function literalAndHyperDialog(titleName: string, oldValue: any, type: string, isStoreDataType?: boolean, inputType?: string) {
+export function inputDialog(titleName: string, oldValue: any, type: string, isStoreDataType?: boolean, inputType?: string) {
 	let title = titleName;
 	const dialogOptions: Partial<Dialog.IOptions<any>> = {
 		title,
 		body: formDialogWidget(
-			<LiteralAndHyperparameterDialog
+			<LiteralInputDialog
 				title={titleName}
 				oldValue={oldValue}
 				type={type}
@@ -23,7 +23,7 @@ export function literalAndHyperDialog(titleName: string, oldValue: any, type: st
 	return dialogOptions;
 }
 
-export const LiteralAndHyperparameterDialog = ({ title, oldValue, type, isStoreDataType, inputType }): JSX.Element => {
+export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inputType }): JSX.Element => {
 
 	const [checked, setChecked] = useState<boolean>(true);
 

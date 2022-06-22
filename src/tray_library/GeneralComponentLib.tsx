@@ -1,5 +1,5 @@
 import { CustomNodeModel } from "../components/CustomNodeModel";
-import { literalAndHyperDialog } from "../dialog/MultiStringDialog";
+import { inputDialog } from "../dialog/LiteralInputDialog";
 import { showFormDialog } from "../dialog/FormDialog";
 interface GeneralComponentLibraryProps{
     model : any;
@@ -43,7 +43,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
     if (nodeData.type === 'string') {
 
         if ((nodeName).startsWith("Literal")) {
-            const dialogOptions = literalAndHyperDialog('String', "", 'String', false ,'textarea');
+            const dialogOptions = inputDialog('String', "", 'String', false ,'textarea');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             const strValue = dialogResult["value"]['String'];
@@ -53,7 +53,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
         }
         else {
 
-            const dialogOptions = literalAndHyperDialog('String', "", 'String');
+            const dialogOptions = inputDialog('String', "", 'String');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             const strValue = dialogResult["value"]['String'];
@@ -66,7 +66,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            const dialogOptions = literalAndHyperDialog('Integer', "", 'Integer');
+            const dialogOptions = inputDialog('Integer', "", 'Integer');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             const intValue = dialogResult["value"]['Integer'];
@@ -74,7 +74,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
             node.addOutPortEnhance(intValue, 'out-0');
 
         } else {
-            const dialogOptions = literalAndHyperDialog('Integer', "", 'Integer');
+            const dialogOptions = inputDialog('Integer', "", 'Integer');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             const intValue = dialogResult["value"]['Integer'];
@@ -87,7 +87,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            const dialogOptions = literalAndHyperDialog('Float', "", 'Float');
+            const dialogOptions = inputDialog('Float', "", 'Float');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             const floatValue = dialogResult["value"]['Float'];
@@ -96,7 +96,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         } else {
 
-            const dialogOptions = literalAndHyperDialog('Float', "", 'Float');
+            const dialogOptions = inputDialog('Float', "", 'Float');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             const floatValue = dialogResult["value"]['Float'];
@@ -117,7 +117,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         } else {
 
-            const dialogOptions = literalAndHyperDialog('Boolean', "", 'Boolean');
+            const dialogOptions = inputDialog('Boolean', "", 'Boolean');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             const boolValue = dialogResult["value"]['Boolean'];
@@ -130,7 +130,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            const dialogOptions = literalAndHyperDialog('List', "", 'List', true);
+            const dialogOptions = inputDialog('List', "", 'List', true);
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             const listValue = dialogResult["value"]['List'];
@@ -139,7 +139,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         } else {
 
-            const dialogOptions = literalAndHyperDialog('List', "", 'List');
+            const dialogOptions = inputDialog('List', "", 'List');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             const listValue = dialogResult["value"]['List'];
@@ -152,7 +152,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            const dialogOptions = literalAndHyperDialog('Tuple', "", 'Tuple', true);
+            const dialogOptions = inputDialog('Tuple', "", 'Tuple', true);
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             const tupleValue = dialogResult["value"]['Tuple'];
@@ -161,7 +161,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         } else {
 
-            const dialogOptions = literalAndHyperDialog('Tuple', "", 'Tuple');
+            const dialogOptions = inputDialog('Tuple', "", 'Tuple');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             const tupleValue = dialogResult["value"]['Tuple'];
@@ -173,7 +173,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            const dialogOptions = literalAndHyperDialog('Dict', "", 'Dict', true);
+            const dialogOptions = inputDialog('Dict', "", 'Dict', true);
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             const dictValue = dialogResult["value"]['Dict'];
@@ -182,7 +182,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         } else {
 
-            const dialogOptions = literalAndHyperDialog('Dict', "", 'Dict');
+            const dialogOptions = inputDialog('Dict', "", 'Dict');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             const dictValue = dialogResult["value"]['Dict'];
