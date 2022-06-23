@@ -14,6 +14,7 @@ import { formDialogWidget } from '../dialog/formDialogwidget';
 import { CommentDialog } from '../dialog/CommentDialog';
 import React from 'react';
 import { showFormDialog } from '../dialog/FormDialog';
+import { inputDialog } from '../dialog/LiteralInputDialog';
 
 /**
  * Add the commands for node actions.
@@ -516,7 +517,7 @@ export function addNodeActionCommands(
         }
     }
 
-    function editLiteral(): void {
+    async function editLiteral(): Promise<void> {
         const widget = tracker.currentWidget?.content as XPipePanel;
 
         if (widget) {
@@ -531,17 +532,36 @@ export function addNodeActionCommands(
             }
 
             let node = null;
-            let links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
-            let oldValue = selected_node.getPorts()["out-0"].getOptions()["label"]
-
-            // Prompt the user to enter new value
-            let theResponse = window.prompt('Enter New Value (Without Quotes):', oldValue);
-            if (theResponse == null || theResponse == "" || theResponse == oldValue) {
-                // When Cancel is clicked or no input provided, just return
-                return
+            const links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
+            const oldValue = selected_node.getPorts()["out-0"].getOptions()["label"];
+            const literalType = selected_node["name"].split(" ")[1];
+            let isStoreDataType: boolean = false;
+            let isTextareaInput: string = "";
+            
+            switch(literalType){
+                case "String":
+                    isTextareaInput = 'textarea';
+                    break;
+                case "List":
+                case "Tuple":
+                case "Dict":
+                    isStoreDataType = true;
+                    break;
+                case "True":
+                case "False":
+                    return;
             }
+            const newTitle = `Update ${literalType}`;
+            const dialogOptions = inputDialog(newTitle, oldValue, literalType, isStoreDataType, isTextareaInput);
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (dialogResult["button"]["label"] == 'Cancel') {
+                // When Cancel is clicked on the dialog, just return
+                return;
+            }
+            const strContent: string = dialogResult["value"][newTitle];
+
             node = new CustomNodeModel({ name: selected_node["name"], color: selected_node["color"], extras: { "type": selected_node["extras"]["type"] } });
-            node.addOutPortEnhance(theResponse, 'out-0');
+            node.addOutPortEnhance(strContent, 'out-0');
 
             // Set new node to old node position
             let position = selected_node.getPosition();
