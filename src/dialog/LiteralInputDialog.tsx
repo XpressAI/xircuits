@@ -67,7 +67,7 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 					type="number"
 					step={type == 'Float' ? "0.01" : "1"}
 					placeholder={type == 'Float' ? "0.00" : "0"}
-					style={{ width: 150 }}
+					style={{ width: 350 }}
 					defaultValue={oldValue} />
 			);
 		} else if (type == 'Boolean') {
