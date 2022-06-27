@@ -29,9 +29,9 @@ class RunConfigRouteHandler(APIHandler):
         err_msg = ""
 
         try:
-            get_run_types = str(cfg['CONFIGURATION'][config_request]).split('\n')
+            get_run_types = str(cfg['REMOTE_EXECUTION'][config_request]).split('\n')
             for id, run_type_name in enumerate(get_run_types):
-                run_configs = str(cfg['CONFIGURATION'][run_type_name]).split('\n')
+                run_configs = str(cfg['RUN_TYPES'][run_type_name]).split('\n')
                 for id, run_config_name in enumerate(run_configs):
                     run_cfg = cfg[run_config_name]
                     configurations.append(
