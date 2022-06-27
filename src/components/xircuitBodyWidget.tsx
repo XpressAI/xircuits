@@ -161,7 +161,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [displaySavedAndCompiled, setDisplaySavedAndCompiled] = useState(false);
 	const [displayDebug, setDisplayDebug] = useState(false);
 	const [displayHyperparameter, setDisplayHyperparameter] = useState(false);
-	const [sparkSubmitNodes, setSparkSubmitkNodes] = useState<any>("");
+	const [runConfigs, setRunConfigs] = useState<any>("");
+	const [lastConfig, setLastConfigs] = useState<any>("");
 	const [stringNodes, setStringNodes] = useState<string[]>(["experiment name"]);
 	const [intNodes, setIntNodes] = useState<string[]>([]);
 	const [floatNodes, setFloatNodes] = useState<string[]>([]);
@@ -178,7 +179,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const [runType, setRunType] = useState<string>("run");
-	const [addedArgSparkSubmit, setAddedArgSparkSubmit] = useState<string>("");
+	const [runTypesCfg, setRunTypesCfg] = useState<string>("");
 	const xircuitLogger = new Log(app);
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
@@ -889,10 +890,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		context.ready.then(async () => {
 			let runArgs = await handleRunDialog();
 			let runCommand = runArgs["commandStr"];
-			let addArgsSparkSubmit = runArgs["addArgs"];
+			let config = runArgs["config"];
 
 			if (runArgs) {
-				commands.execute(commandIDs.executeToOutputPanel, { runCommand, runType, addArgsSparkSubmit });
+				commands.execute(commandIDs.executeToOutputPanel, { runCommand, runType, config });
 			}
 		})
 	}
@@ -996,19 +997,19 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 	};
 
-	async function getConfig(request: string) {
+	async function getRunTypesFromConfig(request: string) {
 		const dataToSend = { "config_request": request };
-
+	
 		try {
-			const server_reply = await requestAPI<any>('get/config', {
+			const server_reply = await requestAPI<any>('config/run', {
 				body: JSON.stringify(dataToSend),
 				method: 'POST',
 			});
-
+	
 			return server_reply;
 		} catch (reason) {
 			console.error(
-				`Error on POST get/config ${dataToSend}.\n${reason}`
+				`Error on POST config/run ${dataToSend}.\n${reason}`
 			);
 		}
 	};
@@ -1348,9 +1349,20 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		alert("Testing");
 	}
 
-	const getConfigRunType = async () => {
-		const configuration = await getConfig("SPARK");
-		setSparkSubmitkNodes(configuration["cfg"]);
+	const getRunTypeFromConfig = async () => {
+		const configuration = await getRunTypesFromConfig("RUN_TYPES");
+		const error_msg = configuration["err_msg"];
+		if (error_msg) {
+			showDialog({
+				title: 'Failed parsing data from config.ini',
+				body: (
+					<pre>{error_msg}</pre>
+				),
+				buttons: [Dialog.warnButton({ label: 'OK' })]
+			});
+		}
+		setRunTypesCfg(configuration["run_types"])
+		setRunConfigs(configuration["run_types_config"]);
 	}
 
 	const hideRcDialog = () => {
@@ -1358,11 +1370,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	useEffect(() => {
-		// Only enable added arguments when in 'Spark Submit' mode
-		if (runType == 'spark-submit') {
-			getConfigRunType();
+		// Get run configuration when in 'Remote Run' mode only
+		if (runType == 'remote-run') {
+			getRunTypeFromConfig();
 		} else {
-			setSparkSubmitkNodes("")
+			setRunConfigs("")
 		}
 
 		context.ready.then(() => {
@@ -1403,8 +1415,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			title,
 			body: formDialogWidget(
 				<RunDialog
-					lastAddedArgsSparkSubmit={addedArgSparkSubmit}
-					childSparkSubmitNodes={sparkSubmitNodes}
+					runTypes={runTypesCfg}
+					runConfigs={runConfigs}
+					lastConfig={lastConfig}
 					childStringNodes={stringNodes}
 					childBoolNodes={boolNodes}
 					childIntNodes={intNodes}
@@ -1423,16 +1436,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		let commandStr = ' ';
-		// Added arguments for spark submit
-		let addArgs
-		let run_type = dialogResult["value"]['runType'] ?? "";
-		if (sparkSubmitNodes.length != 0) {
-		sparkSubmitNodes.map(spark => {
-			if (spark.run_type == run_type) {
-				addArgs = spark;
-				setAddedArgSparkSubmit(spark)
-			}
-		})
+		// Remember the last config chose and set the chosen config to output
+		let config;
+		let runType = dialogResult["value"]['runType'] ?? "";
+		let runConfig = dialogResult["value"]['runConfig'] ?? "";
+		if (runConfigs.length != 0) {
+			runConfigs.map(cfg => {
+				if (cfg.run_type == runType && cfg.run_config_name == runConfig) {
+					config = cfg;
+					setLastConfigs(cfg);
+				}
+			})
 		}
 
 		stringNodes.forEach((param) => {
@@ -1486,8 +1500,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				}
 			});
 		}
-
-		return { commandStr, addArgs };
+		return { commandStr, config };
 	};
 
 

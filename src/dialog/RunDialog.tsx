@@ -5,8 +5,9 @@ import Switch from "react-switch";
 import { HTMLSelect } from "@jupyterlab/ui-components";
 
 export const RunDialog = ({
-	lastAddedArgsSparkSubmit,
-	childSparkSubmitNodes,
+	runTypes,
+	runConfigs,
+	lastConfig,
 	childStringNodes,
 	childBoolNodes,
 	childIntNodes,
@@ -15,7 +16,8 @@ export const RunDialog = ({
 
 	const [checked, setChecked] = useState<boolean[]>([false]);
 	const [runType, setRunType] = useState("");
-	const [addArgs, setAddArgs] = useState("");
+	const [runConfig, setRunConfig] = useState("");
+	const [command, setCommand] = useState("");
 
 	const handleChecked = (e, i) => {
 		let newChecked = [...checked];
@@ -25,52 +27,89 @@ export const RunDialog = ({
 	};
 
 	/**
-     * Handle `change` events for the HTMLSelect component.
-     */
-	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
-        let type = event.target.value;
+	 * Handle `change` events for the HTMLSelect component of run type.
+	 */
+	const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
+		let type = event.target.value;
 		setRunType(type);
-		childSparkSubmitNodes.map(spark => {
-			if (spark.run_type == type) setAddArgs(spark.command);
-		})
+		setRunConfig("-");
+		setCommand("");
 	};
 
-	useEffect(()=>{
-		if(childSparkSubmitNodes.length != 0) {
-			setRunType(childSparkSubmitNodes[0].run_type);
-			setAddArgs(childSparkSubmitNodes[0].command);
+	/**
+	 * Handle `change` events for the HTMLSelect component for run config.
+	 */
+	const handleConfigChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
+		let configName = event.target.value;
+		setRunConfig(configName);
+		if (configName == "-") {
+			setCommand("");
 		}
-	},[])
+	};
+
+	useEffect(() => {
+		if (runTypes.length != 0) {
+			setRunType(runTypes[0].run_type);
+		}
+
+		if (lastConfig.length != 0) {
+			setRunType(lastConfig.run_type);
+			setRunConfig(lastConfig.run_config_name);
+			setCommand(lastConfig.command);
+		}
+	}, [])
+
+	useEffect(() => {
+		if (runConfigs.length != 0) {
+			runConfigs.map(c => {
+				if (c.run_config_name == runConfig) setCommand(c.command);
+			})
+		}
+	}, [runConfig])
 
 	return (
 		<form>
 			<h3 style={{ marginTop: 0, marginBottom: 5 }}>Hyperparameter:</h3>
 			<div>
-				{childSparkSubmitNodes.length != 0 ?
-					<><div><h4 style={{ marginTop: 2, marginBottom: 0 }}>Spark Submit</h4></div><div>Available Run Type:
+				{runConfigs.length != 0 ?
+					<><div><h4 style={{ marginTop: 2, marginBottom: 0 }}>Remote Execution</h4></div><div>Available Run Type:
 						<div>
 							<HTMLSelect
-								onChange={(e) => handleChange(e)}
+								onChange={(e) => handleTypeChange(e)}
 								value={runType}
-								aria-label={'Run type'}
+								aria-label={'Available Run Types'}
 								title={'Select the run type'}
 								name='runType'
 							>
-								{childSparkSubmitNodes.map(spark => (
-									<option key={spark.run_type} value={spark.run_type}>
-										{(spark.run_type)}
+								{runTypes.map((type, i) => (
+									<option id={type.id} key={`index-type-${i}`} value={type.run_type}>
+										{(type.run_type)}
 									</option>
+								))}
+							</HTMLSelect>
+							<div>Available Run Config:</div>
+							<HTMLSelect
+								onChange={(e) => handleConfigChange(e)}
+								value={runConfig}
+								aria-label={'Run Configuration'}
+								title={'Select which config to run'}
+								name='runConfig'
+							>
+								<option value="-">-</option>
+								{runConfigs.map((c, i) => ((c.run_type == runType) ?
+									<option id={c.id} key={`index-config-${i}`} value={c.run_config_name}>
+										{(c.run_config_name)}
+									</option> : null
 								))}
 							</HTMLSelect>
 							<div />
 							<div>Configuration:
 								<div>
 									<TextareaAutosize
-										value={addArgs}
-										minRows={3}
-										maxRows={8}
+										value={command}
+										minRows={10}
 										name='command'
-										style={{ width: 205, fontSize: 12 }}
+										style={{ width: 350, fontSize: 12 }}
 										readOnly />
 								</div>
 							</div>

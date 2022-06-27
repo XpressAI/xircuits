@@ -2,7 +2,7 @@ import json
 
 import tornado
 from jupyter_server.base.handlers import APIHandler
-
+import traceback
 import os
 from configparser import ConfigParser
 
@@ -14,27 +14,43 @@ def get_config():
         ".xircuits/config.ini"])
     return config
 
-class GetConfigRouteHandler(APIHandler):
+class RunConfigRouteHandler(APIHandler):
     @tornado.web.authenticated
     def get(self):
-        self.finish(json.dumps({"data": "This is /get/config endpoint!"}))
+        self.finish(json.dumps({"data": "This is /config/run endpoint!"}))
 
     @tornado.web.authenticated
     def post(self):
         input_data = self.get_json_body()
-        configurations = []
         cfg = get_config()
-
         config_request = input_data["config_request"]
-        config_spark = str(cfg['CONFIGURATION'][config_request]).split('\n')
-        for id, spark in enumerate(config_spark):
-            spark_cfg = cfg[spark]
-            configurations.append({
-                "run_type": spark_cfg["name"],
-                "command" : spark_cfg["command"],
-                "msg" : spark_cfg["msg"],
-                "url" : spark_cfg["url"]
-            })
+        run_types = []
+        configurations = []
+        err_msg = ""
 
-        data = {"cfg": configurations}
+        try:
+            get_run_types = str(cfg['CONFIGURATION'][config_request]).split('\n')
+            for id, run_type_name in enumerate(get_run_types):
+                run_configs = str(cfg['CONFIGURATION'][run_type_name]).split('\n')
+                for id, run_config_name in enumerate(run_configs):
+                    run_cfg = cfg[run_config_name]
+                    configurations.append(
+                        {
+                            "id" : id,
+                            "run_type" : run_type_name,
+                            "run_config_name": run_cfg["name"],
+                            "command" : run_cfg["command"],
+                            "msg" : run_cfg["msg"],
+                            "url" : run_cfg["url"]
+                        })
+                run_types.append({"run_type": run_type_name})
+        except Exception:
+            err_msg = traceback.format_exc()
+            pass
+
+        data = {
+            "run_types": run_types,
+            "run_types_config": configurations,
+            "err_msg": err_msg
+            }
         self.finish(json.dumps(data))
