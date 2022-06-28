@@ -7,6 +7,8 @@ import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { CustomDiagramState } from './state/CustomDiagramState'
 import { CustomLinkModel, TriangleLinkModel } from './link/CustomLinkModel';
 import { CustomLinkFactory, TriangleLinkFactory } from './link/CustomLinkFactory';
+import { PointModel } from '@projectstorm/react-diagrams';
+import { Point } from '@projectstorm/geometry';
 
 export class XircuitsApplication {
 
@@ -90,6 +92,8 @@ export class XircuitsApplication {
                                 const newTriangleLink = new TriangleLinkModel();
                                 const sourceNode = tempModel.getNode(link.source);
                                 const targetNode = tempModel.getNode(link.target);
+                                const linkPoints = link.points;
+                                const points = [];
 
                                 const sourcePort = sourceNode.getPortFromID(link.sourcePort);
                                 const sourcePortName = sourcePort.getOptions()['name'];
@@ -119,6 +123,11 @@ export class XircuitsApplication {
                                 }
                                 newLink.setTargetPort(targetPort);
 
+                                // Set points on link if exist
+                                linkPoints.map((point)=> {
+                                        points.push(new PointModel({ link: link, position: new Point(point.x, point.y) }));
+                                })
+                                newLink.setPoints(points);
                                 tempModel.addAll(newLink);
                                 diagramEngine.setModel(tempModel);
                         }

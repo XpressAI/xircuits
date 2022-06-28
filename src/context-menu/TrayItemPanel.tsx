@@ -14,7 +14,7 @@ export interface TrayItemWidgetProps {
 	app: JupyterFrontEnd;
 	eng: DiagramEngine;
 	nodePosition?: {x: number, y: number};
-	linkData?: DefaultLinkModel;
+	linkData?: any;
 	isParameter?: boolean;
 }
 
@@ -35,12 +35,12 @@ export const Tray = styled.div<TrayStyledProps>`
 `;
 
 export class TrayItemPanel extends React.Component<TrayItemWidgetProps> {
-	selectedNode() {
+	async selectedNode() {
 		let current_node = this.props.currentNode;
 		let node: CustomNodeModel;
 		if (current_node != undefined) {
 			if (current_node.header == "GENERAL") {
-				node = GeneralComponentLibrary({ model: current_node });
+				node = await GeneralComponentLibrary({ model: current_node });
 			} else {
 				node = AdvancedComponentLibrary({ model: current_node });
 			}
@@ -72,15 +72,17 @@ export class TrayItemPanel extends React.Component<TrayItemWidgetProps> {
 		return (
 			<Tray
 				color={this.props.currentNode["color"] || "white"}
-				onClick={(event) => {
+				onClick={async (event) => {
 					if (event.ctrlKey || event.metaKey) {
 						const { commands } = this.props.app;
-						commands.execute('docmanager:open', {
-							path: this.props.currentNode["file_path"]
+						commands.execute(commandIDs.openScript, {
+							nodePath: this.props.currentNode["file_path"],
+							nodeName: this.props.currentNode["class"],
+							nodeLineNo: this.props.currentNode["lineno"]
 						});
 						return;
 					}
-					let node = this.selectedNode();
+					let node = await this.selectedNode();
 					this.addNode(node);
 					this.connectLink(node);
 					this.hidePanelEvent();

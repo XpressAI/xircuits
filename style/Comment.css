@@ -1,6 +1,8 @@
-.comment-component-textarea{
-    resize: none;
-    width: 250px;
+.comment-component-content{
+    max-width: 550px;
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre;
     cursor: pointer;
     padding: 5px;
     box-sizing: border-box;

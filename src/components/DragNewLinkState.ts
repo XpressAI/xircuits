@@ -80,7 +80,9 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 
 					if (!this.config.allowLooseLinks) {
 						const linkEvent = event.event;
-						this.fireEvent(linkEvent);
+						// Weird behaviour where sourcePort's data is missing
+						// For now just pass the port's data itself
+						this.fireEvent(linkEvent, this.port);
 						this.link.remove();
 						this.engine.repaintCanvas();
 					}
@@ -89,9 +91,9 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 		);
 	}
 
-	fireEvent = (linkEvent) => {
+	fireEvent = (linkEvent, sourcePort) => {
 		//@ts-ignore
-		this.engine.fireEvent({ link: this.link, linkEvent }, 'droppedLink');
+		this.engine.fireEvent({ link: this.link, linkEvent, sourcePort }, 'droppedLink');
 	};
 
 	/**

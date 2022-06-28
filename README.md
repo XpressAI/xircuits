@@ -23,7 +23,7 @@
         <img alt="Documentation" src="https://img.shields.io/website/http/xircuits.io.svg?color=orange">
     </a>
      <a>
-        <img alt="Python" src="https://img.shields.io/badge/python-3.9-blue">
+        <img alt="Python" src="https://img.shields.io/badge/Python-3.8%20%7C%203.9%20%7C%203.10-blue">
     </a>
 </p>
 
@@ -87,7 +87,7 @@ Created a cool component library? All your colleagues need to do is to drop your
 And many more.
 
 ## Installation
-You will need python 3.9+ to install xircuits. We recommend installing in a virtual environment.
+You will need python 3.8+ to install xircuits. We recommend installing in a virtual environment.
 ```
 $ pip install xircuits[full]
 ```

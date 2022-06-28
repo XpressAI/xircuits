@@ -234,7 +234,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								 */
 								targetPortChanged: e => {
 									const sourceLink = e.entity as any;
-									app.commands.execute(commandIDs.connectLinkToObviousPorts, { sourceLink });
+									app.commands.execute(commandIDs.connectLinkToObviousPorts, { draggedLink: sourceLink });
 									onChange();
 								},
 								/**
@@ -671,11 +671,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								}
 
 								if (port.startsWith("parameter")) {
-
 									if (sourceNodeName.startsWith("Literal")) {
 										switch (sourceNodeType) {
 											case "string":
-												sourcePortLabelStructure = "'" + sourcePortLabel + "'";
+												sourcePortLabelStructure = '"""' + sourcePortLabel + '"""';
 												break;
 											case "list":
 												sourcePortLabelStructure = "[" + sourcePortLabel + "]";
@@ -704,7 +703,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 										paramName = paramName.toLowerCase();
 										pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + 'args.' + paramName + '\n';
 									}
-
 								} else {
 									pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
 								}
@@ -1812,8 +1810,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [isPanelAtLeft, setIsPanelAtLeft] = useState<boolean>(true);
 	const [componentPanelPosition, setComponentPanelPosition] = useState({ x: 0, y: 0 });
 	const [actionPanelPosition, setActionPanelPosition] = useState({ x: 0, y: 0 });
-	const [nodePosition, setNodePosition] = useState({ x: 0, y: 0 });
-	const [looseLinkData, setLooseLinkData] = useState<any>();
+	const [nodePosition, setNodePosition] = useState<any>();
+	const [looseLinkData, setLooseLinkData] = useState<any>({});
 	const [isParameterLink, setIsParameterLink] = useState<boolean>(false);
 
 	// Component & Action panel position
@@ -1881,13 +1879,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			}
 		}
 
-		const newNodePosition = {
-			x: event.link.points[1].position.x,
-			y: event.link.points[1].position.y,
-		};
-
-		setLooseLinkData(event.link);
-		setNodePosition(newNodePosition);
+		setLooseLinkData({link: event.link, sourcePort: event.sourcePort});
+		setNodePosition(event.linkEvent);
 		panelPosition(event.linkEvent);
 		setIsComponentPanelShown(true);
 	};
@@ -1947,7 +1940,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			</Header> */}
 			<Content>
 				<Layer
-					onDrop={(event) => {
+					onDrop={async (event) => {
 						var data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
 
 						let component_task = componentList.map(x => x["task"]);
@@ -1961,7 +1954,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 						if (current_node != undefined) {
 							if (current_node.header == "GENERAL") {
-								node = GeneralComponentLibrary({ model: current_node });
+								node = await GeneralComponentLibrary({ model: current_node });
 							} else if (current_node.header == "ADVANCED") {
 								node = AdvancedComponentLibrary({ model: current_node });
 							}

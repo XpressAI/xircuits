@@ -93,7 +93,9 @@ const preventDefaultDialogHandler = (
   dialog: Dialog<any>
 ): void => {
   const dialogHandleEvent = dialog.handleEvent;
-  dialog.handleEvent = (event: Event): void => {
+  // Get dialog default action button
+  const defaultButton = dialog.node.querySelector('.jp-Dialog-footer')?.getElementsByTagName('button')[1];
+  dialog.handleEvent = async (event: Event): Promise<void> => {
     if (
       event instanceof KeyboardEvent &&
       event.type === 'keydown' &&
@@ -103,6 +105,10 @@ const preventDefaultDialogHandler = (
       if (!isFormValidFn()) {
         event.stopPropagation();
         event.preventDefault();
+      }
+      // When 'Enter' key is pressed while on input field, force focus to default button
+      if (dialog.node.getElementsByTagName('input')[0]){
+        await defaultButton.focus();
       }
     } else {
       dialogHandleEvent.call(dialog, event);

@@ -14,6 +14,7 @@ import { formDialogWidget } from '../dialog/formDialogwidget';
 import { CommentDialog } from '../dialog/CommentDialog';
 import React from 'react';
 import { showFormDialog } from '../dialog/FormDialog';
+import { inputDialog } from '../dialog/LiteralInputDialog';
 
 /**
  * Add the commands for node actions.
@@ -44,15 +45,39 @@ export function addNodeActionCommands(
         return node ?? null;
     }
 
-    //Add command to open canvas's node its script
+    //Add command to open node's script at specific line
     commands.addCommand(commandIDs.openScript, {
-        execute: () => {
-            const widget = tracker.currentWidget?.content as XPipePanel;
+        execute: async (args) => {
             const node = selectedNode();
-            app.commands.execute(commandIDs.openDocManager, {
-                path: node.extras.path
+            const nodePath = args['nodePath'] as string ?? node.extras.path;
+            const nodeName = args['nodeName'] as string ?? node.name;
+            const nodeLineNo = args['nodeLineNo'] as number ?? node.extras.lineNo;
+
+            if (nodeName.startsWith('Literal') || nodeName.startsWith('Hyperparameter')) {
+                showDialog({
+                    title: `${node.name} don't have its own script`,
+                    buttons: [Dialog.warnButton({ label: 'OK' })]
+                })
+                return;
+            }
+
+            // Open node's file name
+            const newWidget = await app.commands.execute(
+                commandIDs.openDocManager,
+                {
+                    path: nodePath
+                }
+            );
+            newWidget.context.ready.then(() => {
+                // Go to end of node's line first before go to its class
+                app.commands.execute('codemirror:go-to-line', {
+                    line: nodeLineNo[0].end_lineno
+                }).then(() => {
+                    app.commands.execute('codemirror:go-to-line', {
+                        line: nodeLineNo[0].lineno
+                    })
+                })
             });
-            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         }
     });
 
@@ -254,7 +279,10 @@ export function addNodeActionCommands(
             const nodePosition = args['nodePosition'] as any;
 
             const widget = tracker.currentWidget?.content as XPipePanel;
-            node.setPosition(nodePosition);
+
+            const canvasNodePosition = widget.xircuitsApp.getDiagramEngine().getRelativeMousePoint(nodePosition)
+            node.setPosition(canvasNodePosition);
+
             widget.xircuitsApp.getDiagramEngine().getModel().addNode(node);
         },
         label: trans.__('Add node')
@@ -274,7 +302,7 @@ export function addNodeActionCommands(
             let targetPort;
 
             // Get source link node port
-            const linkPort = sourceLink.getSourcePort();
+            const linkPort = sourceLink.sourcePort;
 
             // When '▶' of sourcePort from inPort, connect to '▶' outPort of target node
             if (linkPort.getOptions()['name'] == "in-0") {
@@ -290,7 +318,7 @@ export function addNodeActionCommands(
                 // '▶' of sourcePort to '▶' of targetPort
                 sourcePort = linkPort;
                 targetPort = targetNode.getPorts()["in-0"];
-                app.commands.execute(commandIDs.connectLinkToObviousPorts, { sourceLink, targetNode });
+                app.commands.execute(commandIDs.connectLinkToObviousPorts, { droppedSourceLink:sourceLink, targetNode });
             }
             newLink.setSourcePort(sourcePort);
             newLink.setTargetPort(targetPort);
@@ -302,10 +330,12 @@ export function addNodeActionCommands(
     //Add command to connect link to obvious port given link and target node
     commands.addCommand(commandIDs.connectLinkToObviousPorts, {
         execute: (args) => {
-            const sourceLink = args['sourceLink'] as unknown as DefaultLinkModel;
             const widget = tracker.currentWidget?.content as XPipePanel;
-            const sourcePort = sourceLink.getSourcePort();
-            const targetPort = sourceLink.getTargetPort();
+            const draggedLink = args['draggedLink'] as any;
+            const droppedSourceLink = args['droppedSourceLink'] as any;
+            // Check whether link is dropped or dragged
+            const sourcePort = droppedSourceLink == undefined ? draggedLink.getSourcePort() : droppedSourceLink.sourcePort;
+            const targetPort = droppedSourceLink == undefined ? draggedLink.getTargetPort() : droppedSourceLink.link.getTargetPort();
             const sourceNode = sourcePort.getNode();
             const targetNode = args['targetNode'] as any ?? targetPort.getNode();
             const outPorts = sourceNode['portsOut'];
@@ -491,7 +521,7 @@ export function addNodeActionCommands(
         }
     }
 
-    function editLiteral(): void {
+    async function editLiteral(): Promise<void> {
         const widget = tracker.currentWidget?.content as XPipePanel;
 
         if (widget) {
@@ -506,17 +536,36 @@ export function addNodeActionCommands(
             }
 
             let node = null;
-            let links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
-            let oldValue = selected_node.getPorts()["out-0"].getOptions()["label"]
-
-            // Prompt the user to enter new value
-            let theResponse = window.prompt('Enter New Value (Without Quotes):', oldValue);
-            if (theResponse == null || theResponse == "" || theResponse == oldValue) {
-                // When Cancel is clicked or no input provided, just return
-                return
+            const links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
+            const oldValue = selected_node.getPorts()["out-0"].getOptions()["label"];
+            const literalType = selected_node["name"].split(" ")[1];
+            let isStoreDataType: boolean = false;
+            let isTextareaInput: string = "";
+            
+            switch(literalType){
+                case "String":
+                    isTextareaInput = 'textarea';
+                    break;
+                case "List":
+                case "Tuple":
+                case "Dict":
+                    isStoreDataType = true;
+                    break;
+                case "True":
+                case "False":
+                    return;
             }
+            const newTitle = `Update ${literalType}`;
+            const dialogOptions = inputDialog(newTitle, oldValue, literalType, isStoreDataType, isTextareaInput);
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (dialogResult["button"]["label"] == 'Cancel') {
+                // When Cancel is clicked on the dialog, just return
+                return;
+            }
+            const strContent: string = dialogResult["value"][newTitle];
+
             node = new CustomNodeModel({ name: selected_node["name"], color: selected_node["color"], extras: { "type": selected_node["extras"]["type"] } });
-            node.addOutPortEnhance(theResponse, 'out-0');
+            node.addOutPortEnhance(strContent, 'out-0');
 
             // Set new node to old node position
             let position = selected_node.getPosition();

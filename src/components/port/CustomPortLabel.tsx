@@ -42,7 +42,7 @@ namespace S {
 	export const Port = styled.div`
 		width: 15px;
 		height: 15px;
-		background: rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.2);
 		&:hover {
 			background: rgb(192, 255, 0);
 		}
