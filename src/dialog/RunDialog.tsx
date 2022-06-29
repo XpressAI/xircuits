@@ -70,52 +70,49 @@ export const RunDialog = ({
 	return (
 		<form>
 			<h3 style={{ marginTop: 0, marginBottom: 5 }}>Hyperparameter:</h3>
-			<div>
-				{runConfigs.length != 0 ?
-					<><div><h4 style={{ marginTop: 2, marginBottom: 0 }}>Remote Execution</h4></div><div>Available Run Type:
-						<div>
-							<HTMLSelect
-								onChange={(e) => handleTypeChange(e)}
-								value={runType}
-								aria-label={'Available Run Types'}
-								title={'Select the run type'}
-								name='runType'
-							>
-								{runTypes.map((type, i) => (
-									<option id={type.id} key={`index-type-${i}`} value={type.run_type}>
-										{(type.run_type)}
-									</option>
-								))}
-							</HTMLSelect>
-							<div>Available Run Config:</div>
-							<HTMLSelect
-								onChange={(e) => handleConfigChange(e)}
-								value={runConfig}
-								aria-label={'Run Configuration'}
-								title={'Select which config to run'}
-								name='runConfig'
-							>
-								<option value="-">-</option>
-								{runConfigs.map((c, i) => ((c.run_type == runType) ?
-									<option id={c.id} key={`index-config-${i}`} value={c.run_config_name}>
-										{(c.run_config_name)}
-									</option> : null
-								))}
-							</HTMLSelect>
-							<div />
-							<div>Configuration:
-								<div>
-									<TextareaAutosize
-										value={command}
-										minRows={10}
-										name='command'
-										style={{ width: 350, fontSize: 12 }}
-										readOnly />
-								</div>
-							</div>
-						</div>
+			<div>{runConfigs.length != 0 ?
+				<><h4 style={{ marginTop: 2, marginBottom: 0 }}>Remote Execution</h4>
+					<div>Available Run Type:
+						<HTMLSelect
+							onChange={(e) => handleTypeChange(e)}
+							value={runType}
+							aria-label={'Available Run Types'}
+							title={'Select the run type'}
+							name='runType'
+						>
+							{runTypes.map((type, i) => (
+								<option id={type.id} key={`index-type-${i}`} value={type.run_type}>
+									{(type.run_type)}
+								</option>
+							))}
+						</HTMLSelect>
+					</div>
+					<div>Available Run Config:
+						<HTMLSelect
+							onChange={(e) => handleConfigChange(e)}
+							value={runConfig}
+							aria-label={'Run Configuration'}
+							title={'Select which config to run'}
+							name='runConfig'
+						>
+							<option value="-">-</option>
+							{runConfigs.map((c, i) => ((c.run_type == runType) ?
+								<option id={c.id} key={`index-config-${i}`} value={c.run_config_name}>
+									{(c.run_config_name)}
+								</option> : null
+							))}
+						</HTMLSelect>
+					</div>
+					Configuration:
+					<div>
+						<TextareaAutosize
+							value={command}
+							minRows={10}
+							name='command'
+							style={{ width: 350, fontSize: 12 }}
+							readOnly />
 					</div></>
-					: null}
+				: null}
 			</div>
 			<div></div>
 			<div><h4 style={{ marginTop: 2, marginBottom: 0 }}>String</h4></div>
