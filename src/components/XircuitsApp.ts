@@ -69,6 +69,7 @@ export class XircuitsApplication {
                                 color: node.color, extras: node.extras
                         });
                         newNode.setPosition(node.x, node.y);
+                        newNode.setSelected(node.selected);
 
                         for (let portID in node.ports) {
 
