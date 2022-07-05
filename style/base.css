@@ -45,3 +45,13 @@ input[type=number]::-webkit-inner-spin-button {
   width: 35px;
   height: 35px;
 }
+
+/* Remove outer resizing of run dialog */
+.jp-Dialog-content {
+  resize: none !important;
+}
+
+/* Fix arrow position of HTMLSelect tag on run dialog */
+.jp-Dialog-content .f1ozlkqi {
+  position: relative;
+}

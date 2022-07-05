@@ -56,3 +56,23 @@ class ZipDirectory(Component):
         zipObj.close()        
        
         self.done = True
+
+@xai_component
+class DeleteFile(Component):
+    filename: InCompArg[str]
+
+    def __init__(self):
+
+        self.done = False
+        self.filename = InArg.empty()
+
+    def execute(self, ctx) -> None:
+
+        filename = self.filename.value if self.filename.value else None
+
+        if os.path.exists(filename):
+          os.remove(filename)
+        else:
+          print(filename + " does not exist.") 
+
+        self.done = True
