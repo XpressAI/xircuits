@@ -1576,6 +1576,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	/**Component Panel & Node Action Panel Context Menu */
 	const [isComponentPanelShown, setIsComponentPanelShown] = useState(false);
 	const [actionPanelShown, setActionPanelShown] = useState(false);
+	const [dontHidePanel, setDontHidePanel] = useState(false);
 	const [isPanelAtTop, setIsPanelAtTop] = useState<boolean>(true);
 	const [isPanelAtLeft, setIsPanelAtLeft] = useState<boolean>(true);
 	const [componentPanelPosition, setComponentPanelPosition] = useState({ x: 0, y: 0 });
@@ -1590,35 +1591,41 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			x: event.pageX,
 			y: event.pageY,
 		};
-		let newActionPanelPosition = {
-			x: event.pageX,
-			y: event.pageY,
-		};
 		const canvas = event.view as any;
 		const newCenterPosition = {
 			x: canvas.innerWidth / 2,
 			y: canvas.innerHeight / 2,
 		}
+		const menuDimension = {
+			x: 95,
+			y: 267
+		}
+		const fileBrowserWidth = document.getElementsByClassName("jp-FileBrowser")['filebrowser'].clientWidth;
+		const tabWidth = document.getElementsByClassName("lm-TabBar")[0].clientWidth;
 		if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
 			// Bottom right
 			setIsPanelAtTop(false);
 			setIsPanelAtLeft(false);
-			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y;
-			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x;
+			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x - tabWidth;
+			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y - menuDimension.y;
 		} else if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y < newCenterPosition.y) {
 			// Top right
 			setIsPanelAtTop(true);
 			setIsPanelAtLeft(false);
-			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x;
+			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x - tabWidth;
+			newPanelPosition.y = newPanelPosition.y - 84;
 		} else if (newPanelPosition.x < newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
 			// Bottom left
 			setIsPanelAtTop(false);
 			setIsPanelAtLeft(true);
-			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y;
+			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth;
+			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y - menuDimension.y;
 		} else {
 			// Top left
 			setIsPanelAtTop(true);
 			setIsPanelAtLeft(true);
+			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth;
+			newPanelPosition.y = newPanelPosition.y - 84;
 		}
 		setComponentPanelPosition(newPanelPosition);
 		setActionPanelPosition(newPanelPosition);
@@ -1762,52 +1769,60 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					}}
 					onContextMenu={showNodeActionPanel}
 					onClick={(event) => {
-						hidePanel();
 						if (event.ctrlKey || event.metaKey) {
 							showComponentPanel(event);
+							return;
 						}
+						if(dontHidePanel){
+							return;
+						}
+						hidePanel();
 					}}>
 					<DemoCanvasWidget>
 						<CanvasWidget engine={xircuitsApp.getDiagramEngine()} />
+						{/**Add Component Panel(ctrl + left-click, dropped link)*/}
+						{isComponentPanelShown && (
+							<div
+								onMouseEnter={()=>setDontHidePanel(true)}
+								onMouseLeave={()=>setDontHidePanel(false)}
+								id='component-panel'
+								style={{
+									top: isPanelAtTop ? componentPanelPosition.y : null,
+									bottom: !isPanelAtTop ? componentPanelPosition.y : null,
+									right: !isPanelAtLeft ? componentPanelPosition.x : null,
+									left: isPanelAtLeft ? componentPanelPosition.x : null
+								}}
+								className="add-component-panel">
+								<ComponentsPanel
+									lab={app}
+									eng={xircuitsApp.getDiagramEngine()}
+									nodePosition={nodePosition}
+									linkData={looseLinkData}
+									isParameter={isParameterLink}
+									key="component-panel"
+								></ComponentsPanel>
+							</div>
+						)}
+						{/**Node Action Panel(left-click)*/}
+						{actionPanelShown && (
+							<div
+								id='context-menu'
+								style={{
+									top: isPanelAtTop ? actionPanelPosition.y : null,
+									bottom: !isPanelAtTop ? actionPanelPosition.y : null,
+									right: !isPanelAtLeft ? actionPanelPosition.x : null,
+									left: isPanelAtLeft ? actionPanelPosition.x : null
+								}}
+								className="node-action-context-menu">
+								<NodeActionsPanel
+									app={app}
+									eng={xircuitsApp.getDiagramEngine()}
+									nodePosition={nodePosition}
+								></NodeActionsPanel>
+							</div>
+						)}
 					</DemoCanvasWidget>
 				</Layer>
-				{/**Add Component Panel(right-click)*/}
-				{isComponentPanelShown && (
-					<div
-						style={{ 
-							top: isPanelAtTop ? componentPanelPosition.y : null, 
-							bottom: !isPanelAtTop? componentPanelPosition.y : null, 
-							right: !isPanelAtLeft? componentPanelPosition.x : null, 
-							left: isPanelAtLeft? componentPanelPosition.x : null 
-						}}
-						className="add-component-panel">
-						<ComponentsPanel
-							lab={app}
-							eng={xircuitsApp.getDiagramEngine()}
-							nodePosition={nodePosition}
-							linkData={looseLinkData}
-							isParameter={isParameterLink}
-							key="component-panel"
-						></ComponentsPanel>
-					</div>
-				)}
-				{/**Node Action Panel(ctrl + left-click)*/}
-				{actionPanelShown && (
-					<div
-						style={{ 
-							top: isPanelAtTop? actionPanelPosition.y : null,
-							bottom: !isPanelAtTop? actionPanelPosition.y : null, 
-							right: !isPanelAtLeft? actionPanelPosition.x : null,  
-							left: isPanelAtLeft? actionPanelPosition.x : null 
-						}}
-						className="node-action-context-menu">
-						<NodeActionsPanel
-							app={app}
-							eng={xircuitsApp.getDiagramEngine()}
-							nodePosition={nodePosition}
-						></NodeActionsPanel>
-					</div>
-				)}
 			</Content>
 		</Body>
 	);
