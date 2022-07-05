@@ -1,6 +1,7 @@
     .node-action-context-menu {
-    position: fixed;
-    z-index: 10;
+    position: absolute;
+    z-index: 1000;
+    max-width: 95px;
     border-top: 10px;
     border-color: #000;
     border-radius: 12px;
