@@ -47,7 +47,7 @@ export class XircuitsApplication {
                 return this.diagramEngine;
         }
 
-        public customDeserializeModel = (modelContext: any, diagramEngine: SRD.DiagramEngine) => {
+        public customDeserializeModel = (modelContext: any) => {
 
                 if (modelContext == null) {
                         // When context empty, just return
@@ -78,12 +78,10 @@ export class XircuitsApplication {
                                 if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name, true, port.id);
 
                         }
-                        tempModel.addAll(newNode);
-                        diagramEngine.setModel(tempModel);
+                        tempModel.addNode(newNode);
                 }
 
                 for (let linkID in links) {
-
 
                         let link = links[linkID];
 
@@ -123,8 +121,8 @@ export class XircuitsApplication {
                                         points.push(new PointModel({ id:point.id, link: link, position: new Point(point.x, point.y) }));
                                 })
                                 newLink.setPoints(points);
-                                tempModel.addAll(newLink);
-                                diagramEngine.setModel(tempModel);
+                                newLink.setSelected(link.selected);
+                                tempModel.addLink(newLink);
                         }
                 }
                 tempModel.setOffsetX(offsetX);

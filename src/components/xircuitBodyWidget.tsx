@@ -209,7 +209,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			try {
 				if (notInitialRender.current) {
 					const model: any = currentContext.model.toJSON();
-					let deserializedModel = xircuitsApp.customDeserializeModel(model, xircuitsApp.getDiagramEngine());
+					let deserializedModel = xircuitsApp.customDeserializeModel(model);
 					deserializedModel.registerListener({
 						// Detect changes when node is dropped or deleted
 						nodesUpdated: () => {
