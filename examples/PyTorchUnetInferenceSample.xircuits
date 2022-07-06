@@ -6,7 +6,7 @@
     "gridSize": 0,
     "layers": [
         {
-            "id": "0c4e58ea-9799-458c-8b23-e3b4f6adc60f",
+            "id": "1c8dbe0b-14b9-4eab-bda0-a0fe9fd4a488",
             "type": "diagram-links",
             "isSvg": true,
             "transformed": true,
@@ -14,6 +14,7 @@
                 "566bef31-3217-4159-a331-7e3763298d8b": {
                     "id": "566bef31-3217-4159-a331-7e3763298d8b",
                     "type": "triangle",
+                    "selected": false,
                     "source": "b7fbab48-9a48-4e99-b97a-fa73c8ea5977",
                     "sourcePort": "6c7c86ca-20c0-409c-b6c2-a8e19c4be0bd",
                     "target": "b32f332b-d849-417d-9c16-744335adaa5c",
@@ -22,7 +23,7 @@
                         {
                             "id": "c7bb3704-f6c3-4345-a3e4-3f0bd9db1dc0",
                             "type": "point",
-                            "x": 390.203125,
+                            "x": 407.203125,
                             "y": 76.640625
                         },
                         {
@@ -41,6 +42,7 @@
                 "2655840e-837e-48d2-b425-9dae275afbd1": {
                     "id": "2655840e-837e-48d2-b425-9dae275afbd1",
                     "type": "triangle",
+                    "selected": false,
                     "source": "248af6e5-0131-44f0-8be3-6ed1a2446977",
                     "sourcePort": "1b9f7b34-ba5b-4113-b8c9-f5527cb1eb6d",
                     "target": "b7fbab48-9a48-4e99-b97a-fa73c8ea5977",
@@ -68,6 +70,7 @@
                 "5c8467b5-c2a0-4daa-b35b-6ed828f07906": {
                     "id": "5c8467b5-c2a0-4daa-b35b-6ed828f07906",
                     "type": "custom",
+                    "selected": false,
                     "source": "5d11d57a-b317-4154-bcd0-d57e2bf8b356",
                     "sourcePort": "5fae0600-66a2-4d97-8579-ac9b72de0de6",
                     "target": "b7fbab48-9a48-4e99-b97a-fa73c8ea5977",
@@ -95,6 +98,7 @@
                 "f8270157-1b4f-4c12-9d7b-54601d01b786": {
                     "id": "f8270157-1b4f-4c12-9d7b-54601d01b786",
                     "type": "custom",
+                    "selected": false,
                     "source": "d23514de-a4c5-4488-8c94-5ad33ad327ae",
                     "sourcePort": "8feb1603-231d-4adb-b1e8-262146b3b8fb",
                     "target": "b7fbab48-9a48-4e99-b97a-fa73c8ea5977",
@@ -122,6 +126,7 @@
                 "010c4875-2c49-4a7b-961c-c90d1e885701": {
                     "id": "010c4875-2c49-4a7b-961c-c90d1e885701",
                     "type": "custom",
+                    "selected": false,
                     "source": "b5cbd859-c6a5-4528-addb-b2f8d4c68aaa",
                     "sourcePort": "deca634c-c31b-4d2f-9de7-2dd3a24a0e74",
                     "target": "b7fbab48-9a48-4e99-b97a-fa73c8ea5977",
@@ -130,7 +135,7 @@
                         {
                             "id": "0bb35cbb-2e16-459b-8c38-fb02191fe027",
                             "type": "point",
-                            "x": 175.3125,
+                            "x": 163.125,
                             "y": 336.90625
                         },
                         {
@@ -149,7 +154,7 @@
             }
         },
         {
-            "id": "e8989b24-d77c-45c0-8e6c-eb07241f984f",
+            "id": "9a4cd647-77b7-41ee-a6ce-3b657e4177ff",
             "type": "diagram-nodes",
             "isSvg": false,
             "transformed": true,
@@ -157,6 +162,7 @@
                 "248af6e5-0131-44f0-8be3-6ed1a2446977": {
                     "id": "248af6e5-0131-44f0-8be3-6ed1a2446977",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "Start",
                         "borderColor": "rgb(0,192,255)"
@@ -202,6 +208,7 @@
                 "b32f332b-d849-417d-9c16-744335adaa5c": {
                     "id": "b32f332b-d849-417d-9c16-744335adaa5c",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "Finish",
                         "borderColor": "rgb(0,192,255)"
@@ -247,6 +254,7 @@
                 "b5cbd859-c6a5-4528-addb-b2f8d4c68aaa": {
                     "id": "b5cbd859-c6a5-4528-addb-b2f8d4c68aaa",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "tuple",
                         "borderColor": "rgb(0,192,255)"
@@ -257,7 +265,7 @@
                         {
                             "id": "deca634c-c31b-4d2f-9de7-2dd3a24a0e74",
                             "type": "default",
-                            "x": 167.8125,
+                            "x": 155.625,
                             "y": 329.40625,
                             "name": "out-0",
                             "alignment": "right",
@@ -279,6 +287,7 @@
                 "929c0062-9739-4b8e-ab4d-5711ecd049cf": {
                     "id": "929c0062-9739-4b8e-ab4d-5711ecd049cf",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -309,6 +318,7 @@
                 "d23514de-a4c5-4488-8c94-5ad33ad327ae": {
                     "id": "d23514de-a4c5-4488-8c94-5ad33ad327ae",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -341,6 +351,7 @@
                 "5d11d57a-b317-4154-bcd0-d57e2bf8b356": {
                     "id": "5d11d57a-b317-4154-bcd0-d57e2bf8b356",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -373,6 +384,7 @@
                 "b7fbab48-9a48-4e99-b97a-fa73c8ea5977": {
                     "id": "b7fbab48-9a48-4e99-b97a-fa73c8ea5977",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pytorch/training.py",
@@ -398,7 +410,7 @@
                         {
                             "id": "6c7c86ca-20c0-409c-b6c2-a8e19c4be0bd",
                             "type": "default",
-                            "x": 382.703125,
+                            "x": 399.703125,
                             "y": 69.140625,
                             "name": "out-0",
                             "alignment": "right",

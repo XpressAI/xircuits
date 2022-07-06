@@ -1,12 +1,12 @@
 {
     "id": "e9fc3aee-5b59-423d-8909-29a1d1b1c010",
-    "offsetX": -134.1685314685316,
-    "offsetY": 32.00069930069921,
-    "zoom": 115.00000000000003,
+    "offsetX": -41.47724135887427,
+    "offsetY": -15.889018925463867,
+    "zoom": 90,
     "gridSize": 0,
     "layers": [
         {
-            "id": "94195bca-cf54-4bb8-8395-5d0daca622eb",
+            "id": "d78578af-2c72-4c7c-b34f-4f1ccd57ebb9",
             "type": "diagram-links",
             "isSvg": true,
             "transformed": true,
@@ -14,6 +14,7 @@
                 "d29001fb-4e53-401a-b052-0517d6e31716": {
                     "id": "d29001fb-4e53-401a-b052-0517d6e31716",
                     "type": "triangle",
+                    "selected": false,
                     "source": "867a89f7-0711-46d2-84cf-969e891db82c",
                     "sourcePort": "70695e04-f534-4781-9632-edea5690b4fc",
                     "target": "df495392-600c-4977-aea9-c3d96731a9a9",
@@ -41,6 +42,7 @@
                 "27993a3c-545e-416d-bb6d-3b1beed7a643": {
                     "id": "27993a3c-545e-416d-bb6d-3b1beed7a643",
                     "type": "triangle",
+                    "selected": false,
                     "source": "df495392-600c-4977-aea9-c3d96731a9a9",
                     "sourcePort": "9f31bb83-69f7-49cb-920c-6adc6462fa61",
                     "target": "fe9c6eea-c0c4-4a78-abbf-6ab1fa76433c",
@@ -49,7 +51,7 @@
                         {
                             "id": "43a533ff-52ff-4aaf-b09f-532965f6a7f4",
                             "type": "point",
-                            "x": 323.45311542440237,
+                            "x": 340.45310480959256,
                             "y": 110.6406193028906
                         },
                         {
@@ -68,6 +70,7 @@
                 "e5278663-5436-426d-9479-bfa6256ba536": {
                     "id": "e5278663-5436-426d-9479-bfa6256ba536",
                     "type": "custom",
+                    "selected": false,
                     "source": "df495392-600c-4977-aea9-c3d96731a9a9",
                     "sourcePort": "c5f22ecc-afad-4cdb-8347-b2fd4d94695d",
                     "target": "fe9c6eea-c0c4-4a78-abbf-6ab1fa76433c",
@@ -76,7 +79,7 @@
                         {
                             "id": "0d1b7bbc-1c28-451f-b3fc-b9f1a7dbf5c8",
                             "type": "point",
-                            "x": 323.45311542440237,
+                            "x": 340.45310480959256,
                             "y": 126.64062726399791
                         },
                         {
@@ -95,6 +98,7 @@
                 "e3f16520-d3b4-441c-879c-d2235def324f": {
                     "id": "e3f16520-d3b4-441c-879c-d2235def324f",
                     "type": "triangle",
+                    "selected": false,
                     "source": "fe9c6eea-c0c4-4a78-abbf-6ab1fa76433c",
                     "sourcePort": "ca987d39-d9ee-4d78-bee9-a2914a457637",
                     "target": "56d6f7d9-8f8b-42c8-9fb5-90e660ec0817",
@@ -103,13 +107,13 @@
                         {
                             "id": "c5472c1f-0f4a-4407-ba9f-08715918d622",
                             "type": "point",
-                            "x": 602.8593760392121,
+                            "x": 619.8593654244023,
                             "y": 172.64062195659304
                         },
                         {
                             "id": "e9106521-f35e-4281-8341-b11a814112f6",
                             "type": "point",
-                            "x": 646.5780623503533,
+                            "x": 646.5781154244022,
                             "y": 209.437496956593
                         }
                     ],
@@ -122,6 +126,7 @@
                 "3a90785e-7cd3-4015-a62e-9530f1af9db2": {
                     "id": "3a90785e-7cd3-4015-a62e-9530f1af9db2",
                     "type": "custom",
+                    "selected": false,
                     "source": "fe9c6eea-c0c4-4a78-abbf-6ab1fa76433c",
                     "sourcePort": "09c4b01a-6651-4298-836a-03b5c34e2409",
                     "target": "56d6f7d9-8f8b-42c8-9fb5-90e660ec0817",
@@ -130,13 +135,13 @@
                         {
                             "id": "37c589bd-d9ea-4c8e-a0e8-496ac59ea5ad",
                             "type": "point",
-                            "x": 602.8593760392121,
+                            "x": 619.8593654244023,
                             "y": 188.64062991770038
                         },
                         {
                             "id": "5554ce1b-963d-4dca-871c-448824536cbb",
                             "type": "point",
-                            "x": 646.5780623503533,
+                            "x": 646.5781154244022,
                             "y": 225.43749164918813
                         }
                     ],
@@ -149,6 +154,7 @@
                 "d4f8694d-0814-4e89-b7d0-4f609c57779d": {
                     "id": "d4f8694d-0814-4e89-b7d0-4f609c57779d",
                     "type": "custom",
+                    "selected": false,
                     "source": "e068bad2-f019-468f-8fb8-68ccd27e2d9c",
                     "sourcePort": "27406e6c-8c95-4594-99cb-e98e46803d87",
                     "target": "56d6f7d9-8f8b-42c8-9fb5-90e660ec0817",
@@ -163,7 +169,7 @@
                         {
                             "id": "2e765bfc-9f29-4a61-bcff-46d2a5326aa3",
                             "type": "point",
-                            "x": 646.5780623503533,
+                            "x": 646.5781154244022,
                             "y": 273.4375022639979
                         }
                     ],
@@ -176,6 +182,7 @@
                 "b4b97d34-1e6e-4ca7-b5ea-5982b76933f7": {
                     "id": "b4b97d34-1e6e-4ca7-b5ea-5982b76933f7",
                     "type": "custom",
+                    "selected": false,
                     "source": "fe9c6eea-c0c4-4a78-abbf-6ab1fa76433c",
                     "sourcePort": "84b1e371-d00f-4f82-8f64-53dd9de33248",
                     "target": "56d6f7d9-8f8b-42c8-9fb5-90e660ec0817",
@@ -184,13 +191,13 @@
                         {
                             "id": "21e2613c-aebb-4dfe-8f0f-82ca9a5d79af",
                             "type": "point",
-                            "x": 602.8593760392121,
+                            "x": 619.8593654244023,
                             "y": 204.64061134178323
                         },
                         {
                             "id": "1c07a8be-4c44-4378-920f-5e484a93e5e8",
                             "type": "point",
-                            "x": 646.5780623503533,
+                            "x": 646.5781154244022,
                             "y": 241.4374863417832
                         }
                     ],
@@ -203,6 +210,7 @@
                 "44be8dde-0a0b-414c-a1ca-340975a324a6": {
                     "id": "44be8dde-0a0b-414c-a1ca-340975a324a6",
                     "type": "triangle",
+                    "selected": false,
                     "source": "c6d972f4-4968-43ff-9070-70649fcf27ad",
                     "sourcePort": "7a3d0d07-d6da-4237-9248-5d45bad0292b",
                     "target": "9d575810-382c-4763-a0df-7eb87594b3e1",
@@ -230,6 +238,7 @@
                 "a42e50ff-b400-4ea8-937e-4c5c921624f1": {
                     "id": "a42e50ff-b400-4ea8-937e-4c5c921624f1",
                     "type": "triangle",
+                    "selected": false,
                     "source": "56d6f7d9-8f8b-42c8-9fb5-90e660ec0817",
                     "sourcePort": "905b36a3-afc6-4ad4-a9dc-46b29068e825",
                     "target": "c6d972f4-4968-43ff-9070-70649fcf27ad",
@@ -238,7 +247,7 @@
                         {
                             "id": "5b6e6b30-4b0c-4cc8-a425-23c2cce98be8",
                             "type": "point",
-                            "x": 873.0624373503533,
+                            "x": 890.0624798095924,
                             "y": 209.437496956593
                         },
                         {
@@ -257,6 +266,7 @@
                 "4671554e-0fa4-4541-9e0f-e94ccd8c3ef0": {
                     "id": "4671554e-0fa4-4541-9e0f-e94ccd8c3ef0",
                     "type": "custom",
+                    "selected": false,
                     "source": "185760d3-12ab-4f04-89df-c4130d9cb708",
                     "sourcePort": "dd0b738d-d7b6-4554-b5a1-4d602ac3eaa6",
                     "target": "c6d972f4-4968-43ff-9070-70649fcf27ad",
@@ -265,7 +275,7 @@
                         {
                             "id": "bae85a5e-1bb1-42f3-ad2b-66597e3fb529",
                             "type": "point",
-                            "x": 783.4530623503533,
+                            "x": 766.453126039212,
                             "y": 361.4218825714027
                         },
                         {
@@ -284,6 +294,7 @@
                 "10f97814-e251-47d4-a2d8-1387aecb80b7": {
                     "id": "10f97814-e251-47d4-a2d8-1387aecb80b7",
                     "type": "custom",
+                    "selected": false,
                     "source": "56d6f7d9-8f8b-42c8-9fb5-90e660ec0817",
                     "sourcePort": "8ee14b87-739a-4b92-aed3-40d5b36ca7a8",
                     "target": "c6d972f4-4968-43ff-9070-70649fcf27ad",
@@ -292,7 +303,7 @@
                         {
                             "id": "7d4b0564-2718-4e3a-9e45-c71babf19ce9",
                             "type": "point",
-                            "x": 873.0624373503533,
+                            "x": 890.0624798095924,
                             "y": 241.4374863417832
                         },
                         {
@@ -311,6 +322,7 @@
                 "3c9d048e-a344-442f-9ad8-c419f36045ed": {
                     "id": "3c9d048e-a344-442f-9ad8-c419f36045ed",
                     "type": "custom",
+                    "selected": false,
                     "source": "92ee8820-a58c-4785-b430-90e79d163b82",
                     "sourcePort": "c834c466-490c-4149-b5f0-4489f962637c",
                     "target": "c6d972f4-4968-43ff-9070-70649fcf27ad",
@@ -319,7 +331,7 @@
                         {
                             "id": "6b089c2f-1043-4a9d-9df0-38dda8e99fed",
                             "type": "point",
-                            "x": 780.984376039212,
+                            "x": 764.5156048095924,
                             "y": 425.89061134178314
                         },
                         {
@@ -338,6 +350,7 @@
                 "794dd82f-4491-44b2-ad1c-490515b8458b": {
                     "id": "794dd82f-4491-44b2-ad1c-490515b8458b",
                     "type": "custom",
+                    "selected": false,
                     "source": "f6f7a4e7-014a-4b01-8b99-1e142681a9a3",
                     "sourcePort": "4cb46431-c47e-4151-a187-77a5f40a7537",
                     "target": "c6d972f4-4968-43ff-9070-70649fcf27ad",
@@ -365,6 +378,7 @@
                 "a5b14076-c180-4f81-99bf-18d6af72f1b9": {
                     "id": "a5b14076-c180-4f81-99bf-18d6af72f1b9",
                     "type": "custom",
+                    "selected": false,
                     "source": "01d1f2f5-3dc7-49e6-b717-720686a0c086",
                     "sourcePort": "1d797a06-d490-4b7e-b2e7-7a6d5e993b08",
                     "target": "fe9c6eea-c0c4-4a78-abbf-6ab1fa76433c",
@@ -392,7 +406,7 @@
             }
         },
         {
-            "id": "d06c89eb-0f44-445c-b934-ac03a4b3fe1b",
+            "id": "11f4b5c1-5f2e-4934-94e2-8f4af3a123ac",
             "type": "diagram-nodes",
             "isSvg": false,
             "transformed": true,
@@ -400,6 +414,7 @@
                 "867a89f7-0711-46d2-84cf-969e891db82c": {
                     "id": "867a89f7-0711-46d2-84cf-969e891db82c",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "Start"
                     },
@@ -444,6 +459,7 @@
                 "9d575810-382c-4763-a0df-7eb87594b3e1": {
                     "id": "9d575810-382c-4763-a0df-7eb87594b3e1",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "Finish"
                     },
@@ -488,6 +504,7 @@
                 "185760d3-12ab-4f04-89df-c4130d9cb708": {
                     "id": "185760d3-12ab-4f04-89df-c4130d9cb708",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -498,7 +515,7 @@
                         {
                             "id": "dd0b738d-d7b6-4554-b5a1-4d602ac3eaa6",
                             "type": "default",
-                            "x": 775.9530623503533,
+                            "x": 758.953126039212,
                             "y": 353.9218825714027,
                             "name": "out-0",
                             "alignment": "right",
@@ -520,6 +537,7 @@
                 "f6f7a4e7-014a-4b01-8b99-1e142681a9a3": {
                     "id": "f6f7a4e7-014a-4b01-8b99-1e142681a9a3",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -553,6 +571,7 @@
                     "id": "e068bad2-f019-468f-8fb8-68ccd27e2d9c",
                     "locked": false,
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -585,6 +604,7 @@
                 "92ee8820-a58c-4785-b430-90e79d163b82": {
                     "id": "92ee8820-a58c-4785-b430-90e79d163b82",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -595,7 +615,7 @@
                         {
                             "id": "c834c466-490c-4149-b5f0-4489f962637c",
                             "type": "default",
-                            "x": 773.484376039212,
+                            "x": 757.0156048095924,
                             "y": 418.39061134178314,
                             "name": "out-0",
                             "alignment": "right",
@@ -617,6 +637,7 @@
                 "df495392-600c-4977-aea9-c3d96731a9a9": {
                     "id": "df495392-600c-4977-aea9-c3d96731a9a9",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_spark/pyspark_core.py",
@@ -642,7 +663,7 @@
                         {
                             "id": "9f31bb83-69f7-49cb-920c-6adc6462fa61",
                             "type": "default",
-                            "x": 315.95311542440237,
+                            "x": 332.95310480959256,
                             "y": 103.1406193028906,
                             "name": "out-0",
                             "alignment": "right",
@@ -692,7 +713,7 @@
                         {
                             "id": "c5f22ecc-afad-4cdb-8347-b2fd4d94695d",
                             "type": "default",
-                            "x": 315.95311542440237,
+                            "x": 332.95310480959256,
                             "y": 119.14062726399793,
                             "name": "parameter-out-any-sparksession",
                             "alignment": "right",
@@ -720,6 +741,7 @@
                 "fe9c6eea-c0c4-4a78-abbf-6ab1fa76433c": {
                     "id": "fe9c6eea-c0c4-4a78-abbf-6ab1fa76433c",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_spark/pyspark_core.py",
@@ -745,7 +767,7 @@
                         {
                             "id": "ca987d39-d9ee-4d78-bee9-a2914a457637",
                             "type": "default",
-                            "x": 595.3593760392121,
+                            "x": 612.3593654244023,
                             "y": 165.14062195659304,
                             "name": "out-0",
                             "alignment": "right",
@@ -811,7 +833,7 @@
                         {
                             "id": "09c4b01a-6651-4298-836a-03b5c34e2409",
                             "type": "default",
-                            "x": 595.3593760392121,
+                            "x": 612.3593654244023,
                             "y": 181.1406431862126,
                             "name": "parameter-out-any-out_sparksession",
                             "alignment": "right",
@@ -825,7 +847,7 @@
                         {
                             "id": "84b1e371-d00f-4f82-8f64-53dd9de33248",
                             "type": "default",
-                            "x": 595.3593760392121,
+                            "x": 612.3593654244023,
                             "y": 197.14061134178323,
                             "name": "parameter-out-any-out_dataframe",
                             "alignment": "right",
@@ -855,6 +877,7 @@
                 "56d6f7d9-8f8b-42c8-9fb5-90e660ec0817": {
                     "id": "56d6f7d9-8f8b-42c8-9fb5-90e660ec0817",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_spark/pyspark_core.py",
@@ -866,7 +889,7 @@
                         {
                             "id": "e5241413-6a2b-48ed-9fdb-3aef0782ef45",
                             "type": "default",
-                            "x": 639.0780623503533,
+                            "x": 639.0781154244022,
                             "y": 201.937496956593,
                             "name": "in-0",
                             "alignment": "left",
@@ -880,7 +903,7 @@
                         {
                             "id": "905b36a3-afc6-4ad4-a9dc-46b29068e825",
                             "type": "default",
-                            "x": 865.5624373503533,
+                            "x": 882.5624798095924,
                             "y": 201.937496956593,
                             "name": "out-0",
                             "alignment": "right",
@@ -894,7 +917,7 @@
                         {
                             "id": "73646f92-a356-4045-ad26-9bb075d333a4",
                             "type": "default",
-                            "x": 639.0780623503533,
+                            "x": 639.0781154244022,
                             "y": 217.93749164918813,
                             "name": "parameter-any-in_sparksession",
                             "alignment": "left",
@@ -908,7 +931,7 @@
                         {
                             "id": "aab955e6-9baa-4e45-ab87-18cc9bda077e",
                             "type": "default",
-                            "x": 639.0780623503533,
+                            "x": 639.0781154244022,
                             "y": 233.9374863417832,
                             "name": "parameter-any-dataframe",
                             "alignment": "left",
@@ -922,7 +945,7 @@
                         {
                             "id": "06115c7c-0f3c-4cdf-ae14-25e4999fa953",
                             "type": "default",
-                            "x": 639.0780623503533,
+                            "x": 639.0781154244022,
                             "y": 249.93750757140276,
                             "name": "parameter-string-table_name",
                             "alignment": "left",
@@ -934,7 +957,7 @@
                         {
                             "id": "c3a33dc1-2ead-4855-ac6f-d7f5d3aa5b84",
                             "type": "default",
-                            "x": 639.0780623503533,
+                            "x": 639.0781154244022,
                             "y": 265.9375022639979,
                             "name": "parameter-string-sql_string",
                             "alignment": "left",
@@ -948,7 +971,7 @@
                         {
                             "id": "e1e596b9-e235-47b8-a65d-8ad15eba3a8b",
                             "type": "default",
-                            "x": 865.5624373503533,
+                            "x": 882.5624798095924,
                             "y": 217.93749164918813,
                             "name": "parameter-out-any-out_sparksession",
                             "alignment": "right",
@@ -960,7 +983,7 @@
                         {
                             "id": "8ee14b87-739a-4b92-aed3-40d5b36ca7a8",
                             "type": "default",
-                            "x": 865.5624373503533,
+                            "x": 882.5624798095924,
                             "y": 233.9374863417832,
                             "name": "parameter-out-any-sql_dataframe",
                             "alignment": "right",
@@ -990,6 +1013,7 @@
                 "c6d972f4-4968-43ff-9070-70649fcf27ad": {
                     "id": "c6d972f4-4968-43ff-9070-70649fcf27ad",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_spark/pyspark_core.py",
@@ -1112,6 +1136,7 @@
                 "01d1f2f5-3dc7-49e6-b717-720686a0c086": {
                     "id": "01d1f2f5-3dc7-49e6-b717-720686a0c086",
                     "type": "custom-node",
+                    "selected": false,
                     "extras": {
                         "type": "string"
                     },
