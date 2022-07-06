@@ -54,7 +54,7 @@ export class XircuitsApplication {
                         return;
                 }
 
-                let tempModel = new SRD.DiagramModel();
+                let tempModel = new SRD.DiagramModel({ id: modelContext.id });
                 let links = modelContext["layers"][0]["models"];
                 let nodes = modelContext["layers"][1]["models"];
                 let offsetX = modelContext["offsetX"];
@@ -89,8 +89,8 @@ export class XircuitsApplication {
 
                         if (link.sourcePort && link.targetPort) {
 
-                                let newLink = new CustomLinkModel();
-                                const newTriangleLink = new TriangleLinkModel();
+                                let newLink = new CustomLinkModel({ id: link.id });
+                                const newTriangleLink = new TriangleLinkModel({ id: link.id });
                                 const sourceNode = tempModel.getNode(link.source);
                                 const targetNode = tempModel.getNode(link.target);
                                 const linkPoints = link.points;
@@ -120,7 +120,7 @@ export class XircuitsApplication {
 
                                 // Set points on link if exist
                                 linkPoints.map((point)=> {
-                                        points.push(new PointModel({ link: link, position: new Point(point.x, point.y) }));
+                                        points.push(new PointModel({ id:point.id, link: link, position: new Point(point.x, point.y) }));
                                 })
                                 newLink.setPoints(points);
                                 tempModel.addAll(newLink);
