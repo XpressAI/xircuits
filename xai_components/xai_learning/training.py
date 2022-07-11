@@ -13,7 +13,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 
-@xai_component(type="in")
+@xai_component
 class ReadDataSet(Component):
     dataset_name: InArg[str]
     dataset: OutArg[Tuple[np.array, np.array]]
@@ -124,33 +124,6 @@ class ReadDataSet(Component):
 
         self.done = True
 
-@xai_component(type="in")
-class ReadMaskDataSet(Component):
-    dataset_name: InArg[str]
-    mask_dataset_name: InArg[str]
-    
-    dataset: OutArg[Tuple[str, str]]
-
-    def __init__(self):
-        self.done = False
-        self.dataset_name = InArg.empty()
-        self.mask_dataset_name = InArg.empty()
-        self.dataset = OutArg.empty()
-
-    def execute(self, ctx) -> None:
-
-        if self.dataset_name.value and self.mask_dataset_name.value:
-            
-            # Preprocessing can be done here if needed
-            self.dataset.value = (self.dataset_name.value, self.mask_dataset_name.value)
-            print(self.dataset.value)
-
-        else:
-            print("Dataset was not found!")
-
-        self.done = True
-
-
 @xai_component
 class FlattenImageData(Component):
 
@@ -173,7 +146,7 @@ class FlattenImageData(Component):
         self.done = True
 
 
-@xai_component(type="split")
+@xai_component
 class TrainTestSplit(Component):
     dataset: InArg[any] #Tuple[np.array, np.array]
     train_split: InArg[float]
@@ -211,7 +184,7 @@ class TrainTestSplit(Component):
         self.test.value = test
         self.done = True
 
-@xai_component(type="model")
+@xai_component
 class Create1DInputModel(Component):
     training_data: InArg[any]
 
@@ -242,7 +215,7 @@ class Create1DInputModel(Component):
 
         self.done = True
 
-@xai_component(type="model")
+@xai_component
 class Create2DInputModel(Component):
     training_data: InArg[any]
 
@@ -295,7 +268,7 @@ class Create2DInputModel(Component):
         self.done = True
 
 
-@xai_component(type="train")
+@xai_component
 class TrainImageClassifier(Component):
     model: InArg[any] #keras.Sequential
     training_data: InArg[any] #Tuple[np.array, np.array]
@@ -335,7 +308,7 @@ class TrainImageClassifier(Component):
         self.done = True
 
 
-@xai_component(type="eval")
+@xai_component
 class EvaluateAccuracy(Component):
     model: InArg[any] #keras.Sequential
     eval_dataset: InArg[any] #Tuple[np.array, np.array]
@@ -361,7 +334,7 @@ class EvaluateAccuracy(Component):
         self.done = True
 
 
-@xai_component(type="enough")
+@xai_component
 class ShouldStop(Component):
     target_accuracy: InArg[float]
     max_retries: InArg[int]
@@ -419,7 +392,7 @@ class SaveKerasModel(Component):
         self.done = True
 
 
-@xai_component(type="convert")
+@xai_component
 class SaveKerasModelInModelStash(Component):
     model: InArg[keras.Sequential]
     experiment_name: InArg[str]

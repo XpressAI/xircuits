@@ -57,7 +57,7 @@ class ConvertTorchModelToOnnx(Component):
         self.done = True
     
 
-@xai_component(type="model")
+@xai_component
 class CreateUnetModel(Component):
     train_data: InArg[any] #torch.utils.data.DataLoader
     test_data: InArg[any] #torch.utils.data.DataLoader
@@ -110,7 +110,32 @@ class CreateUnetModel(Component):
         self.done = True
     
 
-@xai_component(type="split")
+@xai_component
+class ReadMaskDataSet(Component):
+    dataset_name: InArg[str]
+    mask_dataset_name: InArg[str]
+    
+    dataset: OutArg[Tuple[str, str]]
+
+    def __init__(self):
+        self.done = False
+        self.dataset_name = InArg.empty()
+        self.mask_dataset_name = InArg.empty()
+        self.dataset = OutArg.empty()
+
+    def execute(self, ctx) -> None:
+
+        if self.dataset_name.value and self.mask_dataset_name.value:
+            
+            # Preprocessing can be done here if needed
+            self.dataset.value = (self.dataset_name.value, self.mask_dataset_name.value)
+            print(self.dataset.value)
+
+        else:
+            print("Dataset was not found!")
+
+        self.done = True
+@xai_component
 class ImageTrainTestSplit(Component):
     input_str: InArg[any] #Tuple[str,str]
     split_ratio: InArg[float]
