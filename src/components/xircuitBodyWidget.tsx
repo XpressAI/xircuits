@@ -1595,9 +1595,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			x: canvas.innerWidth / 2,
 			y: canvas.innerHeight / 2,
 		}
-		const menuOffset = {
+		const menuDimension = {
 			x: 95,
-			y: 250
+			y: 290
 		}
 		const fileBrowserWidth = document.getElementsByClassName("jp-FileBrowser")['filebrowser'].clientWidth;
 		const tabWidth = document.getElementsByClassName("lm-TabBar")[0].clientWidth;
@@ -1605,7 +1605,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			// Bottom right
 			setIsPanelAtLeft(false);
 			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x - tabWidth;
-			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y - menuOffset.y;
+			newPanelPosition.y = newPanelPosition.y - menuDimension.y - 84;
 		} else if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y < newCenterPosition.y) {
 			// Top right
 			setIsPanelAtLeft(false);
@@ -1615,7 +1615,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			// Bottom left
 			setIsPanelAtLeft(true);
 			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth;
-			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y - menuOffset.y;
+			newPanelPosition.y = newPanelPosition.y - menuDimension.y - 84;
 		} else {
 			// Top left
 			setIsPanelAtLeft(true);
