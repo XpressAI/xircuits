@@ -1577,7 +1577,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [isComponentPanelShown, setIsComponentPanelShown] = useState(false);
 	const [actionPanelShown, setActionPanelShown] = useState(false);
 	const [dontHidePanel, setDontHidePanel] = useState(false);
-	const [isPanelAtTop, setIsPanelAtTop] = useState<boolean>(true);
 	const [isPanelAtLeft, setIsPanelAtLeft] = useState<boolean>(true);
 	const [componentPanelPosition, setComponentPanelPosition] = useState({ x: 0, y: 0 });
 	const [actionPanelPosition, setActionPanelPosition] = useState({ x: 0, y: 0 });
@@ -1604,25 +1603,21 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		const tabWidth = document.getElementsByClassName("lm-TabBar")[0].clientWidth;
 		if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
 			// Bottom right
-			setIsPanelAtTop(false);
 			setIsPanelAtLeft(false);
 			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x - tabWidth;
 			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y - menuOffset.y;
 		} else if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y < newCenterPosition.y) {
 			// Top right
-			setIsPanelAtTop(true);
 			setIsPanelAtLeft(false);
 			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x - tabWidth;
 			newPanelPosition.y = newPanelPosition.y - 84;
 		} else if (newPanelPosition.x < newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
 			// Bottom left
-			setIsPanelAtTop(false);
 			setIsPanelAtLeft(true);
 			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth;
 			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y - menuOffset.y;
 		} else {
 			// Top left
-			setIsPanelAtTop(true);
 			setIsPanelAtLeft(true);
 			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth;
 			newPanelPosition.y = newPanelPosition.y - 84;
@@ -1787,8 +1782,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								onMouseLeave={()=>setDontHidePanel(false)}
 								id='component-panel'
 								style={{
-									top: isPanelAtTop ? componentPanelPosition.y : null,
-									bottom: !isPanelAtTop ? componentPanelPosition.y : null,
+									top: componentPanelPosition.y,
 									right: !isPanelAtLeft ? componentPanelPosition.x : null,
 									left: isPanelAtLeft ? componentPanelPosition.x : null
 								}}
@@ -1808,8 +1802,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							<div
 								id='context-menu'
 								style={{
-									top: isPanelAtTop ? actionPanelPosition.y : null,
-									bottom: !isPanelAtTop ? actionPanelPosition.y : null,
+									top: actionPanelPosition.y,
 									right: !isPanelAtLeft ? actionPanelPosition.x : null,
 									left: isPanelAtLeft ? actionPanelPosition.x : null
 								}}
