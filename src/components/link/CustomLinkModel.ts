@@ -1,12 +1,13 @@
-import { DefaultLinkModel } from '@projectstorm/react-diagrams';
+import { DefaultLinkModel, DefaultLinkModelOptions } from '@projectstorm/react-diagrams';
 import { CustomPortModel } from '../port/CustomPortModel';
 
 // Custom link
 export class CustomLinkModel extends DefaultLinkModel {
-	constructor() {
+	constructor(options: DefaultLinkModelOptions = {}) {
 		super({
 			type: 'custom',
-			width: 3
+			width: 3,
+			...options
 		});
 	}
 }
@@ -19,10 +20,11 @@ export class CustomLinkPortModel extends CustomPortModel {
 
 // Triangle link
 export class TriangleLinkModel extends DefaultLinkModel {
-	constructor() {
+	constructor(options: DefaultLinkModelOptions = {}) {
 		super({
 			type: 'triangle',
-			width: 3
+			width: 3,
+			...options
 		});
 	}
 }

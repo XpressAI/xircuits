@@ -190,11 +190,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			if (contextRef.current.isReady) {
 				let currentModel = xircuitsApp.getDiagramEngine().getModel().serialize();
 				contextRef.current.model.fromString(
-					JSON.stringify(currentModel, null, 4)
+					JSON.stringify(currentModel, replacer, 4)
 				);
 				setSaved(false);
 			}
 		}, []);
+
+	function replacer(key, value) {
+		if (key == "x" || key == "y") return Math.round((value + Number.EPSILON) * 1000) / 1000;
+		return value;
+	}
 
 	useEffect(() => {
 		const currentContext = contextRef.current;
@@ -209,7 +214,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			try {
 				if (notInitialRender.current) {
 					const model: any = currentContext.model.toJSON();
-					let deserializedModel = xircuitsApp.customDeserializeModel(model, xircuitsApp.getDiagramEngine());
+					let deserializedModel = xircuitsApp.customDeserializeModel(model);
 					deserializedModel.registerListener({
 						// Detect changes when node is dropped or deleted
 						nodesUpdated: () => {
