@@ -190,11 +190,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			if (contextRef.current.isReady) {
 				let currentModel = xircuitsApp.getDiagramEngine().getModel().serialize();
 				contextRef.current.model.fromString(
-					JSON.stringify(currentModel, null, 4)
+					JSON.stringify(currentModel, replacer, 4)
 				);
 				setSaved(false);
 			}
 		}, []);
+
+	function replacer(key, value) {
+		if (key == "x" || key == "y") return Math.round((value + Number.EPSILON) * 1000) / 1000;
+		return value;
+	}
 
 	useEffect(() => {
 		const currentContext = contextRef.current;
