@@ -279,7 +279,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                         onDoubleClick={this.handleEditLiteral.bind(this)}>
                         <S.Title>
                             <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
-                            <label>
+                            <label data-no-drag>
                                 <Toggle
                                     className='lock'
                                     checked={this.props.node.isLocked()}
