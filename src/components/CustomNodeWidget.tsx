@@ -221,7 +221,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         return text.split(urlRegex)
             .map(part => {
                 if (part.match(urlRegex)) {
-                    return <a href={part} key={part} target="_blank" style={{ color: "blue" }}> {part} </a>;
+                    return <a href={part} key={part} target="_blank" style={{ color: "blue" }}>{part}</a>;
                 }
                 return part;
             });
