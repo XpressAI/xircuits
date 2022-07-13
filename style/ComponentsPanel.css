@@ -11,15 +11,13 @@
   }
 
   .add-component-panel {
-    width: 250px;
-    height: 270px;
-    position: fixed;
-    z-index: 10;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 250px;
+    max-height: 270px;
+    position: absolute;
+    z-index: 1000;
     border-top: 10px;
     border-color: #000;
     border-radius: 12px;
-    overflow-y: auto;
   }
   
   .accordion__item_panel {
