@@ -111,6 +111,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         nodeDeletable: false,
         commentInput: this.props.node['extras']['commentInput'],
         showDescription: false,
+        descriptionStr: "",
 
         imageGalleryItems:[
         {
@@ -205,7 +206,25 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
      */
     async handleDescription() {
         await this.setState({ showDescription: !this.state.showDescription });
-        ReactTooltip.show(this.element as Element)
+        this.getDescriptionStrWithUrl();
+        ReactTooltip.show(this.element as Element);
+    }
+
+    getDescriptionStrWithUrl() {
+        let dscrptStr = this.props.node['extras']['description'] ?? null;
+        if (dscrptStr == null) return this.setState({ descriptionStr: <i>No description provided</i> });
+        this.setState({ descriptionStr: this.urlify(dscrptStr) });
+    }
+
+    urlify(text) {
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return text.split(urlRegex)
+            .map(part => {
+                if (part.match(urlRegex)) {
+                    return <a href={part} key={part} target="_blank" style={{ color: "blue" }}> {part} </a>;
+                }
+                return part;
+            });
     }
 
     // Hide Error Tooltip
@@ -302,7 +321,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                                 <S.DescriptionName color={this.props.node.getOptions().color}>{this.props.node.getOptions()["name"]}</S.DescriptionName>
                                 <p className='description-title'>Description:</p>
                                 <div className='description-container'>
-                                    <pre className='description-text'>{this.props.node['extras']['description'] ?? <i>No description provided</i>}</pre>
+                                    <pre className='description-text'>{this.state.descriptionStr}</pre>
                                 </div>
                             </div>}
                         overridePosition={(
