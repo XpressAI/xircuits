@@ -5,3 +5,4 @@ import './ComponentsPanel.css';
 import './NodeActionPanel.css';
 import './Comment.css';
 import './ComponentInfo.css';
+import './description-markdown.css';

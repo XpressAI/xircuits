@@ -17,6 +17,7 @@ import { formDialogWidget } from '../dialog/formDialogwidget';
 import { showFormDialog } from '../dialog/FormDialog';
 import { CommentDialog } from '../dialog/CommentDialog';
 import ReactTooltip from 'react-tooltip';
+import { marked } from 'marked';
 
 var S;
 (function (S) {
@@ -206,25 +207,18 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
      */
     async handleDescription() {
         await this.setState({ showDescription: !this.state.showDescription });
-        this.getDescriptionStrWithUrl();
+        this.getDescriptionStr();
         ReactTooltip.show(this.element as Element);
     }
 
-    getDescriptionStrWithUrl() {
-        let dscrptStr = this.props.node['extras']['description'] ?? null;
-        if (dscrptStr == null) return this.setState({ descriptionStr: <i>No description provided</i> });
-        this.setState({ descriptionStr: this.urlify(dscrptStr) });
+    renderText = text => {
+        const __html = marked(text)
+        return { __html }
     }
 
-    urlify(text) {
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        return text.split(urlRegex)
-            .map(part => {
-                if (part.match(urlRegex)) {
-                    return <a href={part} key={part} target="_blank" style={{ color: "blue" }}>{part}</a>;
-                }
-                return part;
-            });
+    getDescriptionStr() {
+        let dscrptStr = this.props.node['extras']['description'] ?? '***No description provided***';
+        this.setState({ descriptionStr: dscrptStr });
     }
 
     // Hide Error Tooltip
@@ -321,7 +315,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                                 <S.DescriptionName color={this.props.node.getOptions().color}>{this.props.node.getOptions()["name"]}</S.DescriptionName>
                                 <p className='description-title'>Description:</p>
                                 <div className='description-container'>
-                                    <pre className='description-text'>{this.state.descriptionStr}</pre>
+                                    <div className='markdown-body' dangerouslySetInnerHTML={this.renderText(this.state.descriptionStr)} />
                                 </div>
                             </div>}
                         overridePosition={(
