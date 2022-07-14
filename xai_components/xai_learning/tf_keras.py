@@ -7,27 +7,27 @@ from xai_components.base import InArg, InCompArg, OutArg, Component, xai_compone
 @xai_component
 class LoadKerasModel(Component):
     """Loads a Keras application model instance.
-    Reference:
-    Keras Model Applications: https://keras.io/api/applications/ 
+    
+    ## Reference:
+    - [Keras Model Applications](https://keras.io/api/applications/)
 
-    inPorts:
-    model_name: A Keras model instance.
-    inPorts:
-    include_top: whether to include the fully-connected
+    ### inPorts:
+    - model_name: A Keras model instance.
+    - include_top: whether to include the fully-connected
         layer at the top of the network.
-    weights: one of `None` (random initialization),
+    - weights: one of `None` (random initialization),
         'imagenet' (pre-training on ImageNet),
         or the path to the weights file to be loaded.
-    input_tensor: optional Keras tensor (i.e. output of `layers.Input()`)
+    - input_tensor: optional Keras tensor (i.e. output of `layers.Input()`)
         to use as image input for the model.
-    input_shape: optional shape tuple, only to be specified
+    - input_shape: optional shape tuple, only to be specified
         if `include_top` is False (otherwise the input shape
         has to be `(224, 224, 3)` (with `'channels_last'` data format)
         or `(3, 224, 224)` (with `'channels_first'` data format).
         It should have exactly 3 inputs channels,
         and width and height should be no smaller than 32.
         E.g. `(200, 200, 3)` would be one valid value.
-    pooling: Optional pooling mode for feature extraction
+    - pooling: Optional pooling mode for feature extraction
         when `include_top` is `False`.
         - `None` means that the output of the model will be
             the 4D tensor output of the
@@ -38,14 +38,14 @@ class LoadKerasModel(Component):
             the output of the model will be a 2D tensor.
         - `max` means that global max pooling will
             be applied.
-    classes: optional number of classes to classify images
+    - classes: optional number of classes to classify images
         into, only to be specified if `include_top` is True, and
         if no `weights` argument is specified.
-    args: additional arguments that may configure the Keras model 
+    - args: additional arguments that may configure the Keras model 
         instance behaviour, but not included as inPorts. 
 
-    outPorts:
-    model: A Keras model instance.
+    ### outPorts:
+    - model: A Keras model instance.
     """    
     model_name: InCompArg[str]
     include_top: InArg[bool] 
@@ -91,14 +91,15 @@ class LoadKerasModel(Component):
 @xai_component
 class KerasPredict(Component):
     """Performs prediction given a Keras application model instance.
-    Reference:
-    Keras Model Applications: https://keras.io/api/applications/ 
+    
+    ### Reference:
+    - [Keras Model Applications](https://keras.io/api/applications/)
 
-    inPorts:
-    model: A Keras model instance.
-    img_string: an image path.
-    class_list: list of classes if not using IMAGENET.
-    target_shape: np.array if not using default keras model instance shape.
+    ### inPorts:
+    - model: A Keras model instance.
+    - img_string: an image path.
+    - class_list: list of classes if not using IMAGENET.
+    - target_shape: np.array if not using default keras model instance shape.
     """    
     model:InCompArg[any]
     img_string: InCompArg[str]
@@ -228,28 +229,29 @@ class resnet_model_config:
 @xai_component
 class ResNet50(Component):
     """Instantiates the ResNet50 model.
-    Reference:
+    
+    ### Reference:
     - [Keras Application ResNet50](
         https://keras.io/api/applications/resnet/#resnet50-function)
     - [Deep Residual Learning for Image Recognition](
         https://arxiv.org/abs/1512.03385) (CVPR 2015)
 
-    inPorts:
-    include_top: whether to include the fully-connected
+    ### inPorts:
+    - include_top: whether to include the fully-connected
         layer at the top of the network.
-    weights: one of `None` (random initialization),
+    - weights: one of `None` (random initialization),
         'imagenet' (pre-training on ImageNet),
         or the path to the weights file to be loaded.
-    input_tensor: optional Keras tensor (i.e. output of `layers.Input()`)
+    - input_tensor: optional Keras tensor (i.e. output of `layers.Input()`)
         to use as image input for the model.
-    input_shape: optional shape tuple, only to be specified
+    - input_shape: optional shape tuple, only to be specified
         if `include_top` is False (otherwise the input shape
         has to be `(224, 224, 3)` (with `'channels_last'` data format)
         or `(3, 224, 224)` (with `'channels_first'` data format).
         It should have exactly 3 inputs channels,
         and width and height should be no smaller than 32.
         E.g. `(200, 200, 3)` would be one valid value.
-    pooling: Optional pooling mode for feature extraction
+    - pooling: Optional pooling mode for feature extraction
         when `include_top` is `False`.
         - `None` means that the output of the model will be
             the 4D tensor output of the
@@ -260,12 +262,12 @@ class ResNet50(Component):
             the output of the model will be a 2D tensor.
         - `max` means that global max pooling will
             be applied.
-    classes: optional number of classes to classify images
+    - classes: optional number of classes to classify images
         into, only to be specified if `include_top` is True, and
         if no `weights` argument is specified.
 
-    outPorts:
-    model: A Keras model instance.
+    ### outPorts:
+    - model: A Keras model instance.
     """
     include_top: InArg[bool]
     weights:InArg[str] 
@@ -309,27 +311,29 @@ class ResNet50(Component):
 @xai_component
 class ResNet101(Component):
     """Instantiates the ResNet101 model.
-    Reference:
+    
+    ### Reference:
     - [Keras Application ResNet50](
         https://keras.io/api/applications/resnet/#resnet101-function)
     - [Deep Residual Learning for Image Recognition](
         https://arxiv.org/abs/1512.03385) (CVPR 2015)
 
-    include_top: whether to include the fully-connected
+    ### inPorts:
+    - include_top: whether to include the fully-connected
         layer at the top of the network.
-    weights: one of `None` (random initialization),
+    - weights: one of `None` (random initialization),
         'imagenet' (pre-training on ImageNet),
         or the path to the weights file to be loaded.
-    input_tensor: optional Keras tensor (i.e. output of `layers.Input()`)
+    - input_tensor: optional Keras tensor (i.e. output of `layers.Input()`)
         to use as image input for the model.
-    input_shape: optional shape tuple, only to be specified
+    - input_shape: optional shape tuple, only to be specified
         if `include_top` is False (otherwise the input shape
         has to be `(224, 224, 3)` (with `'channels_last'` data format)
         or `(3, 224, 224)` (with `'channels_first'` data format).
         It should have exactly 3 inputs channels,
         and width and height should be no smaller than 32.
         E.g. `(200, 200, 3)` would be one valid value.
-    pooling: Optional pooling mode for feature extraction
+    - pooling: Optional pooling mode for feature extraction
         when `include_top` is `False`.
         - `None` means that the output of the model will be
             the 4D tensor output of the
@@ -340,12 +344,12 @@ class ResNet101(Component):
             the output of the model will be a 2D tensor.
         - `max` means that global max pooling will
             be applied.
-    classes: optional number of classes to classify images
+    - classes: optional number of classes to classify images
         into, only to be specified if `include_top` is True, and
         if no `weights` argument is specified.
 
-    outPorts:
-    model: A Keras model instance.
+    ### outPorts:
+    - model: A Keras model instance.
     """
     include_top: InArg[bool]
     weights:InArg[str] 
@@ -390,28 +394,29 @@ class ResNet101(Component):
 @xai_component
 class ResNet152(Component):
     """Instantiates the ResNet152 model.
-    Reference:
+    
+    ### Reference:
     - [Keras Application ResNet152](
         https://keras.io/api/applications/resnet/#resnet152-function)
     - [Deep Residual Learning for Image Recognition](
         https://arxiv.org/abs/1512.03385) (CVPR 2015)
 
-    inPorts:
-    include_top: whether to include the fully-connected
+    ### inPorts:
+    - include_top: whether to include the fully-connected
         layer at the top of the network.
-    weights: one of `None` (random initialization),
+    - weights: one of `None` (random initialization),
         'imagenet' (pre-training on ImageNet),
         or the path to the weights file to be loaded.
-    input_tensor: optional Keras tensor (i.e. output of `layers.Input()`)
+    - input_tensor: optional Keras tensor (i.e. output of `layers.Input()`)
         to use as image input for the model.
-    input_shape: optional shape tuple, only to be specified
+    - input_shape: optional shape tuple, only to be specified
         if `include_top` is False (otherwise the input shape
         has to be `(224, 224, 3)` (with `'channels_last'` data format)
         or `(3, 224, 224)` (with `'channels_first'` data format).
         It should have exactly 3 inputs channels,
         and width and height should be no smaller than 32.
         E.g. `(200, 200, 3)` would be one valid value.
-    pooling: Optional pooling mode for feature extraction
+    - pooling: Optional pooling mode for feature extraction
         when `include_top` is `False`.
         - `None` means that the output of the model will be
             the 4D tensor output of the
@@ -422,12 +427,12 @@ class ResNet152(Component):
             the output of the model will be a 2D tensor.
         - `max` means that global max pooling will
             be applied.
-    classes: optional number of classes to classify images
+    = classes: optional number of classes to classify images
         into, only to be specified if `include_top` is True, and
         if no `weights` argument is specified.
 
-    outPorts:
-    model: A Keras model instance.
+    ### outPorts:
+    - model: A Keras model instance.
     """
     include_top: InArg[bool]
     weights:InArg[str] 
@@ -488,51 +493,52 @@ class vgg_model_config:
 @xai_component
 class VGG16(Component):
     """Instantiates the VGG16 model.
-    Reference:
+    
+    ### Reference:
     - [Keras Application VGG16](
         https://keras.io/api/applications/vgg/#vgg16-function)
     - [Very Deep Convolutional Networks for Large-Scale Image Recognition](
     https://arxiv.org/abs/1409.1556) (ICLR 2015)
 
-    inPorts:
-        include_top: whether to include the 3 fully-connected
-            layers at the top of the network.
-        weights: one of `None` (random initialization),
-            'imagenet' (pre-training on ImageNet),
-            or the path to the weights file to be loaded.
-        input_tensor: optional Keras tensor
-            (i.e. output of `layers.Input()`)
-            to use as image input for the model.
-        input_shape: optional shape tuple, only to be specified
-            if `include_top` is False (otherwise the input shape
-            has to be `(224, 224, 3)`
-            (with `channels_last` data format)
-            or `(3, 224, 224)` (with `channels_first` data format).
-            It should have exactly 3 input channels,
-            and width and height should be no smaller than 32.
-            E.g. `(200, 200, 3)` would be one valid value.
-        pooling: Optional pooling mode for feature extraction
-            when `include_top` is `False`.
-            - `None` means that the output of the model will be
-                the 4D tensor output of the
-                last convolutional block.
-            - `avg` means that global average pooling
-                will be applied to the output of the
-                last convolutional block, and thus
-                the output of the model will be a 2D tensor.
-            - `max` means that global max pooling will
-                be applied.
-        classes: optional number of classes to classify images
-            into, only to be specified if `include_top` is True, and
-            if no `weights` argument is specified.
-        classifier_activation: A `str` or callable. The activation function to use
-            on the "top" layer. Ignored unless `include_top=True`. Set
-            `classifier_activation=None` to return the logits of the "top" layer.
-            When loading pretrained weights, `classifier_activation` can only
-            be `None` or `"softmax"`.
+    ### inPorts:
+    - include_top: whether to include the 3 fully-connected
+        layers at the top of the network.
+    - weights: one of `None` (random initialization),
+        'imagenet' (pre-training on ImageNet),
+        or the path to the weights file to be loaded.
+    - input_tensor: optional Keras tensor
+        (i.e. output of `layers.Input()`)
+        to use as image input for the model.
+    - input_shape: optional shape tuple, only to be specified
+        if `include_top` is False (otherwise the input shape
+        has to be `(224, 224, 3)`
+        (with `channels_last` data format)
+        or `(3, 224, 224)` (with `channels_first` data format).
+        It should have exactly 3 input channels,
+        and width and height should be no smaller than 32.
+        E.g. `(200, 200, 3)` would be one valid value.
+    - pooling: Optional pooling mode for feature extraction
+        when `include_top` is `False`.
+        - `None` means that the output of the model will be
+            the 4D tensor output of the
+            last convolutional block.
+        - `avg` means that global average pooling
+            will be applied to the output of the
+            last convolutional block, and thus
+            the output of the model will be a 2D tensor.
+        - `max` means that global max pooling will
+            be applied.
+    - classes: optional number of classes to classify images
+        into, only to be specified if `include_top` is True, and
+        if no `weights` argument is specified.
+    - classifier_activation: A `str` or callable. The activation function to use
+        on the "top" layer. Ignored unless `include_top=True`. Set
+        `classifier_activation=None` to return the logits of the "top" layer.
+        When loading pretrained weights, `classifier_activation` can only
+        be `None` or `"softmax"`.
 
-    outPorts:
-    model: A Keras model instance.
+    ### outPorts:
+    - model: A Keras model instance.
     """
     include_top: InArg[bool]
     weights:InArg[str] 
@@ -578,22 +584,23 @@ class VGG16(Component):
 @xai_component
 class VGG19(Component):
     """Instantiates the VGG19 architecture.
-    Reference:
+    
+    ### Reference:
     - [Keras Application VGG19](
         https://keras.io/api/applications/vgg/#vgg19-function)
     - [Very Deep Convolutional Networks for Large-Scale Image Recognition](
         https://arxiv.org/abs/1409.1556) (ICLR 2015)
 
-    inPorts:
-    include_top: whether to include the 3 fully-connected
+    ### inPorts:
+    - include_top: whether to include the 3 fully-connected
         layers at the top of the network.
-    weights: one of `None` (random initialization),
+    - weights: one of `None` (random initialization),
         'imagenet' (pre-training on ImageNet),
         or the path to the weights file to be loaded.
-    input_tensor: optional Keras tensor
+    - input_tensor: optional Keras tensor
         (i.e. output of `layers.Input()`)
         to use as image input for the model.
-    input_shape: optional shape tuple, only to be specified
+    - input_shape: optional shape tuple, only to be specified
         if `include_top` is False (otherwise the input shape
         has to be `(224, 224, 3)`
         (with `channels_last` data format)
@@ -601,7 +608,7 @@ class VGG19(Component):
         It should have exactly 3 inputs channels,
         and width and height should be no smaller than 32.
         E.g. `(200, 200, 3)` would be one valid value.
-    pooling: Optional pooling mode for feature extraction
+    - pooling: Optional pooling mode for feature extraction
         when `include_top` is `False`.
         - `None` means that the output of the model will be
             the 4D tensor output of the
@@ -612,17 +619,17 @@ class VGG19(Component):
             the output of the model will be a 2D tensor.
         - `max` means that global max pooling will
             be applied.
-    classes: optional number of classes to classify images
+    - classes: optional number of classes to classify images
         into, only to be specified if `include_top` is True, and
         if no `weights` argument is specified.
-    classifier_activation: A `str` or callable. The activation function to use
+    - classifier_activation: A `str` or callable. The activation function to use
         on the "top" layer. Ignored unless `include_top=True`. Set
         `classifier_activation=None` to return the logits of the "top" layer.
         When loading pretrained weights, `classifier_activation` can only
         be `None` or `"softmax"`.
 
-    outPorts:
-    model: A Keras model instance.
+    ### outPorts:
+    - model: A Keras model instance.
     """
     include_top: InArg[bool]
     weights:InArg[str] 
@@ -667,28 +674,29 @@ class VGG19(Component):
 @xai_component
 class Xception(Component):
     """Instantiates the Xception architecture.
-    Reference:
+    
+    ### Reference:
     - [Keras Application Xception](
         https://keras.io/api/applications/xception/)
     - [Xception: Deep Learning with Depthwise Separable Convolutions](
         https://arxiv.org/abs/1610.02357) (CVPR 2017)
 
-    inPorts:
-    include_top: whether to include the fully-connected
+    ### inPorts:
+    - include_top: whether to include the fully-connected
         layer at the top of the network.
-    weights: one of `None` (random initialization),
+    - weights: one of `None` (random initialization),
         'imagenet' (pre-training on ImageNet),
         or the path to the weights file to be loaded.
-    input_tensor: optional Keras tensor
+    - input_tensor: optional Keras tensor
         (i.e. output of `layers.Input()`)
         to use as image input for the model.
-    input_shape: optional shape tuple, only to be specified
+    - input_shape: optional shape tuple, only to be specified
         if `include_top` is False (otherwise the input shape
         has to be `(299, 299, 3)`.
         It should have exactly 3 inputs channels,
         and width and height should be no smaller than 71.
         E.g. `(150, 150, 3)` would be one valid value.
-    pooling: Optional pooling mode for feature extraction
+    - pooling: Optional pooling mode for feature extraction
         when `include_top` is `False`.
         - `None` means that the output of the model will be
             the 4D tensor output of the
@@ -699,17 +707,17 @@ class Xception(Component):
             the output of the model will be a 2D tensor.
         - `max` means that global max pooling will
             be applied.
-    classes: optional number of classes to classify images
+    - classes: optional number of classes to classify images
         into, only to be specified if `include_top` is True,
         and if no `weights` argument is specified.
-    classifier_activation: A `str` or callable. The activation function to use
+    - classifier_activation: A `str` or callable. The activation function to use
         on the "top" layer. Ignored unless `include_top=True`. Set
         `classifier_activation=None` to return the logits of the "top" layer.
         When loading pretrained weights, `classifier_activation` can only
         be `None` or `"softmax"`.
 
-    outPorts:
-    model: A Keras model instance.
+    ### outPorts:
+    - model: A Keras model instance.
     """
 
     include_top: InArg[bool]
@@ -784,41 +792,42 @@ class mobile_model_config:
 @xai_component
 class MobileNet(Component):
     """Instantiates the MobileNet architecture.
-    Reference:
+    
+    ### Reference:
     - [Keras Application MobileNet](
         https://keras.io/api/applications/mobilenet/)
     - [MobileNets: Efficient Convolutional Neural Networks
         for Mobile Vision Applications](
         https://arxiv.org/abs/1704.04861)
-    This function returns a Keras image classification model,
+    This component returns a Keras image classification model,
     optionally loaded with weights pre-trained on ImageNet.
 
-    inPorts:
-    input_shape: Optional shape tuple, only to be specified if `include_top`
+    ### inPorts:
+    - input_shape: Optional shape tuple, only to be specified if `include_top`
         is False (otherwise the input shape has to be `(224, 224, 3)` (with
         `channels_last` data format) or (3, 224, 224) (with `channels_first`
         data format). It should have exactly 3 inputs channels, and width and
         height should be no smaller than 32. E.g. `(200, 200, 3)` would be one
         valid value. Default to `None`.
         `input_shape` will be ignored if the `input_tensor` is provided.
-    alpha: Controls the width of the network. This is known as the width
+    - alpha: Controls the width of the network. This is known as the width
         multiplier in the MobileNet paper. - If `alpha` < 1.0, proportionally
         decreases the number of filters in each layer. - If `alpha` > 1.0,
         proportionally increases the number of filters in each layer. - If
         `alpha` = 1, default number of filters from the paper are used at each
         layer. Default to 1.0.
-    depth_multiplier: Depth multiplier for depthwise convolution. This is
+    - depth_multiplier: Depth multiplier for depthwise convolution. This is
         called the resolution multiplier in the MobileNet paper. Default to 1.0.
-    dropout: Dropout rate. Default to 0.001.
-    include_top: Boolean, whether to include the fully-connected layer at the
+    - dropout: Dropout rate. Default to 0.001.
+    - include_top: Boolean, whether to include the fully-connected layer at the
         top of the network. Default to `True`.
-    weights: One of `None` (random initialization), 'imagenet' (pre-training
+    - weights: One of `None` (random initialization), 'imagenet' (pre-training
         on ImageNet), or the path to the weights file to be loaded. Default to
         `imagenet`.
-    input_tensor: Optional Keras tensor (i.e. output of `layers.Input()`) to
+    - input_tensor: Optional Keras tensor (i.e. output of `layers.Input()`) to
         use as image input for the model. `input_tensor` is useful for sharing
         inputs between multiple different networks. Default to None.
-    pooling: Optional pooling mode for feature extraction when `include_top`
+    - pooling: Optional pooling mode for feature extraction when `include_top`
         is `False`.
         - `None` (default) means that the output of the model will be
             the 4D tensor output of the last convolutional block.
@@ -827,18 +836,18 @@ class MobileNet(Component):
             last convolutional block, and thus
             the output of the model will be a 2D tensor.
         - `max` means that global max pooling will be applied.
-    classes: Optional number of classes to classify images into, only to be
+    - classes: Optional number of classes to classify images into, only to be
         specified if `include_top` is True, and if no `weights` argument is
         specified. Defaults to 1000.
-    classifier_activation: A `str` or callable. The activation function to use
+    - classifier_activation: A `str` or callable. The activation function to use
         on the "top" layer. Ignored unless `include_top=True`. Set
         `classifier_activation=None` to return the logits of the "top" layer.
         When loading pretrained weights, `classifier_activation` can only
         be `None` or `"softmax"`.
-    **kwargs: For backwards compatibility only.
+    - **kwargs: For backwards compatibility only.
 
-    outPorts:
-    model: A Keras model instance.
+    ### outPorts:
+    - model: A Keras model instance.
     """
     input_shape: InArg[any]
     alpha: InArg[any]
