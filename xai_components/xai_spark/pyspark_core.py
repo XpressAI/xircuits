@@ -4,7 +4,7 @@ from pyspark.sql import Row
 from datetime import datetime, date
 import matplotlib.pyplot as plt
 
-from xai_components.base import InArg, OutArg, Component, xai_component
+from xai_components.base import InArg, InCompArg, OutArg, Component, xai_component
 import json
 import os
 import sys
@@ -15,9 +15,23 @@ os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
 
 @xai_component
 class xSparkSession(Component):
-    master: InArg[str]  #master("local")
-    appname: InArg[str] #appName("Word Count")
-    config: InArg[str]  #config("spark.some.config.option", "some-value")
+    """Instantiates a Spark Session.
+  
+    ### inPorts:
+    - master: Cluster URL to connect to (e.g. mesos://host:port, spark://host:port, local[4]). 
+        Default `local`.
+    - appname: A name for your job, to display on the cluster web UI.
+        Default .xircuits canvas name.
+    - config: Runtime configuration interface for Spark.
+        Default `" "`.
+
+    ### outPorts:
+    - sparksession: A spark session instance.
+    """
+
+    master: InArg[str]  
+    appname: InArg[str]
+    config: InArg[str]
     sparksession: OutArg[any]
 
     def __init__(self):
@@ -31,16 +45,38 @@ class xSparkSession(Component):
 
     def execute(self, ctx) -> None:
 
-        spark = SparkSession.builder.getOrCreate()
+        master_url = self.master.value if self.master.value else "local"
+        app_name = self.appname.value if self.appname.value else os.path.splitext(sys.argv[0])[0]
+        config = self.config.value if self.config.value else " "
+
+        if self.master.value or self.config.value:
+            spark = SparkSession.builder.master(master_url) \
+                                .appName(app_name) \
+                                .config(config) \
+                                .getOrCreate()
+
+        else:
+            spark = SparkSession.builder.getOrCreate()
+        
         self.sparksession.value = spark
         self.done = True
 
 
 @xai_component
 class SparkReadPandas(Component):
+    """Creates a Spark df from a pandas df.
+  
+    ### inPorts:
+    - in_sparksession: A spark session.
+    - pandas_dataframe: pandas dataframe.
 
-    in_sparksession: InArg[any]
-    pandas_dataframe: InArg[str]
+    ### outPorts:
+    - out_sparksession: A spark session.
+    - out_dataframe: A spark dataframe.
+    """
+
+    in_sparksession: InCompArg[any]
+    pandas_dataframe: InCompArg[any]
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
 
@@ -48,9 +84,11 @@ class SparkReadPandas(Component):
     def __init__(self):
 
         self.done = False
-        self.in_sparksession = InArg(None)
-        self.pandas_dataframe = InArg(None)
+        self.in_sparksession = InCompArg(None)
+        self.pandas_dataframe = InCompArg(None)
         self.out_sparksession = OutArg(None)
+        self.out_dataframe = OutArg(None)
+
 
     def execute(self, ctx) -> None:
 
@@ -66,17 +104,27 @@ class SparkReadPandas(Component):
 
 @xai_component
 class SparkReadFile(Component):
+    """Reads a Spark supported file format (json / csv / parquet / orc ) 
+    and outputs a Spark dataframe.
 
-    in_sparksession: InArg[any]
-    file_input: InArg[str]
+    ### inPorts:
+    - in_sparksession: A spark session.
+    - file_input: a Spark supported file format (json / csv / parquet / orc ) filepath.
+
+    ### outPorts:
+    - out_sparksession: A spark session.
+    - out_dataframe: A spark dataframe.
+    """
+    in_sparksession: InCompArg[any]
+    file_input: InCompArg[str]
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
 
     def __init__(self):
 
         self.done = False
-        self.in_sparksession = InArg(None)
-        self.file_input = InArg(None)
+        self.in_sparksession = InCompArg(None)
+        self.file_input = InCompArg(None)
         self.out_sparksession = OutArg(None)
         self.out_dataframe = OutArg(None)
 
@@ -113,21 +161,32 @@ class SparkReadFile(Component):
 
 @xai_component
 class SparkReadCSV(Component):
+    """Reads a csv and outputs a Spark dataframe.
 
-    in_sparksession: InArg[any]
-    file_input: InArg[str]
+    ### inPorts:
+    - in_sparksession: A spark session.
+    - file_input: a csv filepath.
+    - separator: the data separator in csv. Default `,`.
+    - header: bool whether csv has headers. Default `True`.
+
+    ### outPorts:
+    - out_sparksession: A spark session.
+    - out_dataframe: A spark dataframe.
+    """
+    in_sparksession: InCompArg[any]
+    file_input: InCompArg[str]
     separator: InArg[str]
-    header: InArg[str]
+    header: InArg[bool]
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
 
     def __init__(self):
 
         self.done = False
-        self.in_sparksession = InArg(None)
-        self.file_input = InArg(None)
+        self.in_sparksession = InCompArg(None)
+        self.file_input = InCompArg(None)
         self.separator = InArg(None)
-        self.header = InArg(None)
+        self.header = InArg(True)
         self.out_sparksession = OutArg(None)
         self.out_dataframe = OutArg(None)
 
@@ -138,7 +197,7 @@ class SparkReadCSV(Component):
         filepath = self.file_input.value
 
         sep = self.separator.value if self.separator.value else ","
-        header = self.header.value if self.header.value else "true"
+        header = self.header.value
         
         df = spark.read.load(filepath,
                  format="csv", sep=sep, inferSchema="true", header=header)
@@ -152,28 +211,39 @@ class SparkReadCSV(Component):
 
 @xai_component
 class SparkWriteFile(Component):
+    """Writes a Spark dataframe to disk in supported output format (csv / parquet / orc).
 
-    dataframe: InArg[any]
-    output_name: InArg[str]
+    ### inPorts:
+    - dataframe: A Spark dataframe.
+    - output_name: desired output name. The format will be inferred from the extension.
+        Currently supports `csv` / `parquet` / `orc` file format.
+    - header: bool whether csv has headers. Default `True`.
+
+    ### outPorts:
+    - out_sparksession: A spark session.
+    """
+    dataframe: InCompArg[any]
+    output_name: InCompArg[str]
     header: InArg[bool]
     out_sparksession: OutArg[any]
 
     def __init__(self):
 
         self.done = False
-        self.dataframe = InArg(None)
-        self.output_name = InArg(None)
-        self.header = InArg(None)
+        self.dataframe = InCompArg(None)
+        self.output_name = InCompArg(None)
+        self.header = InArg(True)
         self.out_sparksession = OutArg(None)
 
     def execute(self, ctx) -> None:
 
         df = self.dataframe.value
         filepath = self.output_name.value
+        header = self.header.value
         ext = filepath.split(".")[-1]
 
         if ext == "csv":
-            df.write.csv(filepath, header=True)
+            df.write.csv(filepath, header=header)
         elif ext == "parquet":
             df.write.parquet(filepath)
         elif ext == "orc":
@@ -185,11 +255,23 @@ class SparkWriteFile(Component):
 
 @xai_component
 class SparkSQL(Component):
+    """Performs a SparkSQL query to obtain a Spark dataframe.
 
-    in_sparksession: InArg[any]
-    dataframe: InArg[any]
+    ### inPorts:
+    - in_sparksession: A spark session.
+    - dataframe: a Spark dataframe.
+    - sql_string: a SQL query to be performed on the dataframe.
+    - table_name: specify a table name is already created by createOrReplaceTempView.
+
+    ### outPorts:
+    - out_sparksession: A spark session.
+    - sql_dataframe: the Spark dataframe obtained from the SQL query.
+    """
+    in_sparksession: InCompArg[any]
+    dataframe: InCompArg[any]
+    sql_string: InCompArg[str]
     table_name: InArg[str]
-    sql_string: InArg[str]
+
     out_sparksession: OutArg[any]
     sql_dataframe: OutArg[any]
 
@@ -197,11 +279,11 @@ class SparkSQL(Component):
     def __init__(self):
 
         self.done = False
-        self.in_sparksession = InArg(None)
-        self.dataframe = InArg(None)
+        self.in_sparksession = InCompArg(None)
+        self.dataframe = InCompArg(None)
+        self.sql_string = InCompArg(None)
         self.table_name = InArg(None)
 
-        self.sql_string = InArg(None)
         self.out_sparksession = OutArg(None)
         self.sql_dataframe = OutArg(None)
 
@@ -229,19 +311,30 @@ class SparkSQL(Component):
 
 @xai_component
 class SparkVisualize(Component):
+    """Visualizes a Spark dataframe.
 
-    dataframe: InArg[any]
+    ### inPorts:
+    - dataframe: a Spark dataframe.
+    - plot_type: the type of plot to be generated. Currently support `bar`, `scatter` and `line` plots. 
+        Default `bar` chart.
+    - x_axis: the X axis / variable to be visualized.
+    - y_axis:the Y axis to be benchmarked on. 
+        Default is `None`, which means it will visualize based on raw numbers. 
+    - output_name: the chart name to be saved as `visual.png`
+
+    """
+    dataframe: InCompArg[any]
     plot_type: InArg[str]
-    x_axis: InArg[str]
+    x_axis: InCompArg[str]
     y_axis: InArg[str]
     output_name: InArg[str]
 
     def __init__(self):
         
         self.done = False
-        self.dataframe = InArg(None)
+        self.dataframe = InCompArg(None)
         self.plot_type = InArg(None)
-        self.x_axis = InArg(None)
+        self.x_axis = InCompArg(None)
         self.y_axis = InArg(None)    
         self.output_name = InArg(None)    
 
