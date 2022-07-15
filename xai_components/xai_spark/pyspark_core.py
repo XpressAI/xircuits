@@ -164,7 +164,7 @@ class SparkReadCSV(Component):
     """Reads a csv and outputs a Spark dataframe.
 
     ### inPorts:
-    - in_sparksession: A spark session.
+    - in_sparksession: a spark session.
     - file_input: a csv filepath.
     - separator: the data separator in csv. Default `,`.
     - header: bool whether csv has headers. Default `True`.
@@ -341,8 +341,6 @@ class SparkVisualize(Component):
 
     def execute(self, ctx) -> None:
         
-        import pandas as pd
-
         df = self.dataframe.value
         plot_type = self.plot_type.value if self.plot_type.value else "bar"
         output_name = self.output_name.value if self.output_name.value else "visual.png"
