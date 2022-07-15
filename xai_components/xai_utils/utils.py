@@ -76,3 +76,59 @@ class DeleteFile(Component):
           print(filename + " does not exist.") 
 
         self.done = True
+
+@xai_component(color="green")
+class TimerComponent(Component):
+    
+    in_timer: InArg[any]
+    timer_message: InArg[str]
+    
+    out_timer: OutArg[any]
+    elapsed_time: OutArg[int]
+    
+    def __init__(self):
+
+        self.done = False
+        
+        self.in_timer = InArg.empty()
+        self.timer_message = InArg.empty()
+
+        self.out_timer = OutArg.empty()
+        self.elapsed_time = OutArg.empty()
+        
+
+    def execute(self, ctx) -> None:
+        
+        import time
+        
+        current_time = time.time()
+        timer_message = self.timer_message.value if self.timer_message.value else "current timer component"
+        
+        elapsed_time = 0
+        
+        if self.in_timer.value:
+                elapsed_time = current_time - self.in_timer.value
+                print("The elapsed time for " + timer_message + " is " + str(elapsed_time) + "seconds.")
+        else:
+            print("Starting new timer.")
+        
+        self.out_timer.value = current_time
+        self.elapsed_time.value = elapsed_time
+
+        
+@xai_component(color="green")
+class SleepComponent(Component):
+    
+    sleep_timer: InArg[float]
+
+    def __init__(self):
+
+        self.done = False
+        
+        self.sleep_timer = InArg.empty()
+                
+    def execute(self, ctx) -> None:
+        
+        sleep_timer = self.sleep_timer.value if self.sleep_timer.value else 5.0
+        print("Sleeping for " + str(sleep_timer) + " seconds.")
+        time.sleep(sleep_timer)
