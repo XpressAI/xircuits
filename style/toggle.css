@@ -150,9 +150,9 @@ background-color: #128D15;
 }
 
 .description.react-toggle .react-toggle-track {
-    background: url(../style/icons/3-vertical-dot.svg) no-repeat;
+    background: url(../style/icons/info.svg) no-repeat;
 }
 
 .description.react-toggle--checked .react-toggle-track {
-    background: url(../style/icons/3-vertical-dot.svg) #FAFAFA no-repeat;
+    background: url(../style/icons/info.svg) #FAFAFA no-repeat;
 }
