@@ -134,3 +134,6 @@ node_modules/
 *.bundle.*
 labextension/
 mlruns/
+
+# Pytorch dataset default dir
+data
