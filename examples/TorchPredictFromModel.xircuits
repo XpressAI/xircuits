@@ -1,12 +1,12 @@
 {
     "id": "7a07853b-3800-4564-84a9-669870697b3b",
-    "offsetX": 151.54440977436767,
-    "offsetY": 8.188460912637545,
-    "zoom": 80,
+    "offsetX": 13.446908717000449,
+    "offsetY": 20.444830772476166,
+    "zoom": 122.5,
     "gridSize": 0,
     "layers": [
         {
-            "id": "28b948c3-9c34-4694-a1fe-97fb2e1fd34f",
+            "id": "0530514f-28e7-4fd9-95ec-4374eb41711f",
             "type": "diagram-links",
             "isSvg": true,
             "transformed": true,
@@ -24,7 +24,7 @@
                             "id": "538f52aa-904c-4e30-aef9-28c5545e40aa",
                             "type": "point",
                             "x": -132.604,
-                            "y": 127.188
+                            "y": 127.187
                         },
                         {
                             "id": "e3622f65-ab2f-455a-88ff-8a8bf2b27b0a",
@@ -331,23 +331,23 @@
                     "curvyness": 50,
                     "selectedColor": "rgb(0,192,255)"
                 },
-                "16029922-512b-439e-b456-2b30ece91bc0": {
-                    "id": "16029922-512b-439e-b456-2b30ece91bc0",
+                "10e7fc2d-23e8-4eda-8f9a-e1f46587bf63": {
+                    "id": "10e7fc2d-23e8-4eda-8f9a-e1f46587bf63",
                     "type": "custom",
-                    "selected": true,
-                    "source": "5c89b360-c3be-4fda-a202-6b4b0095e1db",
-                    "sourcePort": "d11edc46-87bf-434c-96bf-1e397e3d8635",
+                    "selected": false,
+                    "source": "86d10ed9-8322-43ae-9912-3a16f2955c61",
+                    "sourcePort": "956a1874-ebac-43dc-85e9-b7ca8141c22b",
                     "target": "1af025ad-bc4a-4780-aa3e-e2d4c1f67d35",
                     "targetPort": "62ba916a-9a11-44d5-a07c-4e516f486240",
                     "points": [
                         {
-                            "id": "054e359f-e575-42c8-ad46-3f1273e1352a",
+                            "id": "f2b40dae-abb2-4899-9d9d-6844e11a5a0b",
                             "type": "point",
-                            "x": 0,
-                            "y": 0
+                            "x": 407.219,
+                            "y": 162.99
                         },
                         {
-                            "id": "7a887e42-d6dc-417e-830d-98b496ee79cd",
+                            "id": "ecfcf29b-4cb7-4d26-96fe-2774aab0282a",
                             "type": "point",
                             "x": 425.802,
                             "y": 99.552
@@ -362,7 +362,7 @@
             }
         },
         {
-            "id": "a72c944d-81b5-4810-93d9-0e0093ef2790",
+            "id": "75863a9c-c236-4202-8ccc-68ff1ebcd057",
             "type": "diagram-nodes",
             "isSvg": false,
             "transformed": true,
@@ -381,8 +381,8 @@
                         {
                             "id": "6b8fef1a-153f-4403-bf7c-b7186174e61f",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": -140.104,
+                            "y": 119.687,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "87884ab5-f02d-4884-9455-3dc1faf6fe57",
@@ -414,8 +414,8 @@
                         {
                             "id": "6f6753b3-7cef-4420-b612-2b09306c238e",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 986,
+                            "y": 111.135,
                             "name": "in-0",
                             "alignment": "left",
                             "parentNode": "a3a070b9-1878-4a0e-9c86-48758602a997",
@@ -447,8 +447,8 @@
                         {
                             "id": "10f9cdcf-2dc3-46e5-976d-63a801141b42",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 646.625,
+                            "y": 251.969,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "15956f53-52c6-4d7f-bf55-cba5c8b77362",
@@ -488,8 +488,8 @@
                         {
                             "id": "89f84bd8-e84e-45c9-8e2a-00f83cc68870",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": -50.125,
+                            "y": 124.375,
                             "name": "in-0",
                             "alignment": "left",
                             "parentNode": "ff4e8771-5770-4d07-bc6f-d64246c9b0fa",
@@ -502,8 +502,8 @@
                         {
                             "id": "67cdbeff-fa3e-4a94-897b-0beff40531cd",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 96.865,
+                            "y": 124.375,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "ff4e8771-5770-4d07-bc6f-d64246c9b0fa",
@@ -516,8 +516,8 @@
                         {
                             "id": "dcb3d16f-77f6-44de-b306-0852cbdcb1c6",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": -50.125,
+                            "y": 140.375,
                             "name": "parameter-string-img_path",
                             "alignment": "left",
                             "parentNode": "ff4e8771-5770-4d07-bc6f-d64246c9b0fa",
@@ -530,8 +530,8 @@
                         {
                             "id": "15fff31a-eb95-4580-997d-eb90d7108266",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": -50.125,
+                            "y": 156.375,
                             "name": "parameter-tuple-resize",
                             "alignment": "left",
                             "parentNode": "ff4e8771-5770-4d07-bc6f-d64246c9b0fa",
@@ -544,8 +544,8 @@
                         {
                             "id": "d9b61b35-baea-4c50-8a0c-67992d37aacc",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 96.865,
+                            "y": 140.375,
                             "name": "parameter-out-torch.Tensor-tensor",
                             "alignment": "right",
                             "parentNode": "ff4e8771-5770-4d07-bc6f-d64246c9b0fa",
@@ -590,8 +590,8 @@
                         {
                             "id": "5dd9d3e8-27d2-487d-9eb1-31e60a3c9541",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 418.302,
+                            "y": 60.052,
                             "name": "in-0",
                             "alignment": "left",
                             "parentNode": "1af025ad-bc4a-4780-aa3e-e2d4c1f67d35",
@@ -604,8 +604,8 @@
                         {
                             "id": "7c2d0878-5c46-467a-909f-2f9185720515",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 616.073,
+                            "y": 60.052,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "1af025ad-bc4a-4780-aa3e-e2d4c1f67d35",
@@ -618,8 +618,8 @@
                         {
                             "id": "58db7738-72a6-4c97-b840-060dce9434a9",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 418.302,
+                            "y": 76.052,
                             "name": "parameter-nn.Module-model",
                             "alignment": "left",
                             "parentNode": "1af025ad-bc4a-4780-aa3e-e2d4c1f67d35",
@@ -632,13 +632,13 @@
                         {
                             "id": "62ba916a-9a11-44d5-a07c-4e516f486240",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 418.302,
+                            "y": 92.052,
                             "name": "parameter-string-model_path",
                             "alignment": "left",
                             "parentNode": "1af025ad-bc4a-4780-aa3e-e2d4c1f67d35",
                             "links": [
-                                "16029922-512b-439e-b456-2b30ece91bc0"
+                                "10e7fc2d-23e8-4eda-8f9a-e1f46587bf63"
                             ],
                             "in": true,
                             "label": "★model_path"
@@ -646,8 +646,8 @@
                         {
                             "id": "5f6aafa6-64f2-4043-98be-225a06a14929",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 616.073,
+                            "y": 76.052,
                             "name": "parameter-out-nn.Module-loaded_model",
                             "alignment": "right",
                             "parentNode": "1af025ad-bc4a-4780-aa3e-e2d4c1f67d35",
@@ -692,8 +692,8 @@
                         {
                             "id": "d3d3d70f-27b3-490a-8da5-cf2c43083a14",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 723.865,
+                            "y": 111.01,
                             "name": "in-0",
                             "alignment": "left",
                             "parentNode": "a03d9419-1ada-4efb-bf18-289681ad1ad2",
@@ -706,8 +706,8 @@
                         {
                             "id": "251deaa1-aa71-47d7-9b4c-0b082b8b97a5",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 902.656,
+                            "y": 111.01,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "a03d9419-1ada-4efb-bf18-289681ad1ad2",
@@ -720,8 +720,8 @@
                         {
                             "id": "1842ad42-a02f-41be-b67f-e5a62d694b53",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 723.865,
+                            "y": 127.01,
                             "name": "parameter-nn.Module-model",
                             "alignment": "left",
                             "parentNode": "a03d9419-1ada-4efb-bf18-289681ad1ad2",
@@ -734,8 +734,8 @@
                         {
                             "id": "38c926d7-2f0f-4376-8536-e2586127580b",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 723.865,
+                            "y": 143.01,
                             "name": "parameter-torch.Tensor-tensor",
                             "alignment": "left",
                             "parentNode": "a03d9419-1ada-4efb-bf18-289681ad1ad2",
@@ -748,8 +748,8 @@
                         {
                             "id": "3dc032da-b329-4b71-87d9-836eea922a3e",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 723.865,
+                            "y": 159.01,
                             "name": "parameter-list-class_list",
                             "alignment": "left",
                             "parentNode": "a03d9419-1ada-4efb-bf18-289681ad1ad2",
@@ -794,8 +794,8 @@
                         {
                             "id": "174cbf55-6272-4120-a272-56282540a729",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 192.865,
+                            "y": 29.01,
                             "name": "in-0",
                             "alignment": "left",
                             "parentNode": "74a11d96-42da-4080-bd01-a5ac028089c5",
@@ -808,8 +808,8 @@
                         {
                             "id": "61b8c978-a8e9-4e90-996d-5e3c0e871a6e",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 308.823,
+                            "y": 29.01,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "74a11d96-42da-4080-bd01-a5ac028089c5",
@@ -822,8 +822,8 @@
                         {
                             "id": "6b4b9bea-458e-4baa-9d95-79bfd90d0b43",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 308.823,
+                            "y": 45.01,
                             "name": "parameter-out-nn.Module-model",
                             "alignment": "right",
                             "parentNode": "74a11d96-42da-4080-bd01-a5ac028089c5",
@@ -836,8 +836,8 @@
                         {
                             "id": "cd08764b-0338-4cee-a469-e2fbc1a20446",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 308.823,
+                            "y": 61.01,
                             "name": "parameter-out-any-loss_fn",
                             "alignment": "right",
                             "parentNode": "74a11d96-42da-4080-bd01-a5ac028089c5",
@@ -848,8 +848,8 @@
                         {
                             "id": "3985a7da-b15c-41f3-9bc7-61c27d5eacd7",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 308.823,
+                            "y": 77.01,
                             "name": "parameter-out-any-optimizer",
                             "alignment": "right",
                             "parentNode": "74a11d96-42da-4080-bd01-a5ac028089c5",
@@ -883,8 +883,8 @@
                         {
                             "id": "49cb61e6-ab0c-478f-a6f5-acef4b491f8f",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": -146.187,
+                            "y": 244.01,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "c9beb345-23b3-4553-b829-cf32da8f52f4",
@@ -915,8 +915,8 @@
                         {
                             "id": "faa36347-60e7-4093-a2bc-8bc959f167a8",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": -141.24,
+                            "y": 184.01,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "6454ea08-3ce7-4140-b5f5-d2cf66f00b26",
@@ -934,10 +934,10 @@
                         "faa36347-60e7-4093-a2bc-8bc959f167a8"
                     ]
                 },
-                "5c89b360-c3be-4fda-a202-6b4b0095e1db": {
-                    "id": "5c89b360-c3be-4fda-a202-6b4b0095e1db",
+                "86d10ed9-8322-43ae-9912-3a16f2955c61": {
+                    "id": "86d10ed9-8322-43ae-9912-3a16f2955c61",
                     "type": "custom-node",
-                    "selected": true,
+                    "selected": false,
                     "extras": {
                         "type": "string"
                     },
@@ -945,25 +945,25 @@
                     "y": 128.361,
                     "ports": [
                         {
-                            "id": "d11edc46-87bf-434c-96bf-1e397e3d8635",
+                            "id": "956a1874-ebac-43dc-85e9-b7ca8141c22b",
                             "type": "default",
-                            "x": 0,
-                            "y": 0,
+                            "x": 399.719,
+                            "y": 155.49,
                             "name": "out-0",
                             "alignment": "right",
-                            "parentNode": "5c89b360-c3be-4fda-a202-6b4b0095e1db",
+                            "parentNode": "86d10ed9-8322-43ae-9912-3a16f2955c61",
                             "links": [
-                                "16029922-512b-439e-b456-2b30ece91bc0"
+                                "10e7fc2d-23e8-4eda-8f9a-e1f46587bf63"
                             ],
                             "in": false,
-                            "label": "TorchTrainModel.pth"
+                            "label": "examples/TorchTrainModel.pth"
                         }
                     ],
                     "name": "Literal String",
                     "color": "rgb(15,255,255)",
                     "portsInOrder": [],
                     "portsOutOrder": [
-                        "d11edc46-87bf-434c-96bf-1e397e3d8635"
+                        "956a1874-ebac-43dc-85e9-b7ca8141c22b"
                     ]
                 }
             }
