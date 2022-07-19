@@ -117,7 +117,6 @@ class TorchModel(Component):
 
     def execute(self,ctx) -> None:
         
-
         # Define model
         class NeuralNetwork(nn.Module):
             def __init__(self):
@@ -205,6 +204,8 @@ class TestTorchModel(Component):
     test_dataloader: InCompArg[torch.utils.data.DataLoader]
     model: InCompArg[nn.Module]
     loss_fn: InCompArg[any]
+    
+    tested_model: OutArg[nn.Module]
 
     def __init__(self):
         self.done = False
@@ -212,6 +213,8 @@ class TestTorchModel(Component):
         self.test_dataloader = InCompArg(None)
         self.model = InCompArg(None)
         self.loss_fn = InCompArg(None)
+        
+        self.tested_model = OutArg(None)
 
     def execute(self,ctx) -> None:
         
@@ -232,21 +235,142 @@ class TestTorchModel(Component):
         test_loss /= num_batches
         correct /= size
         print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+        
+        self.tested_model.value = model
 
 @xai_component
-class SaveTorchModel(Component):
+class SaveTorchModelState(Component):
 
     model: InCompArg[nn.Module]
-    model_name: InArg[str]
+    model_path: InArg[str]
 
     def __init__(self):
         self.done = False
 
         self.model = InCompArg(None)
-        self.model_name = InArg(None)
+        self.model_path = InArg(None)
 
     def execute(self,ctx) -> None:
         
-        model_name = self.model_name.value if self.model_name.value else os.path.splitext(sys.argv[0])[0] + ".pth"
-        torch.save(self.model.value.state_dict(), model_name)
-        print("Saved PyTorch Model State to " + model_name)
+        model_path = self.model_path.value if self.model_path.value else os.path.splitext(sys.argv[0])[0] + ".pth"
+        torch.save(self.model.value.state_dict(), model_path)
+
+        print("Saved PyTorch Model State to " + model_path)
+
+@xai_component
+class LoadTorchModelState(Component):
+
+    model: InCompArg[nn.Module]
+    model_path: InCompArg[str]
+
+    loaded_model: OutArg[nn.Module]
+
+    def __init__(self):
+
+        self.done = False
+        self.model = InCompArg(None)
+        self.model_path = InCompArg(None)
+
+        self.loaded_model = OutArg(None)
+
+    def execute(self,ctx) -> None:
+
+        model = self.model.value.to(device)
+        model.load_state_dict(torch.load(self.model_path.value))
+
+        self.loaded_model.value = model
+
+@xai_component
+class TorchModelPredict(Component):
+
+    model: InCompArg[nn.Module]
+    test_data: InCompArg[any]
+    class_list: InCompArg[list]
+
+    def __init__(self):
+
+        self.done = False
+        self.model = InCompArg(None)
+        self.test_data = InCompArg(None)
+        self.class_list = InCompArg(None)
+
+    def execute(self,ctx) -> None:
+
+        test_data = self.test_data.value
+        classes = self.class_list.value
+
+        x, y = test_data[0][0], test_data[0][1]
+
+        model = self.model.value
+        model.eval()
+
+        with torch.no_grad():
+            pred = model(x)
+            predicted, actual = classes[pred[0].argmax(0)], classes[y]
+            print(f'Predicted: "{predicted}", Actual: "{actual}"')
+
+
+@xai_component
+class TorchModelPredictFromTensor(Component):
+
+    model: InCompArg[nn.Module]
+    tensor: InCompArg[torch.Tensor]
+    class_list: InCompArg[list]
+
+    def __init__(self):
+
+        self.done = False
+        self.model = InCompArg(None)
+        self.tensor = InCompArg(None)
+        self.class_list = InCompArg(None)
+
+    def execute(self,ctx) -> None:
+
+        classes = self.class_list.value        
+        x = self.tensor.value.to(device)
+        model = self.model.value
+
+        model.eval()
+
+        with torch.no_grad():
+            pred = model(x)
+            predicted = classes[pred[0].argmax(0)]
+            print(f'Predicted: "{predicted}"')
+
+@xai_component
+class Image2TorchTensor(Component):
+
+    img_path: InCompArg[str]
+    resize: InArg[tuple]
+
+    tensor: OutArg[torch.Tensor]
+
+    def __init__(self):
+
+        self.done = False
+        self.img_path = InCompArg(None)
+        self.resize = InArg(None)
+
+        self.tensor = OutArg(None)
+
+    def execute(self,ctx) -> None:
+
+        from torchvision import transforms
+        from PIL import Image
+
+        # mnistFashion expects (1, 28, 28)
+        img = Image.open(self.img_path.value).convert('L')
+        
+        print("Size of the Original image: ", img.size)
+
+        if self.resize.value:
+            transform = transforms.Resize(size = (self.resize.value))
+            img = transform(img)
+            print("Size of the image after resize: ", img.size)
+
+        convert_tensor = transforms.ToTensor()
+        tensor = convert_tensor(img)
+
+        print("Size of the tensor: ", tensor.size())
+
+        self.tensor.value = tensor
