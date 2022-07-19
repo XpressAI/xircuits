@@ -377,7 +377,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                             delayUpdate={50}
                             getContent={() =>
                                 <div data-no-drag className='error-container'>
-                                    <p className='error-text'>{this.props.node.getOptions().extras["tip"]}</p>
+                                    <div className='markdown-body' dangerouslySetInnerHTML={this.renderText(this.props.node.getOptions().extras["tip"])} />
                                     <button
                                         type="button"
                                         className="close"
