@@ -75,6 +75,9 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 			case "boolean":
 				symbolLabel = '⊤⊥';
 				break;
+			case "time.time":
+				symbolLabel = '𝘵';
+				break;
 			case "list":
 				symbolLabel = '[ ]';
 				break;
@@ -87,8 +90,11 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 			case "any":
 				symbolLabel = '[_]';
 				break;
-			default:
+			case "0":
 				symbolLabel = null;
+				break;
+			default:
+				symbolLabel = '◎';
 				break;
 		}
 
