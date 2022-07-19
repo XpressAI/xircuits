@@ -73,9 +73,10 @@ export  class CustomPortModel extends DefaultPortModel  {
         const thisNode = this.getNode();
         const thisNodeModelType = thisNode.getOptions()["extras"]["type"];
         const thisName: string = port.getName();
-        const thisLabel: string = port.getOptions()["label"];
+        const thisLabel: string = "**" + port.getOptions()["label"] + "**";
         const sourcePortName: string = thisPort.getName();
         const thisPortType: string = thisName.split('-')[1];
+        const thisPortTypeText: string = "*`" + thisPortType + "`*";
         const sourcePortType: string = sourcePortName.split('-')[2];
 
         if (this.isParameterNode(thisNodeModelType) == true){
@@ -91,7 +92,7 @@ export  class CustomPortModel extends DefaultPortModel  {
                         return;
                 }
 		        port.getNode().getOptions().extras["borderColor"]="red";
-		        port.getNode().getOptions().extras["tip"]=`Port ${thisLabel} doesn't allow multi-link of (${thisPortType}) type`;
+		        port.getNode().getOptions().extras["tip"]=`Port ${thisLabel} doesn't allow multi-link of ${thisPortTypeText} type`;
                 port.getNode().setSelected(true);
                 return false;
             }
@@ -99,7 +100,7 @@ export  class CustomPortModel extends DefaultPortModel  {
 
             if (!thisName.startsWith("parameter")){
 		        port.getNode().getOptions().extras["borderColor"]="red";
-		        port.getNode().getOptions().extras["tip"]= `Port ${thisLabel} linked is not parameter, please link a non parameter node to it`;
+		        port.getNode().getOptions().extras["tip"]= `Port ${thisLabel} linked is not a parameter, please link a non parameter node to it`;
                 port.getNode().setSelected(true);
                 return false;
             }
@@ -122,7 +123,7 @@ export  class CustomPortModel extends DefaultPortModel  {
                     return;
                 }
 		        port.getNode().getOptions().extras["borderColor"]="red";
-		        port.getNode().getOptions().extras["tip"]= `Port ${thisLabel} linked not correct data type (${result[1]})`;
+		        port.getNode().getOptions().extras["tip"]= `Incorrect data type. Port ${thisLabel} is a type ` + "*`" + result[1] + "`*";
                 port.getNode().setSelected(true);
                 //tested - add stuff
                 return false;
@@ -135,7 +136,7 @@ export  class CustomPortModel extends DefaultPortModel  {
                     return
                 }
 		        port.getNode().getOptions().extras["borderColor"]="red";
-		        port.getNode().getOptions().extras["tip"]= `Port ${thisLabel} is a (${thisPortType}) type, please connect port from (${thisPortType}) type`;
+		        port.getNode().getOptions().extras["tip"]= `Port ${thisLabel} is a ${thisPortTypeText} type, please connect port from ${thisPortTypeText} type`;
                 port.getNode().setSelected(true);
                 return false;
             }else if(Object.keys(port.getLinks()).length > 0){
