@@ -402,7 +402,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                                     offset = leftSidebar.clientWidth + 2;
                                 }
 
-                                newPositionX = newPositionX - 110 + offset + (nodeDimension.x / 2);
+                                newPositionX = newPositionX - 184 + offset + (nodeDimension.x / 2);
                                 newPositionY = newPositionY + 90 + nodeDimension.y;
 
                                 const tooltipPosition = this.props.engine.getRelativePoint(newPositionX, newPositionY);
