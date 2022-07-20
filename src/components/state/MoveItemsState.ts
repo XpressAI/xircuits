@@ -54,6 +54,7 @@ export class MoveItemsState<E extends CanvasEngine = CanvasEngine> extends Abstr
           element.setSelected(true);
           this.engine.repaintCanvas();
           this.initialPosition = element['position'];
+          this.finalPosition = element['position'];
         }
       })
     );
@@ -62,12 +63,10 @@ export class MoveItemsState<E extends CanvasEngine = CanvasEngine> extends Abstr
       new Action({
         type: InputType.MOUSE_UP,
         fire: () => {
-          // When node's position is empty, just return
-          if (this.initialPosition  == null || this.finalPosition == null) return;
           // When node in the same position, just return
           if (
-            this.initialPosition.x === this.finalPosition.x &&
-            this.initialPosition.y === this.finalPosition.y
+            this.initialPosition?.x === this.finalPosition?.x &&
+            this.initialPosition?.y === this.finalPosition?.y
           ) {
             return;
           }
