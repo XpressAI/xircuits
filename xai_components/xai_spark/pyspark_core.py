@@ -2,7 +2,6 @@ from pyspark.sql import SparkSession
 from pyspark.sql import Row
 
 from datetime import datetime, date
-import pandas as pd
 import matplotlib.pyplot as plt
 
 from xai_components.base import InArg, OutArg, Component, xai_component
@@ -248,6 +247,8 @@ class SparkVisualize(Component):
 
 
     def execute(self, ctx) -> None:
+        
+        import pandas as pd
 
         df = self.dataframe.value
         plot_type = self.plot_type.value if self.plot_type.value else "bar"

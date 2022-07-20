@@ -161,7 +161,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [displaySavedAndCompiled, setDisplaySavedAndCompiled] = useState(false);
 	const [displayDebug, setDisplayDebug] = useState(false);
 	const [displayHyperparameter, setDisplayHyperparameter] = useState(false);
-	const [sparkSubmitNodes, setSparkSubmitkNodes] = useState<string>("");
+	const [runConfigs, setRunConfigs] = useState<any>("");
+	const [lastConfig, setLastConfigs] = useState<any>("");
 	const [stringNodes, setStringNodes] = useState<string[]>(["experiment name"]);
 	const [intNodes, setIntNodes] = useState<string[]>([]);
 	const [floatNodes, setFloatNodes] = useState<string[]>([]);
@@ -178,7 +179,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const [runType, setRunType] = useState<string>("run");
-	const [addedArgSparkSubmit, setAddedArgSparkSubmit] = useState<string>("");
+	const [runTypesCfg, setRunTypesCfg] = useState<string>("");
 	const xircuitLogger = new Log(app);
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
@@ -189,11 +190,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			if (contextRef.current.isReady) {
 				let currentModel = xircuitsApp.getDiagramEngine().getModel().serialize();
 				contextRef.current.model.fromString(
-					JSON.stringify(currentModel, null, 4)
+					JSON.stringify(currentModel, replacer, 4)
 				);
 				setSaved(false);
 			}
 		}, []);
+
+	function replacer(key, value) {
+		if (key == "x" || key == "y") return Math.round((value + Number.EPSILON) * 1000) / 1000;
+		return value;
+	}
 
 	useEffect(() => {
 		const currentContext = contextRef.current;
@@ -208,7 +214,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			try {
 				if (notInitialRender.current) {
 					const model: any = currentContext.model.toJSON();
-					let deserializedModel = xircuitsApp.customDeserializeModel(model, xircuitsApp.getDiagramEngine());
+					let deserializedModel = xircuitsApp.customDeserializeModel(model);
 					deserializedModel.registerListener({
 						// Detect changes when node is dropped or deleted
 						nodesUpdated: () => {
@@ -1145,10 +1151,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		context.ready.then(async () => {
 			let runArgs = await handleRunDialog();
 			let runCommand = runArgs["commandStr"];
-			let addArgsSparkSubmit = runArgs["addArgs"];
+			let config = runArgs["config"];
 
 			if (runArgs) {
-				commands.execute(commandIDs.executeToOutputPanel, { runCommand, runType, addArgsSparkSubmit });
+				commands.execute(commandIDs.executeToOutputPanel, { runCommand, runType, config });
 			}
 		})
 	}
@@ -1252,19 +1258,19 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 	};
 
-	async function getConfig(request: string) {
+	async function getRunTypesFromConfig(request: string) {
 		const dataToSend = { "config_request": request };
-
+	
 		try {
-			const server_reply = await requestAPI<any>('get/config', {
+			const server_reply = await requestAPI<any>('config/run', {
 				body: JSON.stringify(dataToSend),
 				method: 'POST',
 			});
-
+	
 			return server_reply;
 		} catch (reason) {
 			console.error(
-				`Error on POST get/config ${dataToSend}.\n${reason}`
+				`Error on POST config/run ${dataToSend}.\n${reason}`
 			);
 		}
 	};
@@ -1604,16 +1610,32 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		alert("Testing");
 	}
 
+	const getRunTypeFromConfig = async () => {
+		const configuration = await getRunTypesFromConfig("RUN_TYPES");
+		const error_msg = configuration["err_msg"];
+		if (error_msg) {
+			showDialog({
+				title: 'Failed parsing data from config.ini',
+				body: (
+					<pre>{error_msg}</pre>
+				),
+				buttons: [Dialog.warnButton({ label: 'OK' })]
+			});
+		}
+		setRunTypesCfg(configuration["run_types"])
+		setRunConfigs(configuration["run_types_config"]);
+	}
+
 	const hideRcDialog = () => {
 		setDisplayRcDialog(false);
 	}
 
 	useEffect(() => {
-		// Only enable added arguments when in 'Spark Submit' mode
-		if (runType == 'spark-submit') {
-			setSparkSubmitkNodes("Added Arguments")
+		// Get run configuration when in 'Remote Run' mode only
+		if (runType == 'remote-run') {
+			getRunTypeFromConfig();
 		} else {
-			setSparkSubmitkNodes("")
+			setRunConfigs("")
 		}
 
 		context.ready.then(() => {
@@ -1654,8 +1676,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			title,
 			body: formDialogWidget(
 				<RunDialog
-					lastAddedArgsSparkSubmit={addedArgSparkSubmit}
-					childSparkSubmitNodes={sparkSubmitNodes}
+					runTypes={runTypesCfg}
+					runConfigs={runConfigs}
+					lastConfig={lastConfig}
 					childStringNodes={stringNodes}
 					childBoolNodes={boolNodes}
 					childIntNodes={intNodes}
@@ -1674,9 +1697,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		let commandStr = ' ';
-		// Added arguments for spark submit
-		let addArgs = dialogResult["value"][sparkSubmitNodes] ?? "";
-		setAddedArgSparkSubmit(addArgs);
+		// Remember the last config chose and set the chosen config to output
+		let config;
+		let runType = dialogResult["value"]['runType'] ?? "";
+		let runConfig = dialogResult["value"]['runConfig'] ?? "";
+		if (runConfigs.length != 0) {
+			runConfigs.map(cfg => {
+				if (cfg.run_type == runType && cfg.run_config_name == runConfig) {
+					config = cfg;
+					setLastConfigs(cfg);
+				}
+			})
+		}
 
 		stringNodes.forEach((param) => {
 			if (param == 'experiment name') {
@@ -1729,8 +1761,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				}
 			});
 		}
-
-		return { commandStr, addArgs };
+		return { commandStr, config };
 	};
 
 
@@ -1806,7 +1837,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	/**Component Panel & Node Action Panel Context Menu */
 	const [isComponentPanelShown, setIsComponentPanelShown] = useState(false);
 	const [actionPanelShown, setActionPanelShown] = useState(false);
-	const [isPanelAtTop, setIsPanelAtTop] = useState<boolean>(true);
+	const [dontHidePanel, setDontHidePanel] = useState(false);
 	const [isPanelAtLeft, setIsPanelAtLeft] = useState<boolean>(true);
 	const [componentPanelPosition, setComponentPanelPosition] = useState({ x: 0, y: 0 });
 	const [actionPanelPosition, setActionPanelPosition] = useState({ x: 0, y: 0 });
@@ -1820,35 +1851,37 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			x: event.pageX,
 			y: event.pageY,
 		};
-		let newActionPanelPosition = {
-			x: event.pageX,
-			y: event.pageY,
-		};
 		const canvas = event.view as any;
 		const newCenterPosition = {
 			x: canvas.innerWidth / 2,
 			y: canvas.innerHeight / 2,
 		}
+		const menuDimension = {
+			x: 95,
+			y: 290
+		}
+		const fileBrowserWidth = document.getElementsByClassName("jp-FileBrowser")['filebrowser'].clientWidth;
+		const tabWidth = document.getElementsByClassName("lm-TabBar")[0].clientWidth;
 		if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
 			// Bottom right
-			setIsPanelAtTop(false);
 			setIsPanelAtLeft(false);
-			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y;
-			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x;
+			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x - tabWidth;
+			newPanelPosition.y = newPanelPosition.y - menuDimension.y - 84;
 		} else if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y < newCenterPosition.y) {
 			// Top right
-			setIsPanelAtTop(true);
 			setIsPanelAtLeft(false);
-			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x;
+			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x - tabWidth;
+			newPanelPosition.y = newPanelPosition.y - 84;
 		} else if (newPanelPosition.x < newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
 			// Bottom left
-			setIsPanelAtTop(false);
 			setIsPanelAtLeft(true);
-			newPanelPosition.y = canvas.innerHeight - newPanelPosition.y;
+			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth;
+			newPanelPosition.y = newPanelPosition.y - menuDimension.y - 84;
 		} else {
 			// Top left
-			setIsPanelAtTop(true);
 			setIsPanelAtLeft(true);
+			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth;
+			newPanelPosition.y = newPanelPosition.y - 84;
 		}
 		setComponentPanelPosition(newPanelPosition);
 		setActionPanelPosition(newPanelPosition);
@@ -1992,52 +2025,58 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					}}
 					onContextMenu={showNodeActionPanel}
 					onClick={(event) => {
-						hidePanel();
 						if (event.ctrlKey || event.metaKey) {
 							showComponentPanel(event);
+							return;
 						}
+						if(dontHidePanel){
+							return;
+						}
+						hidePanel();
 					}}>
 					<DemoCanvasWidget>
 						<CanvasWidget engine={xircuitsApp.getDiagramEngine()} />
+						{/**Add Component Panel(ctrl + left-click, dropped link)*/}
+						{isComponentPanelShown && (
+							<div
+								onMouseEnter={()=>setDontHidePanel(true)}
+								onMouseLeave={()=>setDontHidePanel(false)}
+								id='component-panel'
+								style={{
+									top: componentPanelPosition.y,
+									right: !isPanelAtLeft ? componentPanelPosition.x : null,
+									left: isPanelAtLeft ? componentPanelPosition.x : null
+								}}
+								className="add-component-panel">
+								<ComponentsPanel
+									lab={app}
+									eng={xircuitsApp.getDiagramEngine()}
+									nodePosition={nodePosition}
+									linkData={looseLinkData}
+									isParameter={isParameterLink}
+									key="component-panel"
+								></ComponentsPanel>
+							</div>
+						)}
+						{/**Node Action Panel(left-click)*/}
+						{actionPanelShown && (
+							<div
+								id='context-menu'
+								style={{
+									top: actionPanelPosition.y,
+									right: !isPanelAtLeft ? actionPanelPosition.x : null,
+									left: isPanelAtLeft ? actionPanelPosition.x : null
+								}}
+								className="node-action-context-menu">
+								<NodeActionsPanel
+									app={app}
+									eng={xircuitsApp.getDiagramEngine()}
+									nodePosition={nodePosition}
+								></NodeActionsPanel>
+							</div>
+						)}
 					</DemoCanvasWidget>
 				</Layer>
-				{/**Add Component Panel(right-click)*/}
-				{isComponentPanelShown && (
-					<div
-						style={{ 
-							top: isPanelAtTop ? componentPanelPosition.y : null, 
-							bottom: !isPanelAtTop? componentPanelPosition.y : null, 
-							right: !isPanelAtLeft? componentPanelPosition.x : null, 
-							left: isPanelAtLeft? componentPanelPosition.x : null 
-						}}
-						className="add-component-panel">
-						<ComponentsPanel
-							lab={app}
-							eng={xircuitsApp.getDiagramEngine()}
-							nodePosition={nodePosition}
-							linkData={looseLinkData}
-							isParameter={isParameterLink}
-							key="component-panel"
-						></ComponentsPanel>
-					</div>
-				)}
-				{/**Node Action Panel(ctrl + left-click)*/}
-				{actionPanelShown && (
-					<div
-						style={{ 
-							top: isPanelAtTop? actionPanelPosition.y : null,
-							bottom: !isPanelAtTop? actionPanelPosition.y : null, 
-							right: !isPanelAtLeft? actionPanelPosition.x : null,  
-							left: isPanelAtLeft? actionPanelPosition.x : null 
-						}}
-						className="node-action-context-menu">
-						<NodeActionsPanel
-							app={app}
-							eng={xircuitsApp.getDiagramEngine()}
-							nodePosition={nodePosition}
-						></NodeActionsPanel>
-					</div>
-				)}
 			</Content>
 		</Body>
 	);

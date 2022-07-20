@@ -259,8 +259,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       outputPanel.dispose();
     });
 
-    async function requestToSparkSubmit(path: string, addArgs: string) {
-      const dataToSend = { "currentPath": path, "addArgs": addArgs };
+    async function requestToSparkSubmit(path: string, addCommand: string) {
+      const dataToSend = { "currentPath": path, "addArgs": addCommand };
 
       try {
         const server_reply = await requestAPI<any>('spark/submit', {
@@ -276,6 +276,28 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     };
 
+    function doRemoteRun(path: string, command: string, msg: string, url){
+
+      try {
+        let command_str = command + " " + path;
+        let code_str = "\nfrom subprocess import Popen, PIPE\n\n";
+
+        code_str += `command_str= "${command_str}"\n`;
+        code_str += "p=Popen(command_str, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)\n";
+        code_str += "print('Remote Execution in process...\\n')\n";
+        code_str += `print('Please go to ${url} for more details\\n')\n`;
+        code_str += `print('${msg}\\n')\n`;
+        code_str += "for line in p.stdout:\n";
+        code_str += "    " + "print(line.rstrip())\n\n";
+        code_str += "if p.returncode != 0:\n";
+        code_str += "    " + "print(p.stderr.read())";
+
+        return code_str;
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
     // Execute xircuits python script and display at output panel
     app.commands.addCommand(commandIDs.executeToOutputPanel, {
       execute: async args => {
@@ -285,7 +307,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         const message = typeof args['runCommand'] === 'undefined' ? '' : (args['runCommand'] as string);
         const debug_mode = typeof args['debug_mode'] === 'undefined' ? '' : (args['debug_mode'] as string);
         const runType = typeof args['runType'] === 'undefined' ? '' : (args['runType'] as string);
-        const addArgs = typeof args['addArgsSparkSubmit'] === 'undefined' ? '' : (args['addArgsSparkSubmit'] as string);
+        const config = typeof args['config'] === 'undefined' ? '' : (args['config'] as string);
 
         // Create the panel if it does not exist
         if (!outputPanel || outputPanel.isDisposed) {
@@ -294,25 +316,11 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
         outputPanel.session.ready.then(async () => {
           let code = startRunOutputStr();
-          code += "%run " + model_path + message + debug_mode;
-
-          // Run spark submit when run type is Spark Submit
-          if (runType == 'spark-submit') {
-            const request = await requestToSparkSubmit(model_path, addArgs);
-            const errorMsg = request["stderr"];
-            const outputMsg = request["stdout"];
-            let msg = "";
-
-            // Display the errors if there no output
-            if (outputMsg != 0) {
-              msg = outputMsg;
-            } else {
-              msg = errorMsg;
-            }
-
-            // Display the multi-line message
-            const outputCode = `"""${msg}"""`;
-            code = `print(${outputCode})`;
+          if (runType == 'remote-run') {
+            // Run subprocess when run type is Remote Run
+            code += doRemoteRun(model_path, config['command'], config['msg'], config['url']);
+          } else {
+            code += "%run " + model_path + message + debug_mode
           }
 
           outputPanel.execute(code, xircuitsLogger);

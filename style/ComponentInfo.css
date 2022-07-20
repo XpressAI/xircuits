@@ -13,15 +13,6 @@
     position: relative;
 }
 
-.description-text{
-    text-align: justify;
-    font-family: sans-serif;
-    font-weight: 500;
-    font-size: 12px;
-    white-space: pre-wrap;
-    color: rgb(0, 0, 0);
-}
-
 .description-title{
     text-align: justify;
     font-family: 'Roboto', sans-serif;
