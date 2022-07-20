@@ -550,6 +550,8 @@ export function addNodeActionCommands(
                 case "True":
                 case "False":
                     return;
+                default:
+                    break;
             }
             const newTitle = `Update ${literalType}`;
             const dialogOptions = inputDialog(newTitle, oldValue, literalType, isStoreDataType, isTextareaInput);
