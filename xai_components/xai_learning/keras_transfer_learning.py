@@ -33,6 +33,7 @@ class KerasTransferLearningModel(Component):
         model: compiled model.
         model_config: `dict` model configuration.
     """
+
     base_model_name: InArg[str]
     include_top: InArg[bool]
     weights: InArg[str]
@@ -175,6 +176,20 @@ class TFDataset(Component):
 
 @xai_component(type="train")
 class TrainKerasModel(Component):
+    """Trains a keras model.
+
+    Args:
+        model: compiled model.
+        training data: tensorflow keras model compatible dataset
+        batch_size: `int` or `None`. Number of samples per gradient update.
+        epochs: `int` number of epochs to train the model.
+        kwargs: `dict` optional. Other `tf.model.fit` arguments.
+
+    Returns:
+        trained_model: trained tensoflow keras model.
+        training_metrics: `dict`, training metrics from training history.
+    """
+
     model: InArg[any]
     training_data: InArg[any]
     batch_size: InArg[int]
