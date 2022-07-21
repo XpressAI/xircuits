@@ -16,6 +16,7 @@ def main(args):
     c_3 = TrainKerasModel()
     c_4 = EvaluateAccuracy()
 
+    c_1.dataset_name.value = """imagenet_v2"""
     c_1.batch_size.value = 2
     c_2.base_model_name.value = """MobileNetV2"""
     c_3.model = c_2.model
@@ -23,6 +24,7 @@ def main(args):
     c_3.batch_size.value = 2
     c_3.epochs.value = 2
     c_4.model = c_3.trained_model
+    c_4.eval_dataset = c_1.test_data
 
     c_1.next = c_2
     c_2.next = c_3

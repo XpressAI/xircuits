@@ -8,6 +8,31 @@ from xai_components.base import Component, InArg, OutArg, xai_component
 
 @xai_component(type="model")
 class KerasTransferLearningModel(Component):
+    """Fetch Tensorflow Keras Model by name, for transfer learning.
+
+    Args:
+        base_model_name: `str`, name of model (case sensitive). The
+        base_model_name must be listed here ->
+        https://www.tensorflow.org/api_docs/python/tf/keras/applications#functions_2
+        include_top: `bool`, whether to include the fully connected layers at
+        the top of the network. Defaults to `True`.
+        weights: `str` pretrained weights to use. Defaults to `imagenet`.
+        classes: `int` number of classes to classify imges into, only to be
+        specified if `include_top` is `True`, and if no `weights` argument is
+        specified.
+        classifier_activation: `str` or `callable`. The activation function to
+        use on the "top" layer. Ignored unless `include_top=True`. Set
+        `classifier_activation=None` to return the logits of the "top" layer.
+        When loading pretrained weights, classifier_activation can only be None
+        or "softmax".
+        kwargs: `dict`, optional. Passed to the model class. Please refer to the
+        specific tensorflow keras model documentation for other model specific
+        keyword arguments.
+
+    Returns:
+        model: compiled model.
+        model_config: `dict` model configuration.
+    """
     base_model_name: InArg[str]
     include_top: InArg[bool]
     weights: InArg[str]
@@ -20,7 +45,7 @@ class KerasTransferLearningModel(Component):
 
     def __init__(self):
         self.done = False
-        self.base_model_name = InArg("vgg19")
+        self.base_model_name = InArg.empty()
         self.include_top = InArg(True)
         self.weights = InArg("imagenet")
         self.classes = InArg(1000)
