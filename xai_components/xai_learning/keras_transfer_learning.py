@@ -80,10 +80,28 @@ class KerasTransferLearningModel(Component):
 
 @xai_component()
 class TFDataset(Component):
-    """_summary_
+    """Fetch Tensorflow Dataset by name
 
     Args:
-        Component (_type_): _description_
+        dataset_name: `str`, name of dataset, as listed on
+        https://www.tensorflow.org/datasets/catalog/overview
+        batch_size: `int`, if set, add a batch dimension to the dataset.
+        Defaults to `32`.
+        shuffle_files: `bool`, whether to shuffle the input files. Defaults to
+        `False`.
+        as_supervised: `bool`, if `True`, the returned `tf.data.Dataset` will
+        have a 2-tuple structure `(input, label)` according to
+        `builder.info.supervised_keys`. If `False`, the default, the returned
+        `tf.data.Dataset` will have a dictionary with all the features.
+        kwargs: `dict`, optional. Passes to `tfds.load`. Please refer to the
+        specific tensorflow dataset documentation for other dataset specific
+        keyword arguments.
+
+    Returns:
+        all_data: `dict<key: tfds.Split, value: tf.data.Dataset>`, all available
+        dataset.
+        train_data: `tf.data.Dataset`, train split if available
+        test_data: `tf.data.Dataset`, test split if available
     """
 
     dataset_name: InArg[str]
@@ -98,7 +116,7 @@ class TFDataset(Component):
 
     def __init__(self):
         self.done = False
-        self.dataset_name = InArg("imagenet_v2")
+        self.dataset_name = InArg.empty()
         self.batch_size = InArg(32)
         self.shuffle_files = InArg(False)
         self.as_supervised = InArg(True)
@@ -168,7 +186,10 @@ class TrainKerasModel(Component):
         training_metrics = {}
         for key in train.history.keys():
             training_metrics[key] = {}
-            [training_metrics[key].update({i + 1: v}) for i, v in enumerate(train.history[key])]
+            [
+                training_metrics[key].update({i + 1: v})
+                for i, v in enumerate(train.history[key])
+            ]
 
         self.trained_model.value = model
         self.training_metrics.value = training_metrics
