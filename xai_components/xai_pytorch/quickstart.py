@@ -6,19 +6,29 @@ import sys
 import torch
 from torch import nn
 
-# Get cpu or gpu device for training.
-device = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"Using {device} device")
 @xai_component
 class LoadTorchVisionDataset(Component):
+    """Loads a Torch Vision dataset.
     
-    # https://pytorch.org/vision/stable/datasets.html#built-in-datasets
+    ## Reference:
+    - [Pytorch Vision Datasets](https://pytorch.org/vision/stable/datasets.html#built-in-datasets)
+
+    ### inPorts:
+    - dataset_name: Loads a valid Pytorch Vision dataset, downloads from the 
+    repository if not present in `dataset_dir`. 
+    - dataset_dir: Path to save downloaded Pytorch Vision dataset.
+        Default: `./data`.
+
+    ### outPorts:
+    - training_data: train split of the dataset.
+    - test_data: test split of the dataset.
+    """     
 
     dataset_name: InCompArg[str]
     dataset_dir: InArg[str]
 
-    training_data: OutArg[any]
-    test_data: OutArg[any]
+    training_data: OutArg[torch.utils.data.Dataset]
+    test_data: OutArg[torch.utils.data.Dataset]
 
     def __init__(self):
         self.done = False
@@ -59,12 +69,22 @@ class LoadTorchVisionDataset(Component):
 
 @xai_component
 class TorchDataLoader(Component):
-    
-    # https://pytorch.org/vision/stable/datasets.html#built-in-datasets
+    """Creates data iterators from torch datasets. 
+    To be used with `LoadTorchVisionDataset` component.
 
+    ### inPorts:
+    - training_data: Torch Dataset of training data.
+    - test_data: Torch Dataset of test data.
+    - batch_size: batch size to iterate though.
+        Default: 64
 
-    training_data: InCompArg[any]
-    test_data: InCompArg[any]
+    ### outPorts:
+    - train_dataloader: Dataloader instance for training data.
+    - test_dataloader: Dataloader instance for test data.
+    """
+
+    training_data: InCompArg[torch.utils.data.Dataset]
+    test_data: InCompArg[torch.utils.data.Dataset]
     batch_size: InArg[int]
 
     train_dataloader: OutArg[torch.utils.data.DataLoader]
@@ -84,8 +104,6 @@ class TorchDataLoader(Component):
 
         from torch.utils.data import DataLoader
 
-        # https://pytorch.org/vision/stable/datasets.html#built-in-datasets
-
         batch_size = self.batch_size.value if self.batch_size.value else 64
 
         # Create data loaders.
@@ -103,15 +121,22 @@ class TorchDataLoader(Component):
 
 @xai_component
 class TorchModel(Component):
+    """Creates a custom Torch Model config.
 
-    model: OutArg[nn.Module]
+    ### outPorts:
+    - model: torch nn instance that expects a 28*28 input.
+    - loss_fn: nn.CrossEntropyLoss()
+    - optimizer: torch.optim.SGD(model.parameters(), lr=1e-3)
+    """
+
+    model_config: OutArg[nn.Module]
     loss_fn: OutArg[any]
     optimizer: OutArg[any]
 
     def __init__(self):
         self.done = False
 
-        self.model = OutArg(None)
+        self.model_config = OutArg(None)
         self.loss_fn = OutArg(None)
         self.optimizer = OutArg(None)
 
@@ -135,22 +160,37 @@ class TorchModel(Component):
                 logits = self.linear_relu_stack(x)
                 return logits
 
+        # Get cpu or gpu device for training.
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(f"Using {device} device")
         model = NeuralNetwork().to(device)
         print(model)
 
         loss_fn = nn.CrossEntropyLoss()
         optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
 
-        self.model.value = model
+        self.model_config.value = model
         self.loss_fn.value = loss_fn
         self.optimizer.value = optimizer
 
 
 @xai_component
 class TrainTorchModel(Component):
+    """Trains a Torch model instance from a dataloader. 
 
+    ### inPorts:
+    - train_dataloader: torch dataloader util instance. Ideally from `TorchDataLoader`.
+    - model: torch nn instance.
+    - loss_fn: torch nn loss function.
+    - optimizer: torch model optimizer.
+    - epochs: training epochs. 
+        Default: `5`.
+
+    ### outPorts:
+    - trained_model: trained torch nn instance. 
+    """
     train_dataloader: InCompArg[torch.utils.data.DataLoader]
-    model: InCompArg[nn.Module]
+    model_config: InCompArg[nn.Module]
     loss_fn: InCompArg[any]
     optimizer: InCompArg[any]
     epochs: InArg[int]
@@ -161,7 +201,7 @@ class TrainTorchModel(Component):
         self.done = False
 
         self.train_dataloader = InCompArg(None)
-        self.model = InCompArg(None)
+        self.model_config = InCompArg(None)
         self.loss_fn = InCompArg(None)
         self.optimizer = InCompArg(None)
         self.epochs = InArg(None)
@@ -171,10 +211,13 @@ class TrainTorchModel(Component):
     def execute(self,ctx) -> None:
 
         dataloader = self.train_dataloader.value
-        model = self.model.value
+        model = self.model_config.value
         loss_fn = self.loss_fn.value
         optimizer = self.optimizer.value
         epochs = self.epochs.value if self.epochs.value else 5
+
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(f"Using {device} device")
 
         for t in range(epochs):
             print(f"\nEpoch {t+1}\n-------------------------------")
@@ -200,13 +243,17 @@ class TrainTorchModel(Component):
         self.trained_model.value = model
 @xai_component
 class TestTorchModel(Component):
+    """Tests a Torch model instance from a dataloader. 
 
+    ### inPorts:
+    - test_dataloader: torch dataloader util instance. Ideally from `TorchDataLoader`.
+    - model: torch nn instance. Ideally trained.
+    - loss_fn: torch nn loss function.
+    """
     test_dataloader: InCompArg[torch.utils.data.DataLoader]
     model: InCompArg[nn.Module]
     loss_fn: InCompArg[any]
     
-    tested_model: OutArg[nn.Module]
-
     def __init__(self):
         self.done = False
 
@@ -214,13 +261,15 @@ class TestTorchModel(Component):
         self.model = InCompArg(None)
         self.loss_fn = InCompArg(None)
         
-        self.tested_model = OutArg(None)
-
     def execute(self,ctx) -> None:
         
         dataloader = self.test_dataloader.value
         model = self.model.value
         loss_fn = self.loss_fn.value
+
+        # Get cpu or gpu device for training.
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(f"Using {device} device")
 
         size = len(dataloader.dataset)
         num_batches = len(dataloader)
@@ -236,11 +285,15 @@ class TestTorchModel(Component):
         correct /= size
         print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
         
-        self.tested_model.value = model
-
 @xai_component
 class SaveTorchModelState(Component):
+    """Saves a Torch model's trained state.
 
+    ### inPorts:
+    - model: trained torch nn instance. 
+    - model_path: the filename to be saved as.
+        Default: .xircuits filename + .pth.
+    """
     model: InCompArg[nn.Module]
     model_path: InArg[str]
 
@@ -259,8 +312,16 @@ class SaveTorchModelState(Component):
 
 @xai_component
 class LoadTorchModelState(Component):
+    """Loads a Torch model's state from a previously saved .pth.
 
-    model: InCompArg[nn.Module]
+    ### inPorts:
+    - model_config: torch nn config instance. 
+    - model_path: the saved model path.
+
+    ### outPorts:
+    - loaded_model: torch nn model with loaded state. 
+    """
+    model_config: InCompArg[nn.Module]
     model_path: InCompArg[str]
 
     loaded_model: OutArg[nn.Module]
@@ -268,21 +329,31 @@ class LoadTorchModelState(Component):
     def __init__(self):
 
         self.done = False
-        self.model = InCompArg(None)
+        self.model_config = InCompArg(None)
         self.model_path = InCompArg(None)
 
         self.loaded_model = OutArg(None)
 
     def execute(self,ctx) -> None:
 
-        model = self.model.value.to(device)
+        # Get cpu or gpu device for training.
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(f"Using {device} device")
+
+        model = self.model_config.value.to(device)
         model.load_state_dict(torch.load(self.model_path.value))
 
         self.loaded_model.value = model
 
 @xai_component
 class TorchModelPredict(Component):
+    """Performs a prediction given a Torch model, test_data split, and a class list.
 
+    ### inPorts:
+    - model: trained torch nn instance.
+    - test_data: a torch dataset split. Ideally from `LoadTorchVisionDataset`.
+    - class_list: trained class list.
+    """
     model: InCompArg[nn.Module]
     test_data: InCompArg[any]
     class_list: InCompArg[list]
@@ -310,36 +381,19 @@ class TorchModelPredict(Component):
             print(f'Predicted: "{predicted}", Actual: "{actual}"')
 
 
-@xai_component
-class TorchModelPredictFromTensor(Component):
-
-    model: InCompArg[nn.Module]
-    tensor: InCompArg[torch.Tensor]
-    class_list: InCompArg[list]
-
-    def __init__(self):
-
-        self.done = False
-        self.model = InCompArg(None)
-        self.tensor = InCompArg(None)
-        self.class_list = InCompArg(None)
-
-    def execute(self,ctx) -> None:
-
-        classes = self.class_list.value        
-        x = self.tensor.value.to(device)
-        model = self.model.value
-
-        model.eval()
-
-        with torch.no_grad():
-            pred = model(x)
-            predicted = classes[pred[0].argmax(0)]
-            print(f'Predicted: "{predicted}"')
 
 @xai_component
 class Image2TorchTensor(Component):
+    """Converts an image loaded from path to a torch tensor.
 
+    ### inPorts:
+    - img_path: image path.
+    - resize: tuple with desired tensor dimension.
+        If not provided, will use original image dimensions.
+
+    ### outPorts:
+    - tensor: a torch tensor instance.
+    """
     img_path: InCompArg[str]
     resize: InArg[tuple]
 
@@ -374,3 +428,41 @@ class Image2TorchTensor(Component):
         print("Size of the tensor: ", tensor.size())
 
         self.tensor.value = tensor
+
+@xai_component
+class TorchModelPredictFromTensor(Component):
+    """Performs a prediction given a Torch model, tensor, and a class list.
+    Ideally to be used with `Image2TorchTensor`.
+
+    ### inPorts:
+    - model: trained torch nn instance.
+    - test_data: a torch tensor.
+    - class_list: trained class list.
+    """
+    model: InCompArg[nn.Module]
+    tensor: InCompArg[torch.Tensor]
+    class_list: InCompArg[list]
+
+    def __init__(self):
+
+        self.done = False
+        self.model = InCompArg(None)
+        self.tensor = InCompArg(None)
+        self.class_list = InCompArg(None)
+
+    def execute(self,ctx) -> None:
+
+        # Get cpu or gpu device for training.
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(f"Using {device} device")
+
+        classes = self.class_list.value        
+        x = self.tensor.value.to(device)
+        model = self.model.value
+
+        model.eval()
+
+        with torch.no_grad():
+            pred = model(x)
+            predicted = classes[pred[0].argmax(0)]
+            print(f'Predicted: "{predicted}"')
