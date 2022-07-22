@@ -10,7 +10,7 @@ from torch import nn
 class LoadTorchVisionDataset(Component):
     """Loads a Torch Vision dataset.
     
-    ## Reference:
+    ### Reference:
     - [Pytorch Vision Datasets](https://pytorch.org/vision/stable/datasets.html#built-in-datasets)
 
     ### inPorts:
@@ -250,15 +250,16 @@ class TestTorchModel(Component):
     - model: torch nn instance. Ideally trained.
     - loss_fn: torch nn loss function.
     """
-    test_dataloader: InCompArg[torch.utils.data.DataLoader]
     model: InCompArg[nn.Module]
+    test_dataloader: InCompArg[torch.utils.data.DataLoader]
+
     loss_fn: InCompArg[any]
     
     def __init__(self):
         self.done = False
-
-        self.test_dataloader = InCompArg(None)
+        
         self.model = InCompArg(None)
+        self.test_dataloader = InCompArg(None)
         self.loss_fn = InCompArg(None)
         
     def execute(self,ctx) -> None:
