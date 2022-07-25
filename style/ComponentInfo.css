@@ -37,6 +37,10 @@
     cursor: default;
 }
 
+.error-container{
+    width: 400px;
+}
+
 .error-container .close{
     right: 5px;
 }

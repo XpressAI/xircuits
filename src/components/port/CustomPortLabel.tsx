@@ -36,7 +36,7 @@ namespace S {
 		font-weight: bold;
 		font-size: 9px;
 		font-family: Helvetica, Arial, sans-serif;
-		padding:${(p) => (p.isOutPort ? '3px 0px 0px 2px' : '3px 2px 0px 0px')};
+		padding:${(p) => (p.isOutPort ? '2px 0px 0px 2px' : '2px 2px 0px 0px')};
 	`;
 
 	export const Port = styled.div`
@@ -75,6 +75,9 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 			case "boolean":
 				symbolLabel = '⊤⊥';
 				break;
+			case "time.time":
+				symbolLabel = '𝘵';
+				break;
 			case "list":
 				symbolLabel = '[ ]';
 				break;
@@ -87,8 +90,11 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 			case "any":
 				symbolLabel = '[_]';
 				break;
-			default:
+			case "0":
 				symbolLabel = null;
+				break;
+			default:
+				symbolLabel = '◎';
 				break;
 		}
 
