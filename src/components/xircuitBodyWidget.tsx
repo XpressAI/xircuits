@@ -1604,7 +1604,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			x: 95,
 			y: 290
 		}
-		const fileBrowserWidth = document.getElementsByClassName("jp-FileBrowser")['filebrowser'].clientWidth;
+		const fileBrowserWidth = document.getElementsByClassName("p-SplitPanel-child")[1].clientWidth;
 		const tabWidth = document.getElementsByClassName("lm-TabBar")[0].clientWidth;
 		if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
 			// Bottom right
