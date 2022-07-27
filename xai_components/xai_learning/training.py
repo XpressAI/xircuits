@@ -12,8 +12,8 @@ from pathlib import Path
 class ReadDataSet(Component):
     """Loads a Keras image dataset or creates a dataset from a directory.
     
-    Reference:
-    Keras Model Applications: https://keras.io/api/datasets/
+    ### Reference:
+    - Keras Model Applications: https://keras.io/api/datasets/
 
     ### inPorts:
     - dataset_name: Loads a Keras image dataset given a valid string 
@@ -178,7 +178,9 @@ class FlattenImageData(Component):
 @xai_component
 class TrainTestSplit(Component):
     """Takes a dataset tuple and splits it into train test tuples.
-    Reference: [Scikitlearn Train Test Split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)
+    
+    ### Reference: 
+    - [Scikitlearn Train Test Split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)
 
     ### inPorts:
     - dataset: dataset tuple which contains 
@@ -281,10 +283,10 @@ class Create1DInputModel(Component):
 class Create2DInputModel(Component):
     """Takes a 2D dataset tuple and creates a 2D Keras model.
 
-    inPorts:
+    ### inPorts:
     training_data: dataset tuple which contains 2D numpy array.
     
-    outPorts:
+    ### outPorts:
     model: keras model.
     model_config: keras model config dict. 
         Contains 'lr', 'optimizer_name' and 'loss'.
