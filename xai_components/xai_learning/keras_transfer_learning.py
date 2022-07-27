@@ -5,6 +5,7 @@ import tensorflow.keras.applications as tf_keras_applications
 
 from xai_components.base import Component, InArg, OutArg, xai_component
 
+from tqdm.notebook import tqdm
 
 @xai_component(type="model")
 class KerasTransferLearningModel(Component):
@@ -17,7 +18,13 @@ class KerasTransferLearningModel(Component):
         include_top: `bool`, whether to include the fully connected layers at
         the top of the network. Defaults to `True`.
         weights: `str` pretrained weights to use. Defaults to `imagenet`.
-        classes: `int` number of classes to classify imges into, only to be
+        freeze_all: `bool`, whether to freeze the weights in all layers of the
+        base model. Defaults to `True`.
+        fine_tune_from: `int`, base model layer to fine tune from. Example,
+        setting fine_tune_from=5 for a pretrained model with 25 layers will
+        freeze only the first 5 layers. This will only take effect if freeze_all
+        is set to `False`. Defaults to `0` (freeze_all=True).
+        classes: `int` number of classes to classify images into, only to be
         specified if `include_top` is `True`, and if no `weights` argument is
         specified.
         classifier_activation: `str` or `callable`. The activation function to
@@ -37,6 +44,8 @@ class KerasTransferLearningModel(Component):
     base_model_name: InArg[str]
     include_top: InArg[bool]
     weights: InArg[str]
+    freeze_all: InArg[bool]
+    fine_tune_from: InArg[int]
     classes: InArg[int]
     classifier_activation: InArg[str]
     kwargs: InArg[dict]
@@ -49,6 +58,8 @@ class KerasTransferLearningModel(Component):
         self.base_model_name = InArg.empty()
         self.include_top = InArg(True)
         self.weights = InArg("imagenet")
+        self.freeze_all = InArg(True)
+        self.fine_tune_from = InArg(0)
         self.classes = InArg(1000)
         self.classifier_activation = InArg("softmax")
         self.kwargs = InArg({})
@@ -89,6 +100,22 @@ class KerasTransferLearningModel(Component):
             print(e)
             print("Ensure that the base model name is listed below.\n")
             print(*model_lookup.keys(), sep=", ")
+
+        if self.freeze_all.value:
+            model.trainable = False
+
+        if not self.freeze_all.value and self.fine_tune_from.value > 0:
+            assert self.fine_tune_from.value < len(
+                model.layers
+            ), f"Please ensure that 'fine_tune_from' is lower than the " \
+                f"number of layers in {self.base_model_name.value} model. " \
+                f"{self.base_model_name.value} has {len(model.layers)} " \
+                f"layers, got {self.fine_tune_from.value} as the layer " \
+                "to 'fine_tune_from'"
+
+            model.trainable = True
+            for layer in model.layers[: self.fine_tune_from.value]:
+                layer.trainable = False
 
         model.compile(loss="mse", optimizer="adam", metrics=["accuracy"])
 
