@@ -19,12 +19,12 @@ import { TrayPanel } from './TrayPanel';
 import { TrayItemPanel } from './TrayItemPanel';
 
 export const Body = styled.div`
-  flex-grow: 1;
   display: flex;
   flex-wrap: wrap;
-  min-height: 100%;
   background-color: black;
-  height: 100%;
+  height: 270px;
+  border-top: 10px;
+  border-radius: 12px;
   overflow-y: auto;
 `;
 
@@ -167,7 +167,7 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
 
     return (
         <Body>
-            <Content>
+            <Content onBlur={focusInput}>
                 <TrayPanel>
                     <div>
                         <p className='title-panel'>Add Component</p>
@@ -195,7 +195,7 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
                             })
                         }
                     </div>
-                    <Accordion allowZeroExpanded onBlur={focusInput}>
+                    <Accordion allowZeroExpanded>
                         {
                             category.filter((val) => {
                                 if (searchTerm == "") {

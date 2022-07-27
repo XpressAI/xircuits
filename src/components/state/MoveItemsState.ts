@@ -54,6 +54,7 @@ export class MoveItemsState<E extends CanvasEngine = CanvasEngine> extends Abstr
           element.setSelected(true);
           this.engine.repaintCanvas();
           this.initialPosition = element['position'];
+          this.finalPosition = element['position'];
         }
       })
     );
@@ -64,8 +65,8 @@ export class MoveItemsState<E extends CanvasEngine = CanvasEngine> extends Abstr
         fire: () => {
           // When node in the same position, just return
           if (
-            this.initialPosition.x === this.finalPosition.x &&
-            this.initialPosition.y === this.finalPosition.y
+            this.initialPosition?.x === this.finalPosition?.x &&
+            this.initialPosition?.y === this.finalPosition?.y
           ) {
             return;
           }

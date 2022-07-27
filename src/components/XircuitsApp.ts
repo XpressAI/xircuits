@@ -47,14 +47,14 @@ export class XircuitsApplication {
                 return this.diagramEngine;
         }
 
-        public customDeserializeModel = (modelContext: any, diagramEngine: SRD.DiagramEngine) => {
+        public customDeserializeModel = (modelContext: any) => {
 
                 if (modelContext == null) {
                         // When context empty, just return
                         return;
                 }
 
-                let tempModel = new SRD.DiagramModel();
+                let tempModel = new SRD.DiagramModel({ id: modelContext.id });
                 let links = modelContext["layers"][0]["models"];
                 let nodes = modelContext["layers"][1]["models"];
                 let offsetX = modelContext["offsetX"];
@@ -78,19 +78,17 @@ export class XircuitsApplication {
                                 if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name, true, port.id);
 
                         }
-                        tempModel.addAll(newNode);
-                        diagramEngine.setModel(tempModel);
+                        tempModel.addNode(newNode);
                 }
 
                 for (let linkID in links) {
-
 
                         let link = links[linkID];
 
                         if (link.sourcePort && link.targetPort) {
 
-                                let newLink = new CustomLinkModel();
-                                const newTriangleLink = new TriangleLinkModel();
+                                let newLink = new CustomLinkModel({ id: link.id });
+                                const newTriangleLink = new TriangleLinkModel({ id: link.id });
                                 const sourceNode = tempModel.getNode(link.source);
                                 const targetNode = tempModel.getNode(link.target);
                                 const linkPoints = link.points;
@@ -120,11 +118,11 @@ export class XircuitsApplication {
 
                                 // Set points on link if exist
                                 linkPoints.map((point)=> {
-                                        points.push(new PointModel({ link: link, position: new Point(point.x, point.y) }));
+                                        points.push(new PointModel({ id:point.id, link: link, position: new Point(point.x, point.y) }));
                                 })
                                 newLink.setPoints(points);
-                                tempModel.addAll(newLink);
-                                diagramEngine.setModel(tempModel);
+                                newLink.setSelected(link.selected);
+                                tempModel.addLink(newLink);
                         }
                 }
                 tempModel.setOffsetX(offsetX);
