@@ -1,6 +1,8 @@
 """Components to perform transfer learning using pretrained models from
 Tensorflow Keras, and datasets from Tensorflow Datasets.
 """
+from socket import INADDR_NONE
+from typing import Dict
 import tensorflow.keras.applications as tf_keras_applications
 
 from xai_components.base import Component, InArg, OutArg, xai_component
@@ -260,5 +262,43 @@ class TrainKerasModel(Component):
 
         self.trained_model.value = model
         self.training_metrics.value = training_metrics
+
+        self.done = True
+
+
+@xai_component(type="eval")
+class TFDSEvaluateAccuracy(Component):
+    """Evaluate the accuracy of a Tensorflow Keras model using a Tensorflow
+    dataset (tensorflow.data.Dataset) 
+
+    Args:
+        model: trained tensorflow keras model.
+        eval_dataset: dataset to evaluate. Instance of tensorflow.data.Dataset.
+
+    Returns:
+        metrics: `dict` model loss and accuracy.
+    """
+    model: InArg[any]
+    eval_dataset: InArg[any]
+
+    metrics: OutArg[Dict[str, str]]
+
+    def __init__(self):
+        self.done = False
+        self.model = InArg.empty()
+        self.eval_dataset = InArg.empty()
+        self.metrics = OutArg.empty()
+
+    def execute(self, ctx):
+        
+        (loss, acc) = self.model.value.evaluate(self.eval_dataset.value, verbose=0)
+
+        metrics = {
+            'loss': str(loss),
+            'accuracy': str(acc)
+        }
+        print(metrics)
+
+        self.metrics.value = metrics
 
         self.done = True
