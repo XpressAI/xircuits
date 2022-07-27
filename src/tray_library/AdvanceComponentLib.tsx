@@ -35,8 +35,15 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
             "lineNo": nodeData.lineno
         }
     });
-    node.addInPortEnhance('▶', 'in-0');
-    node.addOutPortEnhance('▶', 'out-0');
+    if (nodeData.type == 'Branch') {
+        node.addInPortEnhance('▶', 'in-0');
+        node.addOutPortEnhance('If True  ▶', 'out-1');
+        node.addOutPortEnhance('If False ▶', 'out-2');
+        node.addOutPortEnhance('Finished ▶', 'out-0');
+    } else {
+        node.addInPortEnhance('▶', 'in-0');
+        node.addOutPortEnhance('▶', 'out-0');
+    }
 
     // TODO: Get rid of the remapping by using compatible type names everywhere
     let type_name_remappings = {

@@ -55,10 +55,7 @@ export  class CustomPortModel extends DefaultPortModel  {
             //console.log("Loop detected.");
             return false;
         }
-        port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-        delete port.getNode().getOptions().extras["tip"];
-        this.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-        delete this.getNode().getOptions().extras["tip"];
+        this.removeErrorTooltip(this, port);
         return true;
     }
 
@@ -147,10 +144,7 @@ export  class CustomPortModel extends DefaultPortModel  {
             }
             //return(!(thisName.startsWith("parameter")) && !(Object.keys(port.getLinks()).length > 0));
         }
-        port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-        delete port.getNode().getOptions().extras["tip"];
-        thisPort.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-        delete thisPort.getNode().getOptions().extras["tip"];
+        this.removeErrorTooltip;
         return true;
     }
 
@@ -175,24 +169,31 @@ export  class CustomPortModel extends DefaultPortModel  {
         let thisNodeModelType = thisNode.getOptions()["extras"]["type"];
 
         if (this.isParameterNode(thisNodeModelType)){
-            port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-            delete port.getNode().getOptions().extras["tip"];
-            thisPort.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-            delete thisPort.getNode().getOptions().extras["tip"];
+            this.removeErrorTooltip;
             return true;
         }
 
         if (!(thisPortLabel.endsWith('▶')) && portLabel != '▶'){
-            port.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-            delete port.getNode().getOptions().extras["tip"];
-            thisPort.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-            delete thisPort.getNode().getOptions().extras["tip"];
+            this.removeErrorTooltip;
             return true;
-        }else{
+        } 
+        else if(thisPortLabel == 'If True  ▶' || thisPortLabel == 'If False ▶' || thisPortLabel == 'Finished ▶'){
+            this.removeErrorTooltip;
+            return (portLabel === '▶' && thisPortLabel.endsWith('If True  ▶') && !(Object.keys(thisPort.getLinks()).length > 1) ||
+            portLabel === '▶' && thisPortLabel.endsWith('If False ▶') && !(Object.keys(thisPort.getLinks()).length > 1) ||
+            portLabel === '▶' && thisPortLabel.endsWith('Finished ▶') && !(Object.keys(thisPort.getLinks()).length > 1));
+        }
+        else{            
             return (portLabel === '▶' && thisPortLabel.endsWith('▶') && !(Object.keys(thisPort.getLinks()).length > 1));
         }
     }
 
+    removeErrorTooltip = (thisPort, port) => {
+        port.getNode().getOptions().extras["borderColor"] = "rgb(0,192,255)";
+        delete port.getNode().getOptions().extras["tip"];
+        thisPort.getNode().getOptions().extras["borderColor"] = "rgb(0,192,255)";
+        delete thisPort.getNode().getOptions().extras["tip"];
+    }
 
     getCircularReplacer = ()=> {
         var seen = [];
@@ -241,7 +242,11 @@ export  class CustomPortModel extends DefaultPortModel  {
                 
                 let portLabel = inPorts[i].getOptions()["label"];
 
-                if (portLabel === "▶"){
+                if (portLabel === "▶" ||
+                    portLabel === 'If True  ▶' ||
+                    portLabel === 'If False ▶' ||
+                    portLabel === 'Finished ▶'
+                ) {
                     let portLink = inPorts[i].getLinks();
                     //check if port has any links
                     if (Object.keys(portLink).length !== 1){
@@ -279,7 +284,11 @@ export  class CustomPortModel extends DefaultPortModel  {
                 
                 let portLabel = outPorts[i].getOptions()["label"];
 
-                if (portLabel === "▶"){
+                if (portLabel === "▶" ||
+                    portLabel === 'If True  ▶' ||
+                    portLabel === 'If False ▶' ||
+                    portLabel === 'Finished ▶'
+                ) {
                     let portLink = outPorts[i].getLinks();
                     //check if port has any links
                     if (Object.keys(portLink).length !== 1){

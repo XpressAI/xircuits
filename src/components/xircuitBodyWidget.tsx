@@ -308,6 +308,36 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return null;
 	}
 
+	const getTargetTrueBranchNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
+		for (let i = 0; i < linkModels.length; i++) {
+			let linkModel = linkModels[i];
+			if (linkModel.getSourcePort().getNode().getID() === sourceId && linkModel.getSourcePort().getOptions()["label"] == 'If True  ▶') {
+				return linkModel.getTargetPort().getNode().getID();
+			}
+		}
+		return null;
+	}
+
+	const getTargetFalseBranchNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
+		for (let i = 0; i < linkModels.length; i++) {
+			let linkModel = linkModels[i];
+			if (linkModel.getSourcePort().getNode().getID() === sourceId && linkModel.getSourcePort().getOptions()["label"] == 'If False ▶') {
+				return linkModel.getTargetPort().getNode().getID();
+			}
+		}
+		return null;
+	}
+
+	const getTargetFinishedBranchNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
+		for (let i = 0; i < linkModels.length; i++) {
+			let linkModel = linkModels[i];
+			if (linkModel.getSourcePort().getNode().getID() === sourceId && linkModel.getSourcePort().getOptions()["label"] == 'Finished ▶') {
+				return linkModel.getTargetPort().getNode().getID();
+			}
+		}
+		return null;
+	}
+
 	const getNodeModelByName = (nodeModels: any[], name: string): NodeModel | null => {
 		for (let i = 0; i < nodeModels.length; i++) {
 			let nodeModel = nodeModels[i];
@@ -330,9 +360,53 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return null;
 	}
 
+	const getTargetNodeFromBranch = (nodeModel) => {
+		let model = xircuitsApp.getDiagramEngine().getModel();
+		let nodeModels = model.getNodes();
+		const trueBranchLink = nodeModel['ports']['out-1']['links'] as any;
+		const falseBranchLink = nodeModel['ports']['out-2']['links'] as any;
+		const getTrueBranchNodeId = getTargetTrueBranchNodeModelId(model.getLinks(), nodeModel.getID());
+		const getFalseBranchNodeId = getTargetFalseBranchNodeModelId(model.getLinks(), nodeModel.getID());
+		const getFinishedBranchNodeId = getTargetFinishedBranchNodeModelId(model.getLinks(), nodeModel.getID());
+		const trueNodeModel = getNodeModelById(nodeModels, getTrueBranchNodeId);
+		const falseNodeModel = getNodeModelById(nodeModels, getFalseBranchNodeId);
+		const finishedNodeModel = getNodeModelById(nodeModels, getFinishedBranchNodeId);
+		let nodeId : string;
+		let tempNodeModel;
+		let falseBranchWorkflow: boolean = false;
+		let onlyFinishedWorkflow: boolean = false;
+
+		if (Object.keys(trueBranchLink).length != 0) {
+			// Set initial node when If True port has nodes
+			nodeId = getTrueBranchNodeId;
+			tempNodeModel = trueNodeModel;
+		}
+		else if (Object.keys(falseBranchLink).length != 0) {
+			// Start If False connection when If True port has no nodes
+			nodeId = getFalseBranchNodeId;
+			tempNodeModel = falseNodeModel;
+			falseBranchWorkflow = true;
+		} else {
+			// When there's no nodes from If True and False port, just run finished port
+			nodeId = getFinishedBranchNodeId;
+			tempNodeModel = finishedNodeModel;
+			onlyFinishedWorkflow = true;
+		}
+		return {nodeId, tempNodeModel, falseBranchWorkflow, onlyFinishedWorkflow}
+	}
+
 	const getAllNodesFromStartToFinish = (): NodeModel[] | null => {
 		let model = xircuitsApp.getDiagramEngine().getModel();
 		let nodeModels = model.getNodes();
+		let branchNodeIds: string[] = [];
+		let falseBranchWorkflow: boolean = false;
+		let onlyFinishedWorkflow: boolean = false;
+		let branchTargetNode: {
+			nodeId: string, 
+			tempNodeModel: any, 
+			falseBranchWorkflow: boolean, 
+			onlyFinishedWorkflow: boolean
+		}
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 		if (startNodeModel == null) {
 			startNodeModel = getNodeModelByName(nodeModels, '🔴Start');
@@ -343,15 +417,72 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			let retNodeModels: NodeModel[] = [];
 			retNodeModels.push(startNodeModel);
 
-			while (getTargetNodeModelId(model.getLinks(), sourceNodeModelId) != null) {
-				let getTargetNode = getTargetNodeModelId(model.getLinks(), sourceNodeModelId)
+			// Iterate through each node 
+			while (getTargetNodeModelId(model.getLinks(), sourceNodeModelId) != null || branchNodeIds.length != 0) {
+				let getTargetNode = getTargetNodeModelId(model.getLinks(), sourceNodeModelId);
+				let getFalseBranchNode = getTargetFalseBranchNodeModelId(model.getLinks(), branchNodeIds[branchNodeIds.length - 1]);
+				let getFinishedBranchNode = getTargetFinishedBranchNodeModelId(model.getLinks(), branchNodeIds[branchNodeIds.length - 1]);
+				let falseBranchNodeModel = getNodeModelById(nodeModels, getFalseBranchNode);
+				let finishBranchNodeModel = getNodeModelById(nodeModels, getFinishedBranchNode);
+
+				const finishedWorkflow = () => {
+					// Remove the last added branch Ids from list
+					branchNodeIds.pop();
+
+					if (finishBranchNodeModel['name'] == 'Branch') {
+						// When the first node at Finished port is Branch, add its Id
+						branchNodeIds.push(finishBranchNodeModel.getID());
+					}
+
+					retNodeModels.push(finishBranchNodeModel);
+					sourceNodeModelId = getFinishedBranchNode;
+					falseBranchWorkflow = false;
+					onlyFinishedWorkflow = false;
+				}
+
+				if (getTargetNode == null && onlyFinishedWorkflow) {
+					// When both If True/False ▶ have no node, just skip
+					branchNodeIds.pop();
+					onlyFinishedWorkflow = false;
+					continue;
+				}
+
+				// False branch
+				if (getTargetNode == null) {
+					if (falseBranchWorkflow || falseBranchNodeModel == null) {
+						// When already when through False branch, go to Finished workflow
+						// When If False ▶ have no node, just skip to Finished
+						finishedWorkflow();
+						continue;
+					}
+					retNodeModels.push(falseBranchNodeModel);
+					sourceNodeModelId = getFalseBranchNode;
+					falseBranchWorkflow = true;
+					continue;
+				}
 
 				if (getTargetNode) {
-					let nodeModel = getNodeModelById(nodeModels, getTargetNode);
+					const nodeModel = getNodeModelById(nodeModels, getTargetNode);
+					let nodeId : string;
+					let tempNodeModel;
+
+					if (nodeModel['extras']['type'] == 'Branch') {
+						branchNodeIds.push(nodeModel.getID());
+						retNodeModels.push(nodeModel);
+
+						branchTargetNode = getTargetNodeFromBranch(nodeModel);
+						nodeId = branchTargetNode.nodeId;
+						tempNodeModel = branchTargetNode.tempNodeModel;
+						falseBranchWorkflow = branchTargetNode.falseBranchWorkflow;
+						onlyFinishedWorkflow = branchTargetNode.onlyFinishedWorkflow;
+						sourceNodeModelId = nodeId;
+						retNodeModels.push(tempNodeModel);
+						continue;
+					}
 
 					if (nodeModel) {
 						sourceNodeModelId = nodeModel.getID();
-						retNodeModels.push(nodeModel)
+						retNodeModels.push(nodeModel);
 					}
 				}
 			}
@@ -368,6 +499,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let nodeModels = model.getNodes();
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 		let pythonCode = 'from argparse import ArgumentParser\n';
+		pythonCode += 'from distutils.util import strtobool\n';
 		pythonCode += 'from datetime import datetime\n';
 		pythonCode += 'from time import sleep\n';
 		if (debuggerMode == true) {
@@ -445,160 +577,260 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		pythonCode += '    ' + 'ctx = {}\n';
 		pythonCode += '    ' + "ctx['args'] = args\n\n";
 
+		let actualNodesNum = 0;
 		for (let i = 0; i < allNodes.length; i++) {
-
+			actualNodesNum++;
 			let nodeType = allNodes[i]["extras"]["type"];
-
+			
 			if (nodeType == 'Start' ||
 				nodeType == 'Finish' ||
 				nodeType === 'boolean' ||
 				nodeType === 'int' ||
 				nodeType === 'float' ||
 				nodeType === 'string') {
-			} else {
-				let bindingName = 'c_' + i;
+				// Skip these type of node
+				actualNodesNum--;
+			}
+			else {
+				let bindingName = 'c_' + actualNodesNum;
 				let componentName = allNodes[i]["name"];
 				componentName = componentName.replace(/\s+/g, "");
 				pythonCode += '    ' + bindingName + ' = ' + componentName + '()\n';
 			}
-
 		}
 
 		pythonCode += '\n';
 
 		if (startNodeModel) {
-			let sourceNodeModelId = startNodeModel.getID();
 			let j = 0;
 
-			while (getTargetNodeModelId(model.getLinks(), sourceNodeModelId) != null) {
-				let targetNodeId = getTargetNodeModelId(model.getLinks(), sourceNodeModelId)
+			for (let i = 0; i < allNodes.length; i++) {
+				j++;
+				let nodeType = allNodes[i]["extras"]["type"];
 
-				if (targetNodeId) {
-
-					let bindingName = 'c_' + ++j;
-					let currentNodeModel = getNodeModelById(nodeModels, targetNodeId);
-					let allPort = currentNodeModel.getPorts();
-					// Reset appending values
-					needAppend.current = "";
-
-					for (let port in allPort) {
-
-						let portIn = allPort[port].getOptions().alignment == 'left';
-
-						if (portIn) {
-							let label = allPort[port].getOptions()["label"];
-							label = label.replace(/\s+/g, "_");
-							label = label.toLowerCase();
-
-							if (label.startsWith("★")) {
-								const newLabel = label.split("★")[1];
-								label = newLabel;
-							}
-
-							if (label == '▶') {
-							} else {
-								let portLinks = allPort[port].getLinks();
-
-								for (let portLink in portLinks) {
-									let sourceNodeName = portLinks[portLink].getSourcePort().getNode()["name"];
-									let sourceNodeType = portLinks[portLink].getSourcePort().getNode().getOptions()["extras"]["type"];
-									let sourceNodeId = portLinks[portLink].getSourcePort().getNode().getOptions()["id"];
-									let sourcePortLabel = portLinks[portLink].getSourcePort().getOptions()["label"];
-									let k = getBindingIndexById(allNodes, sourceNodeId);
-									let preBindingName = 'c_' + k;
-
-									//Get the id of the node of the connected link
-									let linkSourceNodeId = allPort[port]["links"][portLink]["sourcePort"]["parent"]["options"]["id"];
-									let equalSign = ' = ';
-									let sourcePortLabelStructure;
-
-									// When port is 'string', 'list' and 'dict' type 
-									// append values if there's multiple link connected
-									if (port.includes('string') ||
-										port.includes('list') ||
-										port.includes('dict')
-									) {
-										if (needAppend.current == label) {
-											switch (sourceNodeType) {
-												case "dict":
-													equalSign = ' |= '
-													break;
-												default:
-													equalSign = ' += '
-													break;
-											}
-										}
-										needAppend.current = label;
-									}
-
-									if (port.startsWith("parameter")) {
-
-										if (sourceNodeName.startsWith("Literal")) {
-											switch (sourceNodeType) {
-												case "string":
-													sourcePortLabelStructure = '"""' + sourcePortLabel + '"""';
-													break;
-												case "list":
-													sourcePortLabelStructure = "[" + sourcePortLabel + "]";
-													break;
-												case "tuple":
-													sourcePortLabelStructure = "(" + sourcePortLabel + ")";
-													break;
-												case "dict":
-													sourcePortLabelStructure = "{" + sourcePortLabel + "}";
-													break;
-												default:
-													sourcePortLabelStructure = sourcePortLabel;
-													break;
-											}
-											pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + sourcePortLabelStructure + "\n";
-										} else if (linkSourceNodeId == sourceNodeId && !sourceNodeName.startsWith("Hyperparameter")) {
-											// Make sure the node id match between connected link and source node
-											// Skip Hyperparameter Components
-											pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
-										} else {
-											sourcePortLabel = sourcePortLabel.replace(/\s+/g, "_");
-											sourcePortLabel = sourcePortLabel.toLowerCase();
-											sourceNodeName = sourceNodeName.split(": ");
-											let paramName = sourceNodeName[sourceNodeName.length - 1];
-											paramName = paramName.replace(/\s+/g, "_");
-											paramName = paramName.toLowerCase();
-											pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + 'args.' + paramName + '\n';
-										}
-
-									} else {
-										pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
-									}
-								}
-							}
-						} else {
-						}
-
-					}
-
-					if (currentNodeModel) {
-						sourceNodeModelId = currentNodeModel.getID();
-					}
+				if (nodeType == 'Start' ||
+					nodeType == 'Finish' ||
+					nodeType === 'boolean' ||
+					nodeType === 'int' ||
+					nodeType === 'float' ||
+					nodeType === 'string') {
+					// Skip these type of node
+					j--;
+					continue;
 				}
 
+				let bindingName = 'c_' + j;
+				let targetNodeId = allNodes[i].getOptions()['id'];
+				let currentNodeModel = getNodeModelById(nodeModels, targetNodeId);
+				let allPort = currentNodeModel.getPorts();
+				// Reset appending values
+				needAppend.current = "";
+
+				for (let port in allPort) {
+
+					let portIn = allPort[port].getOptions().alignment == 'left';
+
+					if (portIn) {
+						let label = allPort[port].getOptions()["label"];
+						label = label.replace(/\s+/g, "_");
+						label = label.toLowerCase();
+
+						if (label.startsWith("★")) {
+							const newLabel = label.split("★")[1];
+							label = newLabel;
+						}
+
+						if (label == '▶') {
+						} else {
+							let portLinks = allPort[port].getLinks();
+
+							for (let portLink in portLinks) {
+								let sourceNodeName = portLinks[portLink].getSourcePort().getNode()["name"];
+								let sourceNodeType = portLinks[portLink].getSourcePort().getNode().getOptions()["extras"]["type"];
+								let sourceNodeId = portLinks[portLink].getSourcePort().getNode().getOptions()["id"];
+								let sourcePortLabel = portLinks[portLink].getSourcePort().getOptions()["label"];
+								let k = getBindingIndexById(allNodes, sourceNodeId);
+								let preBindingName = 'c_' + k;
+
+								//Get the id of the node of the connected link
+								let linkSourceNodeId = allPort[port]["links"][portLink]["sourcePort"]["parent"]["options"]["id"];
+								let equalSign = ' = ';
+								let sourcePortLabelStructure;
+
+								// When port is 'string', 'list' and 'dict' type 
+								// append values if there's multiple link connected
+								if (port.includes('string') ||
+									port.includes('list') ||
+									port.includes('dict')
+								) {
+									if (needAppend.current == label) {
+										switch (sourceNodeType) {
+											case "dict":
+												equalSign = ' |= '
+												break;
+											default:
+												equalSign = ' += '
+												break;
+										}
+									}
+									needAppend.current = label;
+								}
+
+								if (port.startsWith("parameter")) {
+									if (sourceNodeName.startsWith("Literal")) {
+										switch (sourceNodeType) {
+											case "string":
+												sourcePortLabelStructure = '"""' + sourcePortLabel + '"""';
+												break;
+											case "list":
+												sourcePortLabelStructure = "[" + sourcePortLabel + "]";
+												break;
+											case "tuple":
+												sourcePortLabelStructure = "(" + sourcePortLabel + ")";
+												break;
+											case "dict":
+												sourcePortLabelStructure = "{" + sourcePortLabel + "}";
+												break;
+											default:
+												sourcePortLabelStructure = sourcePortLabel;
+												break;
+										}
+										pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + sourcePortLabelStructure + "\n";
+									} else if (linkSourceNodeId == sourceNodeId && !sourceNodeName.startsWith("Hyperparameter")) {
+										// Make sure the node id match between connected link and source node
+										// Skip Hyperparameter Components
+										pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
+									} else {
+										sourcePortLabel = sourcePortLabel.replace(/\s+/g, "_");
+										sourcePortLabel = sourcePortLabel.toLowerCase();
+										sourceNodeName = sourceNodeName.split(": ");
+										let paramName = sourceNodeName[sourceNodeName.length - 1];
+										paramName = paramName.replace(/\s+/g, "_");
+										paramName = paramName.toLowerCase();
+										pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + 'args.' + paramName + '\n';
+									}
+								} else {
+									pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 
 		pythonCode += '\n';
 
-		for (let i = 0; i < allNodes.length; i++) {
-
+		for (let i = 1; i < allNodes.length; i++) {
 			let nodeType = allNodes[i]["extras"]["type"];
 			let bindingName = 'c_' + i;
 			let nextBindingName = 'c_' + (i + 1);
 
-			if (nodeType == 'Start' || nodeType == 'Finish') {
-			} else if (i == (allNodes.length - 2)) {
+			if (nodeType == 'Start') {
+			} else if (nodeType == 'Finish') {
+				bindingName = 'c_' + (i - 1);
 				pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
-			} else {
+			}
+			else if (nodeType == 'Branch') {
+				let trueBranchLink = allNodes[i]['ports']['out-1']['links'] as any;
+				let falseBranchLink = allNodes[i]['ports']['out-2']['links'] as any;
+				let finishedBranchLink = allNodes[i]['ports']['out-0']['links'] as any;
+
+				const finishedBranchBindingIndex = (finishedBranch?: boolean) => {
+					let branchTargetNodeIndex;
+					let branchBindingName;
+					let isFinish: boolean = false;
+
+					for (let j = 0; j < allNodes.length; j++) {
+						if (!finishedBranch) {
+							// False branch
+							for (let linkID in falseBranchLink) {
+								let falseLink = falseBranchLink[linkID];
+								if (falseLink['targetPort']['parent'].getID() == allNodes[j].getID()) {
+									branchTargetNodeIndex = j;
+								}
+							}
+						} else {
+							// Finished branch
+							for (let linkID in finishedBranchLink) {
+								let finishedLink = finishedBranchLink[linkID];
+								if (finishedLink['targetPort']['parent'].getID() == allNodes[j].getID()) {
+									branchTargetNodeIndex = j;
+								} else if (finishedLink.getTargetPort().getParent()['extras']['type'] === 'Finish') {
+									isFinish = true;
+								}
+							}
+						}
+					}
+					branchBindingName = 'c_' + branchTargetNodeIndex;
+					return {branchBindingName, isFinish};
+				}
+				
+				let finishedBranchBindingName = finishedBranchBindingIndex(true).branchBindingName;
+				let falseBranchBindingName = finishedBranchBindingIndex(false).branchBindingName;
+				// When first node of Finished port is Finish node, end process
+				let isFinish = finishedBranchBindingIndex(true).isFinish;
+
+				if (Object.keys(falseBranchLink).length == 0 && Object.keys(trueBranchLink).length == 0) {
+					if (isFinish) nextBindingName = 'None';
+					// When both If True/False not connected
+					pythonCode += '    ' + bindingName + '.when_true = ' + nextBindingName + '\n';
+					pythonCode += '    ' + bindingName + '.when_false = ' + nextBindingName + '\n';
+				} else if (Object.keys(trueBranchLink).length == 0) {
+					if (isFinish) finishedBranchBindingName = 'None';
+					// When If True have no nodes but If False is connected
+					pythonCode += '    ' + bindingName + '.when_true = ' + finishedBranchBindingName + '\n';
+					pythonCode += '    ' + bindingName + '.when_false = ' + nextBindingName + '\n';
+				} else if (Object.keys(falseBranchLink).length == 0) {
+					if (isFinish) finishedBranchBindingName = 'None';
+					// When If False have no nodes but If True is connected
+					pythonCode += '    ' + bindingName + '.when_true = ' + nextBindingName + '\n';
+					pythonCode += '    ' + bindingName + '.when_false = ' + finishedBranchBindingName + '\n';
+				} 
+				else {
+					pythonCode += '    ' + bindingName + '.when_true = ' + nextBindingName + '\n';
+					pythonCode += '    ' + bindingName + '.when_false = ' + falseBranchBindingName + '\n';
+				}
+			}
+			else {
+				let nodeLink = allNodes[i]['ports']['out-0']['links'];
+				let nextNodeSourceLinks = allNodes[i + 1]['ports']['in-0']['links']
+					
+				// When next node is Finish, just skip
+				if (allNodes[i + 1]['extras']['type'] == 'Finish') continue;
+
+				// Check whether next node is empty
+				if (Object.keys(nodeLink).length == 0) {
+					for (let linkID in nextNodeSourceLinks) {
+						let link = nextNodeSourceLinks[linkID];
+						// Check whether source link is from If False ▶ port
+						if (link['sourcePort'].getOptions()['label'] == 'If False ▶') {
+							let finishedBranchNodeIndex = i;
+							let finishedBranchBindingName;
+							for (let j = i + 1; j < allNodes.length; j++) {
+								let falseBranchNodeLink = allNodes[j]['ports']['out-0']['links'];
+								finishedBranchNodeIndex++;
+								if (Object.keys(falseBranchNodeLink).length == 0) {
+									if (allNodes[j + 1]['extras']['type'] == 'Finish') {
+										// When next node in Finished ▶ port is Finish, just end
+										pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
+										break;
+									}
+									// Stop counting node after port If False ▶ lost connection
+									finishedBranchNodeIndex++;
+									finishedBranchBindingName = 'c_' + finishedBranchNodeIndex;
+									pythonCode += '    ' + bindingName + '.next = ' + finishedBranchBindingName + '\n';
+								break;
+							}
+						}
+						} else if (link['sourcePort'].getOptions()['label'] == 'Finished ▶') {
+							pythonCode += '    ' + bindingName + '.next = ' + nextBindingName + '\n';
+					}
+				}
+					continue;
+			}
 				pythonCode += '    ' + bindingName + '.next = ' + nextBindingName + '\n';
 			}
-
 		}
 
 		if (debuggerMode == true) pythonCode += '    ' + 'debug_mode = args.debug_mode\n';
@@ -724,7 +956,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				for (let i = 0; i < boolNodes.length; i++) {
 					let boolParam = boolNodes[i].replace(/\s+/g, "_");
 					boolParam = boolParam.toLowerCase();
-					pythonCode += '    ' + "parser.add_argument('--" + boolParam + "', default=True, type=bool)\n";
+					pythonCode += '    ' + "parser.add_argument('--" + boolParam + "', dest='" + boolParam + "', type=lambda x: bool(strtobool(x)))\n";
 				}
 			}
 			if (debuggerMode == true) {
@@ -742,22 +974,34 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return pythonCode;
 	}
 
-	const checkAllNodesConnected = (): boolean | null => {
+	const checkBranchFinishedPortConnected = (): boolean | null => {
 		let nodeModels = xircuitsApp.getDiagramEngine().getModel().getNodes();
-
 		for (let i = 0; i < nodeModels.length; i++) {
-			let inPorts = nodeModels[i]["portsIn"];
-			let j = 0;
-			if (inPorts != 0) {
-				if (inPorts[j].getOptions()["label"] == '▶' && Object.keys(inPorts[0].getLinks()).length != 0) {
-					continue
-				} else {
-					nodeModels[i].getOptions().extras["borderColor"] = "red";
-					nodeModels[i].getOptions().extras["tip"] = "Please make sure this node ▶ is properly connected ";
-					nodeModels[i].setSelected(true);
-					return false;
+			let outPorts = nodeModels[i]["portsOut"];
+			let branchNodeType = nodeModels[i]['extras']['type']
+			if (branchNodeType == 'Branch') {
+				if (outPorts[2].getOptions()["label"] == 'Finished ▶' && Object.keys(outPorts[2].getLinks()).length == 0) {
+					// When Finished ▶ has no link, show error tooltip
+						nodeModels[i].getOptions().extras["borderColor"] = "red";
+					nodeModels[i].getOptions().extras["tip"] = "Please make sure this Branch Finished ▶ is properly connected ";
+						nodeModels[i].setSelected(true);
+						return false;
+					}
 				}
 			}
+		return true;
+	}
+
+	const checkAllNodesConnected = (): boolean | null => {
+		let allNodes = getAllNodesFromStartToFinish();
+		let lastNode = allNodes[allNodes.length - 1];
+		
+		if (lastNode['name'] != 'Finish') {
+			// When last node is not Finish node, check failed and show error tooltip
+			lastNode.getOptions().extras["borderColor"] = "red";
+			lastNode.getOptions().extras["tip"] = `Please make sure this ${lastNode['name']} node end with Finish node`;
+			lastNode.setSelected(true);
+			return false;
 		}
 		return true;
 	}
@@ -797,12 +1041,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		let allNodesConnected = checkAllNodesConnected();
-
 		if (!saved) {
 			alert("Please save before compiling.");
 			return;
 		}
+
+		let finishedPortConnected = checkBranchFinishedPortConnected();
+		if (!finishedPortConnected) {
+			alert("Please connect all Branch's Finished port.");
+			return;
+		}
+
+		let allNodesConnected = checkAllNodesConnected();
 
 		if (!allNodesConnected) {
 			alert("Please connect all the nodes before compiling.");
@@ -845,6 +1095,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		// compile
+		let finishedPortConnected = checkBranchFinishedPortConnected();
+		if (!finishedPortConnected) {
+			alert("Please connect all Branch's Finished port.");
+			return;
+		} 
+
 		let allNodesConnected = checkAllNodesConnected();
 		let allCompulsoryNodesConnected = checkAllCompulsoryInPortsConnected();
 
@@ -1476,7 +1732,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (boolNodes) {
 			boolNodes.forEach((param) => {
 				xircuitLogger.info(param + ": " + dialogResult["value"][param]);
-				if (dialogResult["value"][param]) {
+				if (dialogResult["value"][param] != null) {
 					let filteredParam = param.replace(/\s+/g, "_");
 					filteredParam = filteredParam.toLowerCase();
 					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] + ' ';

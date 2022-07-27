@@ -23,7 +23,6 @@ export const RunDialog = ({
 		let newChecked = [...checked];
 		newChecked[i] = e;
 		setChecked(newChecked);
-		console.log("Boolean change: ", checked)
 	};
 
 	/**
@@ -135,7 +134,7 @@ export const RunDialog = ({
 				<div key={`index-${i}`}>{boolNode}
 					<div>
 						<Switch
-							checked={checked[i] || false}
+							checked={checked[i] ?? true}
 							name={boolNode}
 							onChange={(e) => handleChecked(e, i)}
 							handleDiameter={25}

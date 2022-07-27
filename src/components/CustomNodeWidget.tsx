@@ -21,7 +21,7 @@ import { marked } from 'marked';
 
 var S;
 (function (S) {
-    S.Node = styled.div<{ borderColor:string,background: string; selected: boolean;  }>`
+    S.Node = styled.div<{ borderColor: string, background: string; selected: boolean; }>`
 		background-color: ${(p) => p.background};
 		border-radius: 5px;
 		font-family: sans-serif;
@@ -29,7 +29,7 @@ var S;
 		border: solid 2px black;
 		overflow: visible;
 		font-size: 11px;
-		border: solid 2px ${(p) => (p.selected ? (p.borderColor==undefined? 'rgb(0,192,255)': p.borderColor ):'black')};
+		border: solid 2px ${(p) => (p.selected ? (p.borderColor == undefined ? 'rgb(0,192,255)' : p.borderColor) : 'black')};
 	`;
 
     S.Title = styled.div`
@@ -44,18 +44,18 @@ var S;
 		padding: 5px 5px;
 	`;
 
-    S.CommentContainer = styled.div<{ selected: boolean;  }>`
+    S.CommentContainer = styled.div<{ selected: boolean; }>`
         background: rgba(0, 0, 0, 0.3);
         border-radius: 5px;
 		font-family: sans-serif;
 		color: rgb(255, 255, 255);
 		border: solid 2px black;
 		font-size: 12px;
-        border: solid 2px ${(p) => p.selected ? 'rgb(0,192,255)':'black'};
+        border: solid 2px ${(p) => p.selected ? 'rgb(0,192,255)' : 'black'};
         padding: 5px;
     `;
 
-    S.DescriptionName = styled.div<{ color:string }>`
+    S.DescriptionName = styled.div<{ color: string }>`
         color: ${(p) => p.color ?? 'rgb(0, 0, 0)'};
         text-align: justify;
         font-family: 'Roboto', sans-serif;
@@ -93,7 +93,7 @@ export interface DefaultNodeProps {
     node: DefaultNodeModel;
     engine: DiagramEngine;
     app: JupyterFrontEnd;
-    shell : ILabShell;
+    shell: ILabShell;
 }
 
 /**
@@ -105,7 +105,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
     generatePort = (port) => {
         return <CustomPortLabel engine={this.props.engine} port={port} key={port.getID()} node={this.props.node} />;
     };
-    element:Object;
+    element: Object;
     state = {
 
         isTooltipActive: false,
@@ -114,27 +114,27 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         showDescription: false,
         descriptionStr: "",
 
-        imageGalleryItems:[
-        {
-            original: 'https://picsum.photos/id/1018/1000/600/',
-            thumbnail: 'https://picsum.photos/id/1018/250/150/'
-        },
-        {
-            original: 'https://picsum.photos/id/1015/1000/600/',
-            thumbnail: 'https://picsum.photos/id/1015/250/150/'
-        },
-        {
-            original: 'https://picsum.photos/id/1019/1000/600/',
-            thumbnail: 'https://picsum.photos/id/1019/250/150/'
-        },
-       ]
+        imageGalleryItems: [
+            {
+                original: 'https://picsum.photos/id/1018/1000/600/',
+                thumbnail: 'https://picsum.photos/id/1018/250/150/'
+            },
+            {
+                original: 'https://picsum.photos/id/1015/1000/600/',
+                thumbnail: 'https://picsum.photos/id/1015/250/150/'
+            },
+            {
+                original: 'https://picsum.photos/id/1019/1000/600/',
+                thumbnail: 'https://picsum.photos/id/1019/250/150/'
+            },
+        ]
     };
 
     showTooltip() {
-        this.setState({isTooltipActive: true})
+        this.setState({ isTooltipActive: true })
     }
     hideTooltip() {
-        this.setState({isTooltipActive: false})
+        this.setState({ isTooltipActive: false })
     }
     handleClose() {
         let allNodes = this.props.engine.getModel().getNodes();
@@ -162,7 +162,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         })
     }
 
-    handleOnChangeCanvas(){
+    handleOnChangeCanvas() {
         this.props.engine.fireEvent({}, 'onChange');
     }
 
@@ -178,22 +178,22 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
 
     dialogOptions: Partial<Dialog.IOptions<any>> = {
         body: formDialogWidget(
-                <CommentDialog commentInput={this.state.commentInput}/>
+            <CommentDialog commentInput={this.state.commentInput} />
         ),
         buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Submit') })],
-	focusNodeSelector: 'textarea'
+        focusNodeSelector: 'textarea'
     };
 
     /**
      * Allow to edit Comment Component
      */
-    async handleEditComment(){
+    async handleEditComment() {
         let dialogResult = await showFormDialog(this.dialogOptions)
 
         if (dialogResult["button"]["label"] == 'Cancel') {
-			// When Cancel is clicked on the dialog, just return
-			return false;
-		}
+            // When Cancel is clicked on the dialog, just return
+            return false;
+        }
         const newVal = dialogResult["value"]['']
         //  update value both in internal component state
         this.setState({ commentInput: newVal });
@@ -230,11 +230,11 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
     }
 
     // Hide Error Tooltip
-    hideErrorTooltip(){
+    hideErrorTooltip() {
         delete this.props.node.getOptions().extras["tip"];
-        this.props.node.getOptions().extras["borderColor"]="rgb(0,192,255)";
+        this.props.node.getOptions().extras["borderColor"] = "rgb(0,192,255)";
     }
-    
+
     render() {
         if (this.props.node['extras']['type'] == 'comment') {
             return (
@@ -247,7 +247,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                     </div>
                 </S.CommentContainer>
             );
-        } 
+        }
         else if (this.props.node.getOptions()["name"].startsWith('Literal')) {
             return (
                 <S.Node
@@ -416,7 +416,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                 </>
             );
         }
-        else if(this.props.node.getOptions().extras["imageGalleryItems"] != undefined){
+        else if (this.props.node.getOptions().extras["imageGalleryItems"] != undefined) {
             return (
                 <S.Node
                     onMouseEnter={this.showTooltip.bind(this)}
@@ -439,8 +439,8 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                         {/* Get the current image from the node when getting response from API endpoint */}
                         <S.ImageGalleryContainer >
                             <ImageGallery items={this.state.imageGalleryItems} />
-                        {/* <ImageGallery items={this.props.node.getOptions().extras["imageGalleryItems"] || null?}  /> */}
-                        </S.ImageGalleryContainer> 
+                            {/* <ImageGallery items={this.props.node.getOptions().extras["imageGalleryItems"] || null?}  /> */}
+                        </S.ImageGalleryContainer>
 
                         <Pagination
                             totalRecords={100}
@@ -449,7 +449,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                             onPageChanged={this.onPageChanged}
                         />
                     </ToolTip>
-                    
+
                     <S.Title>
                         <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
                     </S.Title>
