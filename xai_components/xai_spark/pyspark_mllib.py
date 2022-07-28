@@ -15,10 +15,10 @@ class SparkSparseVector(Component):
     ### Reference:
     - [Spark Sparse Vector](https://spark.apache.org/docs/latest/api/python/reference/api/pyspark.mllib.linalg.SparseVector.html)
 
-    ### inPorts:
+    ##### inPorts:
     - vector_list: List to turn into sparse vector
 
-    ### outPorts:
+    ##### outPorts:
     - sparse_vector: the converted sparse vector
     """
     vector_list: InCompArg[list]
@@ -53,12 +53,12 @@ class SparkLabeledPoint(Component):
     ### Reference:
     - [Spark Labeled Point](https://spark.apache.org/docs/latest/mllib-data-types.html#labeled-point)
 
-    ### inPorts:
+    ##### inPorts:
     - label: Label for this data point.
     - dense_vector: can be created by supplying a Literal List.
     - sparse_vector: can be passed from the SparkSparseVector component.
 
-    ### outPorts:
+    ##### outPorts:
     - labeled_point: a spark labeled point.
     """
 
@@ -99,11 +99,11 @@ class SparkLoadImageFolder(Component):
     ### Reference:
     - [Spark Image Data Source](https://spark.apache.org/docs/latest/ml-datasource.html#image-data-source)
 
-    ### inPorts:
+    ##### inPorts:
     - in_sparksession: a spark session.
     - folder_path: path of the image directory
 
-    ### outPorts:
+    ##### outPorts:
     - out_sparksession: a spark session.
     - out_dataframe: dataframe that contains the image directory information.
     """
@@ -143,13 +143,13 @@ class SparkSplitDataFrame(Component):
     ### Reference:
     - [Spark DataFrame Random Split](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.randomSplit.html)
 
-    ### inPorts:
+    ##### inPorts:
     - in_dataframe: a Spark DataFrame.
     - train_split: the train split. 
         Default `0.75`.
     - seed: the seed for sampling.
 
-    ### outPorts:
+    ##### outPorts:
     - train_dataframe: the DataFrame that contains the train split.
     - test_dataframe: the DataFrame that contains the test split.
     """
@@ -198,12 +198,12 @@ class SparkSplitDataFrame(Component):
 class SparkLoadLIBSVM(Component):
     """Loads a libsvm file into a dataframe.
 
-    ### inPorts:
+    ##### inPorts:
     - in_sparksession: a spark session.
     - file_input: the path for the libsvm file.
     - options: options for the read.format() config.
 
-    ### outPorts:
+    ##### outPorts:
     - out_sparksession: a spark session.
     - out_dataframe: DataFrame loaded from the libsvm.
     """    
@@ -250,14 +250,14 @@ class SparkLogisticRegression(Component):
     ### Reference:
     - [Spark Logistic Regression](https://spark.apache.org/docs/3.3.0/ml-classification-regression.html#logistic-regression)
     
-    ### inPorts:
+    ##### inPorts:
     - train_dataframe: a Spark dataframe.
     - family: regression mode.
         Default: `auto`. Alternative: `binomial` or `multinomial`.
     - options: Regression parameters. Supply parameters as a Dict. 
         Default: `maxIter`:10, `regParam`:0.3, `elasticNetParam`:0.8
 
-    ### outPorts:
+    ##### outPorts:
     - model: trained Spark regression model.
     """    
     train_dataframe: InCompArg[any]
@@ -309,7 +309,7 @@ class SparkPredict(Component):
     """Performs prediction given a Spark model and a valid corresponding dataset.
     Recommended to use with SparkSplitDataFrame component.
 
-    ### inPorts:
+    ##### inPorts:
     - model: trained Spark  model.
     - test_df: Spark dataframe.
 

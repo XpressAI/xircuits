@@ -15,7 +15,7 @@ class ReadDataSet(Component):
     ### Reference:
     - Keras Model Applications: https://keras.io/api/datasets/
 
-    ### inPorts:
+    ##### inPorts:
     - dataset_name: Loads a Keras image dataset given a valid string 
         (mnist / mnist fasion / cifar10 / cifar 100) OR 
         creates a dataset object when given a valid dataset directory path. 
@@ -27,7 +27,7 @@ class ReadDataSet(Component):
                 |- CLASS_2
                 |- CLASS_3
         
-    ### outPorts:
+    ##### outPorts:
     - dataset: a dataset tuple
     - class_dict: dict of classes if not using IMAGENET.
     """  
@@ -149,10 +149,10 @@ class FlattenImageData(Component):
     """Takes a 2D dataset tuple from the ReadDataSet component  
     that contains tuple and flattens it to 1D. 
 
-    ### inPorts:
+    ##### inPorts:
     - dataset: 2D dataset tuple from the ReadDataSet component.
 
-    ### outPorts:
+    ##### outPorts:
     - resized_dataset: 1D tuple dataset object.
     """  
 
@@ -182,7 +182,7 @@ class TrainTestSplit(Component):
     ### Reference: 
     - [Scikitlearn Train Test Split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)
 
-    ### inPorts:
+    ##### inPorts:
     - dataset: dataset tuple which contains 
     - train_split: float ratio of the train split. Default `0.75`.
     - random_state: seed for random state. Default `None`.
@@ -190,7 +190,7 @@ class TrainTestSplit(Component):
     - stratify: Data is split in a stratified fashion, using this as the class labels. 
         Default `None`.
 
-    ### outPorts:
+    ##### outPorts:
     - train: tuple that contains the train split of the dataset.
     - test:tuple that contains the test split of the dataset.
     - resized_dataset: 1D tuple object.
@@ -283,10 +283,10 @@ class Create1DInputModel(Component):
 class Create2DInputModel(Component):
     """Takes a 2D dataset tuple and creates a 2D Keras model.
 
-    ### inPorts:
+    ##### inPorts:
     training_data: dataset tuple which contains 2D numpy array.
     
-    ### outPorts:
+    ##### outPorts:
     model: keras model.
     model_config: keras model config dict. 
         Contains 'lr', 'optimizer_name' and 'loss'.
@@ -346,12 +346,12 @@ class Create2DInputModel(Component):
 class TrainImageClassifier(Component):
     """Trains a Keras model for image classification.
 
-    ### inPorts:
+    ##### inPorts:
     - model: a Keras model object.
     - training_data: a dataset tuple with (X (data), Y (label)).
     - training_epochs: number of training epochs. Default `1`.
 
-    ### outPorts:
+    ##### outPorts:
     - trained_model: trained Keras model config.
     - training_metrics: dict which contains results of training.
     """
@@ -399,11 +399,11 @@ class TrainImageClassifier(Component):
 class EvaluateAccuracy(Component):
     """Evaluates a Keras model against a dataset
 
-    ### inPorts:
+    ##### inPorts:
     - model: a Keras model object.
     - eval_dataset: a dataset tuple with (X (data), Y (label)).
 
-    ### outPorts:
+    ##### outPorts:
     - metrics: dict which contains results of evaluation.
 
     """
@@ -435,12 +435,12 @@ class EvaluateAccuracy(Component):
 class ShouldStop(Component):
     """Checks whether model evaluation has reached targeted accuracy.
 
-    ### inPorts:
+    ##### inPorts:
     - target_accuracy: the targeted accuracy in floats.
     - max_retries: the number of attempted tries. Default `1`.
     - metrics: dict that contains results of.
 
-    ### outPorts:
+    ##### outPorts:
     - should_retrain: True if targeted accuracy not reached.
     
     """
@@ -482,11 +482,11 @@ class ShouldStop(Component):
 class SaveKerasModel(Component):
     """Saves current Keras model.
 
-    ### inPorts:
+    ##### inPorts:
     - model: a Keras model.
     - model_name: name to save the Keras model. Default is the .xircuits file name.
 
-    ### outPorts:
+    ##### outPorts:
     - model_h5_path: path of the generated .h5 model.
     
     """

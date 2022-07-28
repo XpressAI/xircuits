@@ -22,7 +22,7 @@ class HelloComponent(Component):
 class HelloHyperparameter(Component):
     """A component that changes the print message depending on the supplied parameter.
 
-    ### inPorts:
+    ##### inPorts:
     - input_str: try connecting a Literal String or Hyperparameter String.
     """
     input_str: InArg[str]
@@ -42,7 +42,7 @@ class CompulsoryHyperparameter(Component):
     """A component that uses Compulsory inPorts. 
      Users must fill all compulsory ports to compile and run the canvas.
 
-    ### inPorts:
+    ##### inPorts:
     - input_str: an optional String port.
     - comp_str: a compulsory String port.
     - comp_int: a compulsory Integer port.
@@ -73,7 +73,7 @@ class CompulsoryHyperparameter(Component):
 class HelloListTupleDict(Component):
     """A component that accepts list, tuple, and dict data types.
 
-    ### inPorts:
+    ##### inPorts:
     - input_list: a list port.
     - input_tuple: a tuple port.
     - input_dict: a dict port.
@@ -112,7 +112,7 @@ class HelloContext(Component):
     ### Reference:
     - [Xircuits Content](https://xircuits.io/docs/technical-concepts/xircuits-context)
 
-    ### inPorts:
+    ##### inPorts:
     - context_dict: a dict to add to the ctx.
         Default: `{"new ctx": "Hello Xircuits!"}`
     """
@@ -138,7 +138,7 @@ class AddImport(Component):
     """A special component that adds lines to the generated script header.
     Typically used to add imports.
 
-    ### inPorts:
+    ##### inPorts:
     import_str: provided string will be converted to a line in the script header.
     
     #### Example:

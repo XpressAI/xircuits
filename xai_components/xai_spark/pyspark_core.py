@@ -17,7 +17,7 @@ os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
 class xSparkSession(Component):
     """Instantiates a Spark Session.
   
-    ### inPorts:
+    ##### inPorts:
     - master: Cluster URL to connect to (e.g. mesos://host:port, spark://host:port, local[4]). 
         Default `local`.
     - appname: A name for your job, to display on the cluster web UI.
@@ -25,7 +25,7 @@ class xSparkSession(Component):
     - config: Runtime configuration interface for Spark.
         Default `" "`.
 
-    ### outPorts:
+    ##### outPorts:
     - sparksession: A spark session instance.
     """
 
@@ -66,11 +66,11 @@ class xSparkSession(Component):
 class SparkReadPandas(Component):
     """Creates a Spark df from a pandas df.
   
-    ### inPorts:
+    ##### inPorts:
     - in_sparksession: A spark session.
     - pandas_dataframe: pandas dataframe.
 
-    ### outPorts:
+    ##### outPorts:
     - out_sparksession: A spark session.
     - out_dataframe: A spark dataframe.
     """
@@ -107,11 +107,11 @@ class SparkReadFile(Component):
     """Reads a Spark supported file format (json / csv / parquet / orc ) 
     and outputs a Spark dataframe.
 
-    ### inPorts:
+    ##### inPorts:
     - in_sparksession: A spark session.
     - file_input: a Spark supported file format (json / csv / parquet / orc ) filepath.
 
-    ### outPorts:
+    ##### outPorts:
     - out_sparksession: A spark session.
     - out_dataframe: A spark dataframe.
     """
@@ -163,13 +163,13 @@ class SparkReadFile(Component):
 class SparkReadCSV(Component):
     """Reads a csv and outputs a Spark dataframe.
 
-    ### inPorts:
+    ##### inPorts:
     - in_sparksession: a spark session.
     - file_input: a csv filepath.
     - separator: the data separator in csv. Default `,`.
     - header: bool whether csv has headers. Default `True`.
 
-    ### outPorts:
+    ##### outPorts:
     - out_sparksession: A spark session.
     - out_dataframe: A spark dataframe.
     """
@@ -213,13 +213,13 @@ class SparkReadCSV(Component):
 class SparkWriteFile(Component):
     """Writes a Spark dataframe to disk in supported output format (csv / parquet / orc).
 
-    ### inPorts:
+    ##### inPorts:
     - dataframe: A Spark dataframe.
     - output_name: desired output name. The format will be inferred from the extension.
         Currently supports `csv` / `parquet` / `orc` file format.
     - header: bool whether csv has headers. Default `True`.
 
-    ### outPorts:
+    ##### outPorts:
     - out_sparksession: A spark session.
     """
     dataframe: InCompArg[any]
@@ -257,13 +257,13 @@ class SparkWriteFile(Component):
 class SparkSQL(Component):
     """Performs a SparkSQL query to obtain a Spark dataframe.
 
-    ### inPorts:
+    ##### inPorts:
     - in_sparksession: A spark session.
     - dataframe: a Spark dataframe.
     - sql_string: a SQL query to be performed on the dataframe.
     - table_name: specify a table name is already created by createOrReplaceTempView.
 
-    ### outPorts:
+    ##### outPorts:
     - out_sparksession: A spark session.
     - sql_dataframe: the Spark dataframe obtained from the SQL query.
     """
@@ -313,7 +313,7 @@ class SparkSQL(Component):
 class SparkVisualize(Component):
     """Visualizes a Spark dataframe.
 
-    ### inPorts:
+    ##### inPorts:
     - dataframe: a Spark dataframe.
     - plot_type: the type of plot to be generated. Currently support `bar`, `scatter` and `line` plots. 
         Default `bar` chart.

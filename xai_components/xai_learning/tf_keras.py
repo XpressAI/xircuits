@@ -11,7 +11,7 @@ class LoadKerasModel(Component):
     ## Reference:
     - [Keras Model Applications](https://keras.io/api/applications/)
 
-    ### inPorts:
+    ##### inPorts:
     - model_name: A Keras model instance.
     - include_top: whether to include the fully-connected
         layer at the top of the network.
@@ -44,7 +44,7 @@ class LoadKerasModel(Component):
     - args: additional arguments that may configure the Keras model 
         instance behaviour, but not included as inPorts. 
 
-    ### outPorts:
+    ##### outPorts:
     - model: A Keras model instance.
     """    
     model_name: InCompArg[str]
@@ -95,7 +95,7 @@ class KerasPredict(Component):
     ### Reference:
     - [Keras Model Applications](https://keras.io/api/applications/)
 
-    ### inPorts:
+    ##### inPorts:
     - model: A Keras model instance.
     - img_string: an image path.
     - class_list: list of classes if not using IMAGENET.
@@ -236,7 +236,7 @@ class ResNet50(Component):
     - [Deep Residual Learning for Image Recognition](
         https://arxiv.org/abs/1512.03385) (CVPR 2015)
 
-    ### inPorts:
+    ##### inPorts:
     - include_top: whether to include the fully-connected
         layer at the top of the network.
     - weights: one of `None` (random initialization),
@@ -266,7 +266,7 @@ class ResNet50(Component):
         into, only to be specified if `include_top` is True, and
         if no `weights` argument is specified.
 
-    ### outPorts:
+    ##### outPorts:
     - model: A Keras model instance.
     """
     include_top: InArg[bool]
@@ -318,7 +318,7 @@ class ResNet101(Component):
     - [Deep Residual Learning for Image Recognition](
         https://arxiv.org/abs/1512.03385) (CVPR 2015)
 
-    ### inPorts:
+    ##### inPorts:
     - include_top: whether to include the fully-connected
         layer at the top of the network.
     - weights: one of `None` (random initialization),
@@ -348,7 +348,7 @@ class ResNet101(Component):
         into, only to be specified if `include_top` is True, and
         if no `weights` argument is specified.
 
-    ### outPorts:
+    ##### outPorts:
     - model: A Keras model instance.
     """
     include_top: InArg[bool]
@@ -401,7 +401,7 @@ class ResNet152(Component):
     - [Deep Residual Learning for Image Recognition](
         https://arxiv.org/abs/1512.03385) (CVPR 2015)
 
-    ### inPorts:
+    ##### inPorts:
     - include_top: whether to include the fully-connected
         layer at the top of the network.
     - weights: one of `None` (random initialization),
@@ -431,7 +431,7 @@ class ResNet152(Component):
         into, only to be specified if `include_top` is True, and
         if no `weights` argument is specified.
 
-    ### outPorts:
+    ##### outPorts:
     - model: A Keras model instance.
     """
     include_top: InArg[bool]
@@ -500,7 +500,7 @@ class VGG16(Component):
     - [Very Deep Convolutional Networks for Large-Scale Image Recognition](
     https://arxiv.org/abs/1409.1556) (ICLR 2015)
 
-    ### inPorts:
+    ##### inPorts:
     - include_top: whether to include the 3 fully-connected
         layers at the top of the network.
     - weights: one of `None` (random initialization),
@@ -537,7 +537,7 @@ class VGG16(Component):
         When loading pretrained weights, `classifier_activation` can only
         be `None` or `"softmax"`.
 
-    ### outPorts:
+    ##### outPorts:
     - model: A Keras model instance.
     """
     include_top: InArg[bool]
@@ -591,7 +591,7 @@ class VGG19(Component):
     - [Very Deep Convolutional Networks for Large-Scale Image Recognition](
         https://arxiv.org/abs/1409.1556) (ICLR 2015)
 
-    ### inPorts:
+    ##### inPorts:
     - include_top: whether to include the 3 fully-connected
         layers at the top of the network.
     - weights: one of `None` (random initialization),
@@ -628,7 +628,7 @@ class VGG19(Component):
         When loading pretrained weights, `classifier_activation` can only
         be `None` or `"softmax"`.
 
-    ### outPorts:
+    ##### outPorts:
     - model: A Keras model instance.
     """
     include_top: InArg[bool]
@@ -681,7 +681,7 @@ class Xception(Component):
     - [Xception: Deep Learning with Depthwise Separable Convolutions](
         https://arxiv.org/abs/1610.02357) (CVPR 2017)
 
-    ### inPorts:
+    ##### inPorts:
     - include_top: whether to include the fully-connected
         layer at the top of the network.
     - weights: one of `None` (random initialization),
@@ -716,7 +716,7 @@ class Xception(Component):
         When loading pretrained weights, `classifier_activation` can only
         be `None` or `"softmax"`.
 
-    ### outPorts:
+    ##### outPorts:
     - model: A Keras model instance.
     """
 
@@ -802,7 +802,7 @@ class MobileNet(Component):
     This component returns a Keras image classification model,
     optionally loaded with weights pre-trained on ImageNet.
 
-    ### inPorts:
+    ##### inPorts:
     - input_shape: Optional shape tuple, only to be specified if `include_top`
         is False (otherwise the input shape has to be `(224, 224, 3)` (with
         `channels_last` data format) or (3, 224, 224) (with `channels_first`
@@ -846,7 +846,7 @@ class MobileNet(Component):
         be `None` or `"softmax"`.
     - **kwargs: For backwards compatibility only.
 
-    ### outPorts:
+    ##### outPorts:
     - model: A Keras model instance.
     """
     input_shape: InArg[any]

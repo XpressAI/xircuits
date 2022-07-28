@@ -13,13 +13,13 @@ class LoadTorchVisionDataset(Component):
     ### Reference:
     - [Pytorch Vision Datasets](https://pytorch.org/vision/stable/datasets.html#built-in-datasets)
 
-    ### inPorts:
+    ##### inPorts:
     - dataset_name: Loads a valid Pytorch Vision dataset, downloads from the 
     repository if not present in `dataset_dir`. 
     - dataset_dir: Path to save downloaded Pytorch Vision dataset.
         Default: `./data`.
 
-    ### outPorts:
+    ##### outPorts:
     - training_data: train split of the dataset.
     - test_data: test split of the dataset.
     """     
@@ -72,13 +72,13 @@ class TorchDataLoader(Component):
     """Creates data iterators from torch datasets. 
     To be used with `LoadTorchVisionDataset` component.
 
-    ### inPorts:
+    ##### inPorts:
     - training_data: Torch Dataset of training data.
     - test_data: Torch Dataset of test data.
     - batch_size: batch size to iterate though.
         Default: 64
 
-    ### outPorts:
+    ##### outPorts:
     - train_dataloader: Dataloader instance for training data.
     - test_dataloader: Dataloader instance for test data.
     """
@@ -123,7 +123,7 @@ class TorchDataLoader(Component):
 class TorchModel(Component):
     """Creates a custom Torch Model config.
 
-    ### outPorts:
+    ##### outPorts:
     - model: torch nn instance that expects a 28*28 input.
     - loss_fn: nn.CrossEntropyLoss()
     - optimizer: torch.optim.SGD(model.parameters(), lr=1e-3)
@@ -178,7 +178,7 @@ class TorchModel(Component):
 class TrainTorchModel(Component):
     """Trains a Torch model instance from a dataloader. 
 
-    ### inPorts:
+    ##### inPorts:
     - train_dataloader: torch dataloader util instance. Ideally from `TorchDataLoader`.
     - model: torch nn instance.
     - loss_fn: torch nn loss function.
@@ -186,7 +186,7 @@ class TrainTorchModel(Component):
     - epochs: training epochs. 
         Default: `5`.
 
-    ### outPorts:
+    ##### outPorts:
     - trained_model: trained torch nn instance. 
     """
     train_dataloader: InCompArg[torch.utils.data.DataLoader]
@@ -245,7 +245,7 @@ class TrainTorchModel(Component):
 class TestTorchModel(Component):
     """Tests a Torch model instance from a dataloader. 
 
-    ### inPorts:
+    ##### inPorts:
     - test_dataloader: torch dataloader util instance. Ideally from `TorchDataLoader`.
     - model: torch nn instance. Ideally trained.
     - loss_fn: torch nn loss function.
@@ -290,7 +290,7 @@ class TestTorchModel(Component):
 class SaveTorchModelState(Component):
     """Saves a Torch model's trained state.
 
-    ### inPorts:
+    ##### inPorts:
     - model: trained torch nn instance. 
     - model_path: the filename to be saved as.
         Default: .xircuits filename + .pth.
@@ -315,11 +315,11 @@ class SaveTorchModelState(Component):
 class LoadTorchModelState(Component):
     """Loads a Torch model's state from a previously saved .pth.
 
-    ### inPorts:
+    ##### inPorts:
     - model_config: torch nn config instance. 
     - model_path: the saved model path.
 
-    ### outPorts:
+    ##### outPorts:
     - loaded_model: torch nn model with loaded state. 
     """
     model_config: InCompArg[nn.Module]
@@ -350,7 +350,7 @@ class LoadTorchModelState(Component):
 class TorchModelPredict(Component):
     """Performs a prediction given a Torch model, test_data split, and a class list.
 
-    ### inPorts:
+    ##### inPorts:
     - model: trained torch nn instance.
     - test_data: a torch dataset split. Ideally from `LoadTorchVisionDataset`.
     - class_list: trained class list.
@@ -387,12 +387,12 @@ class TorchModelPredict(Component):
 class Image2TorchTensor(Component):
     """Converts an image loaded from path to a torch tensor.
 
-    ### inPorts:
+    ##### inPorts:
     - img_path: image path.
     - resize: tuple with desired tensor dimension.
         If not provided, will use original image dimensions.
 
-    ### outPorts:
+    ##### outPorts:
     - tensor: a torch tensor instance.
     """
     img_path: InCompArg[str]
@@ -435,7 +435,7 @@ class TorchModelPredictFromTensor(Component):
     """Performs a prediction given a Torch model, tensor, and a class list.
     Ideally to be used with `Image2TorchTensor`.
 
-    ### inPorts:
+    ##### inPorts:
     - model: trained torch nn instance.
     - test_data: a torch tensor.
     - class_list: trained class list.

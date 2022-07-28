@@ -9,7 +9,7 @@ import time
 class ZipDirectory(Component):
     """Zips a directory.
     
-    ### inPorts:
+    ##### inPorts:
     - zip_fn: the Zip filename.
         Default: .xircuits canvas name.
     - dir_name: the directory to be zipped.
@@ -95,7 +95,7 @@ class ZipDirectory(Component):
 class DeleteFile(Component):
     """Deletes a file.
     
-    ### inPorts:
+    ##### inPorts:
     - filename: path to file to be deleted.
     """
     filename: InCompArg[str]
@@ -120,12 +120,12 @@ class DeleteFile(Component):
 class TimerComponent(Component):
     """Chain multiple instances of this component to measure elapsed time. 
     
-    ### inPorts:
+    ##### inPorts:
     - in_timer: if provided will measure the elapsed time since last called.
         if not provided, will start a new timer.
     - timer_message: a log message to be printed. 
 
-    ### outPorts:
+    ##### outPorts:
     - out_timer: passes current timer to the next TimerComponent. 
     - elapsed_time: the elapsed time in seconds.
     """
@@ -167,7 +167,7 @@ class TimerComponent(Component):
 class SleepComponent(Component):
     """Pauses the python process.
     
-    ### inPorts:
+    ##### inPorts:
     - sleep_timer: the number of seconds to pause.
         Default `5.0` seconds.
     """    
