@@ -14,40 +14,43 @@ from xai_components.base import Component, InArg, OutArg, xai_component
 class KerasTransferLearningModel(Component):
     """Fetch Tensorflow Keras Model by name, for transfer learning.
 
-    Args:
-        base_model_name: `str`, name of model (case sensitive). The
-        base_model_name must be listed here ->
-        https://www.tensorflow.org/api_docs/python/tf/keras/applications#functions_2
-        include_top: `bool`, whether to include the fully connected layers at
-        the top of the network. Defaults to `True`.
-        weights: `str` pretrained weights to use. Defaults to `imagenet`.
-        input_shape: `tuple` optional shape tuple, only to be specified if
-        include_top is False (otherwise the input shape has to be (224, 224, 3)
-        (with channels_last data format) or (3, 224, 224) (with channels_first
-        data format). It should have exactly 3 input channels, and width and
-        height should be no smaller than 32. E.g. (200, 200, 3) would be one
-        valid value.
-        freeze_all: `bool`, whether to freeze the weights in all layers of the
-        base model. Defaults to `True`.
-        fine_tune_from: `int`, base model layer to fine tune from. Example,
-        setting fine_tune_from=5 for a pretrained model with 25 layers will
-        freeze only the first 5 layers. This will only take effect if freeze_all
-        is set to `False`. Defaults to `0` (freeze_all=True).
-        classes: `int` number of classes to classify images into, only to be
-        specified if `include_top` is `True`, and if no `weights` argument is
-        specified.
-        classifier_activation: `str` or `callable`. The activation function to
-        use on the "top" layer. Ignored unless `include_top=True`. Set
-        `classifier_activation=None` to return the logits of the "top" layer.
-        When loading pretrained weights, classifier_activation can only be None
-        or "softmax".
-        kwargs: `dict`, optional. Passed to the model class. Please refer to the
-        specific tensorflow keras model documentation for other model specific
-        keyword arguments.
+    #### Reference:
+    - [Keras Application
+    Functions](https://www.tensorflow.org/api_docs/python/tf/keras/applications#functions_2)
 
-    Returns:
-        model: compiled model.
-        model_config: `dict` model configuration.
+    #### inPorts:
+    - base_model_name: `str`, name of model (case sensitive). The
+    base_model_name must be listed under the functions [here](https://www.tensorflow.org/api_docs/python/tf/keras/applications#functions_2)
+    - include_top: `bool`, whether to include the fully connected layers at
+    the top of the network. Defaults to `True`.
+    - weights: `str` pretrained weights to use. Defaults to `imagenet`.
+    - input_shape: `tuple` optional shape tuple, only to be specified if
+    include_top is False (otherwise the input shape has to be (224, 224, 3)
+    (with channels_last data format) or (3, 224, 224) (with channels_first
+    data format). It should have exactly 3 input channels, and width and
+    height should be no smaller than 32. E.g. (200, 200, 3) would be one
+    valid value.
+    - freeze_all: `bool`, whether to freeze the weights in all layers of the
+    base model. Defaults to `True`.
+    - fine_tune_from: `int`, base model layer to fine tune from. Example,
+    setting fine_tune_from=5 for a pretrained model with 25 layers will
+    freeze only the first 5 layers. This will only take effect if freeze_all
+    is set to `False`. Defaults to `0` (freeze_all=True).
+    - classes: `int` number of classes to classify images into, only to be
+    specified if `include_top` is `True`, and if no `weights` argument is
+    specified.
+    - classifier_activation: `str` or `callable`. The activation function to
+    use on the "top" layer. Ignored unless `include_top=True`. Set
+    `classifier_activation=None` to return the logits of the "top" layer.
+    When loading pretrained weights, classifier_activation can only be None
+    or "softmax".
+    - kwargs: `dict`, optional. Passed to the model class. Please refer to the
+    specific tensorflow keras model documentation for other model specific
+    keyword arguments.
+
+    #### outPorts:
+    - model: compiled model.
+    - model_config: `dict` model configuration.
     """
 
     base_model_name: InArg[str]
@@ -162,26 +165,30 @@ class KerasTransferLearningModel(Component):
 class TFDataset(Component):
     """Fetch Tensorflow Dataset by name
 
-    Args:
-        dataset_name: `str`, name of dataset, as listed on
-        https://www.tensorflow.org/datasets/catalog/overview
-        batch_size: `int`, if set, add a batch dimension to the dataset.
-        Defaults to `32`.
-        shuffle_files: `bool`, whether to shuffle the input files. Defaults to
-        `False`.
-        as_supervised: `bool`, if `True`, the returned `tf.data.Dataset` will
-        have a 2-tuple structure `(input, label)` according to
-        `builder.info.supervised_keys`. If `False`, the default, the returned
-        `tf.data.Dataset` will have a dictionary with all the features.
-        kwargs: `dict`, optional. Passes to `tfds.load`. Please refer to the
-        specific tensorflow dataset documentation for other dataset specific
-        keyword arguments.
+    #### Reference:
+    - [Tensorflow Datasets
+    Catalog](https://www.tensorflow.org/datasets/catalog/overview)
 
-    Returns:
-        all_data: `dict<key: tfds.Split, value: tf.data.Dataset>`, all available
-        dataset.
-        train_data: `tf.data.Dataset`, train split if available
-        test_data: `tf.data.Dataset`, test split if available
+    #### inPorts:
+    - dataset_name: `str`, name of dataset, as listed on [Tensorflow Datasets
+    catalog](https://www.tensorflow.org/datasets/catalog/overview)
+    - batch_size: `int`, if set, add a batch dimension to the dataset.
+    Defaults to `32`.
+    - shuffle_files: `bool`, whether to shuffle the input files. Defaults to
+    `False`.
+    - as_supervised: `bool`, if `True`, the returned `tf.data.Dataset` will
+    have a 2-tuple structure `(input, label)` according to
+    `builder.info.supervised_keys`. If `False`, the default, the returned
+    `tf.data.Dataset` will have a dictionary with all the features.
+    - kwargs: `dict`, optional. Passed to `tfds.load`. Please refer to the
+    specific tensorflow dataset documentation for other dataset specific
+    keyword arguments.
+
+    #### outPorts:
+    - all_data: `dict<key: tfds.Split, value: tf.data.Dataset>`, all available
+    dataset.
+    - train_data: `tf.data.Dataset`, train split if available
+    - test_data: `tf.data.Dataset`, test split if available
     """
 
     dataset_name: InArg[str]
@@ -232,16 +239,16 @@ class TFDataset(Component):
 class TrainKerasModel(Component):
     """Trains a keras model.
 
-    Args:
-        model: compiled model.
-        training data: tensorflow keras model compatible dataset
-        batch_size: `int` or `None`. Number of samples per gradient update.
-        epochs: `int` number of epochs to train the model.
-        kwargs: `dict` optional. Other `tf.model.fit` arguments.
+    #### inPorts:
+    - model: compiled model.
+    - training data: tensorflow keras model compatible dataset
+    - batch_size: `int` or `None`. Number of samples per gradient update.
+    - epochs: `int` number of epochs to train the model.
+    - kwargs: `dict` optional. Other `tf.model.fit` arguments.
 
-    Returns:
-        trained_model: trained tensoflow keras model.
-        training_metrics: `dict`, training metrics from training history.
+    #### outPorts:
+    - trained_model: trained tensoflow keras model.
+    - training_metrics: `dict`, training metrics from training history.
     """
 
     model: InArg[any]
@@ -294,14 +301,14 @@ class TrainKerasModel(Component):
 @xai_component(type="eval")
 class TFDSEvaluateAccuracy(Component):
     """Evaluate the accuracy of a Tensorflow Keras model using a Tensorflow
-    dataset (tensorflow.data.Dataset)
+    dataset (`tensorflow.data.Dataset`)
 
-    Args:
-        model: trained tensorflow keras model.
-        eval_dataset: dataset to evaluate. Instance of tensorflow.data.Dataset.
+    #### inPorts:
+    - model: trained tensorflow keras model.
+    - eval_dataset: dataset to evaluate. Instance of `tensorflow.data.Dataset`.
 
-    Returns:
-        metrics: `dict` model loss and accuracy.
+    #### outPorts:
+    - metrics: `dict` model loss and accuracy.
     """
 
     model: InArg[any]
