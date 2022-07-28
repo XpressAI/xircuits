@@ -20,7 +20,8 @@ class KerasTransferLearningModel(Component):
 
     ##### inPorts:
     - base_model_name: `str`, name of model (case sensitive). The
-    base_model_name must be listed under the functions [here](https://www.tensorflow.org/api_docs/python/tf/keras/applications#functions_2)
+    base_model_name must be listed under the functions
+    [here](https://www.tensorflow.org/api_docs/python/tf/keras/applications#functions_2)
     - include_top: `bool`, whether to include the fully connected layers at
     the top of the network. Defaults to `True`.
     - weights: `str` pretrained weights to use. Defaults to `imagenet`.
@@ -49,8 +50,7 @@ class KerasTransferLearningModel(Component):
     keyword arguments.
 
     ##### outPorts:
-    - model: compiled model.
-    - model_config: `dict` model configuration.
+    - model: tensorflow keras model.
     """
 
     base_model_name: InArg[str]
@@ -64,7 +64,6 @@ class KerasTransferLearningModel(Component):
     kwargs: InArg[dict]
 
     model: OutArg[any]
-    model_config: OutArg[dict]
 
     def __init__(self):
         self.done = False
@@ -79,7 +78,6 @@ class KerasTransferLearningModel(Component):
         self.kwargs = InArg({})
 
         self.model = OutArg.empty()
-        self.model_config = OutArg.empty()
 
     def execute(self, ctx):
 
@@ -132,10 +130,11 @@ class KerasTransferLearningModel(Component):
                 layer.trainable = False
 
         if not self.include_top.value:
-            assert (
-                self.input_shape.value
-            ), f"Please provide a valid `input_shape` if `include_top` is set to `False`. Expected a tuple of `input_shape`, e.g `(224, 224, 3)`, got `{self.input_shape.value}`."
-            print("in the head branch")
+            assert self.input_shape.value, (
+                "Please provide a valid `input_shape` if `include_top` is set "
+                "to `False`. Expected a tuple of `input_shape`, e.g "
+                f"`(224, 224, 3)`, got `{self.input_shape.value}`."
+            )
 
             inputs = keras.Input(shape=self.input_shape.value)
             x = model(inputs)
@@ -147,16 +146,7 @@ class KerasTransferLearningModel(Component):
             model = keras.Model(inputs, outputs)
             print(model.summary())
 
-        model.compile(loss="mse", optimizer="adam", metrics=["accuracy"])
-
-        model_config = {
-            "lr": model.optimizer.lr.numpy().item(),
-            "optimizer_name": model.optimizer._name,
-            "loss": model.loss,
-        }
-
         self.model.value = model
-        self.model_config.value = model_config
 
         self.done = True
 
@@ -275,7 +265,6 @@ class TrainKerasModel(Component):
     def execute(self, ctx):
 
         model = self.model.value
-        print(self.training_data.value)
         train = model.fit(
             self.training_data.value,
             batch_size=self.batch_size.value,
@@ -324,11 +313,90 @@ class TFDSEvaluateAccuracy(Component):
 
     def execute(self, ctx):
 
-        (loss, acc) = self.model.value.evaluate(self.eval_dataset.value, verbose=0)
-
-        metrics = {"loss": str(loss), "accuracy": str(acc)}
+        model_metrics_names = self.model.value.metrics_names
+        model_metrics = self.model.value.evaluate(self.eval_dataset.value, verbose=0)
+        metrics = dict(zip(model_metrics_names, model_metrics))
         print(metrics)
 
         self.metrics.value = metrics
+
+        self.done = True
+
+
+@xai_component
+class KerasModelCompiler(Component):
+    """Compiles a Tensorflow Keras model.
+
+    ##### References:
+    - [Tensorflow Keras
+    Optimizers](https://www.tensorflow.org/api_docs/python/tf/keras/optimizers)
+    - [Tensorflow Keras
+    losses](https://www.tensorflow.org/api_docs/python/tf/keras/losses)
+    - [Tensorflow Keras
+    Metrics](https://www.tensorflow.org/api_docs/python/tf/keras/metrics)
+
+    ##### inPorts:
+    - model:
+    - optimizer: `str`, name of an optimizer, e.g, `adam`. Must be a valid
+    tensorflow keras optimizer identifier.
+    - optimizer_kwargs: `dict` optional dictionary of keyword arguments to
+    instantiate the optimizer. If nothing is passed, the default optimizer
+    values are used for the chosen optimizer type.
+    - loss: `str`, name of a Keras loss as a function. This is a string name of
+    a loss function. E.g. `categorical_crossentropy`. Check out the
+    [documentation](https://www.tensorflow.org/api_docs/python/tf/keras/losses#functions_2)
+    for more options. 
+    - metrics: `list` list of metrics to be evaluated by the model during
+    training and testing. Each metric should be a string of a metric identifier,
+    e.g, ['accuracy', 'mse', ... ].
+
+    ##### outPorts:
+    - compiled_model: compiled tensorflow keras model
+    - model_config: `dict` model configuration.
+
+    """
+
+    model: InArg[any]
+    optimizer: InArg[str]
+    optimizer_kwargs: InArg[dict]
+    loss: InArg[str]
+    metrics: InArg[list]
+
+    compiled_model: OutArg[any]
+    model_config: OutArg[dict]
+
+    def __init__(self):
+        self.done = False
+        self.model = InArg.empty()
+        self.optimizer = InArg.empty()
+        self.optimizer_kwargs = InArg({})
+        self.loss = InArg.empty()
+        self.metrics = InArg.empty()
+        self.compiled_model = OutArg.empty()
+        self.model_config = OutArg.empty()
+
+    def execute(self, ctx):
+
+        assert isinstance(
+            self.model.value, keras.Model
+        ), "Please pass in a tensorflow keras model"
+
+        optimizer_identifier = {
+            "class_name": self.optimizer.value,
+            "config": self.optimizer_kwargs.value,
+        }
+        optimizer = keras.optimizers.get(optimizer_identifier)
+
+        self.model.value.compile(
+            optimizer=optimizer, loss=self.loss.value, metrics=self.metrics.value
+        )
+        self.compiled_model.value = self.model.value 
+        model_config = {
+            "lr": self.compiled_model.value.optimizer.lr.numpy().item(),
+            "optimizer_name": self.compiled_model.value.optimizer._name,
+            "loss": self.compiled_model.value.loss,
+        }
+
+        self.model_config.value = model_config
 
         self.done = True
