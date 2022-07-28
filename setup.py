@@ -8,6 +8,7 @@ from pathlib import Path
 import setuptools
 from setuptools import setup, find_packages
 
+import os
 
 HERE = Path(__file__).parent.resolve()
 
@@ -51,6 +52,18 @@ with open("requirements.txt", encoding='utf-8-sig') as f:
 with open("requirements-full.txt", encoding='utf-8-sig') as f:
     full_required = f.read().splitlines()
 
+component_library_reqs = {}
+
+for lib_name in os.listdir("xai_components/"):
+
+    req_path = "xai_components/" + lib_name + "/requirements.txt"
+    
+    if os.path.exists(req_path):
+        with open(req_path, encoding='utf-8-sig') as f:
+            packages_required = f.read().splitlines()
+            package_name = "_".join(lib_name.split("_")[1:])
+            component_library_reqs.update({package_name : packages_required})
+
 setup_args = dict(
     name=name,
     version=version,
@@ -64,22 +77,19 @@ setup_args = dict(
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
     install_requires=required,
-    extras_require={
-        "full": full_required
-    },
+    extras_require=component_library_reqs,
     zip_safe=False,
     include_package_data=True,
-    python_requires=">=3.6",
+    python_requires=">=3.8",
     platforms="Linux, Mac OS X, Windows",
     keywords=["Jupyter", "JupyterLab", "JupyterLab3"],
     classifiers=[
-        "License :: OSI Approved :: BSD License",
+        "License :: OSI Approved :: Apache-2.0 License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Framework :: Jupyter",
         "Framework :: Jupyter :: JupyterLab",
         "Framework :: Jupyter :: JupyterLab :: 3",
