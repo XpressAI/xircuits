@@ -64,6 +64,8 @@ for lib_name in os.listdir("xai_components/"):
             package_name = "_".join(lib_name.split("_")[1:])
             component_library_reqs.update({package_name : packages_required})
 
+component_library_reqs.update({"full": full_required})
+
 setup_args = dict(
     name=name,
     version=version,
