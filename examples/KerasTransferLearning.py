@@ -4,7 +4,7 @@ from time import sleep
 from xai_components.xai_learning.keras_transfer_learning import TFDataset
 from xai_components.xai_learning.keras_transfer_learning import KerasTransferLearningModel
 from xai_components.xai_learning.keras_transfer_learning import TrainKerasModel
-from xai_components.xai_learning.training import EvaluateAccuracy
+from xai_components.xai_learning.keras_transfer_learning import TFDSEvaluateAccuracy
 
 def main(args):
 
@@ -14,11 +14,16 @@ def main(args):
     c_1 = TFDataset()
     c_2 = KerasTransferLearningModel()
     c_3 = TrainKerasModel()
-    c_4 = EvaluateAccuracy()
+    c_4 = TFDSEvaluateAccuracy()
 
     c_1.dataset_name.value = """imagenet_v2"""
     c_1.batch_size.value = 2
     c_2.base_model_name.value = """MobileNetV2"""
+    c_2.include_top.value = False
+    c_2.input_shape.value = (224, 224, 3)
+    c_2.freeze_all.value = False
+    c_2.freeze_all = c_1.all_data
+    c_2.fine_tune_from.value = 50
     c_3.model = c_2.model
     c_3.training_data = c_1.test_data
     c_3.batch_size.value = 2

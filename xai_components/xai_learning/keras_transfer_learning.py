@@ -1,13 +1,14 @@
 """Components to perform transfer learning using pretrained models from
 Tensorflow Keras, and datasets from Tensorflow Datasets.
 """
-from socket import INADDR_NONE
 from typing import Dict
+
 import tensorflow.keras.applications as tf_keras_applications
+from tensorflow import keras
+from tqdm.notebook import tqdm
 
 from xai_components.base import Component, InArg, OutArg, xai_component
 
-from tqdm.notebook import tqdm
 
 @xai_component(type="model")
 class KerasTransferLearningModel(Component):
@@ -20,6 +21,12 @@ class KerasTransferLearningModel(Component):
         include_top: `bool`, whether to include the fully connected layers at
         the top of the network. Defaults to `True`.
         weights: `str` pretrained weights to use. Defaults to `imagenet`.
+        input_shape: `tuple` optional shape tuple, only to be specified if
+        include_top is False (otherwise the input shape has to be (224, 224, 3)
+        (with channels_last data format) or (3, 224, 224) (with channels_first
+        data format). It should have exactly 3 input channels, and width and
+        height should be no smaller than 32. E.g. (200, 200, 3) would be one
+        valid value.
         freeze_all: `bool`, whether to freeze the weights in all layers of the
         base model. Defaults to `True`.
         fine_tune_from: `int`, base model layer to fine tune from. Example,
@@ -46,6 +53,7 @@ class KerasTransferLearningModel(Component):
     base_model_name: InArg[str]
     include_top: InArg[bool]
     weights: InArg[str]
+    input_shape: InArg[tuple]
     freeze_all: InArg[bool]
     fine_tune_from: InArg[int]
     classes: InArg[int]
@@ -60,6 +68,7 @@ class KerasTransferLearningModel(Component):
         self.base_model_name = InArg.empty()
         self.include_top = InArg(True)
         self.weights = InArg("imagenet")
+        self.input_shape = InArg.empty()
         self.freeze_all = InArg(True)
         self.fine_tune_from = InArg(0)
         self.classes = InArg(1000)
@@ -94,7 +103,7 @@ class KerasTransferLearningModel(Component):
             model = model_lookup[base_model_name](
                 include_top=self.include_top.value,
                 weights=self.weights.value,
-                # input_shape=x_shape,
+                input_shape=self.input_shape.value,
                 classes=self.classes.value,
                 **self.kwargs.value,
             )
@@ -107,17 +116,33 @@ class KerasTransferLearningModel(Component):
             model.trainable = False
 
         if not self.freeze_all.value and self.fine_tune_from.value > 0:
-            assert self.fine_tune_from.value < len(
-                model.layers
-            ), f"Please ensure that 'fine_tune_from' is lower than the " \
-                f"number of layers in {self.base_model_name.value} model. " \
-                f"{self.base_model_name.value} has {len(model.layers)} " \
-                f"layers, got {self.fine_tune_from.value} as the layer " \
+            assert self.fine_tune_from.value < len(model.layers), (
+                f"Please ensure that 'fine_tune_from' is lower than the "
+                f"number of layers in {self.base_model_name.value} model. "
+                f"{self.base_model_name.value} has {len(model.layers)} "
+                f"layers, got {self.fine_tune_from.value} as the layer "
                 "to 'fine_tune_from'"
+            )
 
             model.trainable = True
             for layer in model.layers[: self.fine_tune_from.value]:
                 layer.trainable = False
+
+        if not self.include_top.value:
+            assert (
+                self.input_shape.value
+            ), f"Please provide a valid `input_shape` if `include_top` is set to `False`. Expected a tuple of `input_shape`, e.g `(224, 224, 3)`, got `{self.input_shape.value}`."
+            print("in the head branch")
+
+            inputs = keras.Input(shape=self.input_shape.value)
+            x = model(inputs)
+            # ------------- modify below to create your pretrained model head ------------ #
+            x = keras.layers.GlobalAveragePooling2D()(x)
+            outputs = keras.layers.Dense(1000, activation="softmax")(x)
+
+            # ----------------------- end of pretrained model head ----------------------- #
+            model = keras.Model(inputs, outputs)
+            print(model.summary())
 
         model.compile(loss="mse", optimizer="adam", metrics=["accuracy"])
 
@@ -269,7 +294,7 @@ class TrainKerasModel(Component):
 @xai_component(type="eval")
 class TFDSEvaluateAccuracy(Component):
     """Evaluate the accuracy of a Tensorflow Keras model using a Tensorflow
-    dataset (tensorflow.data.Dataset) 
+    dataset (tensorflow.data.Dataset)
 
     Args:
         model: trained tensorflow keras model.
@@ -278,6 +303,7 @@ class TFDSEvaluateAccuracy(Component):
     Returns:
         metrics: `dict` model loss and accuracy.
     """
+
     model: InArg[any]
     eval_dataset: InArg[any]
 
@@ -290,13 +316,10 @@ class TFDSEvaluateAccuracy(Component):
         self.metrics = OutArg.empty()
 
     def execute(self, ctx):
-        
+
         (loss, acc) = self.model.value.evaluate(self.eval_dataset.value, verbose=0)
 
-        metrics = {
-            'loss': str(loss),
-            'accuracy': str(acc)
-        }
+        metrics = {"loss": str(loss), "accuracy": str(acc)}
         print(metrics)
 
         self.metrics.value = metrics
