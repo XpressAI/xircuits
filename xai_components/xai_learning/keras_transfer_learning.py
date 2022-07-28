@@ -14,11 +14,11 @@ from xai_components.base import Component, InArg, OutArg, xai_component
 class KerasTransferLearningModel(Component):
     """Fetch Tensorflow Keras Model by name, for transfer learning.
 
-    #### Reference:
+    ##### Reference:
     - [Keras Application
     Functions](https://www.tensorflow.org/api_docs/python/tf/keras/applications#functions_2)
 
-    #### inPorts:
+    ##### inPorts:
     - base_model_name: `str`, name of model (case sensitive). The
     base_model_name must be listed under the functions [here](https://www.tensorflow.org/api_docs/python/tf/keras/applications#functions_2)
     - include_top: `bool`, whether to include the fully connected layers at
@@ -48,7 +48,7 @@ class KerasTransferLearningModel(Component):
     specific tensorflow keras model documentation for other model specific
     keyword arguments.
 
-    #### outPorts:
+    ##### outPorts:
     - model: compiled model.
     - model_config: `dict` model configuration.
     """
@@ -165,11 +165,11 @@ class KerasTransferLearningModel(Component):
 class TFDataset(Component):
     """Fetch Tensorflow Dataset by name
 
-    #### Reference:
+    ##### Reference:
     - [Tensorflow Datasets
     Catalog](https://www.tensorflow.org/datasets/catalog/overview)
 
-    #### inPorts:
+    ##### inPorts:
     - dataset_name: `str`, name of dataset, as listed on [Tensorflow Datasets
     catalog](https://www.tensorflow.org/datasets/catalog/overview)
     - batch_size: `int`, if set, add a batch dimension to the dataset.
@@ -184,7 +184,7 @@ class TFDataset(Component):
     specific tensorflow dataset documentation for other dataset specific
     keyword arguments.
 
-    #### outPorts:
+    ##### outPorts:
     - all_data: `dict<key: tfds.Split, value: tf.data.Dataset>`, all available
     dataset.
     - train_data: `tf.data.Dataset`, train split if available
@@ -239,14 +239,14 @@ class TFDataset(Component):
 class TrainKerasModel(Component):
     """Trains a keras model.
 
-    #### inPorts:
+    ##### inPorts:
     - model: compiled model.
     - training data: tensorflow keras model compatible dataset
     - batch_size: `int` or `None`. Number of samples per gradient update.
     - epochs: `int` number of epochs to train the model.
     - kwargs: `dict` optional. Other `tf.model.fit` arguments.
 
-    #### outPorts:
+    ##### outPorts:
     - trained_model: trained tensoflow keras model.
     - training_metrics: `dict`, training metrics from training history.
     """
@@ -303,11 +303,11 @@ class TFDSEvaluateAccuracy(Component):
     """Evaluate the accuracy of a Tensorflow Keras model using a Tensorflow
     dataset (`tensorflow.data.Dataset`)
 
-    #### inPorts:
+    ##### inPorts:
     - model: trained tensorflow keras model.
     - eval_dataset: dataset to evaluate. Instance of `tensorflow.data.Dataset`.
 
-    #### outPorts:
+    ##### outPorts:
     - metrics: `dict` model loss and accuracy.
     """
 
