@@ -49,10 +49,8 @@ version = (
 with open("requirements.txt", encoding='utf-8-sig') as f:
     required = f.read().splitlines()
 
-with open("requirements-full.txt", encoding='utf-8-sig') as f:
-    full_required = f.read().splitlines()
-
 component_library_reqs = {}
+full_reqs = []
 
 for lib_name in os.listdir("xai_components/"):
 
@@ -63,8 +61,9 @@ for lib_name in os.listdir("xai_components/"):
             packages_required = f.read().splitlines()
             package_name = "_".join(lib_name.split("_")[1:])
             component_library_reqs.update({package_name : packages_required})
+            full_reqs.extend(component_library_reqs)
 
-component_library_reqs.update({"full": full_required})
+component_library_reqs.update({"full": full_reqs})
 
 setup_args = dict(
     name=name,
