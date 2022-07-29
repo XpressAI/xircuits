@@ -870,7 +870,7 @@
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pytorch/quickstart.py",
-                        "description": "Creates data iterators from torch datasets. \nTo be used with `LoadTorchVisionDataset` component.\n\n### inPorts:\n- training_data: Torch Dataset of training data.\n- test_data: Torch Dataset of test data.\n- batch_size: batch size to iterate though.\n    Default: 64\n\n### outPorts:\n- train_dataloader: Dataloader instance for training data.\n- test_dataloader: Dataloader instance for test data.",
+                        "description": "Creates data iterators from torch datasets. \nTo be used with `LoadTorchVisionDataset` component.\n\n##### inPorts:\n- training_data: Torch Dataset of training data.\n- test_data: Torch Dataset of test data.\n- batch_size: batch size to iterate though.\n    Default: 64\n\n##### outPorts:\n- train_dataloader: Dataloader instance for training data.\n- test_dataloader: Dataloader instance for test data.",
                         "lineNo": [
                             {
                                 "lineno": 71,
@@ -1000,7 +1000,7 @@
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pytorch/quickstart.py",
-                        "description": "Creates a custom Torch Model config.\n\n### outPorts:\n- model: torch nn instance that expects a 28*28 input.\n- loss_fn: nn.CrossEntropyLoss()\n- optimizer: torch.optim.SGD(model.parameters(), lr=1e-3)",
+                        "description": "Creates a custom Torch Model config.\n\n##### outPorts:\n- model: torch nn instance that expects a 28*28 input.\n- loss_fn: nn.CrossEntropyLoss()\n- optimizer: torch.optim.SGD(model.parameters(), lr=1e-3)",
                         "lineNo": [
                             {
                                 "lineno": 123,
@@ -1103,7 +1103,7 @@
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pytorch/quickstart.py",
-                        "description": "Trains a Torch model instance from a dataloader. \n\n### inPorts:\n- train_dataloader: torch dataloader util instance. Ideally from `TorchDataLoader`.\n- model: torch nn instance.\n- loss_fn: torch nn loss function.\n- optimizer: torch model optimizer.\n- epochs: training epochs. \n    Default: `5`.\n\n### outPorts:\n- trained_model: trained torch nn instance. ",
+                        "description": "Trains a Torch model instance from a dataloader. \n\n##### inPorts:\n- train_dataloader: torch dataloader util instance. Ideally from `TorchDataLoader`.\n- model: torch nn instance.\n- loss_fn: torch nn loss function.\n- optimizer: torch model optimizer.\n- epochs: training epochs. \n    Default: `5`.\n\n##### outPorts:\n- trained_model: trained torch nn instance. ",
                         "lineNo": [
                             {
                                 "lineno": 178,
@@ -1251,7 +1251,7 @@
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pytorch/quickstart.py",
-                        "description": "Loads a Torch Vision dataset.\n\n### Reference:\n- [Pytorch Vision Datasets](https://pytorch.org/vision/stable/datasets.html#built-in-datasets)\n\n### inPorts:\n- dataset_name: Loads a valid Pytorch Vision dataset, downloads from the \nrepository if not present in `dataset_dir`. \n- dataset_dir: Path to save downloaded Pytorch Vision dataset.\n    Default: `./data`.\n\n### outPorts:\n- training_data: train split of the dataset.\n- test_data: test split of the dataset.",
+                        "description": "Loads a Torch Vision dataset.\n\n### Reference:\n- [Pytorch Vision Datasets](https://pytorch.org/vision/stable/datasets.html#built-in-datasets)\n\n##### inPorts:\n- dataset_name: Loads a valid Pytorch Vision dataset, downloads from the \nrepository if not present in `dataset_dir`. \n- dataset_dir: Path to save downloaded Pytorch Vision dataset.\n    Default: `./data`.\n\n##### outPorts:\n- training_data: train split of the dataset.\n- test_data: test split of the dataset.",
                         "lineNo": [
                             {
                                 "lineno": 10,
@@ -1366,7 +1366,7 @@
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pytorch/quickstart.py",
-                        "description": "Tests a Torch model instance from a dataloader. \n\n### inPorts:\n- test_dataloader: torch dataloader util instance. Ideally from `TorchDataLoader`.\n- model: torch nn instance. Ideally trained.\n- loss_fn: torch nn loss function.",
+                        "description": "Tests a Torch model instance from a dataloader. \n\n##### inPorts:\n- test_dataloader: torch dataloader util instance. Ideally from `TorchDataLoader`.\n- model: torch nn instance. Ideally trained.\n- loss_fn: torch nn loss function.",
                         "lineNo": [
                             {
                                 "lineno": 245,

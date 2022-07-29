@@ -2,7 +2,8 @@ from xai_components.base import InArg, OutArg, InCompArg, Component, xai_compone
 
 @xai_component(color="red")
 class HelloComponent(Component):
-
+    """The simplest component that greets the user. 
+    """
     def __init__(self):
 
         self.done = False
@@ -19,6 +20,11 @@ class HelloComponent(Component):
 
 @xai_component
 class HelloHyperparameter(Component):
+    """A component that changes the print message depending on the supplied parameter.
+
+    ##### inPorts:
+    - input_str: try connecting a Literal String or Hyperparameter String.
+    """
     input_str: InArg[str]
 
     def __init__(self):
@@ -28,12 +34,19 @@ class HelloHyperparameter(Component):
 
     def execute(self, ctx) -> None:
         input_str = self.input_str.value
-        print("Hello, " + str(input_str))
+        print("Hello " + str(input_str))
         self.done = True
 
 @xai_component
 class CompulsoryHyperparameter(Component):
+    """A component that uses Compulsory inPorts. 
+     Users must fill all compulsory ports to compile and run the canvas.
 
+    ##### inPorts:
+    - input_str: an optional String port.
+    - comp_str: a compulsory String port.
+    - comp_int: a compulsory Integer port.
+    """
     input_str: InArg[str]
 
     #if your component requires a certain parameter to be supplied, use In-Comp(ulsory)-Argument ports.
@@ -58,7 +71,14 @@ class CompulsoryHyperparameter(Component):
 
 @xai_component
 class HelloListTupleDict(Component):
+    """A component that accepts list, tuple, and dict data types then prints them.
+    Useful for testing port type checks.
 
+    ##### inPorts:
+    - input_list: a list port.
+    - input_tuple: a tuple port.
+    - input_dict: a dict port.
+    """
     input_list: InArg[list]
     input_tuple: InArg[tuple]
     input_dict: InArg[dict]
@@ -87,7 +107,16 @@ class HelloListTupleDict(Component):
 
 @xai_component
 class HelloContext(Component):
+    """A component that showcases the usage of Xircuits Context (ctx).
+    Chain multiple instances of this component to add information into the `ctx`.
 
+    ### Reference:
+    - [Xircuits Content](https://xircuits.io/docs/technical-concepts/xircuits-context)
+
+    ##### inPorts:
+    - context_dict: a dict to add to the `ctx`.
+        Default: `{"new ctx": "Hello Xircuits!"}`
+    """
     context_dict: InArg[dict]
 
     def __init__(self):
@@ -107,6 +136,33 @@ class HelloContext(Component):
         
 @xai_component(color="red")
 class AddImport(Component):
+    """A special component that adds lines to the compiled python script header.
+    Typically used to add imports.
+
+    ##### Reference:
+    - [Add Import Component](https://xircuits.io/docs/references/special-components#add-import-component)
+
+    ##### inPorts:
+    import_str: provided string will be converted to a line in the script header.
+    
+    ##### Example:
+    Without `AddImport`, the generated header would look like:
+    ```
+    from argparse import ArgumentParser
+    from datetime import datetime
+    from time import sleep
+    import sys
+    ``` 
+
+    After adding String `print("NEW LINE ADDED")` to the `import_str` port:
+    ```
+    from argparse import ArgumentParser
+    from datetime import datetime
+    from time import sleep
+    print("NEW LINE ADDED")
+    from xai_template.example_components import AddImport
+    ```
+    """
     import_str: InArg[str]
 
     def __init__(self):

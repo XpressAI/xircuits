@@ -1,28 +1,48 @@
-from datetime import datetime
 from typing import Tuple, Dict
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import datasets, layers, models
 import numpy as np
-from xai_components.base import InArg, OutArg, Component, xai_component
-from sklearn.model_selection import train_test_split
-import json
+from xai_components.base import InArg, InCompArg, OutArg, Component, xai_component
 import os
 import sys
 from pathlib import Path
-from tqdm import tqdm
 
-
-@xai_component(type="in")
+@xai_component
 class ReadDataSet(Component):
-    dataset_name: InArg[str]
+    """Loads a Keras image dataset or creates a dataset from a directory.
+    
+    ### Reference:
+    - Keras Model Applications: https://keras.io/api/datasets/
+
+    ##### inPorts:
+    - dataset_name: Loads a Keras image dataset given a valid string 
+        (mnist / mnist fasion / cifar10 / cifar 100) OR 
+        creates a dataset object when given a valid dataset directory path. 
+        
+        For the latter, the directory must have subdirectories and each 
+        subdirectory name will be treated as its own class.
+
+        for example, when given a Literal String `DATASET`, the structure must be:
+        working_dir/
+            |- DATASET 
+                |- CLASS_1
+                |- CLASS_2
+                |- CLASS_3
+        
+    ##### outPorts:
+    - dataset: a dataset tuple
+    - class_dict: dict of classes if not using IMAGENET.
+    """  
+
+    dataset_name: InCompArg[str]
     dataset: OutArg[Tuple[np.array, np.array]]
-    class_dict: OutArg[any]
+    class_dict: OutArg[dict]
 
 
     def __init__(self):
         self.done = False
-        self.dataset_name = InArg.empty()
+        self.dataset_name = InCompArg.empty()
         self.dataset = OutArg.empty()
         self.class_dict = OutArg.empty()
 
@@ -83,6 +103,8 @@ class ReadDataSet(Component):
         elif self.dataset_name.value:
             try:
                 import cv2
+                from tqdm import tqdm
+
                 BASE_FOLDER = self.dataset_name.value
                 folders = [os.path.join(BASE_FOLDER, folder) for folder in os.listdir(BASE_FOLDER)]
                 
@@ -124,42 +146,25 @@ class ReadDataSet(Component):
 
         self.done = True
 
-@xai_component(type="in")
-class ReadMaskDataSet(Component):
-    dataset_name: InArg[str]
-    mask_dataset_name: InArg[str]
-    
-    dataset: OutArg[Tuple[str, str]]
-
-    def __init__(self):
-        self.done = False
-        self.dataset_name = InArg.empty()
-        self.mask_dataset_name = InArg.empty()
-        self.dataset = OutArg.empty()
-
-    def execute(self, ctx) -> None:
-
-        if self.dataset_name.value and self.mask_dataset_name.value:
-            
-            # Preprocessing can be done here if needed
-            self.dataset.value = (self.dataset_name.value, self.mask_dataset_name.value)
-            print(self.dataset.value)
-
-        else:
-            print("Dataset was not found!")
-
-        self.done = True
-
-
 @xai_component
 class FlattenImageData(Component):
 
-    dataset: InArg[Tuple[np.array, np.array]]
+    """Takes a 2D dataset tuple from the ReadDataSet component  
+    that contains tuple and flattens it to 1D. 
+
+    ##### inPorts:
+    - dataset: 2D dataset tuple from the ReadDataSet component.
+
+    ##### outPorts:
+    - resized_dataset: 1D tuple dataset object.
+    """  
+
+    dataset: InCompArg[Tuple[np.array, np.array]]
     resized_dataset: OutArg[Tuple[np.array, np.array]]
 
     def __init__(self):
         self.done = False
-        self.dataset = InArg.empty()
+        self.dataset = InCompArg.empty()
         self.resized_dataset = OutArg.empty()
 
     def execute(self, ctx) -> None:
@@ -173,31 +178,58 @@ class FlattenImageData(Component):
         self.done = True
 
 
-@xai_component(type="split")
+@xai_component
 class TrainTestSplit(Component):
-    dataset: InArg[any] #Tuple[np.array, np.array]
+    """Takes a dataset tuple and splits it into train test tuples.
+    
+    ### Reference: 
+    - [Scikit-learn Train Test Split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)
+
+    ##### inPorts:
+    - dataset: dataset in the form of np array tuples. `Tuple[np.array, np.array]`
+    - train_split: float ratio of the train split. Default `0.75`.
+    - random_state: seed for random state. Default `None`.
+    - shuffle: Enable dataset shuffle with True / False. Default `True`.
+    - stratify: Data is split in a stratified fashion, using this as the class labels. 
+        Default `None`.
+
+    ##### outPorts:
+    - train: tuple that contains the train split of the dataset.
+    - test:tuple that contains the test split of the dataset.
+    - resized_dataset: 1D tuple object.
+    """
+
+    dataset: InCompArg[Tuple[np.array, np.array]]
     train_split: InArg[float]
     random_state: InArg[int]
     shuffle: InArg[bool]
-    train: OutArg[Tuple[np.array, np.array]] #Tuple[np.array, np.array]
-    test: OutArg[Tuple[np.array, np.array]] #Tuple[np.array, np.array]
+    stratify: InArg[any]
+    train: OutArg[Tuple[np.array, np.array]] 
+    test: OutArg[Tuple[np.array, np.array]] 
 
     def __init__(self):
         self.done = False
-        self.dataset = InArg.empty()
+        self.dataset = InCompArg.empty()
         self.train_split = InArg.empty()
         self.random_state = InArg.empty()
         self.shuffle = InArg.empty()
+        self.stratify = InArg.empty()
         self.train = OutArg.empty()
         self.test = OutArg.empty()
 
     def execute(self, ctx) -> None:
+        
+        from sklearn.model_selection import train_test_split
 
         train_split = self.train_split.value if self.train_split.value else 0.75
         shuffle = self.shuffle.value if self.shuffle.value else True
         random_state = self.random_state.value if self.random_state.value else None
+        stratify = self.stratify.value if self.stratify.value else None
+
         print(f"Split Parameters:\nTrain Split {train_split} \nShuffle: {shuffle} \nRandom State: {random_state}")
-        splits = train_test_split(self.dataset.value[0], self.dataset.value[1], test_size=train_split, shuffle=shuffle, random_state=random_state)
+        splits = train_test_split(self.dataset.value[0], self.dataset.value[1], 
+                                    test_size=train_split, shuffle=shuffle, 
+                                    random_state=random_state, stratify=stratify)
         
         train_x = splits[0]
         test_x = splits[1]
@@ -211,15 +243,23 @@ class TrainTestSplit(Component):
         self.test.value = test
         self.done = True
 
-@xai_component(type="model")
+@xai_component
 class Create1DInputModel(Component):
-    training_data: InArg[any]
+    """Takes a 1D dataset tuple and creates a 1D Keras model.
 
+    ##### inPorts:
+    - training_data: dataset tuple which contains 1D numpy array.
+    
+    ##### outPorts:
+    - model: keras model.
+    """
+
+    training_data: InCompArg[Tuple[np.array, np.array]]
     model: OutArg[keras.Sequential]
 
     def __init__(self):
         self.done = False
-        self.training_data = InArg.empty()
+        self.training_data = InCompArg.empty()
         self.model = OutArg.empty()
 
     def execute(self, ctx) -> None:
@@ -242,9 +282,19 @@ class Create1DInputModel(Component):
 
         self.done = True
 
-@xai_component(type="model")
+@xai_component
 class Create2DInputModel(Component):
-    training_data: InArg[any]
+    """Takes a 2D dataset tuple and creates a 2D Keras model.
+
+    ##### inPorts:
+    - training_data: dataset tuple which contains 2D numpy array.
+    
+    ##### outPorts:
+    - model: keras model.
+    - model_config: keras model config dict. 
+        Contains 'lr', 'optimizer_name' and 'loss'.
+    """
+    training_data: InCompArg[Tuple[np.array, np.array]]
 
     model: OutArg[keras.Sequential]
     model_config: OutArg[dict]
@@ -252,7 +302,7 @@ class Create2DInputModel(Component):
 
     def __init__(self):
         self.done = False
-        self.training_data = InArg.empty()
+        self.training_data = InCompArg.empty()
         self.model = OutArg.empty()
         self.model_config = OutArg.empty()
 
@@ -295,10 +345,22 @@ class Create2DInputModel(Component):
         self.done = True
 
 
-@xai_component(type="train")
+@xai_component
 class TrainImageClassifier(Component):
-    model: InArg[any] #keras.Sequential
-    training_data: InArg[any] #Tuple[np.array, np.array]
+    """Trains a Keras model for image classification.
+
+    ##### inPorts:
+    - model: a Keras model object.
+    - training_data: a dataset tuple with (X (data), Y (label)).
+    - training_epochs: number of training epochs. Default `1`.
+
+    ##### outPorts:
+    - trained_model: trained Keras model config.
+    - training_metrics: dict which contains results of training.
+    """
+    
+    model: InCompArg[keras.Sequential]
+    training_data: InCompArg[Tuple[np.array, np.array]] 
     training_epochs: InArg[int]
 
     trained_model: OutArg[keras.Sequential]
@@ -307,8 +369,8 @@ class TrainImageClassifier(Component):
     def __init__(self):
         self.done = False
 
-        self.model = InArg.empty()
-        self.training_data = InArg.empty()
+        self.model = InCompArg.empty()
+        self.training_data = InCompArg.empty()
         self.training_epochs = InArg.empty()
         self.trained_model = OutArg.empty()
         self.training_metrics = OutArg.empty()
@@ -316,12 +378,13 @@ class TrainImageClassifier(Component):
     def execute(self, ctx) -> None:
 
         model = self.model.value
+        epoch = self.training_epochs.value if self.training_epochs.value else 1
 
         train = model.fit(
             self.training_data.value[0],
             self.training_data.value[1],
             batch_size=32,
-            epochs=self.training_epochs.value
+            epochs=epoch
         )
 
         # Set training metrics
@@ -335,17 +398,27 @@ class TrainImageClassifier(Component):
         self.done = True
 
 
-@xai_component(type="eval")
+@xai_component
 class EvaluateAccuracy(Component):
-    model: InArg[any] #keras.Sequential
-    eval_dataset: InArg[any] #Tuple[np.array, np.array]
+    """Evaluates a Keras model against a dataset
+
+    ##### inPorts:
+    - model: a Keras model object.
+    - eval_dataset: a dataset tuple with (X (data), Y (label)).
+
+    ##### outPorts:
+    - metrics: dict which contains results of evaluation.
+
+    """
+    model: InCompArg[keras.Sequential]
+    eval_dataset: InCompArg[Tuple[np.array, np.array]]
 
     metrics: OutArg[Dict[str, str]]
 
     def __init__(self):
         self.done = False
-        self.model = InArg.empty()
-        self.eval_dataset = InArg.empty()
+        self.model = InCompArg.empty()
+        self.eval_dataset = InCompArg.empty()
         self.metrics = OutArg.empty()
 
     def execute(self, ctx) -> None:
@@ -361,26 +434,39 @@ class EvaluateAccuracy(Component):
         self.done = True
 
 
-@xai_component(type="enough")
+@xai_component
 class ShouldStop(Component):
-    target_accuracy: InArg[float]
+    """Checks whether model evaluation has reached targeted accuracy.
+
+    ##### inPorts:
+    - target_accuracy: the targeted accuracy in floats.
+    - max_retries: the number of attempted tries. Default `1`.
+    - metrics: dict that contains results of evaluation.
+
+    ##### outPorts:
+    - should_retrain: True if targeted accuracy not reached.
+    
+    """
+    target_accuracy: InCompArg[float]
+    metrics: InCompArg[Dict[str, str]]
     max_retries: InArg[int]
-    metrics: InArg[Dict[str, str]]
 
     should_retrain: OutArg[bool]
 
     def __init__(self):
         self.done = False
-        self.target_accuracy = InArg.empty()
-        self.max_retries = InArg.empty()
+        self.target_accuracy = InCompArg.empty()
         self.metrics = InArg.empty()
+        self.max_retries = InArg.empty()
+
         self.should_retrain = OutArg(True)
         self.retries = 0
 
     def execute(self, ctx) -> None:
         self.retries += 1
+        max_retries = self.max_retries.value if self.max_retries.value else 1
 
-        if self.retries < self.max_retries.value:
+        if self.retries < max_retries:
             the_accuracy = float(self.metrics.value['accuracy'])
             print('Eval accuracy:' + str(the_accuracy))
 
@@ -397,14 +483,23 @@ class ShouldStop(Component):
 
 @xai_component
 class SaveKerasModel(Component):
+    """Saves current Keras model.
 
-    model: InArg[any]
+    ##### inPorts:
+    - model: a Keras model.
+    - model_name: name to save the Keras model. Default is the .xircuits file name.
+
+    ##### outPorts:
+    - model_h5_path: path of the generated .h5 model.
+    
+    """
+    model: InCompArg[any]
     model_name: InArg[str]
     model_h5_path: OutArg[str]
 
     def __init__(self):
         self.done = False
-        self.model = InArg.empty()
+        self.model = InCompArg.empty()
         self.model_name = InArg.empty()
 
         self.model_h5_path = OutArg.empty()
@@ -416,42 +511,4 @@ class SaveKerasModel(Component):
         print(f"Saving Keras h5 model at: {model_name}")
         self.model_h5_path.value = model_name
 
-        self.done = True
-
-
-@xai_component(type="convert")
-class SaveKerasModelInModelStash(Component):
-    model: InArg[keras.Sequential]
-    experiment_name: InArg[str]
-    metrics: InArg[Dict[str, float]]
-
-    def __init__(self):
-        self.done = False
-        self.model = InArg.empty()
-        self.experiment_name = InArg.empty()
-        self.metrics = InArg.empty()
-
-    def execute(self, ctx) -> None:
-        config = self.execution_context.args
-
-        if not os.path.exists(os.path.join('..', 'experiments')):
-            os.mkdir(os.path.join('..', 'experiments'))
-
-        exp_dir = os.path.join('..', 'experiments', config.name)
-
-        if os.path.exists(exp_dir):
-            exp_dir = exp_dir + '-' + datetime.now().strftime('%Y%m%d-%H:%M:%S')
-        os.mkdir(exp_dir)
-
-        self.model.value.save(os.path.join(exp_dir, 'model.h5'))
-
-        eval_json = json.dumps(self.metrics.value, sort_keys=True, indent=4)
-        with open(os.path.join(exp_dir, 'eval.json'), 'w') as f:
-            f.write(eval_json)
-
-        config_json = json.dumps(vars(config), sort_keys=True, indent=4)
-        with open(os.path.join(exp_dir, 'conf.json'), 'w') as f:
-            f.write(config_json)
-
-        os.system("git add . && git commit -m 'experiment %s'" % (exp_dir))
         self.done = True

@@ -672,7 +672,7 @@
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pytorch/quickstart.py",
-                        "description": "Converts an image loaded from path to a torch tensor.\n\n### inPorts:\n- img_path: image path.\n- resize: tuple with desired tensor dimension.\n    If not provided, will use original image dimensions.\n\n### outPorts:\n- tensor: a torch tensor instance.",
+                        "description": "Converts an image loaded from path to a torch tensor.\n\n##### inPorts:\n- img_path: image path.\n- resize: tuple with desired tensor dimension.\n    If not provided, will use original image dimensions.\n\n##### outPorts:\n- tensor: a torch tensor instance.",
                         "lineNo": [
                             {
                                 "lineno": 387,
@@ -774,7 +774,7 @@
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pytorch/quickstart.py",
-                        "description": "Creates a custom Torch Model config.\n\n### outPorts:\n- model: torch nn instance that expects a 28*28 input.\n- loss_fn: nn.CrossEntropyLoss()\n- optimizer: torch.optim.SGD(model.parameters(), lr=1e-3)",
+                        "description": "Creates a custom Torch Model config.\n\n##### outPorts:\n- model: torch nn instance that expects a 28*28 input.\n- loss_fn: nn.CrossEntropyLoss()\n- optimizer: torch.optim.SGD(model.parameters(), lr=1e-3)",
                         "lineNo": [
                             {
                                 "lineno": 123,
@@ -872,7 +872,7 @@
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pytorch/quickstart.py",
-                        "description": "Loads a Torch model's state from a previously saved .pth.\n\n### inPorts:\n- model_config: torch nn config instance. \n- model_path: the saved model path.\n\n### outPorts:\n- loaded_model: torch nn model with loaded state. ",
+                        "description": "Loads a Torch model's state from a previously saved .pth.\n\n##### inPorts:\n- model_config: torch nn config instance. \n- model_path: the saved model path.\n\n##### outPorts:\n- loaded_model: torch nn model with loaded state. ",
                         "lineNo": [
                             {
                                 "lineno": 315,
