@@ -336,7 +336,7 @@ class KerasModelCompiler(Component):
     Metrics](https://www.tensorflow.org/api_docs/python/tf/keras/metrics)
 
     ##### inPorts:
-    - model:
+    - model: tensorflow keras model to compile.
     - optimizer: `str`, name of an optimizer, e.g, `adam`. Must be a valid
     tensorflow keras optimizer identifier.
     - optimizer_kwargs: `dict` optional dictionary of keyword arguments to
