@@ -23,7 +23,10 @@ class ReadDataSet(Component):
         For the latter, the directory must have subdirectories and each 
         subdirectory name will be treated as its own class.
 
-        DATASET -- CLASS_1
+        for example, when given a Literal String `DATASET`, the structure must be:
+        working_dir/
+            |- DATASET 
+                |- CLASS_1
                 |- CLASS_2
                 |- CLASS_3
         
@@ -180,10 +183,10 @@ class TrainTestSplit(Component):
     """Takes a dataset tuple and splits it into train test tuples.
     
     ### Reference: 
-    - [Scikitlearn Train Test Split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)
+    - [Scikit-learn Train Test Split](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html)
 
     ##### inPorts:
-    - dataset: dataset tuple which contains 
+    - dataset: dataset in the form of np array tuples. `Tuple[np.array, np.array]`
     - train_split: float ratio of the train split. Default `0.75`.
     - random_state: seed for random state. Default `None`.
     - shuffle: Enable dataset shuffle with True / False. Default `True`.
@@ -244,11 +247,11 @@ class TrainTestSplit(Component):
 class Create1DInputModel(Component):
     """Takes a 1D dataset tuple and creates a 1D Keras model.
 
-    inPorts:
-    training_data: dataset tuple which contains 1D numpy array.
+    ##### inPorts:
+    - training_data: dataset tuple which contains 1D numpy array.
     
-    outPorts:
-    model: keras model.
+    ##### outPorts:
+    - model: keras model.
     """
 
     training_data: InCompArg[Tuple[np.array, np.array]]
@@ -284,11 +287,11 @@ class Create2DInputModel(Component):
     """Takes a 2D dataset tuple and creates a 2D Keras model.
 
     ##### inPorts:
-    training_data: dataset tuple which contains 2D numpy array.
+    - training_data: dataset tuple which contains 2D numpy array.
     
     ##### outPorts:
-    model: keras model.
-    model_config: keras model config dict. 
+    - model: keras model.
+    - model_config: keras model config dict. 
         Contains 'lr', 'optimizer_name' and 'loss'.
     """
     training_data: InCompArg[Tuple[np.array, np.array]]
@@ -438,7 +441,7 @@ class ShouldStop(Component):
     ##### inPorts:
     - target_accuracy: the targeted accuracy in floats.
     - max_retries: the number of attempted tries. Default `1`.
-    - metrics: dict that contains results of.
+    - metrics: dict that contains results of evaluation.
 
     ##### outPorts:
     - should_retrain: True if targeted accuracy not reached.

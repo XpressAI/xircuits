@@ -48,7 +48,7 @@ class SparkLabeledPoint(Component):
     """Creates a labeled point from a dense OR sparse vector.
     A dense vector can be created by supplying a list.
     A sparse vector can be passed from the SparkSparseVector component.
-    Only the sparse vector input be used if both are supplied.
+    Only the **sparse vector** input will be used if both are supplied.
 
     ### Reference:
     - [Spark Labeled Point](https://spark.apache.org/docs/latest/mllib-data-types.html#labeled-point)
@@ -196,12 +196,11 @@ class SparkSplitDataFrame(Component):
 
 @xai_component
 class SparkLoadLIBSVM(Component):
-    """Loads a libsvm file into a dataframe.
+    """Loads a libsvm file into a Spark dataframe.
 
     ##### inPorts:
     - in_sparksession: a spark session.
     - file_input: the path for the libsvm file.
-    - options: options for the read.format() config.
 
     ##### outPorts:
     - out_sparksession: a spark session.
@@ -209,7 +208,6 @@ class SparkLoadLIBSVM(Component):
     """    
     in_sparksession: InCompArg[any]
     file_input: InCompArg[str]
-    options: InArg[str]
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
 
@@ -218,7 +216,6 @@ class SparkLoadLIBSVM(Component):
         self.done = False
         self.in_sparksession = InCompArg(None)
         self.file_input = InCompArg(None)
-        self.options = InArg(None)
 
         self.out_sparksession = OutArg(None)
         self.out_dataframe = OutArg(None)

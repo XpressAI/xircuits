@@ -71,7 +71,8 @@ class CompulsoryHyperparameter(Component):
 
 @xai_component
 class HelloListTupleDict(Component):
-    """A component that accepts list, tuple, and dict data types.
+    """A component that accepts list, tuple, and dict data types then prints them.
+    Useful for testing port type checks.
 
     ##### inPorts:
     - input_list: a list port.
@@ -107,13 +108,13 @@ class HelloListTupleDict(Component):
 @xai_component
 class HelloContext(Component):
     """A component that showcases the usage of Xircuits Context (ctx).
-    Chain multiple instances of this component to add information into the ctx.
+    Chain multiple instances of this component to add information into the `ctx`.
 
     ### Reference:
     - [Xircuits Content](https://xircuits.io/docs/technical-concepts/xircuits-context)
 
     ##### inPorts:
-    - context_dict: a dict to add to the ctx.
+    - context_dict: a dict to add to the `ctx`.
         Default: `{"new ctx": "Hello Xircuits!"}`
     """
     context_dict: InArg[dict]
@@ -135,30 +136,32 @@ class HelloContext(Component):
         
 @xai_component(color="red")
 class AddImport(Component):
-    """A special component that adds lines to the generated script header.
+    """A special component that adds lines to the compiled python script header.
     Typically used to add imports.
+
+    ##### Reference:
+    - [Add Import Component](https://xircuits.io/docs/references/special-components#add-import-component)
 
     ##### inPorts:
     import_str: provided string will be converted to a line in the script header.
     
-    #### Example:
-    Typical Xircuits generated script header:
+    ##### Example:
+    Without `AddImport`, the generated header would look like:
     ```
     from argparse import ArgumentParser
     from datetime import datetime
     from time import sleep
     import sys
-    from xai_template.example_components import AddImport
     ``` 
 
-    After adding String `print("NEW LINE ADDED")` to `import_str` port:
+    After adding String `print("NEW LINE ADDED")` to the `import_str` port:
     ```
     from argparse import ArgumentParser
     from datetime import datetime
     from time import sleep
     print("NEW LINE ADDED")
     from xai_template.example_components import AddImport
-    ``` 
+    ```
     """
     import_str: InArg[str]
 

@@ -42,7 +42,8 @@ class LoadKerasModel(Component):
         into, only to be specified if `include_top` is True, and
         if no `weights` argument is specified.
     - args: additional arguments that may configure the Keras model 
-        instance behaviour, but not included as inPorts. 
+        instance behaviour, but not included as inPorts. Click link 
+        in Reference for more details.
 
     ##### outPorts:
     - model: A Keras model instance.
@@ -54,7 +55,7 @@ class LoadKerasModel(Component):
     input_shape: InArg[any]
     pooling: InArg[any]
     classes: InArg[int]
-    args: InArg[int]
+    kargs: InArg[int]
 
     model: OutArg[any]
 
@@ -66,7 +67,7 @@ class LoadKerasModel(Component):
         self.input_tensor = InArg(None)
         self.pooling = InArg(None)
         self.classes = InArg(None)
-        self.args = InArg(None)
+        self.kargs = InArg(None)
 
         self.model = OutArg(None)
 
@@ -99,7 +100,9 @@ class KerasPredict(Component):
     - model: A Keras model instance.
     - img_string: an image path.
     - class_list: list of classes if not using IMAGENET.
-    - target_shape: np.array if not using default keras model instance shape.
+    - target_shape: optional shape tuple, only to be 
+        specified if using a input custom shape.
+        Expected two values (height and width).
     """    
     model:InCompArg[any]
     img_string: InCompArg[str]
@@ -265,6 +268,9 @@ class ResNet50(Component):
     - classes: optional number of classes to classify images
         into, only to be specified if `include_top` is True, and
         if no `weights` argument is specified.
+    - kwargs: additional arguments that may configure the Keras model 
+        instance behaviour, but not included as inPorts. Click link 
+        in Reference for more details.
 
     ##### outPorts:
     - model: A Keras model instance.
@@ -275,7 +281,7 @@ class ResNet50(Component):
     input_shape: InArg[any]
     pooling: InArg[any]
     classes: InArg[int]
-    args: InArg[int]
+    kwargs: InArg[int]
     model: OutArg[any]
 
     def __init__(self):
@@ -285,7 +291,7 @@ class ResNet50(Component):
         self.input_tensor = InArg(None)
         self.pooling = InArg(None)
         self.classes = InArg(None)
-        self.wargs = InArg(None)
+        self.kwargs = InArg(None)
         self.model = OutArg(None)
 
 
@@ -347,6 +353,9 @@ class ResNet101(Component):
     - classes: optional number of classes to classify images
         into, only to be specified if `include_top` is True, and
         if no `weights` argument is specified.
+    - kwargs: additional arguments that may configure the Keras model 
+        instance behaviour, but not included as inPorts. Click link 
+        in Reference for more details.
 
     ##### outPorts:
     - model: A Keras model instance.
@@ -357,7 +366,7 @@ class ResNet101(Component):
     input_shape: InArg[any]
     pooling: InArg[any]
     classes: InArg[int]
-    args: InArg[int]
+    kwargs: InArg[int]
     model: OutArg[any]
 
     def __init__(self):
@@ -427,9 +436,12 @@ class ResNet152(Component):
             the output of the model will be a 2D tensor.
         - `max` means that global max pooling will
             be applied.
-    = classes: optional number of classes to classify images
+    - classes: optional number of classes to classify images
         into, only to be specified if `include_top` is True, and
         if no `weights` argument is specified.
+    - kwargs: additional arguments that may configure the Keras model 
+        instance behaviour, but not included as inPorts. Click link 
+        in Reference for more details.
 
     ##### outPorts:
     - model: A Keras model instance.
@@ -440,7 +452,7 @@ class ResNet152(Component):
     input_shape: InArg[any]
     pooling: InArg[any]
     classes: InArg[int]
-    args: InArg[int]
+    kwargs: InArg[int]
     model: OutArg[any]
 
     def __init__(self):
@@ -536,6 +548,9 @@ class VGG16(Component):
         `classifier_activation=None` to return the logits of the "top" layer.
         When loading pretrained weights, `classifier_activation` can only
         be `None` or `"softmax"`.
+    - kwargs: additional arguments that may configure the Keras model 
+        instance behaviour, but not included as inPorts. Click link 
+        in Reference for more details.
 
     ##### outPorts:
     - model: A Keras model instance.
@@ -791,7 +806,8 @@ class mobile_model_config:
 
 @xai_component
 class MobileNet(Component):
-    """Instantiates the MobileNet architecture.
+    """Instantiates the Keras MobileNet model for image classification,
+    optionally loaded with weights pre-trained on ImageNet.
     
     ### Reference:
     - [Keras Application MobileNet](
@@ -799,8 +815,7 @@ class MobileNet(Component):
     - [MobileNets: Efficient Convolutional Neural Networks
         for Mobile Vision Applications](
         https://arxiv.org/abs/1704.04861)
-    This component returns a Keras image classification model,
-    optionally loaded with weights pre-trained on ImageNet.
+
 
     ##### inPorts:
     - input_shape: Optional shape tuple, only to be specified if `include_top`
@@ -859,6 +874,8 @@ class MobileNet(Component):
     pooling: InArg[any]
     classes: InArg[int]
     classifier_activation: InArg[str]
+    kwargs: InArg[any]
+    
     model: OutArg[any]
 
     def __init__(self):
@@ -874,6 +891,8 @@ class MobileNet(Component):
         self.pooling = InArg(None)
         self.classes = InArg(None)
         self.classifier_activation = InArg(None)
+        self.kwargs = InArg(None)
+
         self.model = OutArg(None)
 
 

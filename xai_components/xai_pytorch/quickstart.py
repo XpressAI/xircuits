@@ -124,7 +124,7 @@ class TorchModel(Component):
     """Creates a custom Torch Model config.
 
     ##### outPorts:
-    - model: torch nn instance that expects a 28*28 input.
+    - model: torch.nn instance that expects a 28*28 input.
     - loss_fn: nn.CrossEntropyLoss()
     - optimizer: torch.optim.SGD(model.parameters(), lr=1e-3)
     """
@@ -180,14 +180,14 @@ class TrainTorchModel(Component):
 
     ##### inPorts:
     - train_dataloader: torch dataloader util instance. Ideally from `TorchDataLoader`.
-    - model: torch nn instance.
-    - loss_fn: torch nn loss function.
+    - model: torch.nn instance.
+    - loss_fn: torch.nn loss function.
     - optimizer: torch model optimizer.
     - epochs: training epochs. 
         Default: `5`.
 
     ##### outPorts:
-    - trained_model: trained torch nn instance. 
+    - trained_model: trained torch.nn instance. 
     """
     train_dataloader: InCompArg[torch.utils.data.DataLoader]
     model_config: InCompArg[nn.Module]
@@ -247,8 +247,8 @@ class TestTorchModel(Component):
 
     ##### inPorts:
     - test_dataloader: torch dataloader util instance. Ideally from `TorchDataLoader`.
-    - model: torch nn instance. Ideally trained.
-    - loss_fn: torch nn loss function.
+    - model: torch.nn instance. Ideally trained.
+    - loss_fn: torch.nn loss function.
     """
     model: InCompArg[nn.Module]
     test_dataloader: InCompArg[torch.utils.data.DataLoader]
@@ -291,8 +291,8 @@ class SaveTorchModelState(Component):
     """Saves a Torch model's trained state.
 
     ##### inPorts:
-    - model: trained torch nn instance. 
-    - model_path: the filename to be saved as.
+    - model: trained torch.nn instance. 
+    - model_path: the path/filename to be saved as. `.pth` will be appended.
         Default: .xircuits filename + .pth.
     """
     model: InCompArg[nn.Module]
@@ -316,11 +316,11 @@ class LoadTorchModelState(Component):
     """Loads a Torch model's state from a previously saved .pth.
 
     ##### inPorts:
-    - model_config: torch nn config instance. 
+    - model_config: torch.nn config instance. 
     - model_path: the saved model path.
 
     ##### outPorts:
-    - loaded_model: torch nn model with loaded state. 
+    - loaded_model: torch.nn model with loaded state. 
     """
     model_config: InCompArg[nn.Module]
     model_path: InCompArg[str]
@@ -351,9 +351,9 @@ class TorchModelPredict(Component):
     """Performs a prediction given a Torch model, test_data split, and a class list.
 
     ##### inPorts:
-    - model: trained torch nn instance.
+    - model: trained torch.nn instance.
     - test_data: a torch dataset split. Ideally from `LoadTorchVisionDataset`.
-    - class_list: trained class list.
+    - class_list: list of classes model was trained on.
     """
     model: InCompArg[nn.Module]
     test_data: InCompArg[any]
@@ -436,9 +436,9 @@ class TorchModelPredictFromTensor(Component):
     Ideally to be used with `Image2TorchTensor`.
 
     ##### inPorts:
-    - model: trained torch nn instance.
+    - model: trained torch.nn instance.
     - test_data: a torch tensor.
-    - class_list: trained class list.
+    - class_list: list of classes model was trained on.
     """
     model: InCompArg[nn.Module]
     tensor: InCompArg[torch.Tensor]

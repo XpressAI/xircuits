@@ -118,7 +118,7 @@ class DeleteFile(Component):
 
 @xai_component(color="green")
 class TimerComponent(Component):
-    """Chain multiple instances of this component to measure elapsed time. 
+    """Chain multiple instances of this component to measure elapsed time.
     
     ##### inPorts:
     - in_timer: if provided will measure the elapsed time since last called.

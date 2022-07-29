@@ -19,11 +19,11 @@ class xSparkSession(Component):
   
     ##### inPorts:
     - master: Cluster URL to connect to (e.g. mesos://host:port, spark://host:port, local[4]). 
-        Default `local`.
+        Default: `local`.
     - appname: A name for your job, to display on the cluster web UI.
-        Default .xircuits canvas name.
+        Default: .xircuits canvas name.
     - config: Runtime configuration interface for Spark.
-        Default `" "`.
+        Default: `" "`.
 
     ##### outPorts:
     - sparksession: A spark session instance.
@@ -261,7 +261,7 @@ class SparkSQL(Component):
     - in_sparksession: A spark session.
     - dataframe: a Spark dataframe.
     - sql_string: a SQL query to be performed on the dataframe.
-    - table_name: specify a table name is already created by createOrReplaceTempView.
+    - table_name: specify a table name if not already created by createOrReplaceTempView.
 
     ##### outPorts:
     - out_sparksession: A spark session.
