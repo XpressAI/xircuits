@@ -58,7 +58,7 @@ jobs:
 
     - name: Install Xircuits
       run: |
-        whl_name=$(echo dist/*whl)[full]
+        whl_name=$(echo dist/*whl)[learning]
         pip install $whl_name
 
     - name: Setup Playwright
