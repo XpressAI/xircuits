@@ -7,7 +7,7 @@ import tensorflow.keras.applications as tf_keras_applications
 from tensorflow import keras
 from tqdm.notebook import tqdm
 
-from xai_components.base import Component, InArg, OutArg, xai_component
+from xai_components.base import Component, InArg, InCompArg, OutArg, xai_component
 
 
 @xai_component(type="model")
@@ -40,6 +40,8 @@ class KerasTransferLearningModel(Component):
     - classes: `int` number of classes to classify images into, only to be
     specified if `include_top` is `True`, and if no `weights` argument is
     specified.
+    - binary: `bool` whether this model will be used for binary classification.
+    Defaults o `False`.
     - classifier_activation: `str` or `callable`. The activation function to
     use on the "top" layer. Ignored unless `include_top=True`. Set
     `classifier_activation=None` to return the logits of the "top" layer.
@@ -53,13 +55,14 @@ class KerasTransferLearningModel(Component):
     - model: tensorflow keras model.
     """
 
-    base_model_name: InArg[str]
+    base_model_name: InCompArg[str]
     include_top: InArg[bool]
     weights: InArg[str]
-    input_shape: InArg[tuple]
+    input_shape: InCompArg[tuple]
     freeze_all: InArg[bool]
     fine_tune_from: InArg[int]
     classes: InArg[int]
+    binary: InArg[bool]
     classifier_activation: InArg[str]
     kwargs: InArg[dict]
 
@@ -74,6 +77,7 @@ class KerasTransferLearningModel(Component):
         self.freeze_all = InArg(True)
         self.fine_tune_from = InArg(0)
         self.classes = InArg(1000)
+        self.binary = InArg(False)
         self.classifier_activation = InArg("softmax")
         self.kwargs = InArg({})
 
@@ -113,6 +117,12 @@ class KerasTransferLearningModel(Component):
             print("Ensure that the base model name is listed below.\n")
             print(*model_lookup.keys(), sep=", ")
 
+        # fetch the model proprocess input layer
+        model_module = getattr(tf_keras_applications, base_model_name).__module__
+        model_module_name = model_module.split(".")[-1]
+        model_module = getattr(tf_keras_applications, model_module_name)
+        preprocess_input = getattr(model_module, "preprocess_input")
+
         if self.freeze_all.value:
             model.trainable = False
 
@@ -137,12 +147,18 @@ class KerasTransferLearningModel(Component):
             )
 
             inputs = keras.Input(shape=self.input_shape.value)
-            x = model(inputs)
+            x = preprocess_input(inputs)
+            x = model(x)
             # ------------- modify below to create your pretrained model head ------------ #
             x = keras.layers.GlobalAveragePooling2D()(x)
-            outputs = keras.layers.Dense(1000, activation="softmax")(x)
-
             # ----------------------- end of pretrained model head ----------------------- #
+            if self.binary.value is True:
+                outputs = keras.layers.Dense(1)(x)
+            else:
+                outputs = keras.layers.Dense(
+                    self.classes.value, activation=self.classifier_activation.value
+                )(x)
+
             model = keras.Model(inputs, outputs)
             print(model.summary())
 
@@ -181,7 +197,7 @@ class TFDataset(Component):
     - test_data: `tf.data.Dataset`, test split if available
     """
 
-    dataset_name: InArg[str]
+    dataset_name: InCompArg[str]
     batch_size: InArg[int]
     shuffle_files: InArg[bool]
     as_supervised: InArg[bool]
@@ -193,7 +209,7 @@ class TFDataset(Component):
 
     def __init__(self):
         self.done = False
-        self.dataset_name = InArg.empty()
+        self.dataset_name = InCompArg.empty()
         self.batch_size = InArg(32)
         self.shuffle_files = InArg(False)
         self.as_supervised = InArg(True)
@@ -241,10 +257,10 @@ class TrainKerasModel(Component):
     - training_metrics: `dict`, training metrics from training history.
     """
 
-    model: InArg[any]
-    training_data: InArg[any]
-    batch_size: InArg[int]
-    epochs: InArg[int]
+    model: InCompArg[any]
+    training_data: InCompArg[any]
+    batch_size: InCompArg[int]
+    epochs: InCompArg[int]
     kwargs: InArg[dict]
 
     trained_model: OutArg[any]
@@ -253,10 +269,10 @@ class TrainKerasModel(Component):
     def __init__(self):
         self.done = False
 
-        self.model = InArg.empty()
-        self.training_data = InArg.empty()
-        self.batch_size = InArg.empty()
-        self.epochs = InArg.empty()
+        self.model = InCompArg.empty()
+        self.training_data = InCompArg.empty()
+        self.batch_size = InCompArg.empty()
+        self.epochs = InCompArg.empty()
         self.kwargs = InArg({})
 
         self.trained_model = OutArg.empty()
@@ -300,15 +316,15 @@ class TFDSEvaluateAccuracy(Component):
     - metrics: `dict` model loss and accuracy.
     """
 
-    model: InArg[any]
-    eval_dataset: InArg[any]
+    model: InCompArg[any]
+    eval_dataset: InCompArg[any]
 
     metrics: OutArg[Dict[str, str]]
 
     def __init__(self):
         self.done = False
-        self.model = InArg.empty()
-        self.eval_dataset = InArg.empty()
+        self.model = InCompArg.empty()
+        self.eval_dataset = InCompArg.empty()
         self.metrics = OutArg.empty()
 
     def execute(self, ctx):
@@ -334,18 +350,23 @@ class KerasModelCompiler(Component):
     losses](https://www.tensorflow.org/api_docs/python/tf/keras/losses)
     - [Tensorflow Keras
     Metrics](https://www.tensorflow.org/api_docs/python/tf/keras/metrics)
+    - [Tensorflow Keras loss
+    identifier](https://www.tensorflow.org/api_docs/python/tf/keras/losses/get#expandable-1)
 
     ##### inPorts:
     - model: tensorflow keras model to compile.
-    - optimizer: `str`, name of an optimizer, e.g, `adam`. Must be a valid
-    tensorflow keras optimizer identifier.
-    - optimizer_kwargs: `dict` optional dictionary of keyword arguments to
-    instantiate the optimizer. If nothing is passed, the default optimizer
-    values are used for the chosen optimizer type.
-    - loss: `str`, name of a Keras loss as a function. This is a string name of
-    a loss function. E.g. `categorical_crossentropy`. Check out the
-    [documentation](https://www.tensorflow.org/api_docs/python/tf/keras/losses#functions_2)
-    for more options. 
+    - optimizer_identifier: `any`, valid tensorflow keras optimizer identifier,
+    e.g, `adam` or `Adam` for default arguments, `{"class_name": "Adam",
+    "config": {"learning_rate": 0.001}}` to specify keyword arguments.
+    - loss_identifier: `any`, valid tensorflow keras loss identifier, e.g,
+    `categorical_crossentropy` or `CategoricalCrossentropy` for a loss as a
+    [function](https://www.tensorflow.org/api_docs/python/tf/keras/losses#functions_2),
+    or a
+    [class](https://www.tensorflow.org/api_docs/python/tf/keras/losses#classes_2),
+    `{"class_name": "CategoricalCrossentropy", "config": {"from_logits": True}`
+    to pass in keyword arguments. Check out the [identifier
+    documentation](https://www.tensorflow.org/api_docs/python/tf/keras/losses/get#expandable-1)
+    for more details. 
     - metrics: `list` list of metrics to be evaluated by the model during
     training and testing. Each metric should be a string of a metric identifier,
     e.g, ['accuracy', 'mse', ... ].
@@ -356,22 +377,21 @@ class KerasModelCompiler(Component):
 
     """
 
-    model: InArg[any]
-    optimizer: InArg[str]
-    optimizer_kwargs: InArg[dict]
-    loss: InArg[str]
-    metrics: InArg[list]
+    model: InCompArg[any]
+    optimizer_identifier: InCompArg[any]
+    loss_identifier: InCompArg[any]
+    metrics: InCompArg[list]
 
     compiled_model: OutArg[any]
     model_config: OutArg[dict]
 
     def __init__(self):
         self.done = False
-        self.model = InArg.empty()
-        self.optimizer = InArg.empty()
-        self.optimizer_kwargs = InArg({})
-        self.loss = InArg.empty()
-        self.metrics = InArg.empty()
+        self.model = InCompArg.empty()
+        self.optimizer_identifier = InCompArg.empty()
+        self.loss_identifier = InCompArg.empty()
+        self.metrics = InCompArg.empty()
+
         self.compiled_model = OutArg.empty()
         self.model_config = OutArg.empty()
 
@@ -381,16 +401,13 @@ class KerasModelCompiler(Component):
             self.model.value, keras.Model
         ), "Please pass in a tensorflow keras model"
 
-        optimizer_identifier = {
-            "class_name": self.optimizer.value,
-            "config": self.optimizer_kwargs.value,
-        }
-        optimizer = keras.optimizers.get(optimizer_identifier)
+        optimizer = keras.optimizers.get(self.optimizer_identifier.value)
+        loss = keras.losses.get(self.loss_identifier.value)
 
         self.model.value.compile(
-            optimizer=optimizer, loss=self.loss.value, metrics=self.metrics.value
+            optimizer=optimizer, loss=loss, metrics=self.metrics.value
         )
-        self.compiled_model.value = self.model.value 
+        self.compiled_model.value = self.model.value
         model_config = {
             "lr": self.compiled_model.value.optimizer.lr.numpy().item(),
             "optimizer_name": self.compiled_model.value.optimizer._name,
