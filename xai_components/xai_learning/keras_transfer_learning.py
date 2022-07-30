@@ -366,7 +366,7 @@ class KerasModelCompiler(Component):
     `{"class_name": "CategoricalCrossentropy", "config": {"from_logits": True}`
     to pass in keyword arguments. Check out the [identifier
     documentation](https://www.tensorflow.org/api_docs/python/tf/keras/losses/get#expandable-1)
-    for more details. 
+    for more details.
     - metrics: `list` list of metrics to be evaluated by the model during
     training and testing. Each metric should be a string of a metric identifier,
     e.g, ['accuracy', 'mse', ... ].
@@ -415,5 +415,36 @@ class KerasModelCompiler(Component):
         }
 
         self.model_config.value = model_config
+
+        self.done = True
+
+
+@xai_component
+class SaveKerasModel(Component):
+    """Saves a Tensorflow Keras model.
+
+    ##### inPorts:
+    - model: tensorflow keras model to save
+    - model_name: `str` name to save the model as
+        
+    """
+    model: InCompArg[any]
+    model_name: InCompArg[any]
+
+    def __init__(self):
+        self.done = False
+        self.model = InCompArg.empty()
+        self.model_name = InCompArg.empty()
+
+    def execute(self, ctx):
+
+        from pathlib import Path
+
+        assert isinstance(
+            self.model.value, keras.Model
+        ), "Please pass in a tensorflow keras model"
+
+        print(f"Saving Tensorflow Keras model to: {Path.cwd()}")
+        self.model.value.save(f"{self.model_name.value}.h5")
 
         self.done = True
