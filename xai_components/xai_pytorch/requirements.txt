@@ -3,4 +3,3 @@ torchvision
 torchaudio
 matplotlib
 onnx_tf
-tensorflow-datasets
