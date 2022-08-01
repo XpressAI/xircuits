@@ -1,4 +1,5 @@
 tensorflow
+tensorflow-datasets
 numpy
 sklearn
 opencv-python

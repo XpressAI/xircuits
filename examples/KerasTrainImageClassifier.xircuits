@@ -1,12 +1,12 @@
 {
     "id": "42c2ec4d-83dc-4458-9df3-52b03c5eb845",
-    "offsetX": -35.777110316847946,
-    "offsetY": 26.217558084231094,
-    "zoom": 72.08333333333329,
+    "offsetX": 34.135732959945585,
+    "offsetY": -19.61475387577377,
+    "zoom": 95.93333333333347,
     "gridSize": 0,
     "layers": [
         {
-            "id": "18a6aed7-e8fd-4543-bdfd-cc40ab255358",
+            "id": "b81dd673-8385-4b71-bf94-58040d6b2053",
             "type": "diagram-links",
             "isSvg": true,
             "transformed": true,
@@ -23,14 +23,14 @@
                         {
                             "id": "d3fc5ce8-31ca-49a1-b244-5715b2dfb27e",
                             "type": "point",
-                            "x": 1373.4531323988087,
-                            "y": 153.43749439584474
+                            "x": -35.583,
+                            "y": 20.446
                         },
                         {
                             "id": "ae98ff54-af80-457b-83fe-fa78dae61b87",
                             "type": "point",
-                            "x": 1448.296919250224,
-                            "y": 173.26561248620442
+                            "x": -35.583,
+                            "y": 20.446
                         }
                     ],
                     "labels": [],
@@ -51,14 +51,14 @@
                         {
                             "id": "80f0e53f-abac-451b-9bd8-88d14f128605",
                             "type": "point",
-                            "x": 829.4374705473939,
-                            "y": 289.0625059119119
+                            "x": -35.583,
+                            "y": 20.446
                         },
                         {
                             "id": "fec8f778-62d8-4ea3-b7d5-8332f92d2fc1",
                             "type": "point",
-                            "x": 930.187544250224,
-                            "y": 185.46875591191196
+                            "x": -35.583,
+                            "y": 20.446
                         }
                     ],
                     "labels": [],
@@ -79,14 +79,14 @@
                         {
                             "id": "64be150b-6b33-4cc0-a3ef-e2aa8a08c19f",
                             "type": "point",
-                            "x": 1164.4999705473938,
-                            "y": 137.46875591191196
+                            "x": -35.583,
+                            "y": 20.446
                         },
                         {
                             "id": "57c60c21-645c-46ce-90f1-c50eb5423984",
                             "type": "point",
-                            "x": 1213.6093823988087,
-                            "y": 153.43749439584474
+                            "x": -35.583,
+                            "y": 20.446
                         }
                     ],
                     "labels": [],
@@ -107,14 +107,14 @@
                         {
                             "id": "0af96af9-60bb-4640-90cd-de8fd81f4fa2",
                             "type": "point",
-                            "x": 1164.4999705473938,
-                            "y": 153.4687466990582
+                            "x": -35.583,
+                            "y": 20.446
                         },
                         {
                             "id": "e6ebabf6-ca6c-4512-953d-3f7db45f08ac",
                             "type": "point",
-                            "x": 1213.6093823988087,
-                            "y": 169.43750591191196
+                            "x": -35.583,
+                            "y": 20.446
                         }
                     ],
                     "labels": [],
@@ -135,14 +135,14 @@
                         {
                             "id": "a9586f34-874c-4c40-b776-0ad34685710a",
                             "type": "point",
-                            "x": 865.171919250224,
-                            "y": 68.23438091191201
+                            "x": -35.583,
+                            "y": 20.446
                         },
                         {
                             "id": "5a486d49-460e-4e8f-b749-94404e0d0114",
                             "type": "point",
-                            "x": 930.187544250224,
-                            "y": 137.46875591191196
+                            "x": -35.583,
+                            "y": 20.446
                         }
                     ],
                     "labels": [],
@@ -163,14 +163,14 @@
                         {
                             "id": "a8ed38b8-9399-45af-9393-5537e7160b71",
                             "type": "point",
-                            "x": 865.171919250224,
-                            "y": 84.23437169905822
+                            "x": -35.583,
+                            "y": 20.446
                         },
                         {
                             "id": "f8417594-4cbf-402b-91b9-c1bde63c712c",
                             "type": "point",
-                            "x": 930.187544250224,
-                            "y": 153.4687466990582
+                            "x": -35.583,
+                            "y": 20.446
                         }
                     ],
                     "labels": [],
@@ -191,14 +191,14 @@
                         {
                             "id": "b21f6eef-3d3d-48f5-9d62-5a4b3702123b",
                             "type": "point",
-                            "x": 372.23441925022433,
-                            "y": 257.1562466990581
+                            "x": -35.583,
+                            "y": 20.446
                         },
                         {
                             "id": "8e8cd75e-7442-48a7-9033-1f80117f8e3b",
                             "type": "point",
-                            "x": 477.2812942502243,
-                            "y": 184.1406124862044
+                            "x": -35.583,
+                            "y": 20.446
                         }
                     ],
                     "labels": [],
@@ -219,14 +219,14 @@
                         {
                             "id": "ed15b062-01cf-4a00-842a-b3cf911e4aaf",
                             "type": "point",
-                            "x": 374.67191925022433,
-                            "y": 325.84373748620436
+                            "x": -35.583,
+                            "y": 20.446
                         },
                         {
                             "id": "7310f2e9-948a-40d3-921d-0a716e668085",
                             "type": "point",
-                            "x": 477.2812942502243,
-                            "y": 216.14062169905816
+                            "x": -35.583,
+                            "y": 20.446
                         }
                     ],
                     "labels": [],
@@ -247,14 +247,14 @@
                         {
                             "id": "e6a8ff1a-ff1e-49b5-b711-60a4a86a6bb1",
                             "type": "point",
-                            "x": 627.9531323988091,
-                            "y": 184.1406124862044
+                            "x": -35.583,
+                            "y": 20.446
                         },
                         {
                             "id": "b4d251a5-f70c-4c03-9383-390e2ec4dfc0",
                             "type": "point",
-                            "x": 1213.6093823988087,
-                            "y": 185.43749669905816
+                            "x": -35.583,
+                            "y": 20.446
                         }
                     ],
                     "labels": [],
@@ -275,14 +275,14 @@
                         {
                             "id": "6e4f6d62-e45c-43e2-845f-c205ffcbfee7",
                             "type": "point",
-                            "x": 627.9531323988091,
-                            "y": 168.1406216990582
+                            "x": -35.583,
+                            "y": 20.446
                         },
                         {
                             "id": "f5ff8c91-88a1-4e2b-b390-d089faa5ec56",
                             "type": "point",
-                            "x": 930.187544250224,
-                            "y": 169.46873748620442
+                            "x": -35.583,
+                            "y": 20.446
                         }
                     ],
                     "labels": [],
@@ -303,14 +303,14 @@
                         {
                             "id": "53569f40-3d52-4300-aa6b-ea690797da1b",
                             "type": "point",
-                            "x": 627.9531323988091,
-                            "y": 152.14063091191196
+                            "x": -35.583,
+                            "y": 20.446
                         },
                         {
                             "id": "a511182b-d6b6-499b-ad29-2ae3b18bd0aa",
                             "type": "point",
-                            "x": 657.1250258245167,
-                            "y": 68.23438091191201
+                            "x": -35.583,
+                            "y": 20.446
                         }
                     ],
                     "labels": [],
@@ -331,126 +331,14 @@
                         {
                             "id": "2b650a63-c989-4da1-b925-7e69160efdec",
                             "type": "point",
-                            "x": 627.9531323988091,
-                            "y": 168.1406216990582
+                            "x": -35.583,
+                            "y": 20.446
                         },
                         {
                             "id": "b0cc1ca0-ab74-4d86-b1d6-bf90732146a4",
                             "type": "point",
-                            "x": 657.1250258245167,
-                            "y": 84.23437169905822
-                        }
-                    ],
-                    "labels": [],
-                    "width": 3,
-                    "color": "gray",
-                    "curvyness": 50,
-                    "selectedColor": "rgb(0,192,255)"
-                },
-                "3499a7ca-e88c-495c-84e0-081eb2fa9272": {
-                    "id": "3499a7ca-e88c-495c-84e0-081eb2fa9272",
-                    "type": "triangle",
-                    "selected": false,
-                    "source": "8ec5f3e7-30bc-4ffe-9362-99a9a7475fe8",
-                    "sourcePort": "ea0d5274-a264-4e83-be99-98dfd344b694",
-                    "target": "fa3d100f-39d0-447c-b99f-e8fa6719fc8d",
-                    "targetPort": "6c5ebca6-54b1-4a1a-9f9a-e77135c5abd0",
-                    "points": [
-                        {
-                            "id": "2ac5f631-e1c4-490f-9eff-783fea4ecd11",
-                            "type": "point",
-                            "x": 123.34375739880934,
-                            "y": 81.12500591191201
-                        },
-                        {
-                            "id": "df3014d5-4a66-4cbd-b598-e6739b0b7e41",
-                            "type": "point",
-                            "x": 242.99998897310175,
-                            "y": 151.93749439584474
-                        }
-                    ],
-                    "labels": [],
-                    "width": 3,
-                    "color": "gray",
-                    "curvyness": 50,
-                    "selectedColor": "rgb(0,192,255)"
-                },
-                "7ec9118a-b52f-4f38-bd7c-67a083276f35": {
-                    "id": "7ec9118a-b52f-4f38-bd7c-67a083276f35",
-                    "type": "custom",
-                    "selected": false,
-                    "source": "65bec10c-af39-4f21-8b71-7f1739960b5a",
-                    "sourcePort": "e26c06f9-7a1f-4392-95ec-e3d049c6ce51",
-                    "target": "fa3d100f-39d0-447c-b99f-e8fa6719fc8d",
-                    "targetPort": "3276cb2f-edc3-48ae-8bc9-cde4efe145b9",
-                    "points": [
-                        {
-                            "id": "c1bf231f-22ef-4edb-af82-ff70b67807e8",
-                            "type": "point",
-                            "x": 115.45311397310181,
-                            "y": 159.07813091191196
-                        },
-                        {
-                            "id": "9db7e98e-ab69-4eb5-ba1e-6b44449acf3f",
-                            "type": "point",
-                            "x": 242.99998897310175,
-                            "y": 167.93750591191196
-                        }
-                    ],
-                    "labels": [],
-                    "width": 3,
-                    "color": "gray",
-                    "curvyness": 50,
-                    "selectedColor": "rgb(0,192,255)"
-                },
-                "6eb5c795-927b-4598-9ee6-2b2dc886bde5": {
-                    "id": "6eb5c795-927b-4598-9ee6-2b2dc886bde5",
-                    "type": "triangle",
-                    "selected": false,
-                    "source": "fa3d100f-39d0-447c-b99f-e8fa6719fc8d",
-                    "sourcePort": "0f3fa1ea-92c1-45af-81fc-882b4604a066",
-                    "target": "75fa2162-1bad-4b72-8730-8d0956d6d135",
-                    "targetPort": "5661aacd-aa08-45de-a48e-6cd562ffa19e",
-                    "points": [
-                        {
-                            "id": "1997a70c-26dd-4c2c-bbc0-694d8bfd0c54",
-                            "type": "point",
-                            "x": 440.0156692502243,
-                            "y": 151.93749439584474
-                        },
-                        {
-                            "id": "a40405aa-984f-452d-a315-65471019d7eb",
-                            "type": "point",
-                            "x": 477.2812942502243,
-                            "y": 152.14063091191196
-                        }
-                    ],
-                    "labels": [],
-                    "width": 3,
-                    "color": "gray",
-                    "curvyness": 50,
-                    "selectedColor": "rgb(0,192,255)"
-                },
-                "8ab02216-eb7e-43b3-a9d8-1b8a532c84b2": {
-                    "id": "8ab02216-eb7e-43b3-a9d8-1b8a532c84b2",
-                    "type": "custom",
-                    "selected": false,
-                    "source": "fa3d100f-39d0-447c-b99f-e8fa6719fc8d",
-                    "sourcePort": "215e0b3a-e81c-4006-9e3f-872fe3aa5164",
-                    "target": "75fa2162-1bad-4b72-8730-8d0956d6d135",
-                    "targetPort": "d26bdeed-84bb-4e23-9fa0-dcee3900c421",
-                    "points": [
-                        {
-                            "id": "bdc25e94-7fbc-4fab-bf2d-3f1fff9efe3d",
-                            "type": "point",
-                            "x": 440.0156692502243,
-                            "y": 167.93750591191196
-                        },
-                        {
-                            "id": "8284f457-ed8c-4882-a80d-0741ef4abcc3",
-                            "type": "point",
-                            "x": 477.2812942502243,
-                            "y": 168.1406216990582
+                            "x": -35.583,
+                            "y": 20.446
                         }
                     ],
                     "labels": [],
@@ -462,7 +350,7 @@
             }
         },
         {
-            "id": "e258bb75-9d41-4a9a-8dc0-a2811d7b16b3",
+            "id": "673f5ed3-921e-4578-b29d-0614d0eeda16",
             "type": "diagram-nodes",
             "isSvg": false,
             "transformed": true,
@@ -474,28 +362,26 @@
                     "extras": {
                         "type": "Start"
                     },
-                    "x": 84.64658115891672,
-                    "y": 46.49500939636508,
+                    "x": 84.647,
+                    "y": 46.495,
                     "ports": [
                         {
                             "id": "ea0d5274-a264-4e83-be99-98dfd344b694",
                             "type": "default",
-                            "x": 115.84375739880936,
-                            "y": 73.62500591191201,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "8ec5f3e7-30bc-4ffe-9362-99a9a7475fe8",
-                            "links": [
-                                "3499a7ca-e88c-495c-84e0-081eb2fa9272"
-                            ],
+                            "links": [],
                             "in": false,
                             "label": "▶"
                         },
                         {
                             "id": "1f742844-3d9b-4818-a7c3-4daba263ff78",
                             "type": "default",
-                            "x": 115.84375739880936,
-                            "y": 89.62499669905823,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-out-1",
                             "alignment": "right",
                             "parentNode": "8ec5f3e7-30bc-4ffe-9362-99a9a7475fe8",
@@ -520,14 +406,14 @@
                         "type": "Finish",
                         "borderColor": "rgb(0,192,255)"
                     },
-                    "x": 1438.8024543082768,
-                    "y": 138.64002855851632,
+                    "x": 1438.802,
+                    "y": 138.64,
                     "ports": [
                         {
                             "id": "82ffb26d-208f-4c04-8b2c-c5342aae2641",
                             "type": "default",
-                            "x": 1440.796919250224,
-                            "y": 165.76561248620442,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "in-0",
                             "alignment": "left",
                             "parentNode": "b9e041cf-27c7-4488-ada4-6623adb0ab30",
@@ -540,8 +426,8 @@
                         {
                             "id": "e8a1caeb-514f-4d71-8afa-77d5cf4dac5e",
                             "type": "default",
-                            "x": 1440.796919250224,
-                            "y": 181.76563091191196,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-in-1",
                             "alignment": "left",
                             "parentNode": "b9e041cf-27c7-4488-ada4-6623adb0ab30",
@@ -566,20 +452,18 @@
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
                     },
-                    "x": 49.172721354125365,
-                    "y": 124.44940158802436,
+                    "x": 49.173,
+                    "y": 124.449,
                     "ports": [
                         {
                             "id": "e26c06f9-7a1f-4392-95ec-e3d049c6ce51",
                             "type": "default",
-                            "x": 107.95311397310182,
-                            "y": 151.57813091191196,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "65bec10c-af39-4f21-8b71-7f1739960b5a",
-                            "links": [
-                                "7ec9118a-b52f-4f38-bd7c-67a083276f35"
-                            ],
+                            "links": [],
                             "in": false,
                             "label": "mnist"
                         }
@@ -599,14 +483,14 @@
                         "type": "int",
                         "borderColor": "rgb(0,192,255)"
                     },
-                    "x": 757.6587043291158,
-                    "y": 254.42636671402474,
+                    "x": 757.659,
+                    "y": 254.426,
                     "ports": [
                         {
                             "id": "f398f210-9249-40cc-a4df-af5ca6f72784",
                             "type": "default",
-                            "x": 821.9374705473939,
-                            "y": 281.5625059119119,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "9dca8612-5727-4d84-b9ac-16cdb3809f87",
@@ -632,14 +516,14 @@
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
                     },
-                    "x": 42.408244536144906,
-                    "y": 263.1702207171203,
+                    "x": 42.408,
+                    "y": 263.17,
                     "ports": [
                         {
                             "id": "febcddf4-e51c-4c55-8bfc-7a0f57be6d5a",
                             "type": "default",
-                            "x": 101.18749818595559,
-                            "y": 290.2968716990581,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "df8259bd-7432-41e7-9d9f-a42c5e25bf2d",
@@ -662,14 +546,14 @@
                     "extras": {
                         "type": "string"
                     },
-                    "x": 37.85912256177377,
-                    "y": 325.5579758191611,
+                    "x": 37.859,
+                    "y": 325.558,
                     "ports": [
                         {
                             "id": "494abf19-7846-4d3a-a29e-93bcb7a1364e",
                             "type": "default",
-                            "x": 98.98437318595559,
-                            "y": 352.6874966990581,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "cdeb7e03-837a-46a0-a5e8-55f1fb7fd90f",
@@ -693,14 +577,14 @@
                         "type": "float",
                         "borderColor": "rgb(0,192,255)"
                     },
-                    "x": 310.258095077014,
-                    "y": 222.52590664630833,
+                    "x": 310.258,
+                    "y": 222.526,
                     "ports": [
                         {
                             "id": "31173d23-e739-4784-8444-88e9ba6ba94e",
                             "type": "default",
-                            "x": 364.73441925022433,
-                            "y": 249.65624669905813,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "bacd83a3-8d6e-4db5-ba21-bd3c25af184d",
@@ -726,14 +610,14 @@
                         "type": "boolean",
                         "borderColor": "rgb(0,192,255)"
                     },
-                    "x": 310.23901430544777,
-                    "y": 291.2178024342392,
+                    "x": 310.239,
+                    "y": 291.218,
                     "ports": [
                         {
                             "id": "e23b1613-a78f-4f28-9603-a3acfb1abd6e",
                             "type": "default",
-                            "x": 367.17191925022433,
-                            "y": 318.34373748620436,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "d1ecf20f-3b86-4d76-b2ab-2f60fd95e63a",
@@ -758,14 +642,14 @@
                     "extras": {
                         "type": "string"
                     },
-                    "x": 11.841776326845544,
-                    "y": 203.4644486025019,
+                    "x": 11.842,
+                    "y": 203.464,
                     "ports": [
                         {
                             "id": "2c6bd512-c9a9-490a-aee8-a2961128a575",
                             "type": "default",
-                            "x": 101.70312318595559,
-                            "y": 230.59373748620436,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "4943bdc8-a5a4-4a28-89b3-a7f841696f69",
@@ -789,14 +673,14 @@
                         "type": "eval",
                         "path": "xai_components/xai_learning/training.py"
                     },
-                    "x": 1204.1171889934642,
-                    "y": 118.80847784281949,
+                    "x": 1204.117,
+                    "y": 118.808,
                     "ports": [
                         {
                             "id": "65093d30-9ff3-432b-bb4f-61702726567a",
                             "type": "default",
-                            "x": 1206.1093823988087,
-                            "y": 145.93750130548509,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "in-0",
                             "alignment": "left",
                             "parentNode": "1df74e98-686e-4c0d-9ff6-c85040db239d",
@@ -809,8 +693,8 @@
                         {
                             "id": "83fc3500-4b92-40b7-8b59-163596fb3d37",
                             "type": "default",
-                            "x": 1365.9531323988087,
-                            "y": 145.93750130548509,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "1df74e98-686e-4c0d-9ff6-c85040db239d",
@@ -823,8 +707,8 @@
                         {
                             "id": "108a5afa-e846-4771-b519-f86f35a161a1",
                             "type": "default",
-                            "x": 1206.1093823988087,
-                            "y": 161.93750591191196,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-any-model",
                             "alignment": "left",
                             "parentNode": "1df74e98-686e-4c0d-9ff6-c85040db239d",
@@ -837,8 +721,8 @@
                         {
                             "id": "c79caea5-1885-4e61-9273-45387cbd1eab",
                             "type": "default",
-                            "x": 1206.1093823988087,
-                            "y": 177.93749669905816,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-any-eval_dataset",
                             "alignment": "left",
                             "parentNode": "1df74e98-686e-4c0d-9ff6-c85040db239d",
@@ -851,8 +735,8 @@
                         {
                             "id": "bc6951c0-6acf-482f-aca7-cd145199bc3e",
                             "type": "default",
-                            "x": 1365.9531323988087,
-                            "y": 161.93750591191196,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-out-Dict[str, str]-metrics",
                             "alignment": "right",
                             "parentNode": "1df74e98-686e-4c0d-9ff6-c85040db239d",
@@ -881,14 +765,14 @@
                         "type": "train",
                         "path": "xai_components/xai_learning/training.py"
                     },
-                    "x": 920.6975581096195,
-                    "y": 102.83452681866703,
+                    "x": 920.698,
+                    "y": 102.835,
                     "ports": [
                         {
                             "id": "f28e4a7c-4a46-490c-b9cf-83a0c1fde6b0",
                             "type": "default",
-                            "x": 922.687544250224,
-                            "y": 129.96875591191196,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "in-0",
                             "alignment": "left",
                             "parentNode": "68323fd7-b170-4e8d-85c4-2ccca655d273",
@@ -901,8 +785,8 @@
                         {
                             "id": "a47793b4-1bd1-4868-9c98-68c79d479953",
                             "type": "default",
-                            "x": 1156.9999705473938,
-                            "y": 129.96875591191196,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "68323fd7-b170-4e8d-85c4-2ccca655d273",
@@ -915,8 +799,8 @@
                         {
                             "id": "67b7bf15-e4b3-4913-abeb-0528381c3f56",
                             "type": "default",
-                            "x": 922.687544250224,
-                            "y": 145.9687466990582,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-any-model",
                             "alignment": "left",
                             "parentNode": "68323fd7-b170-4e8d-85c4-2ccca655d273",
@@ -929,8 +813,8 @@
                         {
                             "id": "32e744fe-1271-418b-8b34-65efa08cfb4c",
                             "type": "default",
-                            "x": 922.687544250224,
-                            "y": 161.96873748620442,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-any-training_data",
                             "alignment": "left",
                             "parentNode": "68323fd7-b170-4e8d-85c4-2ccca655d273",
@@ -943,8 +827,8 @@
                         {
                             "id": "e4574193-6f5a-4a5e-b15e-fe865ea587eb",
                             "type": "default",
-                            "x": 922.687544250224,
-                            "y": 177.96875591191196,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-int-training_epochs",
                             "alignment": "left",
                             "parentNode": "68323fd7-b170-4e8d-85c4-2ccca655d273",
@@ -957,8 +841,8 @@
                         {
                             "id": "f56d6edf-c587-4ed1-9fd5-6d4996a3073e",
                             "type": "default",
-                            "x": 1156.9999705473938,
-                            "y": 145.9687466990582,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-out-keras.Sequential-trained_model",
                             "alignment": "right",
                             "parentNode": "68323fd7-b170-4e8d-85c4-2ccca655d273",
@@ -971,8 +855,8 @@
                         {
                             "id": "f83929ec-f3d3-4b18-941c-2c9b54e1260a",
                             "type": "default",
-                            "x": 1156.9999705473938,
-                            "y": 161.96873748620442,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-out-dict-training_metrics",
                             "alignment": "right",
                             "parentNode": "68323fd7-b170-4e8d-85c4-2ccca655d273",
@@ -1003,14 +887,14 @@
                         "type": "model",
                         "path": "xai_components/xai_learning/training.py"
                     },
-                    "x": 647.6378850651439,
-                    "y": 33.6020348344272,
+                    "x": 647.638,
+                    "y": 33.602,
                     "ports": [
                         {
                             "id": "029878ce-0e04-4b3b-a090-50528cbddccd",
                             "type": "default",
-                            "x": 649.6250258245167,
-                            "y": 60.73438091191201,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "in-0",
                             "alignment": "left",
                             "parentNode": "9bb883a7-3c66-443b-9ae3-02fd004c1566",
@@ -1023,8 +907,8 @@
                         {
                             "id": "f8359848-295f-4d0c-97b1-5ad136dfc9f2",
                             "type": "default",
-                            "x": 857.671919250224,
-                            "y": 60.73438091191201,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "9bb883a7-3c66-443b-9ae3-02fd004c1566",
@@ -1037,8 +921,8 @@
                         {
                             "id": "df362df6-a268-4abe-9081-64574af66c98",
                             "type": "default",
-                            "x": 649.6250258245167,
-                            "y": 76.73437169905823,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-any-training_data",
                             "alignment": "left",
                             "parentNode": "9bb883a7-3c66-443b-9ae3-02fd004c1566",
@@ -1051,8 +935,8 @@
                         {
                             "id": "8857aad6-5ef4-4ad3-900d-58921cacabef",
                             "type": "default",
-                            "x": 857.671919250224,
-                            "y": 76.73437169905823,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-out-keras.Sequential-model",
                             "alignment": "right",
                             "parentNode": "9bb883a7-3c66-443b-9ae3-02fd004c1566",
@@ -1065,8 +949,8 @@
                         {
                             "id": "75356dba-6f26-4fe9-ad84-86eada24acba",
                             "type": "default",
-                            "x": 857.671919250224,
-                            "y": 92.73437630548511,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-out-dict-model_config",
                             "alignment": "right",
                             "parentNode": "9bb883a7-3c66-443b-9ae3-02fd004c1566",
@@ -1089,34 +973,33 @@
                 },
                 "75fa2162-1bad-4b72-8730-8d0956d6d135": {
                     "id": "75fa2162-1bad-4b72-8730-8d0956d6d135",
+                    "locked": false,
                     "type": "custom-node",
                     "selected": false,
                     "extras": {
                         "type": "split",
                         "path": "xai_components/xai_learning/training.py"
                     },
-                    "x": 467.78265448078594,
-                    "y": 117.5018428382797,
+                    "x": 467.783,
+                    "y": 117.502,
                     "ports": [
                         {
                             "id": "5661aacd-aa08-45de-a48e-6cd562ffa19e",
                             "type": "default",
-                            "x": 469.7812942502243,
-                            "y": 144.64063091191196,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "in-0",
                             "alignment": "left",
                             "parentNode": "75fa2162-1bad-4b72-8730-8d0956d6d135",
-                            "links": [
-                                "6eb5c795-927b-4598-9ee6-2b2dc886bde5"
-                            ],
+                            "links": [],
                             "in": true,
                             "label": "▶"
                         },
                         {
                             "id": "9913e11c-57eb-483c-8e6a-23889093e986",
                             "type": "default",
-                            "x": 620.4531323988091,
-                            "y": 144.64063091191196,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "75fa2162-1bad-4b72-8730-8d0956d6d135",
@@ -1129,22 +1012,20 @@
                         {
                             "id": "d26bdeed-84bb-4e23-9fa0-dcee3900c421",
                             "type": "default",
-                            "x": 469.7812942502243,
-                            "y": 160.6406216990582,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-any-dataset",
                             "alignment": "left",
                             "parentNode": "75fa2162-1bad-4b72-8730-8d0956d6d135",
-                            "links": [
-                                "8ab02216-eb7e-43b3-a9d8-1b8a532c84b2"
-                            ],
+                            "links": [],
                             "in": true,
                             "label": "dataset"
                         },
                         {
                             "id": "9594e3bf-0d9d-4a38-b8db-f40f1b08dfd6",
                             "type": "default",
-                            "x": 469.7812942502243,
-                            "y": 176.6406124862044,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-float-train_split",
                             "alignment": "left",
                             "parentNode": "75fa2162-1bad-4b72-8730-8d0956d6d135",
@@ -1157,8 +1038,8 @@
                         {
                             "id": "e1bb025a-eae6-456f-b150-45a19571067f",
                             "type": "default",
-                            "x": 469.7812942502243,
-                            "y": 192.64063091191193,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-int-random_state",
                             "alignment": "left",
                             "parentNode": "75fa2162-1bad-4b72-8730-8d0956d6d135",
@@ -1169,8 +1050,8 @@
                         {
                             "id": "27686323-6728-4ced-aaf0-aca277b73cfc",
                             "type": "default",
-                            "x": 469.7812942502243,
-                            "y": 208.64062169905816,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-boolean-shuffle",
                             "alignment": "left",
                             "parentNode": "75fa2162-1bad-4b72-8730-8d0956d6d135",
@@ -1183,8 +1064,8 @@
                         {
                             "id": "8cc8aadb-133b-4861-9289-55bfebc41b26",
                             "type": "default",
-                            "x": 620.4531323988091,
-                            "y": 160.6406216990582,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-out-Tuple[np.array, np.array]-train",
                             "alignment": "right",
                             "parentNode": "75fa2162-1bad-4b72-8730-8d0956d6d135",
@@ -1198,8 +1079,8 @@
                         {
                             "id": "e71aac04-247d-479f-ae2c-4ff0f358cd22",
                             "type": "default",
-                            "x": 620.4531323988091,
-                            "y": 176.6406124862044,
+                            "x": -35.583,
+                            "y": 20.446,
                             "name": "parameter-out-Tuple[np.array, np.array]-test",
                             "alignment": "right",
                             "parentNode": "75fa2162-1bad-4b72-8730-8d0956d6d135",
@@ -1223,98 +1104,6 @@
                         "9913e11c-57eb-483c-8e6a-23889093e986",
                         "8cc8aadb-133b-4861-9289-55bfebc41b26",
                         "e71aac04-247d-479f-ae2c-4ff0f358cd22"
-                    ]
-                },
-                "fa3d100f-39d0-447c-b99f-e8fa6719fc8d": {
-                    "id": "fa3d100f-39d0-447c-b99f-e8fa6719fc8d",
-                    "type": "custom-node",
-                    "selected": false,
-                    "extras": {
-                        "type": "in",
-                        "path": "xai_components/xai_learning/training.py"
-                    },
-                    "x": 233.51083627304888,
-                    "y": 117.30108515453269,
-                    "ports": [
-                        {
-                            "id": "6c5ebca6-54b1-4a1a-9f9a-e77135c5abd0",
-                            "type": "default",
-                            "x": 235.49998897310175,
-                            "y": 144.43750130548509,
-                            "name": "in-0",
-                            "alignment": "left",
-                            "parentNode": "fa3d100f-39d0-447c-b99f-e8fa6719fc8d",
-                            "links": [
-                                "3499a7ca-e88c-495c-84e0-081eb2fa9272"
-                            ],
-                            "in": true,
-                            "label": "▶"
-                        },
-                        {
-                            "id": "0f3fa1ea-92c1-45af-81fc-882b4604a066",
-                            "type": "default",
-                            "x": 432.5156692502243,
-                            "y": 144.43750130548509,
-                            "name": "out-0",
-                            "alignment": "right",
-                            "parentNode": "fa3d100f-39d0-447c-b99f-e8fa6719fc8d",
-                            "links": [
-                                "6eb5c795-927b-4598-9ee6-2b2dc886bde5"
-                            ],
-                            "in": false,
-                            "label": "▶"
-                        },
-                        {
-                            "id": "3276cb2f-edc3-48ae-8bc9-cde4efe145b9",
-                            "type": "default",
-                            "x": 235.49998897310175,
-                            "y": 160.43750591191196,
-                            "name": "parameter-string-dataset_name",
-                            "alignment": "left",
-                            "parentNode": "fa3d100f-39d0-447c-b99f-e8fa6719fc8d",
-                            "links": [
-                                "7ec9118a-b52f-4f38-bd7c-67a083276f35"
-                            ],
-                            "in": true,
-                            "label": "dataset_name"
-                        },
-                        {
-                            "id": "215e0b3a-e81c-4006-9e3f-872fe3aa5164",
-                            "type": "default",
-                            "x": 432.5156692502243,
-                            "y": 160.43750591191196,
-                            "name": "parameter-out-Tuple[np.array, np.array]-dataset",
-                            "alignment": "right",
-                            "parentNode": "fa3d100f-39d0-447c-b99f-e8fa6719fc8d",
-                            "links": [
-                                "8ab02216-eb7e-43b3-a9d8-1b8a532c84b2"
-                            ],
-                            "in": false,
-                            "label": "dataset"
-                        },
-                        {
-                            "id": "5f727af9-2503-454f-9774-b6caf918dc80",
-                            "type": "default",
-                            "x": 432.5156692502243,
-                            "y": 176.4374966990582,
-                            "name": "parameter-out-any-class_dict",
-                            "alignment": "right",
-                            "parentNode": "fa3d100f-39d0-447c-b99f-e8fa6719fc8d",
-                            "links": [],
-                            "in": false,
-                            "label": "class_dict"
-                        }
-                    ],
-                    "name": "ReadDataSet",
-                    "color": "rgb(153,204,51)",
-                    "portsInOrder": [
-                        "6c5ebca6-54b1-4a1a-9f9a-e77135c5abd0",
-                        "3276cb2f-edc3-48ae-8bc9-cde4efe145b9"
-                    ],
-                    "portsOutOrder": [
-                        "0f3fa1ea-92c1-45af-81fc-882b4604a066",
-                        "215e0b3a-e81c-4006-9e3f-872fe3aa5164",
-                        "5f727af9-2503-454f-9774-b6caf918dc80"
                     ]
                 }
             }
