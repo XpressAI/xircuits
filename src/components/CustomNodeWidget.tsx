@@ -322,7 +322,9 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                                 </button>
                                 <S.DescriptionName color={this.props.node.getOptions().color}>{this.props.node.getOptions()["name"]}</S.DescriptionName>
                                 <p className='description-title'>Description:</p>
-                                <div className='description-container'>
+                                <div 
+                                    onWheel={(e) => e.stopPropagation()}
+                                    className='description-container'>
                                     <div className='markdown-body' dangerouslySetInnerHTML={this.renderText(this.state.descriptionStr)} />
                                 </div>
                             </div>}
