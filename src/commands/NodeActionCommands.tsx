@@ -607,28 +607,31 @@ export function addNodeActionCommands(
                 // When no node selected, just return
                 return;
             }
-            if (node.getOptions()["name"] !== "undefined") {
-                let modelName = node.getOptions()["name"];
-                const errorMsg = `${modelName} node cannot be deleted!`
-                if (modelName !== 'Start' && modelName !== 'Finish') {
-                    if (!node.isLocked()) {
-                        node.remove()
-                    } else {
+            const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
+            selectedEntities.forEach((node) => {
+                if (node.getOptions()["name"] !== "undefined") {
+                    let modelName = node.getOptions()["name"];
+                    const errorMsg = `${modelName} node cannot be deleted!`
+                    if (modelName !== 'Start' && modelName !== 'Finish') {
+                        if (!node.isLocked()) {
+                            node.remove()
+                        } else {
+                            showDialog({
+                                title: 'Locked Node',
+                                body: errorMsg,
+                                buttons: [Dialog.warnButton({ label: 'OK' })]
+                            });
+                        }
+                    }
+                    else {
                         showDialog({
-                            title: 'Locked Node',
+                            title: 'Undeletable Node',
                             body: errorMsg,
                             buttons: [Dialog.warnButton({ label: 'OK' })]
                         });
                     }
                 }
-                else {
-                    showDialog({
-                        title: 'Undeletable Node',
-                        body: errorMsg,
-                        buttons: [Dialog.warnButton({ label: 'OK' })]
-                    });
-                }
-            }
+            })
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         }
     }
