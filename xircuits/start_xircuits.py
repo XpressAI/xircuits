@@ -41,23 +41,39 @@ def download_component_library():
         for component_lib in args.sublib:
             request_submodule_library(component_lib)
 
-
 def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--branch', nargs='?', default="master", help='pull files from a xircuits branch')
 
-    args = parser.parse_args()
-    branch_name = args.branch
+    parsed, extra_args = parser.parse_known_args()
 
+    for arg in extra_args:
+        if arg.startswith(("-", "--")):
+            parser.add_argument(arg.split('=')[0])
+
+    args = parser.parse_args()
+
+    # fetch xai_components
     component_library_path = Path(os.getcwd()) / "xai_components"
 
     if not component_library_path.exists():
         val = input("Xircuits Component Library is not found. Would you like to load it in the current path (Y/N)? ")
         if val.lower() == ("y" or "yes"):
-            request_folder("xai_components", branch=branch_name)
+            request_folder("xai_components", branch=args.branch)
+
+    # launch if extra arguments pro
+    if extra_args:
+        try:
+            launch_cmd = "jupyter lab" + " " + " ".join(extra_args)
+            os.system(launch_cmd)
+
+        except Exception as e:
+            print("Error in launch args! Error log:\n")
+            print(e)
     
-    os.system("jupyter lab")
+    else:
+        os.system("jupyter lab")
 
 print(
 '''
