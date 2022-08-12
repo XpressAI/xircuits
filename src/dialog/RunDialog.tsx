@@ -167,7 +167,7 @@ export const RunDialog = ({
 									padding: '2px 2.26ex 2px 2px',
 									borderRadius: '6px 3px 3px 6px',
 									fontSize: 20,
-									width: '10vw'
+									width: '60%'
 								},
 								input: {
 									borderRadius: '6px 3px 3px 6px',
@@ -176,7 +176,7 @@ export const RunDialog = ({
 									marginRight: 4,
 									display: 'block',
 									fontWeight: 100,
-									width: '11.3vw'
+									width: '100%'
 								},
 								plus: {
 									background: 'rgba(255, 255, 255, 100)'
@@ -217,7 +217,7 @@ export const RunDialog = ({
 									padding: '2px 2.26ex 2px 2px',
 									borderRadius: '6px 3px 3px 6px',
 									fontSize: 20,
-									width: '10vw'
+									width: '60%'
 								},
 								input: {
 									borderRadius: '6px 3px 3px 6px',
@@ -226,7 +226,7 @@ export const RunDialog = ({
 									marginRight: 4,
 									display: 'block',
 									fontWeight: 100,
-									width: '11.3vw'
+									width: '100%'
 								},
 								plus: {
 									background: 'rgba(255, 255, 255, 100)'
