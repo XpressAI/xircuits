@@ -55,7 +55,7 @@ class LoadKerasModel(Component):
     input_shape: InArg[any]
     pooling: InArg[any]
     classes: InArg[int]
-    kargs: InArg[int]
+    args: InArg[int]
 
     model: OutArg[any]
 
@@ -67,7 +67,7 @@ class LoadKerasModel(Component):
         self.input_tensor = InArg(None)
         self.pooling = InArg(None)
         self.classes = InArg(None)
-        self.kargs = InArg(None)
+        self.args = InArg(None)
 
         self.model = OutArg(None)
 
