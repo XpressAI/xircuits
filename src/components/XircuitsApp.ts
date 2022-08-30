@@ -47,7 +47,7 @@ export class XircuitsApplication {
                 return this.diagramEngine;
         }
 
-        public customDeserializeModel = (modelContext: any) => {
+        public customDeserializeModel = (modelContext: any, initialRender?: boolean) => {
 
                 if (modelContext == null) {
                         // When context empty, just return
@@ -92,7 +92,6 @@ export class XircuitsApplication {
                                 const sourceNode = tempModel.getNode(link.source);
                                 const targetNode = tempModel.getNode(link.target);
                                 const linkPoints = link.points;
-                                const points = [];
 
                                 const sourcePort = sourceNode.getPortFromID(link.sourcePort);
                                 const sourcePortName = sourcePort.getOptions()['name'];
@@ -103,7 +102,6 @@ export class XircuitsApplication {
                                                 newLink = newTriangleLink;
                                         }
                                 }
-                                newLink.setSourcePort(sourcePort);
 
                                 const targetPort = targetNode.getPortFromID(link.targetPort);
                                 const targetPortName = targetPort.getOptions()['name'];
@@ -114,14 +112,27 @@ export class XircuitsApplication {
                                                 newLink = newTriangleLink;
                                         }
                                 }
-                                newLink.setTargetPort(targetPort);
 
                                 // Set points on link if exist
+                                const points = [];
                                 linkPoints.map((point)=> {
                                         points.push(new PointModel({ id:point.id, link: link, position: new Point(point.x, point.y) }));
                                 })
-                                newLink.setPoints(points);
+
+                                newLink.setSourcePort(sourcePort);
+                                newLink.setTargetPort(targetPort);
                                 newLink.setSelected(link.selected);
+
+                                if (initialRender) {
+                                        // When initial rendering of xircuits, 
+                                        // delay the rendering of points.
+                                        setTimeout(() => {
+                                                newLink.setPoints(points);
+                                        }, 10)
+                                }
+                                else {
+                                        newLink.setPoints(points);
+                                }
                                 tempModel.addLink(newLink);
                         }
                 }
