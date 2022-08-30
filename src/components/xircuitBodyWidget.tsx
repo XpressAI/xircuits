@@ -1,7 +1,7 @@
 import React, { FC, useState, useCallback, useEffect, useRef } from 'react';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
-import { DefaultLinkModel, LinkModel } from '@projectstorm/react-diagrams';
+import { LinkModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
 import { Dialog, showDialog, showErrorMessage } from '@jupyterlab/apputils';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
@@ -180,6 +180,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const [runType, setRunType] = useState<string>("run");
 	const [runTypesCfg, setRunTypesCfg] = useState<string>("");
+	const initialRender = useRef(true);
 	const xircuitLogger = new Log(app);
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
@@ -214,7 +215,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			try {
 				if (notInitialRender.current) {
 					const model: any = currentContext.model.toJSON();
-					let deserializedModel = xircuitsApp.customDeserializeModel(model);
+					let deserializedModel = xircuitsApp.customDeserializeModel(model, initialRender.current);
 					deserializedModel.registerListener({
 						// Detect changes when node is dropped or deleted
 						nodesUpdated: () => {
@@ -254,6 +255,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						}
 					})
 					xircuitsApp.getDiagramEngine().setModel(deserializedModel);
+					initialRender.current = false;
 				} else {
 					// Clear undo history when first time rendering
 					notInitialRender.current = true;
