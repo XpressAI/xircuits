@@ -434,27 +434,13 @@
                             ],
                             "in": false,
                             "label": "▶"
-                        },
-                        {
-                            "id": "07e10895-cb31-4eaa-b432-d93fdd44f2e8",
-                            "type": "default",
-                            "x": 84.20313134661713,
-                            "y": 94.14062726399794,
-                            "name": "parameter-out-1",
-                            "alignment": "right",
-                            "parentNode": "867a89f7-0711-46d2-84cf-969e891db82c",
-                            "links": [],
-                            "in": false,
-                            "label": "  "
                         }
                     ],
                     "name": "Start",
                     "color": "rgb(255,102,102)",
                     "portsInOrder": [],
                     "portsOutOrder": [
-                        "70695e04-f534-4781-9632-edea5690b4fc",
-                        "07e10895-cb31-4eaa-b432-d93fdd44f2e8"
-                    ]
+                        "70695e04-f534-4781-9632-edea5690b4fc"                    ]
                 },
                 "9d575810-382c-4763-a0df-7eb87594b3e1": {
                     "id": "9d575810-382c-4763-a0df-7eb87594b3e1",
@@ -479,25 +465,12 @@
                             ],
                             "in": true,
                             "label": "▶"
-                        },
-                        {
-                            "id": "312e0621-e268-45e9-a331-b82f48a47b5c",
-                            "type": "default",
-                            "x": 1150.437501039212,
-                            "y": 409.21877880102227,
-                            "name": "parameter-in-1",
-                            "alignment": "left",
-                            "parentNode": "9d575810-382c-4763-a0df-7eb87594b3e1",
-                            "links": [],
-                            "in": true,
-                            "label": "  "
                         }
                     ],
                     "name": "Finish",
                     "color": "rgb(255,102,102)",
                     "portsInOrder": [
-                        "ea8458de-21d3-49fb-a66d-2c74e5dedfbd",
-                        "312e0621-e268-45e9-a331-b82f48a47b5c"
+                        "ea8458de-21d3-49fb-a66d-2c74e5dedfbd"
                     ],
                     "portsOutOrder": []
                 },
