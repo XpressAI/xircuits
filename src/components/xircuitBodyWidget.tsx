@@ -715,16 +715,34 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		for (let i = 0; i < allNodes.length; i++) {
 
 			let nodeType = allNodes[i]["extras"]["type"];
+			let isNextNodeEmpty = allNodes[i]["extras"]["nextNode"];
+			let sourceBranchId = allNodes[i]['extras']['sourceBranchId'];
+			let nextNodeAfterBranch = allNodes[i]["extras"]["finishNode"];
+
 			let bindingName = 'c_' + i;
 			let nextBindingName = 'c_' + (i + 1);
 
-			if (nodeType == 'Start' || nodeType == 'Finish') {
-			} else if (i == (allNodes.length - 2)) {
-				pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
-			} else {
-				pythonCode += '    ' + bindingName + '.next = ' + nextBindingName + '\n';
+			for (let j = 0; j < allNodes.length; j++) {
+				let branchFlowportId = allNodes[i]['extras']['portId'];
+				if (sourceBranchId == allNodes[j].getID()) {
+					let sourceBindingName = 'c_' + j;
+					const portName = allNodes[j].getPortFromID(branchFlowportId).getName().split('out-flow-')[1];
+					pythonCode += '    ' + sourceBindingName + `.${portName} = ` + 'SubGraphExecutor(' + 'c_' + i + ')\n';
+				}
 			}
 
+			if (nodeType == 'Start' || nodeType == 'Finish') {
+			} else if (isNextNodeEmpty === null && isNextNodeEmpty !== undefined) {
+				pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
+			} else if(nextNodeAfterBranch){
+				for (let j = 0; j < allNodes.length; j++) {
+					if (nextNodeAfterBranch.getID() == allNodes[j].getID()){
+						pythonCode += '    ' + bindingName + '.next = ' + 'c_' + j +'\n';
+					}
+				}
+			}else {
+				pythonCode += '    ' + bindingName + '.next = ' + nextBindingName + '\n';
+			}
 		}
 
 		if (debuggerMode == true) pythonCode += '    ' + 'debug_mode = args.debug_mode\n';
