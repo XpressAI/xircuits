@@ -174,28 +174,31 @@ class ComponentsRouteHandler(APIHandler):
 
         is_arg = lambda n: isinstance(n, ast.AnnAssign) and \
                                            isinstance(n.annotation, ast.Subscript) and \
-                                           n.annotation.value.id in ('InArg', 'InCompArg', 'OutArg')
-        
+                                           n.annotation.value.id in ['InArg', 'InCompArg', 'OutArg']
+
+        is_flow_arg = lambda n: isinstance(n, ast.AnnAssign) and \
+                                            isinstance(n.annotation, ast.Name) and \
+                                            n.annotation.id in ['BaseComponent']
+
         python_version = platform.python_version_tuple()
-        if int(python_version[1]) == 8:
-            variables = [
-                {
+
+        variables = []
+        for v in (node.body):
+            if is_flow_arg(v):
+                variables.append({
+                    "name": v.target.id,
+                    "kind": v.annotation.id,
+                })
+                continue
+            elif is_arg(v):
+                variables.append({
                     "name": v.target.id,
                     "kind": v.annotation.value.id,
-                    "type": read_orig_code(v.annotation.slice.value, file_lines)
-                }
-                for v in node.body if is_arg(v)
-            ]
-        else:
-            variables = [
-                {
-                    "name": v.target.id,
-                    "kind": v.annotation.value.id,
-                    # "type": ast.unparse(v.annotation.slice)
-                    "type": read_orig_code(v.annotation.slice, file_lines)
-                }
-                for v in node.body if is_arg(v)
-            ]
+                    "type": read_orig_code(v.annotation.slice.value if int(python_version[1]) == 8 else v.annotation.slice, file_lines)
+                })
+                continue
+            else:
+                continue
 
         docstring = ast.get_docstring(node)
         lineno = [

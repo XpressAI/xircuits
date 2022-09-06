@@ -94,6 +94,7 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 				symbolLabel = '[_]';
 				break;
 			case "0":
+			case "flow":
 				symbolLabel = null;
 				break;
 			default:

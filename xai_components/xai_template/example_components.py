@@ -1,17 +1,29 @@
-from xai_components.base import InArg, OutArg, InCompArg, Component, xai_component
+from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component
 
 @xai_component(color="red")
-class HelloComponent(Component):
-    """The simplest component that greets the user. 
+class TestFlowPort(Component):
+    """Testing Flowport Component. 
     """
+    when_A: BaseComponent
+    when_B: BaseComponent
+    condition: InArg[bool]
+    
     def __init__(self):
 
         self.done = False
+        self.condition = InArg.empty()
+        self.when_A = Component
+        self.when_B = Component
 
     def execute(self, ctx) -> None:
         
-        #If the import is only exclusive to 1 component, it is a good practice to import inside execute()
-        import os 
+        condition = self.condition.value
+        if condition:
+            self.when_A.do(ctx)
+        else:
+            self.when_B.do(ctx)
+
+        self.done = True
 
         creator_name = os.getlogin()
         print("Hello, " + creator_name)
