@@ -80,6 +80,17 @@ class Component(BaseComponent):
     def debug_repr(self) -> str:
         return "<h1>Component</h1>"
 
+class SubGraphExecutor:
+    
+    def __init__(self, component):
+        self.comp = component
+        
+    def do(self, ctx):
+        comp = self.comp
+        is_done = False
+        while not is_done or comp is not None:
+            is_done, comp = comp.do(ctx)
+
 
 class BranchComponent(BaseComponent):
     when_true: BaseComponent

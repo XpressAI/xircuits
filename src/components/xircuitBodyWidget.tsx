@@ -370,6 +370,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let pythonCode = 'from argparse import ArgumentParser\n';
 		pythonCode += 'from datetime import datetime\n';
 		pythonCode += 'from time import sleep\n';
+		pythonCode += 'from xai_components.base import SubGraphExecutor\n';
 		if (debuggerMode == true) {
 			pythonCode += 'import json, os, signal\n';
 			pythonCode += 'from flask import Flask, jsonify, request\n';
