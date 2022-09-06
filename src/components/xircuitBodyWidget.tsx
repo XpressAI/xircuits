@@ -333,6 +333,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const getAllNodesFromStartToFinish = (): NodeModel[] | null => {
 		let model = xircuitsApp.getDiagramEngine().getModel();
 		let nodeModels = model.getNodes();
+		let branchNodes = [];
+		let finishedNodes = [];
+		let whichBranchId: string = '';
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 		if (startNodeModel == null) {
 			startNodeModel = getNodeModelByName(nodeModels, '🔴Start');
@@ -343,15 +346,137 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			let retNodeModels: NodeModel[] = [];
 			retNodeModels.push(startNodeModel);
 
-			while (getTargetNodeModelId(model.getLinks(), sourceNodeModelId) != null) {
-				let getTargetNode = getTargetNodeModelId(model.getLinks(), sourceNodeModelId)
+			while (getTargetNodeModelId(model.getLinks(), sourceNodeModelId) != null || finishedNodes.length != 0) {
+				let getTargetNode = getTargetNodeModelId(model.getLinks(), sourceNodeModelId);
+				const nodeModel = getNodeModelById(nodeModels, getTargetNode);
+
+				// When the next node is Finish, set its previous node extras's nextNode properties as null
+				if (getTargetNode != null && nodeModel.getOptions()['name'] == 'Finish') {
+					const beforeFinishNode = getNodeModelById(nodeModels, sourceNodeModelId);
+					beforeFinishNode['extras']['nextNode'] = null;
+				}
+
+				// This will go to the next node of branch node given its source branch node ID
+				const branchWorkflow = (nodeId?: string) => {
+					let nextBranchNode = branchNodes.find(x => x.currentNode.getID() == nodeId).nextNode;
+					whichBranchId = nodeId;
+					let checkIfNextNodeIsBranchNode = getNodeWithBranchFlowport(nextBranchNode);
+					checkIfNextNodeIsBranchNode; // This will check if the next node of the branch node is another branch node
+					if (checkIfNextNodeIsBranchNode) {
+						// If the next node is a branch node
+						retNodeModels.push(nextBranchNode);
+						branchNodes.forEach((node, index) => {
+							// Remove it from the the list to indicate we already go through its workflow
+							if (nextBranchNode === node.nextNode) branchNodes.splice(index, 1);
+						})
+						checkIfNextNodeHasBranchFlowport(nextBranchNode); // This will check again if the next node of the branch node is another branch node
+					} else {
+						sourceNodeModelId = nextBranchNode.getID();
+						retNodeModels.push(nextBranchNode);
+						branchNodes.forEach((node, index) => {
+							// Remove it from the the list to indicate we already go through its workflow
+							if (nextBranchNode === node.nextNode) branchNodes.splice(index, 1);
+						})
+					}
+				}
+
+				// This will check if the next node of the branch node is another branch node
+				const checkIfNextNodeHasBranchFlowport = (nextNode?) => {
+					let tempNextBranchNode = branchNodes.find(x => x.currentNode.getID() == nextNode.getID()).nextNode;
+					whichBranchId = tempNextBranchNode.getID();
+					getNodeWithBranchFlowport(tempNextBranchNode);
+					sourceNodeModelId = tempNextBranchNode.getID();
+					retNodeModels.push(tempNextBranchNode);
+					branchNodes.forEach((node, index) => {
+						// Remove it from the the list to indicate we already go through its workflow
+						if (tempNextBranchNode === node.nextNode) branchNodes.splice(index, 1);
+					})
+				}
+
+				// This will check if the node have a branch flowports
+				const getNodeWithBranchFlowport = (node?) => {
+					const tempNodeModel = node != null ? node : nodeModel;
+					const currentBranchNodesLength = branchNodes.length;
+					tempNodeModel['portsOut'].map((p) => {
+						if (p.getName().includes('out-flow')) {
+							const branchFlowportLinks = p.links;
+							for (let linkID in branchFlowportLinks) {
+								let link = branchFlowportLinks[linkID];
+								if (Object.keys(link).length != 0) {
+									const sameBranchNode = finishedNodes.find(x => x.currentNode.getID() == tempNodeModel.getID());
+									const nextBranchFlowportNode = link.getTargetPort().getParent();
+									const finishedLink = tempNodeModel.getPorts()['out-0'].links;
+									let getFinishNode;
+									for (let linkID in finishedLink) {
+										let link = finishedLink[linkID];
+										getFinishNode = link.getTargetPort().getParent();
+									}
+									if (finishedNodes.length == 0 || !sameBranchNode) {
+										// When there is no branch node or the same branch node,
+										// Get the branch node and its next node of finish port
+										finishedNodes.push({
+											'currentNode': tempNodeModel,
+											'finishNode': getFinishNode
+										});
+									}
+									branchNodes.push({
+										// Get the branch node and its next node of its branch flowports
+										'currentNode': tempNodeModel,
+										'nextNode': nextBranchFlowportNode
+									});
+									// Save the source branch Id and its port Id at each next node of the branch node
+									nextBranchFlowportNode['extras']['sourceBranchId'] = tempNodeModel.getID();
+									nextBranchFlowportNode['extras']['portId'] = p.getID();
+								}
+							}
+						}
+					})
+					if (currentBranchNodesLength !== branchNodes.length) {
+						// If the next node is branch node, return true
+						return true;
+					}
+					return false;
+				}
+
+				// When next node is empty check if there's any branch component,
+				// continue to finish port where its branches using the saved node Id.
+				if (getTargetNode == null) {
+					const getCurrentNode = getNodeModelById(nodeModels, sourceNodeModelId);
+					getCurrentNode['extras']['nextNode'] = null;
+					if (branchNodes.length != 0) {
+						// When there still a branch flowports, iterate through branch workflow again
+						let latestBranchNode = branchNodes[branchNodes.length - 1];
+						branchWorkflow(latestBranchNode.currentNode.getID());
+						continue;
+					};
+					// When there is no more branch workflow to iterate, continue with the finish port workflow
+					// Every finish node branch workflow
+					const latestFinishedNode = finishedNodes[finishedNodes.length - 1];
+					latestFinishedNode.currentNode['extras']['finishNode'] = latestFinishedNode.finishNode;
+					sourceNodeModelId = latestFinishedNode.finishNode.getID();
+					retNodeModels.push(latestFinishedNode.finishNode);
+					finishedNodes.forEach((node, index) => {
+						// Remove it from the the list to indicate we already go through its workflow
+						if (latestFinishedNode.finishNode === node.finishNode) finishedNodes.splice(index, 1);
+					})
+					continue;
+				}
 
 				if (getTargetNode) {
-					let nodeModel = getNodeModelById(nodeModels, getTargetNode);
-
+					getNodeWithBranchFlowport(); // This will check if the node have a branch flowports
 					if (nodeModel) {
+						// If there are branch flowports, get its node Id.
+						if (finishedNodes.length != 0) {
+							const latestBranchNode = finishedNodes[finishedNodes.length - 1].currentNode;
+							if (latestBranchNode.getID() == nodeModel.getID()) {
+								// Get the branch node's Id and iterate through it branch workflow.
+								retNodeModels.push(nodeModel);
+								branchWorkflow(nodeModel.getID());
+								continue;
+							}
+						}
 						sourceNodeModelId = nodeModel.getID();
-						retNodeModels.push(nodeModel)
+						retNodeModels.push(nodeModel);
 					}
 				}
 			}
