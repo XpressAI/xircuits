@@ -593,120 +593,120 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		pythonCode += '\n';
 
 		if (startNodeModel) {
-			let sourceNodeModelId = startNodeModel.getID();
 			let j = 0;
 
-			while (getTargetNodeModelId(model.getLinks(), sourceNodeModelId) != null) {
-				let targetNodeId = getTargetNodeModelId(model.getLinks(), sourceNodeModelId)
+			for (let i = 0; i < allNodes.length; i++) {
+				j++;
+				let nodeType = allNodes[i]["extras"]["type"];
 
-				if (targetNodeId) {
-
-					let bindingName = 'c_' + ++j;
-					let currentNodeModel = getNodeModelById(nodeModels, targetNodeId);
-					let allPort = currentNodeModel.getPorts();
-					// Reset appending values
-					needAppend.current = "";
-
-					for (let port in allPort) {
-
-						let portIn = allPort[port].getOptions().alignment == 'left';
-
-						if (portIn) {
-							let label = allPort[port].getOptions()["label"];
-							label = label.replace(/\s+/g, "_");
-							label = label.toLowerCase();
-
-							if (label.startsWith("★")) {
-								const newLabel = label.split("★")[1];
-								label = newLabel;
-							}
-
-							if (label == '▶') {
-							} else {
-								let portLinks = allPort[port].getLinks();
-
-								for (let portLink in portLinks) {
-									let sourceNodeName = portLinks[portLink].getSourcePort().getNode()["name"];
-									let sourceNodeType = portLinks[portLink].getSourcePort().getNode().getOptions()["extras"]["type"];
-									let sourceNodeId = portLinks[portLink].getSourcePort().getNode().getOptions()["id"];
-									let sourcePortLabel = portLinks[portLink].getSourcePort().getOptions()["label"];
-									let k = getBindingIndexById(allNodes, sourceNodeId);
-									let preBindingName = 'c_' + k;
-
-									//Get the id of the node of the connected link
-									let linkSourceNodeId = allPort[port]["links"][portLink]["sourcePort"]["parent"]["options"]["id"];
-									let equalSign = ' = ';
-									let sourcePortLabelStructure;
-
-									// When port is 'string', 'list' and 'dict' type 
-									// append values if there's multiple link connected
-									if (port.includes('string') ||
-										port.includes('list') ||
-										port.includes('dict')
-									) {
-										if (needAppend.current == label) {
-											switch (sourceNodeType) {
-												case "dict":
-													equalSign = ' |= '
-													break;
-												default:
-													equalSign = ' += '
-													break;
-											}
-										}
-										needAppend.current = label;
-									}
-
-									if (port.startsWith("parameter")) {
-
-										if (sourceNodeName.startsWith("Literal")) {
-											switch (sourceNodeType) {
-												case "string":
-													sourcePortLabelStructure = '"""' + sourcePortLabel + '"""';
-													break;
-												case "list":
-													sourcePortLabelStructure = "[" + sourcePortLabel + "]";
-													break;
-												case "tuple":
-													sourcePortLabelStructure = "(" + sourcePortLabel + ")";
-													break;
-												case "dict":
-													sourcePortLabelStructure = "{" + sourcePortLabel + "}";
-													break;
-												default:
-													sourcePortLabelStructure = sourcePortLabel;
-													break;
-											}
-											pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + sourcePortLabelStructure + "\n";
-										} else if (linkSourceNodeId == sourceNodeId && !sourceNodeName.startsWith("Hyperparameter")) {
-											// Make sure the node id match between connected link and source node
-											// Skip Hyperparameter Components
-											pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
-										} else {
-											sourcePortLabel = sourcePortLabel.replace(/\s+/g, "_");
-											sourcePortLabel = sourcePortLabel.toLowerCase();
-											sourceNodeName = sourceNodeName.split(": ");
-											let paramName = sourceNodeName[sourceNodeName.length - 1];
-											paramName = paramName.replace(/\s+/g, "_");
-											paramName = paramName.toLowerCase();
-											pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + 'args.' + paramName + '\n';
-										}
-
-									} else {
-										pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
-									}
-								}
-							}
-						} else {
-						}
-
-					}
-
-					if (currentNodeModel) {
-						sourceNodeModelId = currentNodeModel.getID();
-					}
+				if (nodeType == 'Start' ||
+					nodeType == 'Finish' ||
+					nodeType === 'boolean' ||
+					nodeType === 'int' ||
+					nodeType === 'float' ||
+					nodeType === 'string') {
+					// Skip these type of node
+					j--;
+					continue;
 				}
 
+				let bindingName = 'c_' + j;
+				let targetNodeId = allNodes[i].getOptions()['id'];
+				let currentNodeModel = getNodeModelById(nodeModels, targetNodeId);
+				let allPort = currentNodeModel.getPorts();
+				// Reset appending values
+				needAppend.current = "";
+
+				for (let port in allPort) {
+
+					let portIn = allPort[port].getOptions().alignment == 'left';
+
+					if (portIn) {
+						let label = allPort[port].getOptions()["label"];
+						label = label.replace(/\s+/g, "_");
+						label = label.toLowerCase();
+
+						if (label.startsWith("★")) {
+							const newLabel = label.split("★")[1];
+							label = newLabel;
+						}
+
+						if (label == '▶') {
+						} else {
+							let portLinks = allPort[port].getLinks();
+
+							for (let portLink in portLinks) {
+								let sourceNodeName = portLinks[portLink].getSourcePort().getNode()["name"];
+								let sourceNodeType = portLinks[portLink].getSourcePort().getNode().getOptions()["extras"]["type"];
+								let sourceNodeId = portLinks[portLink].getSourcePort().getNode().getOptions()["id"];
+								let sourcePortLabel = portLinks[portLink].getSourcePort().getOptions()["label"];
+								let k = getBindingIndexById(allNodes, sourceNodeId);
+								let preBindingName = 'c_' + k;
+
+								//Get the id of the node of the connected link
+								let linkSourceNodeId = allPort[port]["links"][portLink]["sourcePort"]["parent"]["options"]["id"];
+								let equalSign = ' = ';
+								let sourcePortLabelStructure;
+
+								// When port is 'string', 'list' and 'dict' type 
+								// append values if there's multiple link connected
+								if (port.includes('string') ||
+									port.includes('list') ||
+									port.includes('dict')
+								) {
+									if (needAppend.current == label) {
+										switch (sourceNodeType) {
+											case "dict":
+												equalSign = ' |= '
+												break;
+											default:
+												equalSign = ' += '
+												break;
+										}
+									}
+									needAppend.current = label;
+								}
+
+								if (port.startsWith("parameter")) {
+									if (sourceNodeName.startsWith("Literal")) {
+										switch (sourceNodeType) {
+											case "string":
+												sourcePortLabelStructure = '"""' + sourcePortLabel + '"""';
+												break;
+											case "list":
+												sourcePortLabelStructure = "[" + sourcePortLabel + "]";
+												break;
+											case "tuple":
+												sourcePortLabelStructure = "(" + sourcePortLabel + ")";
+												break;
+											case "dict":
+												sourcePortLabelStructure = "{" + sourcePortLabel + "}";
+												break;
+											default:
+												sourcePortLabelStructure = sourcePortLabel;
+												break;
+										}
+										pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + sourcePortLabelStructure + "\n";
+									} else if (linkSourceNodeId == sourceNodeId && !sourceNodeName.startsWith("Hyperparameter")) {
+										// Make sure the node id match between connected link and source node
+										// Skip Hyperparameter Components
+										pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
+									} else {
+										sourcePortLabel = sourcePortLabel.replace(/\s+/g, "_");
+										sourcePortLabel = sourcePortLabel.toLowerCase();
+										sourceNodeName = sourceNodeName.split(": ");
+										let paramName = sourceNodeName[sourceNodeName.length - 1];
+										paramName = paramName.replace(/\s+/g, "_");
+										paramName = paramName.toLowerCase();
+										pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + 'args.' + paramName + '\n';
+									}
+								} else {
+									pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 
