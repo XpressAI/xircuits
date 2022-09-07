@@ -452,7 +452,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					// When there is no more branch workflow to iterate, continue with the finish port workflow
 					// Every finish node branch workflow
 					const latestFinishedNode = finishedNodes[finishedNodes.length - 1];
-					latestFinishedNode.currentNode['extras']['finishNode'] = latestFinishedNode.finishNode;
+					latestFinishedNode.currentNode['extras']['finishNode'] = latestFinishedNode.finishNode.getID();
 					sourceNodeModelId = latestFinishedNode.finishNode.getID();
 					retNodeModels.push(latestFinishedNode.finishNode);
 					finishedNodes.forEach((node, index) => {
@@ -715,9 +715,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		for (let i = 0; i < allNodes.length; i++) {
 
 			let nodeType = allNodes[i]["extras"]["type"];
-			let isNextNodeEmpty = allNodes[i]["extras"]["nextNode"];
 			let sourceBranchId = allNodes[i]['extras']['sourceBranchId'];
-			let nextNodeAfterBranch = allNodes[i]["extras"]["finishNode"];
+			let nextNodeAfterBranch = allNodes[i]["extras"]["nextNode"];
+			let finishNodeIdAfterBranch = allNodes[i]["extras"]["finishNode"];
 
 			let bindingName = 'c_' + i;
 			let nextBindingName = 'c_' + (i + 1);
@@ -732,11 +732,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			}
 
 			if (nodeType == 'Start' || nodeType == 'Finish') {
-			} else if (isNextNodeEmpty === null && isNextNodeEmpty !== undefined) {
+			} else if (nextNodeAfterBranch === null && nextNodeAfterBranch !== undefined) {
+				// When next node after each branch workflow is empty, set next node to None
 				pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
-			} else if(nextNodeAfterBranch){
+			} else if(finishNodeIdAfterBranch != null){
+				// When there is no more branch workflow, continue to finish node
 				for (let j = 0; j < allNodes.length; j++) {
-					if (nextNodeAfterBranch.getID() == allNodes[j].getID()){
+					if (finishNodeIdAfterBranch == allNodes[j].getID()){
 						pythonCode += '    ' + bindingName + '.next = ' + 'c_' + j +'\n';
 					}
 				}
