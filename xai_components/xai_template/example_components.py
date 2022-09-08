@@ -1,6 +1,24 @@
 from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component
 
 @xai_component(color="red")
+class HelloComponent(Component):
+    """The simplest component that greets the user. 
+    """
+    def __init__(self):
+
+        self.done = False
+
+    def execute(self, ctx) -> None:
+        
+        #If the import is only exclusive to 1 component, it is a good practice to import inside execute()
+        import os 
+
+        creator_name = os.getlogin()
+        print("Hello, " + creator_name)
+
+        self.done = True
+
+@xai_component(color="red")
 class TestFlowPort(Component):
     """Testing Flowport Component. 
     """
