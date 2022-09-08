@@ -197,8 +197,6 @@ class ComponentsRouteHandler(APIHandler):
                     "type": read_orig_code(v.annotation.slice.value if int(python_version[1]) == 8 else v.annotation.slice, file_lines)
                 })
                 continue
-            else:
-                continue
 
         docstring = ast.get_docstring(node)
         lineno = [
