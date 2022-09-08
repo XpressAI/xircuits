@@ -11,9 +11,9 @@ class TestFlowPort(Component):
     def __init__(self):
 
         self.done = False
-        self.condition = InArg.empty()
-        self.when_A = Component
-        self.when_B = Component
+        self.condition = InArg(True)
+        self.when_A = BaseComponent
+        self.when_B = BaseComponent
 
     def execute(self, ctx) -> None:
         
@@ -23,11 +23,30 @@ class TestFlowPort(Component):
         else:
             self.when_B.do(ctx)
 
-        self.done = True
+@xai_component
+class AlphabetSwitch(Component):
+    when_A: BaseComponent
+    when_B: BaseComponent
+    when_C: BaseComponent
+    
+    def __init__(self):
 
-        creator_name = os.getlogin()
-        print("Hello, " + creator_name)
+        self.done = False
+        self.when_A = BaseComponent
+        self.when_B = BaseComponent
+        self.when_C = BaseComponent
 
+    def execute(self, ctx) -> None:
+        import random
+
+        alphabet = random.choice(['a', 'b', 'c'])
+        print('Running alphabet: ' + alphabet)
+        if alphabet == "a":
+            self.when_A.do(ctx)
+        if alphabet == "b":
+            self.when_B.do(ctx)
+        if alphabet == "c":
+            self.when_C.do(ctx)
         self.done = True
 
 @xai_component
