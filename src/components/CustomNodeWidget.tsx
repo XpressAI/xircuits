@@ -220,7 +220,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         marked.setOptions({
             renderer: renderer
         });
-        const __html = marked(text)
+        const __html = marked(text ?? '')
         return { __html }
     }
 
