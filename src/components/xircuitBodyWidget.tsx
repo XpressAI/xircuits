@@ -390,28 +390,42 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				// This will check if the node have branch flowports
 				const checkIfNodeHasBranchFlowport = (currentNode) => {
 					const currentBranchNodesLength = branchNodes.length;
-					currentNode['portsOut'].map((p) => {
+					if (currentNode == undefined || currentNode == null){
+						return
+					}
+					currentNode['portsOut']?.map((p) => {
 						if (p.getName().includes('out-flow')) {
 							const branchFlowportLinks = p.links;
+							const sameBranchNode = finishedNodes.find(x => x.currentNode.getID() == currentNode.getID());
+							const finishedLink = currentNode.getPorts()['out-0'].links;
+							let getFinishNode;
+			
+							if (Object.keys(finishedLink).length != 0) {
+								for (let linkID in finishedLink) {
+										let link = finishedLink[linkID];
+										if (Object.keys(finishedLink).length != 0) {
+											getFinishNode = link.getTargetPort().getParent();
+											currentNode['extras']['finishNodeId'] = getFinishNode.getID();
+										}
+									}
+							} else {
+								// When there is no finish node, set finishNodeId to None
+								getFinishNode = null;
+								currentNode['extras']['finishNodeId'] = 'None';
+							}
+							if (finishedNodes.length == 0 || !sameBranchNode) {
+								// When there is no branch node or the same branch node,
+								// Get the branch node and its next node of finish port
+								finishedNodes.push({
+									'currentNode': currentNode,
+									'finishNode': getFinishNode
+								});
+							}
+
 							for (let linkID in branchFlowportLinks) {
 								let link = branchFlowportLinks[linkID];
 								if (Object.keys(link).length != 0) {
-									const sameBranchNode = finishedNodes.find(x => x.currentNode.getID() == currentNode.getID());
 									const nextBranchFlowportNode = link.getTargetPort().getParent();
-									const finishedLink = currentNode.getPorts()['out-0'].links;
-									let getFinishNode;
-									for (let linkID in finishedLink) {
-										let link = finishedLink[linkID];
-										getFinishNode = link.getTargetPort().getParent();
-									}
-									if (finishedNodes.length == 0 || !sameBranchNode) {
-										// When there is no branch node or the same branch node,
-										// Get the branch node and its next node of finish port
-										finishedNodes.push({
-											'currentNode': currentNode,
-											'finishNode': getFinishNode
-										});
-									}
 									branchNodes.push({
 										// Get the branch node and its next node of its branch flowports
 										'currentNode': currentNode,
@@ -447,19 +461,27 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					// When there is no more branch workflow to iterate, continue with the finish port workflow
 					// Every finish node branch workflow
 					const latestFinishedNode = finishedNodes[finishedNodes.length - 1];
-					latestFinishedNode.currentNode['extras']['finishNode'] = latestFinishedNode.finishNode.getID();
-					let checkIfNodeIsBranchNode = checkIfNodeHasBranchFlowport(latestFinishedNode.finishNode);
+					if (latestFinishedNode.finishNode == null) {
+						finishedNodes.forEach((node, index) => {
+							// Remove it from the the list 
+							// to indicate we already finish going through all of this branch node's workflow
+							if (latestFinishedNode?.currentNode === node.currentNode) finishedNodes.splice(index, 1);
+						})
+						continue;
+					}
+					// latestFinishedNode.currentNode['extras']['finishNodeId'] = latestFinishedNode?.finishNode?.getID();
+					let checkIfNodeIsBranchNode = checkIfNodeHasBranchFlowport(latestFinishedNode?.finishNode);
 					if (checkIfNodeIsBranchNode) {
 						// This will check if the finish node of the branch node is another branch node
-						checkIfNextNodeHasBranchFlowport(latestFinishedNode.finishNode); 
+						checkIfNextNodeHasBranchFlowport(latestFinishedNode?.finishNode); 
 					}else {
-						sourceNodeModelId = latestFinishedNode.finishNode.getID();
+						sourceNodeModelId = latestFinishedNode?.finishNode?.getID();
 					}
-					retNodeModels.push(latestFinishedNode.finishNode);
+					retNodeModels.push(latestFinishedNode?.finishNode);
 					finishedNodes.forEach((node, index) => {
 						// Remove it from the the list 
 						// to indicate we already finish going through all of this branch node's workflow
-						if (latestFinishedNode.finishNode === node.finishNode) finishedNodes.splice(index, 1);
+						if (latestFinishedNode?.finishNode === node.finishNode) finishedNodes.splice(index, 1);
 					})
 					continue;
 				}
@@ -719,7 +741,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			let nodeType = allNodes[i]["extras"]["type"];
 			let sourceBranchId = allNodes[i]['extras']['sourceBranchId'];
 			let nextNodeAfterBranch = allNodes[i]["extras"]["nextNode"];
-			let finishNodeIdAfterBranch = allNodes[i]["extras"]["finishNode"];
+			let finishNodeIdAfterBranch = allNodes[i]["extras"]["finishNodeId"];
 
 			let bindingName = 'c_' + i;
 			let nextBindingName = 'c_' + (i + 1);
