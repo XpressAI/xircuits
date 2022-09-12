@@ -81,19 +81,11 @@ export  class CustomPortModel extends DefaultPortModel  {
             console.log("port name: ", thisName);
             console.log("parameter port: ", port.getNode().getInPorts());
             if (Object.keys(port.getLinks()).length > 0){
-                // When port is 'string', 'list' and 'dict' type, just return
-                switch (thisPortType){
-                    case "string":
-                    case "list":
-                    case "dict":
-                        return;
-                }
 		        port.getNode().getOptions().extras["borderColor"]="red";
 		        port.getNode().getOptions().extras["tip"]=`Port ${thisLabel} doesn't allow multi-links of ${thisPortTypeText} type.`;
                 port.getNode().setSelected(true);
                 return false;
             }
-
 
             if (!thisName.startsWith("parameter")){
 		        port.getNode().getOptions().extras["borderColor"]="red";
@@ -127,18 +119,9 @@ export  class CustomPortModel extends DefaultPortModel  {
             }
 
         }else{
-            if (thisName.startsWith("parameter")){
-                // Skip 'any' type check for both in and out ports or same type check
-                if(thisPortType == 'any' || sourcePortType == 'any' || thisPortType == sourcePortType){
-                    return
-                }
+            if(Object.keys(port.getLinks()).length > 0){
 		        port.getNode().getOptions().extras["borderColor"]="red";
-		        port.getNode().getOptions().extras["tip"]= `Inncorrect input for port ${thisLabel}, please connect port from a ${thisPortTypeText} type.`;
-                port.getNode().setSelected(true);
-                return false;
-            }else if(Object.keys(port.getLinks()).length > 0){
-		        port.getNode().getOptions().extras["borderColor"]="red";
-		        port.getNode().getOptions().extras["tip"]= `Port ${thisLabel} only allows 1 link per port! Please delete the current link to proceed.`;
+		        port.getNode().getOptions().extras["tip"]= `Xircuits only allows 1 link per InPort! Please delete the current link to proceed.`;
                 port.getNode().setSelected(true);
                 return false;
             }
