@@ -176,8 +176,8 @@ export  class CustomPortModel extends DefaultPortModel  {
         if (!(thisPortLabel.endsWith('▶')) && portLabel != '▶'){
             this.removeErrorTooltip(this, port);
             return true;
-            thisPort.getNode().getOptions().extras["borderColor"]="rgb(0,192,255)";
-            delete thisPort.getNode().getOptions().extras["tip"];
+        }else if (thisPortLabel.includes('▶')){
+            this.removeErrorTooltip(this, port);
             return true;
         }else{
             return (portLabel === '▶' && thisPortLabel.endsWith('▶') && !(Object.keys(thisPort.getLinks()).length > 1));
