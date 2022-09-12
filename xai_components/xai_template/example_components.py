@@ -20,7 +20,16 @@ class HelloComponent(Component):
 
 @xai_component(color="red")
 class TestFlowPort(Component):
-    """Testing Flowport Component. 
+    """
+    Example on how to branch a workflow with a condition. Default condition is True.
+    
+    **How it works**
+    
+    When the condition is True, it'll run the workflow from outFlow port(when_A ▶) until there no more node connected. When condition is False, vice versa.
+    
+    Then, it'll continue to run finished port (▶) until it reach Finish node.
+    
+    Note: Finished port (▶) must be **connected** and Finish node **MUST** be inside finished port workflow. 
     """
     when_A: BaseComponent
     when_B: BaseComponent
@@ -43,6 +52,21 @@ class TestFlowPort(Component):
 
 @xai_component
 class AlphabetSwitch(Component):
+    """
+    Example on how to branch a workflow randomly.
+    
+    **How it works**
+    
+    This node will choose a random alphabet between 'a','b' and 'c'. 
+    
+    When choosen, it'll run that alphabet workflow until there no more node connected.
+    
+    Then, it'll continue to run finished port (▶) until it reach Finish node.
+    
+    Running xircuits again might choose a different alphabet workflow.
+    
+    Note: Finished port (▶) must be **connected** and Finish node **MUST** be inside finished port workflow. 
+    """
     when_A: BaseComponent
     when_B: BaseComponent
     when_C: BaseComponent
