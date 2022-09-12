@@ -913,21 +913,25 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const checkAllNodesConnected = (): boolean | null => {
-		let nodeModels = xircuitsApp.getDiagramEngine().getModel().getNodes();
-
-		for (let i = 0; i < nodeModels.length; i++) {
-			let inPorts = nodeModels[i]["portsIn"];
-			let j = 0;
-			if (inPorts != 0) {
-				if (inPorts[j].getOptions()["label"] == '▶' && Object.keys(inPorts[0].getLinks()).length != 0) {
-					continue
-				} else {
-					nodeModels[i].getOptions().extras["borderColor"] = "red";
-					nodeModels[i].getOptions().extras["tip"] = "Please make sure this node ▶ is properly connected ";
-					nodeModels[i].setSelected(true);
-					return false;
-				}
+		let allNodes = getAllNodesFromStartToFinish();
+		for (let i = 0; i < allNodes.length; i++) {
+			let finishNodeIdAfterBranch = allNodes[i]["extras"]["finishNodeId"];
+			if (finishNodeIdAfterBranch == 'None') {
+				// When a branch node's finish port not connected, check failed and show error tooltip
+				allNodes[i].getOptions().extras["borderColor"] = "red";
+				allNodes[i].getOptions().extras["tip"] = `Please make sure this ${allNodes[i]['name']}'s finish port '▶' is connected`;
+				allNodes[i].setSelected(true);
+				return false;
 			}
+		}
+
+		let lastNode = allNodes[allNodes.length - 1];
+		if (lastNode['name'] != 'Finish') {
+			// When last node is not Finish node, check failed and show error tooltip
+			lastNode.getOptions().extras["borderColor"] = "red";
+			lastNode.getOptions().extras["tip"] = `Please make sure this **${lastNode['name']}** node end with **Finish** node`;
+			lastNode.setSelected(true);
+			return false;
 		}
 		return true;
 	}
