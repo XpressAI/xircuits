@@ -13,6 +13,7 @@ If applicable, note issue numbers this pull request addresses. You can also note
 - [ ] Xircuits Core (Jupyterlab Related changes)
 - [ ] Xircuits Canvas (Custom RD Related changes)
 - [ ] Xircuits Component Library
+- [ ] Xircuits Project Template
 - [ ] Testing Automation
 - [ ] Documentation
 - [ ] Others (Please Specify)
