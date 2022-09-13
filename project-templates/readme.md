@@ -24,4 +24,4 @@ The following are some open source Xircuits template projects by our developers 
 | [Chatbot](https://github.com/XpressAI/x-template-chatbot) | [annabelle1217](https://github.com/annabelle1217) |
 | [Semantic Segmentation](https://github.com/XpressAI/x-template-semantic_segmentation) | [quietrex](https://github.com/quietrex)
 
-For more information, checkout our documentation on [how to use Xircuits project templates](https://xircuits.io/tutorials/running-a-xircuits-project-template) or [how to create your own project from our template](https://xircuits.io/developer-guide/creating-a-xircuits-project).
+For more information, checkout our documentation on [how to use Xircuits project templates](https://xircuits.io/tutorials/running-a-xircuits-project-template) or [how to create your own project from our template](https://xircuits.io/developer-guide/creating-a-xircuits-project-template).
