@@ -4,66 +4,30 @@ Welcome to Xircuits!
 
 The following is a set of guidelines for contributing to Xircuits on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
 
-## Table Of Contents
-
-[What should I know before I get started?](#what-should-i-know-before-i-get-started)
-  * [Xircuits Structure](#xircuits-structure)
-  * [Design Decisions](#design-decisions)
-
-[How Can I Contribute?](#how-can-i-contribute)
-  * [New Features](#new-features)
-  * [Feature Requests](#feature-requests)
-  * [Reporting Bugs](#reporting-bugs)
-  
-[Chat with the Devs!](#chat-with-the-devs)
-
-
-## What should I know before I get started?
-
-### Xircuits Structure
-
-Xircuits is a Jupyterlab-based extension with React Diagram as its core canvas. 
-
-Here's a list of the main feature categories:
-
-* ### Xircuits Core
-   
-  [Jupyterlab](https://github.com/jupyterlab/jupyterlab) related features. Includes but not limited to:
-  * Document
-  * Toolbar
-  * Server
-  * Kernel Output
-  * Logger
-  * Component Tray Extension
-  * Right Click Menu (Context)
-
-* ### Xircuits Canvas 
-
-  [React Diagram](https://github.com/projectstorm/react-diagrams) related changes. Includes:
-  * Custom Nodes
-  * Custom Ports & Logic
-  * Custom Events & Actions
- 
-* ### Xircuits Component Library
-  Python-based components that can implement any python-based libraries out there. Some that are included in the base Xircuits installation are Tensorflow, Pytorch, and Pyspark. 
-
-* ### Testing Automation
-  [Playwright](https://github.com/microsoft/playwright)-based UI tests. 
-
-* ### Documentation 
-  We have our docs [here](https://github.com/XpressAI/xircuits.io).
-
-Some features may overlap with each other (such as codegen being an overlap between Core and Canvas), but this list should be a good overview of where you want to focus your contribution on.
-
-## Design Decisions
-
-When we make a significant decision in implementing features, we should document it in the [architecture decision records](https://github.com/XpressAI/xircuits/tree/master/adr). If you have a question around why we do things, check to see if it is documented there. 
-
 ## How Can I Contribute?
 
-### New Features
+Contributors are always welcome in any of the categories whether it's core features or Xircuits libraries. Here are some you can try:
 
-Contributors are always welcome in any of the categories whether it's Core features or Xircuits libraries. Please use the template when submitting a pull request.
+### 1. Xircuits Component Libraries
+
+Xircuits is built on top of famous Python libraries and frameworks, we're always looking to expand our library. Here's a [guide](https://xircuits.io/docs/developer-guide/creating-a-xircuits-component-library) to get you started, and you can submit a PR to add it [here](https://github.com/XpressAI/xircuits/tree/master/xai_components#xircuits-component-library-list).
+
+### 2. Xircuits Project Templates
+
+Are you using Xircuits for your project and would like to share it to the world? Here's a [guide](https://xircuits.io/docs/developer-guide/creating-a-xircuits-project-template) to start, then add to our project list [here](https://github.com/XpressAI/xircuits/tree/master/project-templates#list-of-open-source-project-templates).
+
+### 3. Xircuits Core Features 
+
+We have a [long list of features](https://github.com/XpressAI/xircuits/projects/1) we'd love to have for Xircuits. If you have expertise in JS/TS, you're more than welcome to give it a try. Here's the [core development guide](https://xircuits.io/docs/developer-guide/developing-xircuits-core-features
+) to help you.
+
+### 4. Tests and Validation
+Xircuits is using [Playwright](https://playwright.dev/) to validate the builds. As currently it only validates a few core features (compiling and running), we're always looking to expand the tests. 
+
+### 5. Documentation Updates
+Currently the documentation is hosted at https://xircuits.io/docs/. If you spot an error or would like to contribute your own guides, feel free to make a PR.
+
+# Other
 
 ### Feature Requests
 
