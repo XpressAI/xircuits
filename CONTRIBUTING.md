@@ -31,11 +31,11 @@ Currently the documentation is hosted at https://xircuits.io/docs/. If you spot 
 
 ### Feature Requests
 
-Xircuits is still very young in its age and we have a long list of features that we want to implement. Please check the project tab to see if we have that feature already in our road map, and if not then use the [feature request template](https://github.com/xircuits/.github/ISSUE_TEMPLATE/feature-request.md) to request that feature. 
+Xircuits is still very young in its age and we have a long list of features that we want to implement. Please check the project tab to see if we have that feature already in our road map, and if not then use the [feature request template](https://github.com/XpressAI/xircuits/issues/new?assignees=&labels=&template=feature-request.md&title=) to request that feature. 
 
 ### Reporting Bugs
 
-Before creating bug reports, please check [this list](#before-submitting-a-bug-report) as you might find out that you don't need to create one. When you are creating a bug report, please include as many details as possible. Fill out [the required template](https://github.com/xircuits/.github/ISSUE_TEMPLATE/bug-report.md), the information it asks for helps us resolve issues faster.
+Before creating bug reports, please check [this list](https://github.com/XpressAI/xircuits/issues) as you might find out that you don't need to create one. When you are creating a bug report, please include as many details as possible. Fill out [the required template](https://github.com/XpressAI/xircuits/issues/new?assignees=&labels=&template=bug-report.md&title=), the information it asks for helps us resolve issues faster.
 
 > **Note:** If you find a **Closed** issue that seems like it is the same thing that you're experiencing, open a new issue and include a link to the original issue in the body of your new one.
 
