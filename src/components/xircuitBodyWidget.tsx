@@ -20,9 +20,10 @@ import 'rc-dialog/assets/bootstrap.css';
 import { requestAPI } from '../server/handler';
 import { XircuitsApplication } from './XircuitsApp';
 import ComponentsPanel from '../context-menu/ComponentsPanel';
-import { GeneralComponentLibrary } from '../tray_library/GeneralComponentLib';
+import { cancelDialog, GeneralComponentLibrary } from '../tray_library/GeneralComponentLib';
 import { NodeActionsPanel } from '../context-menu/NodeActionsPanel';
-import { AdvancedComponentLibrary } from '../tray_library/AdvanceComponentLib';
+import { AdvancedComponentLibrary, fetchNodeByName } from '../tray_library/AdvanceComponentLib';
+import { inputDialog, getItsLiteralType } from '../dialog/LiteralInputDialog';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -1580,6 +1581,46 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 	}
 
+	const connectLinkToItsLiteral = async (linkName, event) => {
+		let portType = linkName.split("-")[1];
+		let nodeType: string = portType;
+		let varInput: string = '';
+
+		switch (portType) {
+			case 'int':
+				nodeType = 'Integer';
+				break;
+			case 'boolean':
+				let boolTitle = 'Enter boolean value: ';
+				const dialogOptions = inputDialog(boolTitle, "", 'Boolean');
+				const dialogResult = await showFormDialog(dialogOptions);
+				if (cancelDialog(dialogResult)) return;
+				let boolValue = dialogResult["value"][boolTitle];
+				if (boolValue == false) {
+					nodeType = 'False'
+				} else {
+					nodeType = 'True'
+				}
+				break;
+			case 'any':
+				// When inPort is 'any' type, get the correct literal type based on the first character inputed
+				let portAnyType = await getItsLiteralType();
+				nodeType = portAnyType.nodeType;
+				varInput = portAnyType.varInput;
+				break;
+			default:
+				nodeType = portType.charAt(0).toUpperCase() + portType.slice(1);
+				break;
+		}
+		let current_node = await fetchNodeByName('Literal ' + nodeType);
+		let node = await GeneralComponentLibrary({ model: current_node, variableValue: varInput });
+		if (node == undefined) return;
+		let nodePosition = event.linkEvent;
+		let sourceLink = { link: event.link, sourcePort: event.sourcePort };
+		app.commands.execute(commandIDs.addNodeGivenPosition, { node, nodePosition });
+		app.commands.execute(commandIDs.connectNodeByLink, { targetNode: node, sourceLink, isParameterLink: true });
+	}
+
 	/**Component Panel & Node Action Panel Context Menu */
 	const [isComponentPanelShown, setIsComponentPanelShown] = useState(false);
 	const [actionPanelShown, setActionPanelShown] = useState(false);
@@ -1645,17 +1686,19 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	};
 
 	// Show the component panel from dropped link
-	const showComponentPanelFromLink = (event) => {
+	const showComponentPanelFromLink = async (event) => {
 		setActionPanelShown(false);
 		setIsComponentPanelShown(false);
-		const linkName = event.link.sourcePort.options.name;
+		const linkName:string = event.link.sourcePort.options.name;
 
 		if (linkName.startsWith("parameter")) {
-			setIsParameterLink(true)
-			// Don't show panel when loose link from parameter outPort
+			// Don't show panel when loose link from parameter outPorts
 			if (linkName.includes("parameter-out")) {
 				return
 			}
+			// When loose link from type InPort, connect to its respective literal node
+			connectLinkToItsLiteral(linkName, event);
+			return;
 		}
 
 		setLooseLinkData({link: event.link, sourcePort: event.sourcePort});
