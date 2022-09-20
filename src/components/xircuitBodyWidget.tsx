@@ -353,7 +353,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				// When the next node is Finish, set its previous node extras's nextNode properties as null
 				if (getTargetNode != null && nodeModel.getOptions()['name'] == 'Finish') {
 					const beforeFinishNode = getNodeModelById(nodeModels, sourceNodeModelId);
-					beforeFinishNode['extras']['nextNode'] = null;
+					beforeFinishNode['extras']['nextNode'] = 'None';
 				}
 
 				// This will go to the next node of branch node given its source branch node ID
@@ -420,6 +420,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 									'currentNode': currentNode,
 									'finishNode': getFinishNode
 								});
+								currentNode['extras']['isBranchNode'] = true;
 							}
 
 							for (let linkID in branchFlowportLinks) {
@@ -449,7 +450,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				// continue to finish port where its branches using the saved node Id.
 				if (getTargetNode == null) {
 					const getCurrentNode = getNodeModelById(nodeModels, sourceNodeModelId);
-					getCurrentNode['extras']['nextNode'] = null;
+					getCurrentNode['extras']['nextNode'] = 'None';
 
 					if (branchNodes.length != 0) {
 						// When there still a branch flowports, iterate through branch workflow again
@@ -742,36 +743,33 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			let sourceBranchId = allNodes[i]['extras']['sourceBranchId'];
 			let nextNodeAfterBranch = allNodes[i]["extras"]["nextNode"];
 			let finishNodeIdAfterBranch = allNodes[i]["extras"]["finishNodeId"];
+			let isBranchNode = allNodes[i]["extras"]["isBranchNode"];
 
 			let bindingName = 'c_' + i;
 			let nextBindingName = 'c_' + (i + 1);
 
 			for (let j = 0; j < allNodes.length; j++) {
 				let branchFlowportId = allNodes[i]['extras']['portId'];
+				let sourceBindingName = 'c_' + j;
 				if (sourceBranchId == allNodes[j].getID()) {
-					let sourceBindingName = 'c_' + j;
 					const portName = allNodes[j].getPortFromID(branchFlowportId).getName().split('out-flow-')[1];
 					pythonCode += '    ' + sourceBindingName + `.${portName} = ` + 'SubGraphExecutor(' + 'c_' + i + ')\n';
 				}
-			}
-
-			if (nodeType == 'Start' || nodeType == 'Finish') {
-			} else if (nextNodeAfterBranch === null && nextNodeAfterBranch !== undefined) {
-				// When next node after each branch workflow is empty, set next node to None
-				pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
-			} else if (finishNodeIdAfterBranch != null) {
-				// When there is no more branch workflow, continue to finish node
-				for (let j = 0; j < allNodes.length; j++) {
-					if (finishNodeIdAfterBranch == allNodes[j].getID()) {
-						if (allNodes[j]["extras"]["type"] == 'Finish') {
-							// When the next node of finish workflow is a Finish node, end xircuits workflow
-							pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
-						} else {
-							pythonCode += '    ' + bindingName + '.next = ' + 'c_' + j + '\n';
-						}
+				if (finishNodeIdAfterBranch != null && finishNodeIdAfterBranch == allNodes[j].getID()) {
+					if (allNodes[j]["extras"]["type"] == 'Finish') {
+						// When the next node of finish workflow is a Finish node, end xircuits workflow
+						pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
+					} else {
+						pythonCode += '    ' + bindingName + '.next = ' + 'c_' + j + '\n';
 					}
 				}
-			}else {
+			}
+
+			if (nodeType == 'Start' || nodeType == 'Finish' || isBranchNode) {
+			} else if (nextNodeAfterBranch === 'None') {
+				// When next node after each branch workflow is empty or next node is a Finish node, set next node to None
+				pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
+			} else {
 				pythonCode += '    ' + bindingName + '.next = ' + nextBindingName + '\n';
 			}
 		}
