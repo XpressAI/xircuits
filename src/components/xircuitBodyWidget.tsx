@@ -759,11 +759,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			} else if (nextNodeAfterBranch === null && nextNodeAfterBranch !== undefined) {
 				// When next node after each branch workflow is empty, set next node to None
 				pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
-			} else if(finishNodeIdAfterBranch != null){
+			} else if (finishNodeIdAfterBranch != null) {
 				// When there is no more branch workflow, continue to finish node
 				for (let j = 0; j < allNodes.length; j++) {
-					if (finishNodeIdAfterBranch == allNodes[j].getID()){
-						pythonCode += '    ' + bindingName + '.next = ' + 'c_' + j +'\n';
+					if (finishNodeIdAfterBranch == allNodes[j].getID()) {
+						if (allNodes[j]["extras"]["type"] == 'Finish') {
+							// When the next node of finish workflow is a Finish node, end xircuits workflow
+							pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
+						} else {
+							pythonCode += '    ' + bindingName + '.next = ' + 'c_' + j + '\n';
+						}
 					}
 				}
 			}else {
