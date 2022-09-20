@@ -161,7 +161,7 @@ export  class CustomPortModel extends DefaultPortModel  {
             return true;
         }else if (thisPortLabel.includes('▶')){
             this.removeErrorTooltip(this, port);
-            return true;
+            return (portLabel === '▶' && thisPortLabel.includes('▶') && !(Object.keys(thisPort.getLinks()).length > 1));
         }else{
             return (portLabel === '▶' && thisPortLabel.endsWith('▶') && !(Object.keys(thisPort.getLinks()).length > 1));
         }
