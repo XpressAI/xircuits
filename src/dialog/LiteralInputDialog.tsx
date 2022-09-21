@@ -35,12 +35,18 @@ export async function getItsLiteralType(){
 	const varValue = dialogResult["value"][varOfAnyTypeTitle];
 	const varType = varValue.charAt(0);
 	const varInput : string = varValue.slice(1);
+	let errorMsg : string;
 	switch (varType) {
 		case '"':
 			nodeType = 'String';
 			break;
 		case '#':
 			const isInputFloat = varInput.search('.');
+			let onlyNum = Number(varInput);
+			if (isNaN(onlyNum)){
+				errorMsg = `Variable's input (${varInput}) contain non-numeric value. Only allow '.' for Float` ;
+				break;
+			}
 			if (isInputFloat == 0) {
 				nodeType = 'Float';
 			} else {
@@ -78,8 +84,7 @@ export async function getItsLiteralType(){
 			nodeType = 'String';
 			break;
 	}
-	let varInput = varValue.slice(1);
-	return { nodeType, varInput}
+	return { nodeType, varInput, errorMsg}
 }
 
 export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inputType }): JSX.Element => {
