@@ -1783,6 +1783,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			case 'any':
 				// When inPort is 'any' type, get the correct literal type based on the first character inputed
 				let portAnyType = await getItsLiteralType();
+				if (portAnyType == undefined) return;
 				nodeType = portAnyType.nodeType;
 				varInput = portAnyType.varInput;
 				break;
