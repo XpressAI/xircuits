@@ -80,8 +80,8 @@ export async function getItsLiteralType(){
 			}
 			break;
 		default:
-			// When type is undefined, set to string type
-			nodeType = 'String';
+			// When type is undefined, show error
+			errorMsg = `Type is undefined or not provided. Please insert the first chararacter as shown in example` ;
 			break;
 	}
 	return { nodeType, varInput, errorMsg}

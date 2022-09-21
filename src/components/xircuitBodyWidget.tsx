@@ -1625,7 +1625,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				break;
 		}
 		if (errorMsg != undefined) {
-			showErrorDialog('Error : Input have non-numeric values', errorMsg);
+			if (nodeType == ('Float' || 'Integer')) {
+				showErrorDialog('Error : Input have non-numeric values', errorMsg);
+			} else {
+				showErrorDialog('Error : Type undefined', errorMsg);
+			}
 			return;
 		}
 		let current_node = await fetchNodeByName('Literal ' + nodeType);
