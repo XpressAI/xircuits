@@ -34,24 +34,27 @@ export async function getItsLiteralType(){
 	if (cancelDialog(dialogResult)) return;
 	const varValue = dialogResult["value"][varOfAnyTypeTitle];
 	const varType = varValue.charAt(0);
+	const varInput : string = varValue.slice(1);
 	switch (varType) {
 		case '"':
-			nodeType = 'String'
+			nodeType = 'String';
 			break;
 		case '#':
-			nodeType = 'Integer'
-			break;
-		case '.':
-			nodeType = 'Float'
+			const isInputFloat = varInput.search('.');
+			if (isInputFloat == 0) {
+				nodeType = 'Float';
+			} else {
+				nodeType = 'Integer';
+			}
 			break;
 		case '[':
-			nodeType = 'List'
+			nodeType = 'List';
 			break;
 		case '(':
-			nodeType = 'Tuple'
+			nodeType = 'Tuple';
 			break;
 		case '{':
-			nodeType = 'Dict'
+			nodeType = 'Dict';
 			break;
 		case '!':
 			let boolValue = varValue.slice(1);
@@ -60,19 +63,19 @@ export async function getItsLiteralType(){
 				case 'True':
 				case '1':
 				case 't':
-					nodeType = 'True'
+					nodeType = 'True';
 					break;
 				case 'false':
 				case 'False':
 				case '0':
 				case 'nil':
-					nodeType = 'False'
+					nodeType = 'False';
 					break;
 			}
 			break;
 		default:
 			// When type is undefined, set to string type
-			nodeType = 'String'
+			nodeType = 'String';
 			break;
 	}
 	let varInput = varValue.slice(1);
@@ -107,6 +110,7 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 					<p>Determine your variable type by inserting the first char as below: </p>
 					<li> " : String</li>
 					<li> # : Integer</li>
+					<li> # with '.' : Float</li>
 					<li> [ : List</li>
 					<li> ( : Tuple</li>
 					<li> {dictSymbol} : Dict</li>
