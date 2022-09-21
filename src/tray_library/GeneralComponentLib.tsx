@@ -50,7 +50,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
     if (nodeData.type === 'string') {
 
         if ((nodeName).startsWith("Literal")) {
-            if (variableValue == '') {
+            if (variableValue == '' || variableValue == undefined) {
                 const dialogOptions = inputDialog('String', "", 'String', false ,'textarea');
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (cancelDialog(dialogResult)) return;
@@ -72,7 +72,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
     } else if (nodeData.type === 'int') {
 
         if ((nodeName).startsWith("Literal")) {
-            if (variableValue == '') {
+            if (variableValue == '' || variableValue == undefined) {
                 const dialogOptions = inputDialog('Integer', "", 'Integer');
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (cancelDialog(dialogResult)) return;
@@ -94,7 +94,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
     } else if (nodeData.type === 'float') {
 
         if ((nodeName).startsWith("Literal")) {
-            if (variableValue == '') {
+            if (variableValue == '' || variableValue == undefined) {
                 const dialogOptions = inputDialog('Float', "", 'Float');
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (cancelDialog(dialogResult)) return;
@@ -141,7 +141,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            if (variableValue == '') {
+            if (variableValue == '' || variableValue == undefined) {
                 const dialogOptions = inputDialog('List', "", 'List', true);
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (cancelDialog(dialogResult)) return;
@@ -165,7 +165,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            if (variableValue == '') {
+            if (variableValue == '' || variableValue == undefined) {
                 const dialogOptions = inputDialog('Tuple', "", 'Tuple', true);
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (cancelDialog(dialogResult)) return;
@@ -188,7 +188,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            if (variableValue == '') {
+            if (variableValue == '' || variableValue == undefined) {
                 const dialogOptions = inputDialog('Dict', "", 'Dict', true);
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (cancelDialog(dialogResult)) return;
