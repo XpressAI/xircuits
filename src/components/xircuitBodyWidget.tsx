@@ -745,6 +745,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return pythonCode;
 	}
 
+	const showErrorDialog = (title: string, errorMsg: string) => {
+		showDialog({
+			title,
+			body: (
+				<pre>{errorMsg}</pre>
+			),
+			buttons: [Dialog.warnButton({ label: 'OK' })]
+		});
+	}
+
 	const checkAllNodesConnected = (): boolean | null => {
 		let nodeModels = xircuitsApp.getDiagramEngine().getModel().getNodes();
 
@@ -1585,7 +1595,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let portType = linkName.split("-")[1];
 		let nodeType: string = portType;
 		let varInput: string = '';
-
+		let errorMsg: string;
 		switch (portType) {
 			case 'int':
 				nodeType = 'Integer';
@@ -1608,10 +1618,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				if (portAnyType == undefined) return;
 				nodeType = portAnyType.nodeType;
 				varInput = portAnyType.varInput;
+				errorMsg = portAnyType.errorMsg;
 				break;
 			default:
 				nodeType = portType.charAt(0).toUpperCase() + portType.slice(1);
 				break;
+		}
+		if (errorMsg != undefined) {
+			showErrorDialog('Error : Input have non-numeric values', errorMsg);
+			return;
 		}
 		let current_node = await fetchNodeByName('Literal ' + nodeType);
 		let node = await GeneralComponentLibrary({ model: current_node, variableValue: varInput });
