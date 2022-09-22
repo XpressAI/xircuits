@@ -3,9 +3,10 @@ import { inputDialog } from "../dialog/LiteralInputDialog";
 import { showFormDialog } from "../dialog/FormDialog";
 interface GeneralComponentLibraryProps{
     model : any;
+    variableValue?: any;
 }
 
-function cancelDialog(dialogResult) {
+export function cancelDialog(dialogResult) {
     if (dialogResult["button"]["label"] == 'Cancel') {
         // When Cancel is clicked on the dialog, just return
         return true;
@@ -16,8 +17,13 @@ function cancelDialog(dialogResult) {
 export async function GeneralComponentLibrary(props: GeneralComponentLibraryProps){
     let node = null;
     const nodeData = props.model;
+    const variableValue = props.variableValue;
     const nodeName = nodeData.task;
     const hyperparameterTitle = 'Please define parameter';
+    let inputValue;
+    if (variableValue != ''){
+        inputValue = variableValue;
+    }
     // For now, comment this first until we've use for it
     // if (props.type === 'math') {
 
@@ -44,42 +50,43 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
     if (nodeData.type === 'string') {
 
         if ((nodeName).startsWith("Literal")) {
-            const dialogOptions = inputDialog('String', "", 'String', false ,'textarea');
-            const dialogResult = await showFormDialog(dialogOptions);
-            if (cancelDialog(dialogResult)) return;
-            const strValue = dialogResult["value"]['String'];
+            if (variableValue == '' || variableValue == undefined) {
+                const dialogOptions = inputDialog('String', "", 'String', false ,'textarea');
+                const dialogResult = await showFormDialog(dialogOptions);
+                if (cancelDialog(dialogResult)) return;
+                inputValue = dialogResult["value"]['String'];
+            }
 
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-            node.addOutPortEnhance(strValue, 'out-0');
+            node.addOutPortEnhance(inputValue, 'out-0');
         }
         else {
-
             const dialogOptions = inputDialog(hyperparameterTitle, "", 'String');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
-            const strValue = dialogResult["value"][hyperparameterTitle];
-            node = new CustomNodeModel({ name: "Hyperparameter (String): " + strValue, color: nodeData.color, extras: { "type": nodeData.type } });
+            inputValue = dialogResult["value"][hyperparameterTitle];
+            node = new CustomNodeModel({ name: "Hyperparameter (String): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
-
         }
 
     } else if (nodeData.type === 'int') {
 
         if ((nodeName).startsWith("Literal")) {
-
-            const dialogOptions = inputDialog('Integer', "", 'Integer');
-            const dialogResult = await showFormDialog(dialogOptions);
-            if (cancelDialog(dialogResult)) return;
-            const intValue = dialogResult["value"]['Integer'];
+            if (variableValue == '' || variableValue == undefined) {
+                const dialogOptions = inputDialog('Integer', "", 'Integer');
+                const dialogResult = await showFormDialog(dialogOptions);
+                if (cancelDialog(dialogResult)) return;
+                inputValue = dialogResult["value"]['Integer'];
+            }
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-            node.addOutPortEnhance(intValue, 'out-0');
+            node.addOutPortEnhance(inputValue, 'out-0');
 
         } else {
             const dialogOptions = inputDialog(hyperparameterTitle, "", 'String');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
-            const intValue = dialogResult["value"][hyperparameterTitle];
-            node = new CustomNodeModel({ name: "Hyperparameter (Int): " + intValue, color: nodeData.color, extras: { "type": nodeData.type } });
+            inputValue = dialogResult["value"][hyperparameterTitle];
+            node = new CustomNodeModel({ name: "Hyperparameter (Int): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
 
         }
@@ -87,23 +94,24 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
     } else if (nodeData.type === 'float') {
 
         if ((nodeName).startsWith("Literal")) {
-
-            const dialogOptions = inputDialog('Float', "", 'Float');
-            const dialogResult = await showFormDialog(dialogOptions);
-            if (cancelDialog(dialogResult)) return;
-            const floatValue = dialogResult["value"]['Float'];
+            if (variableValue == '' || variableValue == undefined) {
+                const dialogOptions = inputDialog('Float', "", 'Float');
+                const dialogResult = await showFormDialog(dialogOptions);
+                if (cancelDialog(dialogResult)) return;
+                inputValue = dialogResult["value"]['Float'];
+            }
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-            node.addOutPortEnhance(floatValue, 'out-0');
+            node.addOutPortEnhance(inputValue, 'out-0');
 
         } else {
 
             const dialogOptions = inputDialog(hyperparameterTitle, "", 'String');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
-            const floatValue = dialogResult["value"][hyperparameterTitle];
+            inputValue = dialogResult["value"][hyperparameterTitle];
             console.log(dialogResult);
             
-            node = new CustomNodeModel({ name: "Hyperparameter (Float): " + floatValue, color: nodeData.color, extras: { "type": nodeData.type } });
+            node = new CustomNodeModel({ name: "Hyperparameter (Float): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
 
         }
@@ -123,8 +131,8 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
             const dialogOptions = inputDialog(hyperparameterTitle, "", 'String');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
-            const boolValue = dialogResult["value"][hyperparameterTitle];
-            node = new CustomNodeModel({ name: "Hyperparameter (Boolean): " + boolValue, color: nodeData.color, extras: { "type": nodeData.type } });
+            inputValue = dialogResult["value"][hyperparameterTitle];
+            node = new CustomNodeModel({ name: "Hyperparameter (Boolean): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
 
         }
@@ -133,20 +141,22 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            const dialogOptions = inputDialog('List', "", 'List', true);
-            const dialogResult = await showFormDialog(dialogOptions);
-            if (cancelDialog(dialogResult)) return;
-            const listValue = dialogResult["value"]['List'];
+            if (variableValue == '' || variableValue == undefined) {
+                const dialogOptions = inputDialog('List', "", 'List', true);
+                const dialogResult = await showFormDialog(dialogOptions);
+                if (cancelDialog(dialogResult)) return;
+                inputValue = dialogResult["value"]['List'];
+            }
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-            node.addOutPortEnhance(listValue, 'out-0');
+            node.addOutPortEnhance(inputValue, 'out-0');
 
         } else {
 
             const dialogOptions = inputDialog(hyperparameterTitle, "", 'String');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
-            const listValue = dialogResult["value"][hyperparameterTitle];
-            node = new CustomNodeModel({ name: "Hyperparameter (List): " + listValue, color: nodeData.color, extras: { "type": nodeData.type } });
+            inputValue = dialogResult["value"][hyperparameterTitle];
+            node = new CustomNodeModel({ name: "Hyperparameter (List): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
 
         }
@@ -155,20 +165,22 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            const dialogOptions = inputDialog('Tuple', "", 'Tuple', true);
-            const dialogResult = await showFormDialog(dialogOptions);
-            if (cancelDialog(dialogResult)) return;
-            const tupleValue = dialogResult["value"]['Tuple'];
+            if (variableValue == '' || variableValue == undefined) {
+                const dialogOptions = inputDialog('Tuple', "", 'Tuple', true);
+                const dialogResult = await showFormDialog(dialogOptions);
+                if (cancelDialog(dialogResult)) return;
+                inputValue = dialogResult["value"]['Tuple'];
+            }
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-            node.addOutPortEnhance(tupleValue, 'out-0');
+            node.addOutPortEnhance(inputValue, 'out-0');
 
         } else {
 
             const dialogOptions = inputDialog(hyperparameterTitle, "", 'String');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
-            const tupleValue = dialogResult["value"][hyperparameterTitle];
-            node = new CustomNodeModel({ name: "Hyperparameter (Tuple): " + tupleValue, color: nodeData.color, extras: { "type": nodeData.type } });
+            inputValue = dialogResult["value"][hyperparameterTitle];
+            node = new CustomNodeModel({ name: "Hyperparameter (Tuple): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
         }
 
@@ -176,20 +188,22 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         if ((nodeName).startsWith("Literal")) {
 
-            const dialogOptions = inputDialog('Dict', "", 'Dict', true);
-            const dialogResult = await showFormDialog(dialogOptions);
-            if (cancelDialog(dialogResult)) return;
-            const dictValue = dialogResult["value"]['Dict'];
+            if (variableValue == '' || variableValue == undefined) {
+                const dialogOptions = inputDialog('Dict', "", 'Dict', true);
+                const dialogResult = await showFormDialog(dialogOptions);
+                if (cancelDialog(dialogResult)) return;
+                inputValue = dialogResult["value"]['Dict'];
+            }
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-            node.addOutPortEnhance(dictValue, 'out-0');
+            node.addOutPortEnhance(inputValue, 'out-0');
 
         } else {
 
             const dialogOptions = inputDialog(hyperparameterTitle, "", 'String');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
-            const dictValue = dialogResult["value"][hyperparameterTitle];
-            node = new CustomNodeModel({ name: "Hyperparameter (Dict): " + dictValue, color: nodeData.color, extras: { "type": nodeData.type } });
+            inputValue = dialogResult["value"][hyperparameterTitle];
+            node = new CustomNodeModel({ name: "Hyperparameter (Dict): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
 
         }
