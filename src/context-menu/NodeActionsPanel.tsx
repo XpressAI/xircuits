@@ -28,6 +28,12 @@ export class NodeActionsPanel extends React.Component<NodeActionsPanelProps> {
 			<ActionPanel onClick={this.hideNodeActionPanel.bind(this)}>
 				<div className="option"
 					onClick={() => {
+						this.props.app.commands.execute(commandIDs.duplicateNode)
+					}}>
+					Duplicate
+				</div>
+				<div className="option"
+					onClick={() => {
 						this.props.app.commands.execute(commandIDs.cutNode)
 					}}>
 					Cut

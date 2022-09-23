@@ -164,6 +164,21 @@ export function addNodeActionCommands(
         }
     });
 
+    //Add command to duplicate node
+    commands.addCommand(commandIDs.duplicateNode, {
+        execute: duplicateNode,
+        label: trans.__('Duplicate'),
+        isEnabled: () => {
+            const widget = tracker.currentWidget?.content as XPipePanel;
+            const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
+            let isNodeSelected: boolean;
+            if (selectedEntities.length > 0) {
+                isNodeSelected = true
+            }
+            return isNodeSelected ?? false;
+        }
+    });
+
     //Add command to edit literal component
     commands.addCommand(commandIDs.editNode, {
         execute: editLiteral,
@@ -460,7 +475,18 @@ export function addNodeActionCommands(
         }
     }
 
-    function pasteNode(): void {
+    function duplicateNode(): void {
+        const widget = tracker.currentWidget?.content as XPipePanel;
+
+        if (widget) {
+            const copies = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities().map(entity =>
+                entity.clone().serialize(),
+            );
+
+            localStorage.setItem('clipboard', JSON.stringify(copies));
+            pasteNode();
+        }
+    }
         const widget = tracker.currentWidget?.content as XPipePanel;
 
         if (widget) {

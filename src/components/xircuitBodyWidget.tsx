@@ -98,6 +98,7 @@ export const commandIDs = {
 	openScript: 'Xircuit-editor:open-node-script',
 	undo: 'Xircuit-editor:undo',
 	redo: 'Xircuit-editor:redo',
+	duplicateNode: 'Xircuit-editor:duplicate-node',
 	cutNode: 'Xircuit-editor:cut-node',
 	copyNode: 'Xircuit-editor:copy-node',
 	pasteNode: 'Xircuit-editor:paste-node',
