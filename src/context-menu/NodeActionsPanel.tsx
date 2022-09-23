@@ -46,7 +46,7 @@ export class NodeActionsPanel extends React.Component<NodeActionsPanelProps> {
 				</div>
 				<div className="option"
 					onClick={() => {
-						this.props.app.commands.execute(commandIDs.pasteNode)
+						this.props.app.commands.execute(commandIDs.pasteNode,{nodePosition: this.props.nodePosition})
 					}}>
 					Paste
 				</div>

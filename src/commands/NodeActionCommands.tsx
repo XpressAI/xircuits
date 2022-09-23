@@ -151,7 +151,10 @@ export function addNodeActionCommands(
 
     //Add command to paste node
     commands.addCommand(commandIDs.pasteNode, {
-        execute: pasteNode,
+        execute: async (args) => {
+            const nodePosition = args['nodePosition'] as any;
+            pasteNode(nodePosition);
+        },
         label: trans.__('Paste'),
         icon: pasteIcon,
         isEnabled: () => {
@@ -487,6 +490,8 @@ export function addNodeActionCommands(
             pasteNode();
         }
     }
+
+    function pasteNode(nodePosition?): void {
         const widget = tracker.currentWidget?.content as XPipePanel;
 
         if (widget) {
@@ -518,10 +523,18 @@ export function addNodeActionCommands(
             });
 
             models.forEach(modelInstance => {
-                const oldX = modelInstance.getX();
-                const oldY = modelInstance.getY();
-
-                modelInstance.setPosition(oldX + 10, oldY + 10)
+                let oldX;
+                let oldY;
+                if (models.length == 1 && nodePosition != undefined) {
+                    // When copied one node, use current mouse position
+                    oldX = nodePosition?.x;
+                    oldY = nodePosition?.y;
+                } else {
+                    // When copied multiple node, use copied node's position with slight diff
+                    oldX = modelInstance?.getX() + 10;
+                    oldY = modelInstance?.getY() + 10;
+                }
+                modelInstance.setPosition(oldX, oldY)
                 model.addNode(modelInstance);
                 // Remove any empty/default node
                 if (modelInstance.getOptions()['type'] == 'default') model.removeNode(modelInstance)
