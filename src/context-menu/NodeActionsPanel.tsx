@@ -52,6 +52,12 @@ export class NodeActionsPanel extends React.Component<NodeActionsPanelProps> {
 				</div>
 				<div className="option"
 					onClick={() => {
+						this.props.app.commands.execute(commandIDs.openScript)
+					}}>
+					Open Script
+				</div>
+				<div className="option"
+					onClick={() => {
 						this.props.app.commands.execute(commandIDs.reloadNode)
 					}}>
 					Reload Node
@@ -61,12 +67,6 @@ export class NodeActionsPanel extends React.Component<NodeActionsPanelProps> {
 						this.props.app.commands.execute(commandIDs.editNode)
 					}}>
 					Edit
-				</div>
-				<div className="option"
-					onClick={() => {
-						this.props.app.commands.execute(commandIDs.openScript)
-					}}>
-					Open Script
 				</div>
 				<div className="option"
 					onClick={() => {
