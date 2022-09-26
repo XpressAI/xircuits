@@ -335,7 +335,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let nodeModels = model.getNodes();
 		let branchNodes = [];
 		let finishedNodes = [];
-		let whichBranchId: string = '';
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 		if (startNodeModel == null) {
 			startNodeModel = getNodeModelByName(nodeModels, '🔴Start');
@@ -365,7 +364,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							if (nodeId === node.currentNode.getID()) finishWorkflow(node);
 						})
 					} else {
-						whichBranchId = nodeId;
 						let checkIfNodeIsBranchNode = checkIfNodeHasBranchFlowport(branchNode.nextNode);
 						if (checkIfNodeIsBranchNode) {
 							// This will check if the next node of the branch node is another branch node
@@ -401,7 +399,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				// This will check if the next node of the branch node is another branch node
 				const checkIfNextNodeHasBranchFlowport = (branchNode?) => {
 					let tempNextNodeOfBranch = branchNodes.find(x => x.currentNode.getID() == branchNode.getID()).nextNode;
-					whichBranchId = tempNextNodeOfBranch.getID();
 					checkIfNodeHasBranchFlowport(tempNextNodeOfBranch);
 					sourceNodeModelId = tempNextNodeOfBranch.getID();
 					retNodeModels.push(tempNextNodeOfBranch);
