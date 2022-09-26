@@ -763,10 +763,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				let branchFlowportId = allNodes[i]['extras']['portId'];
 				let sourceBindingName = 'c_' + j;
 				if (sourceBranchId == allNodes[j].getID()) {
+					if (finishNodeIdAfterBranch == 'None') {
+						// When the next node of finish workflow is empty, end xircuits workflow
+						pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
+					}
 					const portName = allNodes[j].getPortFromID(branchFlowportId).getName().split('out-flow-')[1];
 					pythonCode += '    ' + sourceBindingName + `.${portName} = ` + 'SubGraphExecutor(' + 'c_' + i + ')\n';
-				}
-				if (finishNodeIdAfterBranch != null && finishNodeIdAfterBranch == allNodes[j].getID()) {
+				} else if (finishNodeIdAfterBranch == allNodes[j].getID()) {
 					if (allNodes[j]["extras"]["type"] == 'Finish') {
 						// When the next node of finish workflow is a Finish node, end xircuits workflow
 						pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
