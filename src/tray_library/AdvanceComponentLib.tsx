@@ -31,7 +31,8 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
         extras: {
             "type": nodeData.type,
             "path": nodeData.file_path,
-            "description": nodeData.docstring,
+            "description": nodeData["json_description"]["description"] || nodeData.docstring,
+            "argumentDescriptions" : nodeData["json_description"]["arguments"],
             "lineNo": nodeData.lineno
         }
     });
@@ -44,19 +45,24 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
         "str": "string"
     }
 
-    nodeData["variables"].forEach(variable => {
-        let name = variable["name"];
-        let type = type_name_remappings[variable["type"]] || variable["type"];
+    const argumentDescriptions = nodeData["json_description"]["arguments"];
+
+
+    nodeData["variables"].forEach((variable, _) => {
+        const name = variable["name"];
+        const type = type_name_remappings[variable["type"]] || variable["type"];
+
+        const description = argumentDescriptions ? argumentDescriptions[name] || "" : "";
 
         switch (variable["kind"]) {
             case "InCompArg":
-                node.addInPortEnhance(`★${name}`, `parameter-${type}-${name}`);
+                node.addInPortEnhance(`★${name}`, `parameter-${type}-${name}`, true, null, description);
                 break;
             case "InArg":
-                node.addInPortEnhance(name, `parameter-${type}-${name}`);
+                node.addInPortEnhance(name, `parameter-${type}-${name}`, true, null, description);
                 break;
             case "OutArg":
-                node.addOutPortEnhance(name, `parameter-out-${type}-${name}`);
+                node.addOutPortEnhance(name, `parameter-out-${type}-${name}`, true, null, description);
                 break;
             case "BaseComponent":
                 node.addOutPortEnhance(`${name} ▶`, `out-flow-${name}`);

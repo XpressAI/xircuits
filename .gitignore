@@ -143,3 +143,8 @@ tsconfig.tsbuildinfo
 
 # .py files compiled by Xircuits
 examples/*.py
+
+# pycharm files
+/.idea/
+
+xai_components/*/arguments

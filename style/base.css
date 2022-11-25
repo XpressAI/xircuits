@@ -55,3 +55,16 @@ input[type=number]::-webkit-inner-spin-button {
 .jp-Dialog-content .f1ozlkqi {
   position: relative;
 }
+
+.alignToggle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.alignToggle span {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}

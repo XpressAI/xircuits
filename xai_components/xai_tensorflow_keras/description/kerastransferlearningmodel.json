@@ -1,0 +1,16 @@
+{
+  "description" : "keras_transfer_learning description :math:`1/\\tau_{0}`",
+  "arguments" : {
+    "base_model_name" : "base_model_name description",
+    "include_top" : "include_top description :math:`1/\\tau_{0}`",
+    "weights" : "weights description",
+    "input_shape" : "input_shape description",
+    "freeze_all" : "freeze_all description",
+    "fine_tune_from" : "fine_tune_from description",
+    "classes" : "classes description",
+    "binary" : "binary description",
+    "classifier_activation" : "classifier_activation description",
+    "kwargs" : "kwargs description",
+    "model" : "model description"
+  }
+}

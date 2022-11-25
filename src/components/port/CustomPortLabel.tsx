@@ -2,11 +2,17 @@ import * as React from 'react';
 import { DiagramEngine, PortWidget } from '@projectstorm/react-diagrams-core';
 import { DefaultNodeModel, DefaultPortModel } from "@projectstorm/react-diagrams";
 import styled from '@emotion/styled';
+import WithToggle from "./WithToggle";
+
 
 export interface CustomPortLabelProps {
 	port: DefaultPortModel;
 	engine: DiagramEngine;
 	node: DefaultNodeModel;
+	showDescription: boolean;
+	setShowDescription: any;
+	setDescriptionStr: (string: any) => any;
+	description : string;
 }
 
 namespace S {
@@ -123,7 +129,15 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 
 		const label = (
 			<S.Label>
-				{this.props.port.getOptions().label}
+				<WithToggle
+					renderToggleBeforeChildren={!this.props.port.getOptions().in}
+					showDescription={this.props.showDescription}
+					setShowDescription={this.props.setShowDescription}
+					description={this.props.description}
+					setDescriptionStr={this.props.setDescriptionStr(this.props.port.getOptions().label)}
+				>
+					{this.props.port.getOptions().label}
+				</WithToggle>
 			</S.Label>);
 
 		return (
