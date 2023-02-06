@@ -137,3 +137,6 @@ mlruns/
 
 # Pytorch dataset default dir
 data
+
+# .py files compiled by Xircuits
+examples/*.py
