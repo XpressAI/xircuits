@@ -88,39 +88,10 @@ class SubGraphExecutor:
         
     def do(self, ctx):
         comp = self.comp
-        is_done = False
-        while not is_done or comp is not None:
+        #is_done = False
+        while comp is not None:
             is_done, comp = comp.do(ctx)
-
-
-@xai_component
-class BranchComponent(BaseComponent):
-    when_true: BaseComponent
-    when_false: BaseComponent
-    done: bool
-
-    condition: InArg[bool]
-
-    def do(self, ctx) -> BaseComponent:
-        if self.condition.value:
-            return self.done, self.when_true
-        else:
-            return self.done, self.when_false
-
-
-@xai_component
-class LoopComponent(Component):
-    body: BaseComponent
-
-    condition: InArg[bool]
-
-    def do(self, ctx) -> BaseComponent:
-        while self.condition.value:
-            next_body = self.body.do(ctx)
-            while next_body:
-                next_body = next_body.do(ctx)
-            return self.done, self
-        return self.done, self.next
+        return is_done, None
 
 
 def execute_graph(args: Namespace, start: BaseComponent, ctx) -> None:

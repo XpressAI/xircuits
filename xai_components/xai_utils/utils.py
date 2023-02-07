@@ -6,6 +6,19 @@ from pathlib import Path
 import time
 
 @xai_component
+class Print(Component):
+    msg: InArg[any]
+    done: bool
+    
+    def __init__(self):
+        self.msg = InArg.empty()
+        self.done = False
+        
+    def execute(self, ctx):
+        print(str(self.msg.value))
+
+    
+@xai_component
 class ZipDirectory(Component):
     """Zips a directory.
     
