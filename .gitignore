@@ -137,3 +137,5 @@ mlruns/
 
 # Pytorch dataset default dir
 data
+
+tsconfig.tsbuildinfo
