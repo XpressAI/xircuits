@@ -14,8 +14,25 @@ class Print(Component):
         self.msg = InArg.empty()
         self.done = False
         
-    def execute(self, ctx):
+    def execute(self, ctx) -> None:
         print(str(self.msg.value))
+        
+@xai_component
+class ConcatString(Component):
+    a: InArg[str]
+    b: InArg[str]
+    out: OutArg[str]
+    done: bool
+    
+    def __init__(self):
+        self.a = InArg.empty()
+        self.b = InArg.empty()
+        self.out = InArg.empty()
+        self.done = False
+    
+    def execute(self, cts) -> None:
+        self.out.value = self.a + self.b
+
 
     
 @xai_component
