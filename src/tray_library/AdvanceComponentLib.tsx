@@ -58,6 +58,9 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
             case "OutArg":
                 node.addOutPortEnhance(name, `parameter-out-${type}-${name}`);
                 break;
+            case "BaseComponent":
+                node.addOutPortEnhance(`${name} ▶`, `out-flow-${name}`);
+                break;
             default:
                 console.warn("Unknown variable kind for variable", variable)
                 break;

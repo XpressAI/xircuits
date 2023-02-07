@@ -1,4 +1,4 @@
-from xai_components.base import InArg, OutArg, InCompArg, Component, xai_component
+from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component
 
 @xai_component(color="red")
 class HelloComponent(Component):
@@ -16,6 +16,79 @@ class HelloComponent(Component):
         creator_name = os.getlogin()
         print("Hello, " + creator_name)
 
+        self.done = True
+
+@xai_component(color="red")
+class TestFlowPort(Component):
+    """
+    Example on how to branch a workflow with a condition. Default condition is True.
+    
+    **How it works**
+    
+    When the condition is True, it'll run the workflow from outFlow port(when_A ▶) until there no more node connected. When condition is False, vice versa.
+    
+    Then, it'll continue to run finished port (▶) until it reach Finish node.
+    
+    Note: Finished port (▶) must be **connected** and Finish node **MUST** be inside finished port workflow. 
+    """
+    when_A: BaseComponent
+    when_B: BaseComponent
+    condition: InArg[bool]
+    
+    def __init__(self):
+
+        self.done = False
+        self.condition = InArg(True)
+        self.when_A = BaseComponent
+        self.when_B = BaseComponent
+
+    def execute(self, ctx) -> None:
+        
+        condition = self.condition.value
+        if condition:
+            self.when_A.do(ctx)
+        else:
+            self.when_B.do(ctx)
+
+@xai_component
+class AlphabetSwitch(Component):
+    """
+    Example on how to branch a workflow randomly.
+    
+    **How it works**
+    
+    This node will choose a random alphabet between 'a','b' and 'c'. 
+    
+    When choosen, it'll run that alphabet workflow until there no more node connected.
+    
+    Then, it'll continue to run finished port (▶) until it reach Finish node.
+    
+    Running xircuits again might choose a different alphabet workflow.
+    
+    Note: Finished port (▶) must be **connected** and Finish node **MUST** be inside finished port workflow. 
+    """
+    when_A: BaseComponent
+    when_B: BaseComponent
+    when_C: BaseComponent
+    
+    def __init__(self):
+
+        self.done = False
+        self.when_A = BaseComponent
+        self.when_B = BaseComponent
+        self.when_C = BaseComponent
+
+    def execute(self, ctx) -> None:
+        import random
+
+        alphabet = random.choice(['a', 'b', 'c'])
+        print('Running alphabet: ' + alphabet)
+        if alphabet == "a":
+            self.when_A.do(ctx)
+        if alphabet == "b":
+            self.when_B.do(ctx)
+        if alphabet == "c":
+            self.when_C.do(ctx)
         self.done = True
 
 @xai_component

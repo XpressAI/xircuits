@@ -224,12 +224,6 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
         if (request["message"] == "completed") {
           const model_path = current_path.split(".xircuits")[0] + ".py";
-          await app.commands.execute(
-            commandIDs.openDocManager,
-            {
-              path: model_path
-            }
-          );
           docmanager.closeFile(model_path);
           if (showOutput) {
             alert(`${model_path} successfully compiled!`);
