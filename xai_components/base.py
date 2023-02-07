@@ -69,7 +69,7 @@ class BaseComponent:
 
 class Component(BaseComponent):
     next: BaseComponent
-    done: False
+    done: bool
 
     def do(self, ctx) -> BaseComponent:
         print(f"\nExecuting: {self.__class__.__name__}")
@@ -79,6 +79,7 @@ class Component(BaseComponent):
 
     def debug_repr(self) -> str:
         return "<h1>Component</h1>"
+
 
 class SubGraphExecutor:
     
@@ -92,22 +93,24 @@ class SubGraphExecutor:
             is_done, comp = comp.do(ctx)
 
 
+@xai_component
 class BranchComponent(BaseComponent):
     when_true: BaseComponent
     when_false: BaseComponent
+    done: bool
 
     condition: InArg[bool]
 
     def do(self, ctx) -> BaseComponent:
         if self.condition.value:
-            return self.when_true
+            return self.done, self.when_true
         else:
-            return self.when_false
+            return self.done, self.when_false
 
 
 @xai_component
 class LoopComponent(Component):
-    body: Component
+    body: BaseComponent
 
     condition: InArg[bool]
 
@@ -116,8 +119,8 @@ class LoopComponent(Component):
             next_body = self.body.do(ctx)
             while next_body:
                 next_body = next_body.do(ctx)
-            return self
-        return self.next
+            return self.done, self
+        return self.done, self.next
 
 
 def execute_graph(args: Namespace, start: BaseComponent, ctx) -> None:
