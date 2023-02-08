@@ -6,7 +6,4 @@
 	url = https://github.com/XpressAI/xai-modelstash
 [submodule "xai_components/xai_rpa"]
 	path = xai_components/xai_rpa
-	url = git@github.com:yuenherny/xai-rpa.git
-[submodule "xai-rpa"]
-	path = xai-rpa
-	url = git@github.com:yuenherny/xai-rpa.git
+	url = https://github.com/yuenherny/xai-rpa
