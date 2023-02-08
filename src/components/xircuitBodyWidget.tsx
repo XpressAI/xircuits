@@ -336,6 +336,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const getAllNodesFromStartToFinish = (): NodeModel[] | null => {
 		let model = xircuitsApp.getDiagramEngine().getModel();
 		let nodeModels = model.getNodes();
+		let branchNodes = [];
+		let finishedNodes = [];
 		let startNodeModel = getNodeModelByName(nodeModels, 'Start');
 		if (startNodeModel == null) {
 			startNodeModel = getNodeModelByName(nodeModels, '🔴Start');
@@ -346,15 +348,171 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			let retNodeModels: NodeModel[] = [];
 			retNodeModels.push(startNodeModel);
 
-			while (getTargetNodeModelId(model.getLinks(), sourceNodeModelId) != null) {
-				let getTargetNode = getTargetNodeModelId(model.getLinks(), sourceNodeModelId)
+			while (getTargetNodeModelId(model.getLinks(), sourceNodeModelId) != null || finishedNodes.length != 0) {
+				let getTargetNode = getTargetNodeModelId(model.getLinks(), sourceNodeModelId);
+				const nodeModel = getNodeModelById(nodeModels, getTargetNode);
+
+				// When the next node is Finish, set its previous node extras's nextNode properties as null
+				if (getTargetNode != null && nodeModel.getOptions()['name'] == 'Finish') {
+					const beforeFinishNode = getNodeModelById(nodeModels, sourceNodeModelId);
+					beforeFinishNode['extras']['nextNode'] = 'None';
+				}
+
+				// This will go to the next node of branch node given its source branch node ID
+				const branchWorkflow = (nodeId?: string) => {
+					let branchNode = branchNodes.find(x => x.currentNode.getID() == nodeId);
+					if (branchNode == undefined) {
+						//When no flowPorts connected, skip to finish port's Node
+						finishedNodes.forEach((node) => {
+							if (nodeId === node.currentNode.getID()) finishWorkflow(node);
+						})
+					} else {
+						let checkIfNodeIsBranchNode = checkIfNodeHasBranchFlowport(branchNode.nextNode);
+						if (checkIfNodeIsBranchNode) {
+							// This will check if the next node of the branch node is another branch node
+							checkIfNextNodeHasBranchFlowport(branchNode.nextNode);
+						} else {
+							sourceNodeModelId = branchNode.nextNode.getID();
+						}
+						retNodeModels.push(branchNode.nextNode);
+						branchNodes.forEach((node, index) => {
+							// Remove it from the the list to indicate we already go through its workflow
+							if (branchNode.nextNode === node.nextNode) branchNodes.splice(index, 1);
+						})
+					}
+				}
+
+				// This will go to the next node of finish workflow's node given its source branch node ID
+				const finishWorkflow = (latestFinishedNode?) => {
+					let checkIfNodeIsBranchNode = checkIfNodeHasBranchFlowport(latestFinishedNode?.finishNode);
+					if (checkIfNodeIsBranchNode) {
+						// This will check if the finish node of the branch node is another branch node
+						checkIfNextNodeHasBranchFlowport(latestFinishedNode?.finishNode); 
+					}else {
+						sourceNodeModelId = latestFinishedNode?.finishNode?.getID();
+					}
+					retNodeModels.push(latestFinishedNode?.finishNode);
+					finishedNodes.forEach((node, index) => {
+						// Remove it from the the list 
+						// to indicate we already finish going through all of this branch node's workflow
+						if (latestFinishedNode?.finishNode === node.finishNode) finishedNodes.splice(index, 1);
+					})
+				}
+
+				// This will check if the next node of the branch node is another branch node
+				const checkIfNextNodeHasBranchFlowport = (branchNode?) => {
+					let tempNextNodeOfBranch = branchNodes.find(x => x.currentNode.getID() == branchNode.getID()).nextNode;
+					checkIfNodeHasBranchFlowport(tempNextNodeOfBranch);
+					sourceNodeModelId = tempNextNodeOfBranch.getID();
+					retNodeModels.push(tempNextNodeOfBranch);
+					branchNodes.forEach((node, index) => {
+						// Remove it from the the list to indicate we already go through its workflow
+						if (tempNextNodeOfBranch === node.nextNode) branchNodes.splice(index, 1);
+					})
+				}
+
+				// This will check if the node have branch flowports
+				const checkIfNodeHasBranchFlowport = (currentNode) => {
+					const currentBranchNodesLength = branchNodes.length;
+					if (currentNode == undefined || currentNode == null){
+						return
+					}
+					currentNode['portsOut']?.map((p) => {
+						if (p.getName().includes('out-flow')) {
+							const branchFlowportLinks = p.links;
+							const sameBranchNode = finishedNodes.find(x => x.currentNode.getID() == currentNode.getID());
+							const finishedLink = currentNode.getPorts()['out-0'].links;
+							let getFinishNode;
+
+							if (Object.keys(finishedLink).length != 0) {
+								for (let linkID in finishedLink) {
+										let link = finishedLink[linkID];
+										if (Object.keys(finishedLink).length != 0) {
+											getFinishNode = link.getTargetPort().getParent();
+											currentNode['extras']['finishNodeId'] = getFinishNode.getID();
+										}
+									}
+							} else {
+								// When there is no finish node, set finishNodeId to None
+								getFinishNode = null;
+								currentNode['extras']['finishNodeId'] = 'None';
+							}
+							if (finishedNodes.length == 0 || !sameBranchNode) {
+								// When there is no branch node or the same branch node,
+								// Get the branch node and its next node of finish port
+								finishedNodes.push({
+									'currentNode': currentNode,
+									'finishNode': getFinishNode
+								});
+								currentNode['extras']['isBranchNode'] = true; // To indicate it's a branch component
+							}
+
+							for (let linkID in branchFlowportLinks) {
+								let link = branchFlowportLinks[linkID];
+								if (Object.keys(link).length != 0) {
+									const nextBranchFlowportNode = link.getTargetPort().getParent();
+									branchNodes.push({
+										// Get the branch node and its next node of its branch flowports
+										'currentNode': currentNode,
+										'nextNode': nextBranchFlowportNode
+									});
+									// Save the source branch Id and its port Id at each next node of the branch node
+									nextBranchFlowportNode['extras']['sourceBranchId'] = currentNode.getID();
+									nextBranchFlowportNode['extras']['portId'] = p.getID();
+								}
+							}
+						}
+					})
+					if (currentBranchNodesLength !== branchNodes.length) {
+						// If the next node is branch node, return true
+						return true;
+					}
+					return false;
+				}
+
+				// When next node is empty check if there's any branch component,
+				// continue to finish port where its branches using the saved node Id.
+				if (getTargetNode == null) {
+					const getCurrentNode = getNodeModelById(nodeModels, sourceNodeModelId);
+					getCurrentNode['extras']['nextNode'] = 'None';
+
+					if (branchNodes.length != 0) {
+						// When there still a branch flowports, iterate through branch workflow again
+						let latestBranchNode = branchNodes[branchNodes.length - 1];
+						branchWorkflow(latestBranchNode.currentNode.getID());
+						continue;
+					};
+
+					// When there is no more branch workflow to iterate, continue with the finish port workflow
+					const latestFinishedNode = finishedNodes[finishedNodes.length - 1];
+					if (latestFinishedNode.finishNode == null) {
+						// When there's no next node, remove from list
+						finishedNodes.forEach((node, index) => {
+							// Remove it from the the list 
+							// to indicate we already finish going through all of this branch node's workflow
+							if (latestFinishedNode?.currentNode === node.currentNode) finishedNodes.splice(index, 1);
+						})
+						continue;
+					}
+					finishWorkflow(latestFinishedNode); // Every finish node branch workflow
+					continue;
+				}
 
 				if (getTargetNode) {
-					let nodeModel = getNodeModelById(nodeModels, getTargetNode);
-
+					checkIfNodeHasBranchFlowport(nodeModel); // This will check if the node have branch flowports
 					if (nodeModel) {
+						// If there are branch flowports, get its node Id.
+						if (finishedNodes.length != 0) {
+							const latestBranchNode = finishedNodes[finishedNodes.length - 1].currentNode;
+							if (latestBranchNode.getID() == nodeModel.getID()) {
+								// Get the branch node's Id and iterate through it branch workflow.
+								retNodeModels.push(nodeModel);
+								branchWorkflow(nodeModel.getID());
+								continue;
+							}
+						}
 						sourceNodeModelId = nodeModel.getID();
-						retNodeModels.push(nodeModel)
+						retNodeModels.push(nodeModel);
 					}
 				}
 			}
@@ -373,6 +531,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let pythonCode = 'from argparse import ArgumentParser\n';
 		pythonCode += 'from datetime import datetime\n';
 		pythonCode += 'from time import sleep\n';
+		pythonCode += 'from xai_components.base import SubGraphExecutor\n';
 		if (debuggerMode == true) {
 			pythonCode += 'import json, os, signal\n';
 			pythonCode += 'from flask import Flask, jsonify, request\n';
@@ -470,120 +629,120 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		pythonCode += '\n';
 
 		if (startNodeModel) {
-			let sourceNodeModelId = startNodeModel.getID();
 			let j = 0;
 
-			while (getTargetNodeModelId(model.getLinks(), sourceNodeModelId) != null) {
-				let targetNodeId = getTargetNodeModelId(model.getLinks(), sourceNodeModelId)
+			for (let i = 0; i < allNodes.length; i++) {
+				j++;
+				let nodeType = allNodes[i]["extras"]["type"];
 
-				if (targetNodeId) {
-
-					let bindingName = 'c_' + ++j;
-					let currentNodeModel = getNodeModelById(nodeModels, targetNodeId);
-					let allPort = currentNodeModel.getPorts();
-					// Reset appending values
-					needAppend.current = "";
-
-					for (let port in allPort) {
-
-						let portIn = allPort[port].getOptions().alignment == 'left';
-
-						if (portIn) {
-							let label = allPort[port].getOptions()["label"];
-							label = label.replace(/\s+/g, "_");
-							label = label.toLowerCase();
-
-							if (label.startsWith("★")) {
-								const newLabel = label.split("★")[1];
-								label = newLabel;
-							}
-
-							if (label == '▶') {
-							} else {
-								let portLinks = allPort[port].getLinks();
-
-								for (let portLink in portLinks) {
-									let sourceNodeName = portLinks[portLink].getSourcePort().getNode()["name"];
-									let sourceNodeType = portLinks[portLink].getSourcePort().getNode().getOptions()["extras"]["type"];
-									let sourceNodeId = portLinks[portLink].getSourcePort().getNode().getOptions()["id"];
-									let sourcePortLabel = portLinks[portLink].getSourcePort().getOptions()["label"];
-									let k = getBindingIndexById(allNodes, sourceNodeId);
-									let preBindingName = 'c_' + k;
-
-									//Get the id of the node of the connected link
-									let linkSourceNodeId = allPort[port]["links"][portLink]["sourcePort"]["parent"]["options"]["id"];
-									let equalSign = ' = ';
-									let sourcePortLabelStructure;
-
-									// When port is 'string', 'list' and 'dict' type 
-									// append values if there's multiple link connected
-									if (port.includes('string') ||
-										port.includes('list') ||
-										port.includes('dict')
-									) {
-										if (needAppend.current == label) {
-											switch (sourceNodeType) {
-												case "dict":
-													equalSign = ' |= '
-													break;
-												default:
-													equalSign = ' += '
-													break;
-											}
-										}
-										needAppend.current = label;
-									}
-
-									if (port.startsWith("parameter")) {
-
-										if (sourceNodeName.startsWith("Literal")) {
-											switch (sourceNodeType) {
-												case "string":
-													sourcePortLabelStructure = '"""' + sourcePortLabel + '"""';
-													break;
-												case "list":
-													sourcePortLabelStructure = "[" + sourcePortLabel + "]";
-													break;
-												case "tuple":
-													sourcePortLabelStructure = "(" + sourcePortLabel + ")";
-													break;
-												case "dict":
-													sourcePortLabelStructure = "{" + sourcePortLabel + "}";
-													break;
-												default:
-													sourcePortLabelStructure = sourcePortLabel;
-													break;
-											}
-											pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + sourcePortLabelStructure + "\n";
-										} else if (linkSourceNodeId == sourceNodeId && !sourceNodeName.startsWith("Hyperparameter")) {
-											// Make sure the node id match between connected link and source node
-											// Skip Hyperparameter Components
-											pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
-										} else {
-											sourcePortLabel = sourcePortLabel.replace(/\s+/g, "_");
-											sourcePortLabel = sourcePortLabel.toLowerCase();
-											sourceNodeName = sourceNodeName.split(": ");
-											let paramName = sourceNodeName[sourceNodeName.length - 1];
-											paramName = paramName.replace(/\s+/g, "_");
-											paramName = paramName.toLowerCase();
-											pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + 'args.' + paramName + '\n';
-										}
-
-									} else {
-										pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
-									}
-								}
-							}
-						} else {
-						}
-
-					}
-
-					if (currentNodeModel) {
-						sourceNodeModelId = currentNodeModel.getID();
-					}
+				if (nodeType == 'Start' ||
+					nodeType == 'Finish' ||
+					nodeType === 'boolean' ||
+					nodeType === 'int' ||
+					nodeType === 'float' ||
+					nodeType === 'string') {
+					// Skip these type of node
+					j--;
+					continue;
 				}
 
+				let bindingName = 'c_' + j;
+				let targetNodeId = allNodes[i].getOptions()['id'];
+				let currentNodeModel = getNodeModelById(nodeModels, targetNodeId);
+				let allPort = currentNodeModel.getPorts();
+				// Reset appending values
+				needAppend.current = "";
+
+				for (let port in allPort) {
+
+					let portIn = allPort[port].getOptions().alignment == 'left';
+
+					if (portIn) {
+						let label = allPort[port].getOptions()["label"];
+						label = label.replace(/\s+/g, "_");
+						label = label.toLowerCase();
+
+						if (label.startsWith("★")) {
+							const newLabel = label.split("★")[1];
+							label = newLabel;
+						}
+
+						if (label == '▶') {
+						} else {
+							let portLinks = allPort[port].getLinks();
+
+							for (let portLink in portLinks) {
+								let sourceNodeName = portLinks[portLink].getSourcePort().getNode()["name"];
+								let sourceNodeType = portLinks[portLink].getSourcePort().getNode().getOptions()["extras"]["type"];
+								let sourceNodeId = portLinks[portLink].getSourcePort().getNode().getOptions()["id"];
+								let sourcePortLabel = portLinks[portLink].getSourcePort().getOptions()["label"];
+								let k = getBindingIndexById(allNodes, sourceNodeId);
+								let preBindingName = 'c_' + k;
+
+								//Get the id of the node of the connected link
+								let linkSourceNodeId = allPort[port]["links"][portLink]["sourcePort"]["parent"]["options"]["id"];
+								let equalSign = ' = ';
+								let sourcePortLabelStructure;
+
+								// When port is 'string', 'list' and 'dict' type 
+								// append values if there's multiple link connected
+								if (port.includes('string') ||
+									port.includes('list') ||
+									port.includes('dict')
+								) {
+									if (needAppend.current == label) {
+										switch (sourceNodeType) {
+											case "dict":
+												equalSign = ' |= '
+												break;
+											default:
+												equalSign = ' += '
+												break;
+										}
+									}
+									needAppend.current = label;
+								}
+
+								if (port.startsWith("parameter")) {
+									if (sourceNodeName.startsWith("Literal")) {
+										switch (sourceNodeType) {
+											case "string":
+												sourcePortLabelStructure = '"""' + sourcePortLabel + '"""';
+												break;
+											case "list":
+												sourcePortLabelStructure = "[" + sourcePortLabel + "]";
+												break;
+											case "tuple":
+												sourcePortLabelStructure = "(" + sourcePortLabel + ")";
+												break;
+											case "dict":
+												sourcePortLabelStructure = "{" + sourcePortLabel + "}";
+												break;
+											default:
+												sourcePortLabelStructure = sourcePortLabel;
+												break;
+										}
+										pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + sourcePortLabelStructure + "\n";
+									} else if (linkSourceNodeId == sourceNodeId && !sourceNodeName.startsWith("Hyperparameter")) {
+										// Make sure the node id match between connected link and source node
+										// Skip Hyperparameter Components
+										pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
+									} else {
+										sourcePortLabel = sourcePortLabel.replace(/\s+/g, "_");
+										sourcePortLabel = sourcePortLabel.toLowerCase();
+										sourceNodeName = sourceNodeName.split(": ");
+										let paramName = sourceNodeName[sourceNodeName.length - 1];
+										paramName = paramName.replace(/\s+/g, "_");
+										paramName = paramName.toLowerCase();
+										pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + 'args.' + paramName + '\n';
+									}
+								} else {
+									pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 
@@ -592,16 +751,41 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		for (let i = 0; i < allNodes.length; i++) {
 
 			let nodeType = allNodes[i]["extras"]["type"];
+			let sourceBranchId = allNodes[i]['extras']['sourceBranchId'];
+			let nextNodeAfterBranch = allNodes[i]["extras"]["nextNode"];
+			let finishNodeIdAfterBranch = allNodes[i]["extras"]["finishNodeId"];
+			let isBranchNode = allNodes[i]["extras"]["isBranchNode"];
+
 			let bindingName = 'c_' + i;
 			let nextBindingName = 'c_' + (i + 1);
 
-			if (nodeType == 'Start' || nodeType == 'Finish') {
-			} else if (i == (allNodes.length - 2)) {
+			for (let j = 0; j < allNodes.length; j++) {
+				let branchFlowportId = allNodes[i]['extras']['portId'];
+				let sourceBindingName = 'c_' + j;
+				if (sourceBranchId == allNodes[j].getID()) {
+					if (finishNodeIdAfterBranch == 'None') {
+						// When the next node of finish workflow is empty, end xircuits workflow
+						pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
+					}
+					const portName = allNodes[j].getPortFromID(branchFlowportId).getName().split('out-flow-')[1];
+					pythonCode += '    ' + sourceBindingName + `.${portName} = ` + 'SubGraphExecutor(' + 'c_' + i + ')\n';
+				} else if (finishNodeIdAfterBranch == allNodes[j].getID()) {
+					if (allNodes[j]["extras"]["type"] == 'Finish') {
+						// When the next node of finish workflow is a Finish node, end xircuits workflow
+						pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
+					} else {
+						pythonCode += '    ' + bindingName + '.next = ' + 'c_' + j + '\n';
+					}
+				}
+			}
+
+			if (nodeType == 'Start' || nodeType == 'Finish' || isBranchNode) {
+			} else if (nextNodeAfterBranch === 'None') {
+				// When next node after each branch workflow is empty or next node is a Finish node, set next node to None
 				pythonCode += '    ' + bindingName + '.next = ' + 'None\n';
 			} else {
 				pythonCode += '    ' + bindingName + '.next = ' + nextBindingName + '\n';
 			}
-
 		}
 
 		if (debuggerMode == true) pythonCode += '    ' + 'debug_mode = args.debug_mode\n';
@@ -756,21 +940,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const checkAllNodesConnected = (): boolean | null => {
-		let nodeModels = xircuitsApp.getDiagramEngine().getModel().getNodes();
+		let allNodes = getAllNodesFromStartToFinish();
+		let lastNode = allNodes[allNodes.length - 1];
 
-		for (let i = 0; i < nodeModels.length; i++) {
-			let inPorts = nodeModels[i]["portsIn"];
-			let j = 0;
-			if (inPorts != 0) {
-				if (inPorts[j].getOptions()["label"] == '▶' && Object.keys(inPorts[0].getLinks()).length != 0) {
-					continue
-				} else {
-					nodeModels[i].getOptions().extras["borderColor"] = "red";
-					nodeModels[i].getOptions().extras["tip"] = "Please make sure this node ▶ is properly connected ";
-					nodeModels[i].setSelected(true);
-					return false;
-				}
-			}
+		if (lastNode['name'] != 'Finish') {
+			// When last node is not Finish node, check failed and show error tooltip
+			lastNode.getOptions().extras["borderColor"] = "red";
+			lastNode.getOptions().extras["tip"] = `Please make sure this **${lastNode['name']}** node end with **Finish** node`;
+			lastNode.setSelected(true);
+			return false;
 		}
 		return true;
 	}

@@ -220,7 +220,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         marked.setOptions({
             renderer: renderer
         });
-        const __html = marked(text)
+        const __html = marked(text ?? '')
         return { __html }
     }
 
@@ -379,6 +379,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                             delayUpdate={50}
                             getContent={() =>
                                 <div data-no-drag className='error-container'>
+                                    <p className='error-title'>Error</p>
                                     <div className='markdown-body' dangerouslySetInnerHTML={this.renderText(this.props.node.getOptions().extras["tip"])} />
                                     <button
                                         type="button"

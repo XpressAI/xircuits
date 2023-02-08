@@ -28,20 +28,24 @@
     box-shadow: 5px 5px 3px rgba(0,0,0,.5) !important;
 }
 
-.error-text{
+.error-title{
+    text-align: justify;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
     color: rgb(0, 0, 0);
-    width: 250px;
-    text-align: center;
-    padding-right: 10px;
-    cursor: default;
+    padding-bottom: 7px;
 }
 
 .error-container{
     width: 400px;
+    position: relative;
+    padding-left: 10px;
 }
 
 .error-container .close{
-    right: 5px;
+    right: -12px;
+    top: -3px;
 }
 
 /* Close button*/

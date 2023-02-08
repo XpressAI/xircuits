@@ -138,5 +138,8 @@ mlruns/
 # Pytorch dataset default dir
 data
 
+# tsconfig files
+tsconfig.tsbuildinfo
+
 # .py files compiled by Xircuits
 examples/*.py
