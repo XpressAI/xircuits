@@ -118,17 +118,96 @@ class TorchDataLoader(Component):
         self.train_dataloader.value = train_dataloader
         self.test_dataloader.value = test_dataloader
 
+        
+@xai_component
+class TorchAddLinearLayer(Component):
+    """Adds a LinearLayer to a sequential model."""
+
+    model_in: InArg[list]
+    in_features: InArg[int]
+    out_features: InArg[int]
+    bias: InArg[bool]
+    model_out: OutArg[list]
+
+    def __init__(self):
+        self.done = False
+
+        self.model_in = InArg.empty()
+        self.in_features = InArg.empty()
+        self.out_features = InArg.empty()
+        self.bias = InArg.empty()
+        self.model_out = OutArg.empty()
+
+    def execute(self,ctx) -> None:
+        bias = True if self.bias.value is None else False
+        in_size = self.in_features.value
+        out_size = self.out_features.value
+        
+        if self.model_in.value is None:
+            self.model_out.value = [nn.Linear(in_size, out_size, bias)]
+        else:
+            self.model_out.value = self.model_in.value + [nn.Linear(in_size, out_size, bias)]
+        
+@xai_component
+class TorchAddReluLayer(Component):
+    """Adds a Relu activation to a sequential model."""
+    
+    model_in: InArg[list]
+    model_out: OutArg[list]
+    
+    def __init__(self):
+        self.done = False
+        
+        self.model_in = InArg.empty()
+        self.model_out = OutArg.empty()
+    
+    def execute(self, ctx) -> None:
+        if self.model_in.value is None:
+            self.model_out.value = [nn.ReLU()]
+        else:
+            self.model_out.value = self.model_in.value + [nn.ReLU()]
+
+@xai_component
+class TorchAddDropoutLayer(Component):
+    """Adds a Dropout to a sequential model."""
+    
+    model_in: InArg[list]
+    prob_zero: InArg[float]
+    model_out: OutArg[list]
+    
+    def __init__(self):
+        self.done = False
+        
+        self.model_in = InArg.empty()
+        self.prob_zero = InArg.empty()
+        self.model_out = OutArg.empty()
+    
+    def execute(self, ctx) -> None:
+        prob = 0.5
+        if self.prob_zero.value is not None:
+            prob = self.prob_zero.value
+            
+        if self.model_in.value is None:
+            self.model_out.value = [nn.Dropout(prob)]
+        else:
+            self.model_out.value = self.model_in.value + [nn.Dropout(prob)]
 
 @xai_component
 class TorchModel(Component):
     """Creates a custom Torch Model config.
 
     ##### outPorts:
-    - model: torch.nn instance that expects a 28*28 input.
+    - model_in: List of layers to make into Sequential Model
+    - model_config: resulting model.
     - loss_fn: nn.CrossEntropyLoss()
     - optimizer: torch.optim.SGD(model.parameters(), lr=1e-3)
     """
 
+    model_in: InArg[list]
+    loss_in: InArg[str]
+    learning_rate = InArg[float]
+    optimizer_in: InArg[str]
+    should_flatten: InArg[bool]
     model_config: OutArg[nn.Module]
     loss_fn: OutArg[any]
     optimizer: OutArg[any]
@@ -136,28 +215,33 @@ class TorchModel(Component):
     def __init__(self):
         self.done = False
 
-        self.model_config = OutArg(None)
-        self.loss_fn = OutArg(None)
-        self.optimizer = OutArg(None)
+        self.model_in = InArg.empty()
+        self.loss_in = InArg.empty()
+        self.learning_rate = InArg(1e-3)
+        self.optimizer_in = InArg.empty()
+        self.should_flatten = InArg(False)
+        self.model_config = OutArg.empty()
+        self.loss_fn = OutArg.empty()
+        self.optimizer = OutArg.empty()
 
     def execute(self,ctx) -> None:
+        should_flatten = self.should_flatten.value
+        stack = self.model_in.value
         
         # Define model
         class NeuralNetwork(nn.Module):
             def __init__(self):
                 super(NeuralNetwork, self).__init__()
-                self.flatten = nn.Flatten()
-                self.linear_relu_stack = nn.Sequential(
-                    nn.Linear(28*28, 512),
-                    nn.ReLU(),
-                    nn.Linear(512, 512),
-                    nn.ReLU(),
-                    nn.Linear(512, 10)
-                )
+                
+                if should_flatten:
+                    self.flatten = nn.Flatten()
+                self.stack = nn.Sequential(*stack)
 
             def forward(self, x):
-                x = self.flatten(x)
-                logits = self.linear_relu_stack(x)
+                if should_flatten:
+                    x = self.flatten(x)
+                    
+                logits = self.stack(x)
                 return logits
 
         # Get cpu or gpu device for training.
@@ -166,8 +250,24 @@ class TorchModel(Component):
         model = NeuralNetwork().to(device)
         print(model)
 
-        loss_fn = nn.CrossEntropyLoss()
-        optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
+        loss_fn = nn.MSELoss()
+        if self.loss_in.value == 'CrossEntropyLoss':
+            loss_fn = nn.CrossEntropyLoss()
+        elif self.loss_in.value == 'L1Loss':
+            loss_fn = nn.L1Loss()
+        elif self.loss_in.value == 'CTCLoss':
+            loss_fn = nn.CTCLoss()
+        else:
+            loss_fn = eval(self.loss_in.value)
+
+        
+        optimizer = torch.optim.SGD(model.parameters(), lr=self.learning_rate.value)
+        if self.optimizer_in.value == 'Adam':
+            optimizer = torch.optim.Adam(model.parameters(), lr=self.learning_rate.value)
+        elif self.optimizer_in.value == 'RMSprop':
+            optimizer = torch.optim.RMSprop(model.parameters(), lr=self.learning_rate.value)
+        else:
+            optimizer = eval(self.optimizer_in.value)
 
         self.model_config.value = model
         self.loss_fn.value = loss_fn
