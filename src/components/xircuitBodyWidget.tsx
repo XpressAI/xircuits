@@ -164,11 +164,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [displayHyperparameter, setDisplayHyperparameter] = useState(false);
 	const [runConfigs, setRunConfigs] = useState<any>("");
 	const [lastConfig, setLastConfigs] = useState<any>("");
-	const [stringNodes, setStringNodes] = useState<string[]>(["experiment name"]);
+	const [stringNodes, setStringNodes] = useState<string[]>([]);
 	const [intNodes, setIntNodes] = useState<string[]>([]);
 	const [floatNodes, setFloatNodes] = useState<string[]>([]);
 	const [boolNodes, setBoolNodes] = useState<string[]>([]);
-	const [stringNodesValue, setStringNodesValue] = useState<string[]>([""]);
+	const [stringNodesValue, setStringNodesValue] = useState<string[]>([]);
 	const [intNodesValue, setIntNodesValue] = useState<number[]>([0]);
 	const [floatNodesValue, setFloatNodesValue] = useState<number[]>([0.00]);
 	const [boolNodesValue, setBoolNodesValue] = useState<boolean[]>([false]);
@@ -1597,7 +1597,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				}
 			}
 			else {
-				setStringNodes(["experiment name"]);
+				setStringNodes([]);
 				setIntNodes([]);
 				setFloatNodes([]);
 				setBoolNodes([]);
