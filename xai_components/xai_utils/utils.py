@@ -31,7 +31,7 @@ class ConcatString(Component):
         self.done = False
     
     def execute(self, cts) -> None:
-        self.out.value = self.a + self.b
+        self.out.value = self.a.value + self.b.value
 
 
     
