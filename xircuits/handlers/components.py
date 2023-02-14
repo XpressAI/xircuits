@@ -24,18 +24,18 @@ DEFAULT_COMPONENTS_PATHS = [
 # A good point in time to do that, would be when the python compilation step
 # gets refactored
 DEFAULT_COMPONENTS = {
-    1: { "name": "Get Hyper-parameter String Name", "returnType": "string"},
-    2: { "name": "Get Hyper-parameter Int Name", "returnType": "int"},
-    3: { "name": "Get Hyper-parameter Float Name", "returnType": "float"},
-    4: { "name": "Get Hyper-parameter Boolean Name", "returnType": "boolean"},
-    5: { "name": "Literal String", "returnType": "string"},
-    6:{ "name": "Literal Integer", "returnType": "int"},
-    7:{ "name": "Literal Float", "returnType": "float"},
-    8:{ "name": "Literal True", "returnType": "boolean"},
-    9:{ "name": "Literal False", "returnType": "boolean"},
-    10:{ "name": "Literal List", "returnType": "list"},
-    11:{ "name": "Literal Tuple", "returnType": "tuple"},
-    12:{ "name": "Literal Dict", "returnType": "dict"},
+    1: { "name": "Get Argument String Name", "returnType": "string","color":"lightpink"},
+    2: { "name": "Get Argument Integer Name", "returnType": "int","color":"blue"},
+    3: { "name": "Get Argument Float Name", "returnType": "float","color":"green"},
+    4: { "name": "Get Argument Boolean Name", "returnType": "boolean","color":"red"},
+    5: { "name": "Literal String", "returnType": "string","color":"lightpink"},
+    6:{ "name": "Literal Integer", "returnType": "int","color":"blue"},
+    7:{ "name": "Literal Float", "returnType": "float","color":"green"},
+    8:{ "name": "Literal True", "returnType": "boolean","color":"red"},
+    9:{ "name": "Literal False", "returnType": "boolean","color":"red"},
+    10:{ "name": "Literal List", "returnType": "list","color":"yellow"},
+    11:{ "name": "Literal Tuple", "returnType": "tuple","color":"purple"},
+    12:{ "name": "Literal Dict", "returnType": "dict","color":"orange"},
     # Comment this first since we don't use it
     # 1: { "name": "Math Operation", "returnType": "math"},
     # 2: { "name": "Convert to Aurora", "returnType": "convert"},
@@ -102,7 +102,8 @@ class ComponentsRouteHandler(APIHandler):
                 "header": GROUP_GENERAL,
                 "category": GROUP_GENERAL,
                 "variables": [],
-                "type": c["returnType"]
+                "type": c["returnType"],
+                "color":c.get('color') or None    
             })
 
         default_paths = set(pathlib.Path(p).expanduser().resolve() for p in sys.path)
