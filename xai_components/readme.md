@@ -24,9 +24,10 @@ $ xircuits-components --sublib componentLibraryName
 
 Don't forget to install their packages after fetching the library!
 
-| Name       | Description                                                                                                                                          | Link                                                                               |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Pycaret    | A component library built using Pycaret's API! Complete with examples for NLP, anomaly detection, classification, clustering, as well as regression. | [Link](https://github.com/XpressAI/xai-pycaret) |
-| Modelstash | Coming Soon...                                                                                                                                       | Coming Soon...                                                                     |
+| Name                                                                                                                                                            | Version |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| <b>[Pycaret](https://github.com/XpressAI/xai-pycaret)</b><br>A component library built using Pycaret's API! Complete with examples for NLP, anomaly detection, classification, clustering, as well as regression. | 0.1.0   |
+| <b>[RPA](https://github.com/yuenherny/xai-rpa)</b><br>Robotic process automation library to automate routine and repetitive tasks!                                                                                     | 0.1.0   |
+| <b>Modelstash</b><br>Coming Soon...                                                                                                                                    | \-      |
 
 Want your component library listed here? Just submit a PR to the Xircuits repository. For more information, refer to the [Xircuits component library documentation](https://xircuits.io/docs/technical-concepts/xircuits-component-library).
