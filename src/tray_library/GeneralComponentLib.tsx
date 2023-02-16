@@ -86,7 +86,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             inputValue = dialogResult["value"][hyperparameterTitle];
-            node = new CustomNodeModel({ name: "Argument (Integer): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
+            node = new CustomNodeModel({ name: "Argument (Int): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
 
         }
@@ -180,7 +180,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             inputValue = dialogResult["value"][hyperparameterTitle];
-            node = new CustomNodeModel({ name: "Hyperparameter (Tuple): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
+            node = new CustomNodeModel({ name: "Argument (Tuple): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
         }
 
@@ -203,7 +203,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             inputValue = dialogResult["value"][hyperparameterTitle];
-            node = new CustomNodeModel({ name: "Hyperparameter (Dict): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
+            node = new CustomNodeModel({ name: "Argument (Dict): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
 
         }
