@@ -147,7 +147,110 @@ class TorchAddLinearLayer(Component):
             self.model_out.value = [nn.Linear(in_size, out_size, bias)]
         else:
             self.model_out.value = self.model_in.value + [nn.Linear(in_size, out_size, bias)]
+
+@xai_component
+class TorchAddConv2DLayer(Component):
+    """Adds a Conv2DLayer to a sequential model."""
+
+    model_in: InArg[list]
+
+    in_channels: InCompArg[int]
+    out_channels: InCompArg[int]
+    kernel_size: InCompArg[any] #int or tuple
+    stride: InArg[any] #int or tuple
+    padding: InArg[any] #int, tuple or str
+    dilation: InArg[any] #int or tuple
+    groups: InArg[int]
+    bias: InArg[bool]
+    padding_mode: InArg[str]
+
+    model_out: OutArg[list]
+
+
+    def __init__(self):
+        self.done = False
+
+        self.model_in = InArg.empty()
+
+        self.in_channels = InCompArg.empty()
+        self.out_channels = InCompArg.empty()
+        self.kernel_size = InCompArg.empty()
+        self.stride = InArg(1)
+        self.padding = InArg(0)
+        self.dilation = InArg(1)
+        self.groups = InArg(1)
+        self.bias = InArg(True)
+        self.padding_mode = InArg('zeros')
+
+        self.model_out = OutArg.empty()
+
+    def execute(self,ctx) -> None:
+
+        in_channels = self.in_channels.value 
+        out_channels = self.out_channels.value 
+        kernel_size = self.kernel_size.value 
+        stride = self.stride.value 
+        padding = self.padding.value 
+        dilation = self.dilation.value 
+        groups = self.groups.value 
+        bias = self.bias.value 
+        padding_mode = self.padding_mode.value 
         
+        if self.model_in.value is None:
+            self.model_out.value = [nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias, padding_mode)]
+        else:
+            self.model_out.value = self.model_in.value + [nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias, padding_mode)]
+
+@xai_component
+class TorchAddTransformerEncoderLayer(Component):
+    """Adds a TransformerEncoderLayer to a sequential model."""
+
+    model_in: InArg[list]
+
+    d_model : InCompArg[int]
+    nhead : InCompArg[int]
+    dim_feedforward : InArg[int]
+    dropout : InArg[float]
+    activation : InArg[any] #Union[str, Callable[[Tensor], Tensor]]
+    layer_norm_eps : InArg[float]
+    batch_first : InArg[bool]
+    norm_first : InArg[bool]
+
+    model_out: OutArg[list]
+
+
+    def __init__(self):
+        self.done = False
+
+        self.model_in = InArg.empty()
+
+        self.d_model = InCompArg.empty()
+        self.nhead = InCompArg.empty()
+        self.dim_feedforward = InArg(2048)
+        self.dropout = InArg(0.1)
+        self.activation = InArg('relu')
+        self.layer_norm_eps = InArg(1e-05)
+        self.batch_first = InArg(False)
+        self.norm_first = InArg(False)
+
+        self.model_out = OutArg.empty()
+
+    def execute(self,ctx) -> None:
+
+        d_model = self.d_model.value
+        nhead = self.nhead.value
+        dim_feedforward = self.dim_feedforward.value
+        dropout = self.dropout.value
+        activation = self.activation.value
+        layer_norm_eps = self.layer_norm_eps.value
+        batch_first = self.batch_first.value
+        norm_first = self.norm_first.value
+        
+        if self.model_in.value is None:
+            self.model_out.value = [nn.TransformerEncoderLayer(d_model, nhead, dim_feedforward, dropout, activation, layer_norm_eps, batch_first, norm_first)]
+        else:
+            self.model_out.value = self.model_in.value + [nn.TransformerEncoderLayer(d_model, nhead, dim_feedforward, dropout, activation, layer_norm_eps, batch_first, norm_first)]
+            
 @xai_component
 class TorchAddReluLayer(Component):
     """Adds a Relu activation to a sequential model."""
