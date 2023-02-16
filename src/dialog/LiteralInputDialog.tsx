@@ -185,7 +185,7 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 		<form>
 			{type != 'Boolean' && type != 'Variable' ?
 				<h3 style={{ marginTop: 0, marginBottom: 5 }}>
-					Enter {title.includes('parameter') ? 'Hyperparameter Name' : `${type} Value`} ({isStoreDataType ? 'Without Brackets' : 'Without Quotes'}):
+					Enter {title.includes('parameter') ? 'Argument Name' : `${type} Value`} ({isStoreDataType ? 'Without Brackets' : 'Without Quotes'}):
 				</h3>
 				: null}
 			<DictExample />

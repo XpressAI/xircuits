@@ -69,7 +69,7 @@ export const RunDialog = ({
 
 	return (
 		<form>
-			<h3 style={{ marginTop: 0, marginBottom: 5 }}>Hyperparameter:</h3>
+			<h3 style={{ marginTop: 0, marginBottom: 5 }}>Argument:</h3>
 			<div>{runConfigs.length != 0 ?
 				<><h4 style={{ marginTop: 2, marginBottom: 0 }}>Remote Execution</h4>
 					<div>Available Run Type:
