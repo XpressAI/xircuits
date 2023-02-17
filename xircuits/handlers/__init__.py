@@ -1,6 +1,5 @@
 from jupyter_server.utils import url_path_join
 
-from .compile import CompileFileRouteHandler
 from .compile_xircuits import CompileXircuitsFileRouteHandler
 from .components import ComponentsRouteHandler
 from .config import RunConfigRouteHandler
@@ -14,10 +13,6 @@ def setup_handlers(web_app, url_path):
 
     # Prepend the base_url so that it works in a JupyterHub setting
     web_app.add_handlers(host_pattern, [
-        (
-            url_path_join(base_url, url_path, "file/generate"),
-            CompileFileRouteHandler
-        ),
         (
             url_path_join(base_url, url_path, "debug/enable"),
             DebuggerRouteHandler
