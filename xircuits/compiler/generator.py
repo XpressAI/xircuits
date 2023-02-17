@@ -1,6 +1,6 @@
 import ast
 import itertools
-
+import re
 
 class CodeGenerator:
     def __init__(self, graph):
@@ -60,6 +60,21 @@ def main(args):
 
         # Set up component argument links
         for node in component_nodes:
+            # Handle argument connections
+            for port in (p for p in node.ports if p.direction == 'in' and p.type == 'triangle' and p.source.name.startswith('Argument ')):
+                # Unfortunately, we don't have the information anywhere else and updating the file format isn't an option at the moment
+                pattern = re.compile(r'^Argument \(.+?\): (.+)$')
+                arg_name = pattern.match(port.source.name).group(1)
+
+                assignment_target = "%s.%s.value" % (
+                    named_nodes[port.target.id],
+                    port.targetLabel
+                )
+                assignment_source = "args.%s" % arg_name
+                tpl = ast.parse("%s = %s" % (assignment_target, assignment_source))
+                code.append(tpl)
+
+            # Handle regular connections
             for port in (p for p in node.ports if p.direction == 'in' and p.type != 'triangle'):
                 assignment_target = "%s.%s" % (
                     named_nodes[port.target.id],
@@ -83,6 +98,9 @@ def main(args):
                     tpl = ast.parse("%s = %s" % (assignment_target, assignment_source))
                 code.append(tpl)
 
+
+
+        # Set up control flow
         for node in component_nodes:
             has_next = False
             for port in (p for p in node.ports if p.direction == "out" and p.type == "triangle"):
@@ -131,8 +149,38 @@ while next_component:
     def _generate_trailer(self):
         code = """
 if __name__ == '__main__':
-    parser = ArgumentParser()
     main(parser.parse_args())
     print("\\nFinished Executing")        
         """
-        return [ast.parse(code).body]
+        body = ast.parse(code).body[0]
+        arg_parsing = self._generate_argument_parsing()
+        arg_parsing.extend(body.body)
+        body.body = arg_parsing
+        return [body]
+
+    def _generate_argument_parsing(self):
+        # Unfortunately, we don't have the information anywhere else and updating the file format isn't an option at the moment
+        pattern = re.compile(r'^Argument \(.+?\): (.+)$')
+
+        type_mapping = {
+            "int": "int",
+            "string": "str",
+            "boolean": "bool",
+            "float": "float"
+        }
+
+
+        code = """
+parser = ArgumentParser()        
+        """
+        body = ast.parse(code).body
+
+        nodes = self._build_node_set()
+        argument_nodes = [n for n in nodes if n.name.startswith("Argument ") and n.file is None]
+        for arg in argument_nodes:
+            m = pattern.match(arg.name)
+            arg_name = m.group(1)
+            tpl = "parser.add_argument('--%s', type=%s)" % (arg_name, type_mapping[arg.type])
+            body.extend(ast.parse(tpl).body)
+
+        return body
