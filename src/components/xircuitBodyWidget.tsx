@@ -109,6 +109,7 @@ export const commandIDs = {
 	connectLinkToObviousPorts: 'Xircuit-editor:connect-obvious-link',
 	addCommentNode: 'Xircuit-editor:add-comment-node',
 	createArbitraryFile: 'Xircuit-editor:create-arbitrary-file',
+	compileFile: 'Xircuit-editor:compile-file',
 	openDebugger: 'Xircuit-debugger:open',
 	breakpointXircuit: 'Xircuit-editor:breakpoint-node',
 	nextNode: 'Xircuit-editor:next-node',
@@ -1000,10 +1001,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		let pythonCode = getPythonCompiler();
 		let showOutput = true;
 		setCompiled(true);
-		commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
+		commands.execute(commandIDs.compileFile, { showOutput });
 	}
 
 	const handleUnsaved = () => {
@@ -1052,12 +1052,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		let pythonCode = getPythonCompiler(debuggerMode);
 		let showOutput = false;
 
 		// Only compile when 'Run' is chosen
 		if (runType == 'run') {
-			commands.execute(commandIDs.createArbitraryFile, { pythonCode, showOutput });
+			commands.execute(commandIDs.compileFile, { showOutput });
 			setCompiled(true);
 		}
 

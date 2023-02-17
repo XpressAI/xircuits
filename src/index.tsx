@@ -234,6 +234,43 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     });
 
+    async function requestToGenerateCompileFile(path: string) {
+      const data = {
+        "outPath": path.split(".xircuits")[0] + ".py",
+        "filePath": path
+      };
+
+      try {
+        return await requestAPI<any>('file/compile', {
+          body: JSON.stringify(data),
+          method: 'POST',
+        });
+
+      } catch (reason) {
+        console.error(
+          'Error on POST /xircuits/file/compile', data, reason
+        );
+      }
+    }
+
+    app.commands.addCommand(commandIDs.compileFile, {
+      execute: async args => {
+        const path = tracker.currentWidget.context.path;
+        const showOutput = typeof args['showOutput'] === undefined ? false : (args['showOutput'] as boolean);
+        const request = await requestToGenerateCompileFile(path);
+
+        if (request["message"] == "completed") {
+          const model_path = path.split(".xircuits")[0] + ".py";
+          docmanager.closeFile(model_path);
+          if (showOutput) {
+            alert(`${model_path} successfully compiled!`);
+          }
+        } else {
+          alert("Failed to generate arbitrary file!");
+        }
+      }
+    });
+
     let outputPanel: OutputPanel;
     /**
       * Creates a output panel.
