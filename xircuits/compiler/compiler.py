@@ -1,5 +1,5 @@
-from .parser import XircuitsFileParser
-from .generator import CodeGenerator
+from xircuits.compiler.parser import XircuitsFileParser
+from xircuits.compiler.generator import CodeGenerator
 
 
 def compile(input_file, output_file):
