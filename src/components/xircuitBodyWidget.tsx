@@ -723,7 +723,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 												break;
 										}
 										pythonCode += '    ' + bindingName + '.' + label + '.value' + equalSign + sourcePortLabelStructure + "\n";
-									} else if (linkSourceNodeId == sourceNodeId && !sourceNodeName.startsWith("Hyperparameter")) {
+									} else if (linkSourceNodeId == sourceNodeId && !sourceNodeName.startsWith("Argument")) {
 										// Make sure the node id match between connected link and source node
 										// Skip Hyperparameter Components
 										pythonCode += '    ' + bindingName + '.' + label + equalSign + preBindingName + '.' + sourcePortLabel + '\n';
@@ -1580,7 +1580,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 				for (let i = 0; i < nodesCount; i++) {
 					let nodeName = allNodes[i].getOptions()["name"];
-					if (nodeName.startsWith("Hyperparameter")) {
+					if (nodeName.startsWith("Argument")) {
 						let regEx = /\(([^)]+)\)/;
 						let result = nodeName.match(regEx);
 						let nodeText = nodeName.split(": ");
@@ -1986,7 +1986,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							let point = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
 							node.setPosition(point);
 							xircuitsApp.getDiagramEngine().getModel().addNode(node);
-							if (node["name"].startsWith("Hyperparameter")) {
+							if (node["name"].startsWith("Argument")) {
 								setInitialize(true);
 							}
 							setSaved(false);

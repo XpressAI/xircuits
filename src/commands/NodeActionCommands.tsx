@@ -53,7 +53,7 @@ export function addNodeActionCommands(
             const nodeName = args['nodeName'] as string ?? node.name;
             const nodeLineNo = args['nodeLineNo'] as number ?? node.extras.lineNo;
 
-            if (nodeName.startsWith('Literal') || nodeName.startsWith('Hyperparameter')) {
+            if (nodeName.startsWith('Literal') || nodeName.startsWith('Argument')) {
                 showDialog({
                     title: `${node.name} don't have its own script`,
                     buttons: [Dialog.warnButton({ label: 'OK' })]
@@ -200,7 +200,7 @@ export function addNodeActionCommands(
             const selected_node = selectedNode();
 
             // When a General Component is selected, just return
-            if (selected_node.name.startsWith("Literal") || selected_node.name.startsWith("Hyperparameter")) {
+            if (selected_node.name.startsWith("Literal") || selected_node.name.startsWith("Argument")) {
                 showDialog({
                     title: `${selected_node.name} cannot be reloaded`,
                     buttons: [Dialog.warnButton({ label: 'OK' })]
