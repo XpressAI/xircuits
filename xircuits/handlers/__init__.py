@@ -1,6 +1,7 @@
 from jupyter_server.utils import url_path_join
 
 from .compile import CompileFileRouteHandler
+from .compile_xircuits import CompileXircuitsFileRouteHandler
 from .components import ComponentsRouteHandler
 from .config import RunConfigRouteHandler
 from .debugger import DebuggerRouteHandler
@@ -32,6 +33,10 @@ def setup_handlers(web_app, url_path):
         (
             url_path_join(base_url, url_path, "spark/submit"),
             SparkSubmitRouteHandler
+        ),
+        (
+            url_path_join(base_url, url_path, "file/compile"),
+            CompileXircuitsFileRouteHandler
         )
 
     ])
