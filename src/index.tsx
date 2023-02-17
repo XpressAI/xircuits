@@ -197,43 +197,6 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    async function requestToGenerateArbitraryFile(path: string, pythonScript: string) {
-      const dataToSend = { "currentPath": path.split(".xircuits")[0] + ".py", "compilePythonScript": pythonScript };
-
-      try {
-        const server_reply = await requestAPI<any>('file/generate', {
-          body: JSON.stringify(dataToSend),
-          method: 'POST',
-        });
-
-        return server_reply;
-      } catch (reason) {
-        console.error(
-          `Error on POST /xircuits/file/generate ${dataToSend}.\n${reason}`
-        );
-      }
-    };
-
-    app.commands.addCommand(commandIDs.createArbitraryFile, {
-      execute: async args => {
-        const current_path = tracker.currentWidget.context.path;
-        const path = current_path;
-        const message = typeof args['pythonCode'] === undefined ? '' : (args['pythonCode'] as string);
-        const showOutput = typeof args['showOutput'] === undefined ? false : (args['showOutput'] as boolean);
-        const request = await requestToGenerateArbitraryFile(path, message); // send this file and create new file
-
-        if (request["message"] == "completed") {
-          const model_path = current_path.split(".xircuits")[0] + ".py";
-          docmanager.closeFile(model_path);
-          if (showOutput) {
-            alert(`${model_path} successfully compiled!`);
-          }
-        } else {
-          alert("Failed to generate arbitrary file!");
-        }
-      }
-    });
-
     async function requestToGenerateCompileFile(path: string) {
       const data = {
         "outPath": path.split(".xircuits")[0] + ".py",
