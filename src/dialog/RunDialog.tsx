@@ -69,7 +69,7 @@ export const RunDialog = ({
 
 	return (
 		<form>
-			<h3 style={{ marginTop: 0, marginBottom: 5 }}>Argument:</h3>
+			{childStringNodes.length > 0 ? <h3 style={{ marginTop: 0, marginBottom: 5 }}>Arguments:</h3> : null}
 			<div>{runConfigs.length != 0 ?
 				<><h4 style={{ marginTop: 2, marginBottom: 0 }}>Remote Execution</h4>
 					<div>Available Run Type:
@@ -115,7 +115,6 @@ export const RunDialog = ({
 				: null}
 			</div>
 			<div></div>
-			<div><h4 style={{ marginTop: 2, marginBottom: 0 }}>String</h4></div>
 			{childStringNodes.map((stringNode, i) =>
 				<div key={`index-${i}`}>{stringNode}
 					<div>
