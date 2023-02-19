@@ -3,11 +3,13 @@ import itertools
 import re
 
 class CodeGenerator:
-    def __init__(self, graph):
+    def __init__(self, graph, component_python_paths):
         self.graph = graph
+        self.component_python_paths = component_python_paths
 
     def generate(self, filelike):
         module_body = list(itertools.chain(
+            self._generate_python_path(),
             self._generate_fixed_imports(),
             self._generate_component_imports(),
             self._generate_main(),
@@ -15,6 +17,28 @@ class CodeGenerator:
         ))
 
         filelike.write(ast.unparse(ast.Module(body=module_body, type_ignores=[])))
+
+    def _generate_python_path(self):
+        fixed_code = """
+import sys        
+"""
+        code = ast.parse(fixed_code).body
+        nodes = self._build_node_set()
+
+        needed_paths = set()
+        for node in nodes:
+            if node.name in self.component_python_paths:
+                needed_paths.add(self.component_python_paths[node.name])
+
+        if len(needed_paths) == 0:
+            return []
+
+        for p in needed_paths:
+            tpl = ast.parse('sys.path.append("value")')
+            tpl.body[0].value.args[0].value = p
+            code.extend(tpl.body)
+        return code
+
 
     def _generate_fixed_imports(self):
         fixed_imports = """

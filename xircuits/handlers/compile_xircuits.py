@@ -23,9 +23,11 @@ class CompileXircuitsFileRouteHandler(APIHandler):
         input_file_path = input_data["filePath"]
         output_file_path = input_data["outPath"]
 
+        component_python_paths = input_data["pythonPaths"]
+
         with open(self.__get_notebook_absolute_path__(input_file_path), 'r') as infile:
             with open(self.__get_notebook_absolute_path__(output_file_path), 'w') as outfile:
-                compile(infile, outfile)
+                compile(infile, outfile, component_python_paths)
 
         data = {"message": "completed"}
 

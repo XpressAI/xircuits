@@ -595,7 +595,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		let showOutput = true;
 		setCompiled(true);
-		commands.execute(commandIDs.compileFile, { showOutput });
+		commands.execute(commandIDs.compileFile, { showOutput, componentList });
 	}
 
 	const handleUnsaved = () => {
@@ -648,7 +648,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		// Only compile when 'Run' is chosen
 		if (runType == 'run') {
-			commands.execute(commandIDs.compileFile, { showOutput });
+			commands.execute(commandIDs.compileFile, { showOutput, componentList });
 			setCompiled(true);
 		}
 

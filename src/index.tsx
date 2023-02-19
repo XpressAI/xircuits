@@ -197,10 +197,11 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    async function requestToGenerateCompileFile(path: string) {
+    async function requestToGenerateCompileFile(path: string, python_paths: any) {
       const data = {
         "outPath": path.split(".xircuits")[0] + ".py",
-        "filePath": path
+        "filePath": path,
+        "pythonPaths": python_paths
       };
 
       try {
@@ -220,7 +221,13 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       execute: async args => {
         const path = tracker.currentWidget.context.path;
         const showOutput = typeof args['showOutput'] === undefined ? false : (args['showOutput'] as boolean);
-        const request = await requestToGenerateCompileFile(path);
+
+        const python_paths = {};
+        (args['componentList'] === undefined ? [] : args['componentList'] as []).filter(it => it['python_path']).forEach(it => {
+          python_paths[it['name']] = it['python_path']
+        });
+
+        const request = await requestToGenerateCompileFile(path, python_paths);
 
         if (request["message"] == "completed") {
           const model_path = path.split(".xircuits")[0] + ".py";
