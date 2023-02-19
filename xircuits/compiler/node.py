@@ -1,3 +1,4 @@
+from typing import List
 from dataclasses import dataclass
 
 from xircuits.compiler.port import Port
@@ -9,7 +10,7 @@ class Node:
     name: str
     type: str
     file: str
-    ports: list[Port]
+    ports: List[Port]
 
     def generate_import(self):
         pass
