@@ -2,6 +2,21 @@ import ast
 import itertools
 import re
 
+import sys
+
+if sys.version_info >= (3, 9):
+    from ast import unparse
+else:
+    import io
+    from .vendor.unparse import Unparser
+
+
+    def unparse(parsed):
+        f = io.StringIO()
+        Unparser(parsed, f)
+        return f.getvalue()
+
+
 class CodeGenerator:
     def __init__(self, graph, component_python_paths):
         self.graph = graph
@@ -16,7 +31,7 @@ class CodeGenerator:
             self._generate_trailer()
         ))
 
-        filelike.write(ast.unparse(ast.Module(body=module_body, type_ignores=[])))
+        filelike.write(unparse(ast.Module(body=module_body, type_ignores=[])))
 
     def _generate_python_path(self):
         fixed_code = """
@@ -38,7 +53,6 @@ import sys
             tpl.body[0].value.args[0].value = p
             code.extend(tpl.body)
         return code
-
 
     def _generate_fixed_imports(self):
         fixed_imports = """
@@ -85,7 +99,8 @@ def main(args):
         # Set up component argument links
         for node in component_nodes:
             # Handle argument connections
-            for port in (p for p in node.ports if p.direction == 'in' and p.type == 'triangle' and p.source.name.startswith('Argument ')):
+            for port in (p for p in node.ports if
+                         p.direction == 'in' and p.type == 'triangle' and p.source.name.startswith('Argument ')):
                 # Unfortunately, we don't have the information anywhere else and updating the file format isn't an option at the moment
                 pattern = re.compile(r'^Argument \(.+?\): (.+)$')
                 arg_name = pattern.match(port.source.name).group(1)
@@ -122,8 +137,6 @@ def main(args):
                     tpl = ast.parse("%s = %s" % (assignment_target, assignment_source))
                 code.append(tpl)
 
-
-
         # Set up control flow
         for node in component_nodes:
             has_next = False
@@ -137,7 +150,8 @@ def main(args):
                     )
                 elif port.name.startswith("out-flow-"):
                     assignment_target = "%s.%s" % (named_nodes[port.source.id], port.name[len("out-flow-"):])
-                    assignment_source = "SubGraphExecutor(%s)" % named_nodes[port.target.id] if port.target.id in named_nodes else None
+                    assignment_source = "SubGraphExecutor(%s)" % named_nodes[
+                        port.target.id] if port.target.id in named_nodes else None
                     code.append(
                         ast.parse("%s = %s" % (assignment_target, assignment_source))
                     )
@@ -192,7 +206,6 @@ if __name__ == '__main__':
             "boolean": "bool",
             "float": "float"
         }
-
 
         code = """
 parser = ArgumentParser()        
