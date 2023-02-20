@@ -34,8 +34,8 @@ test('Should complete E2E test', async ({
   // Select First Kernel
   await page.locator('button:has-text("Select")').click();
 
-  const content = await page.locator("text=Finish Executing").innerHTML()
+  const content = await page.locator("text=Finished Executing").innerHTML()
 
-  expect(content).toContain('Finish Executing')
+  expect(content).toContain('Finished Executing')
 
 });
