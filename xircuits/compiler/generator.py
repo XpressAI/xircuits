@@ -8,7 +8,7 @@ if sys.version_info >= (3, 9):
     from ast import unparse
 else:
     import io
-    from .vendor.unparse import Unparser
+    from xircuits.compiler.vendor.unparse import Unparser
 
 
     def unparse(parsed):
