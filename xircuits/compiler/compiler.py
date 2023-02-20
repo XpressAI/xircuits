@@ -1,3 +1,5 @@
+import json
+
 from xircuits.compiler.parser import XircuitsFileParser
 from xircuits.compiler.generator import CodeGenerator
 
@@ -15,13 +17,18 @@ def compile(input_file, output_file, component_python_paths=None):
 def main():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('source_file_path')
-    parser.add_argument('out_file_path')
+    parser.add_argument('source_file', type=argparse.FileType('r'))
+    parser.add_argument('out_file', type=argparse.FileType('w'))
+    parser.add_argument("python_paths_file", nargs='?', default=None, type=argparse.FileType('r'),
+                        help="JSON file with a mapping of component name to required python path. "
+                             "e.g. {'MyComponent': '/some/path'}")
 
     args = parser.parse_args()
-    with open(args.source_file_path, 'r') as source:
-        with open(args.out_file_path, 'w') as target:
-            compile(source, target)
+    component_paths = {}
+    if args.python_paths_file:
+        component_paths = json.load(args.python_paths_file)
+    compile(args.source_file, args.out_file, component_python_paths=component_paths)
+
 
 if __name__ == '__main__':
     main()
