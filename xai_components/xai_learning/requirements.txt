@@ -1,7 +1,7 @@
 tensorflow
 tensorflow-datasets
 numpy
-sklearn
+scikit-learn
 opencv-python
 tqdm
 pillow
