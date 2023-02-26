@@ -118,11 +118,11 @@ class TorchDataLoader(Component):
         self.train_dataloader.value = train_dataloader
         self.test_dataloader.value = test_dataloader
 
+        
 
 @xai_component
-class TorchModel(Component):
-    """Creates a custom Torch Model config.
-
+class ExampleTorchModelConfig(Component):
+    """Creates example Torch Model config.
     ##### outPorts:
     - model: torch.nn instance that expects a 28*28 input.
     - loss_fn: nn.CrossEntropyLoss()
@@ -172,7 +172,6 @@ class TorchModel(Component):
         self.model_config.value = model
         self.loss_fn.value = loss_fn
         self.optimizer.value = optimizer
-
 
 @xai_component
 class TrainTorchModel(Component):

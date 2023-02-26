@@ -52,7 +52,7 @@ class CounterComponent(Component):
         self.out_number = OutArg.empty()
         self.state = None
         
-    def execute(self, ctx):
+    def execute(self, ctx) -> None:
         if self.state is None:
             self.state = self.start_number.value
         else:
@@ -76,7 +76,7 @@ class ComparisonComponent(Component):
         self.op = InArg.empty()
         self.out = OutArg.empty()
         
-    def execute(self, ctx):
+    def execute(self, ctx) -> None:
         self.out.value = eval(str(self.a.value) + " " + self.op.value + " " + str(self.b.value))
 
 
@@ -86,11 +86,11 @@ class MutableVariable:
     def __init__(self):
         self._fn = None
     
-    def set_fn(self, fn):
+    def set_fn(self, fn) -> None:
         self._fn = fn
         
     @property
-    def value(self):
+    def value(self) -> any:
         return self._fn()
     
     
@@ -104,7 +104,7 @@ class GetVariableComponent(Component):
         self.name = InArg.empty()
         self.value = MutableVariable()
         
-    def execute(self, ctx):
+    def execute(self, ctx) -> None:
         self.value.set_fn(lambda: ctx[self.name.value])
 
 @xai_component
@@ -117,7 +117,7 @@ class SetVariableComponent(Component):
         self.name = InArg.empty()
         self.value = InArg.empty()
         
-    def execute(self, ctx):
+    def execute(self, ctx) -> None:
         ctx[self.name.value] = self.value.value
 
 
@@ -134,6 +134,6 @@ class DefineVariableComponent(Component):
         self.value = InArg.empty()
         self.ref = MutableVariable()
         
-    def execute(self, ctx):
+    def execute(self, ctx) -> None:
         ctx[self.name.value] = self.value.value
         self.ref.set_fn(lambda: ctx[self.name.value])

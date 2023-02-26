@@ -1,5 +1,5 @@
 from argparse import Namespace
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, Tuple
 
 T = TypeVar('T')
 
@@ -60,10 +60,10 @@ class BaseComponent:
     def set_execution_context(cls, context: ExecutionContext) -> None:
         cls.execution_context = context
 
-    def execute(self) -> None:
+    def execute(self, ctx) -> None:
         pass
 
-    def do(self):
+    def do(self, ctx) -> Tuple[bool, 'BaseComponent']:
         pass
 
 
@@ -71,7 +71,7 @@ class Component(BaseComponent):
     next: BaseComponent
     done: bool
 
-    def do(self, ctx) -> BaseComponent:
+    def do(self, ctx) -> Tuple[bool, BaseComponent]:
         print(f"\nExecuting: {self.__class__.__name__}")
         self.execute(ctx)
 

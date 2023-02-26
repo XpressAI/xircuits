@@ -197,33 +197,40 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    async function requestToGenerateArbitraryFile(path: string, pythonScript: string) {
-      const dataToSend = { "currentPath": path.split(".xircuits")[0] + ".py", "compilePythonScript": pythonScript };
+    async function requestToGenerateCompileFile(path: string, python_paths: any) {
+      const data = {
+        "outPath": path.split(".xircuits")[0] + ".py",
+        "filePath": path,
+        "pythonPaths": python_paths
+      };
 
       try {
-        const server_reply = await requestAPI<any>('file/generate', {
-          body: JSON.stringify(dataToSend),
+        return await requestAPI<any>('file/compile', {
+          body: JSON.stringify(data),
           method: 'POST',
         });
 
-        return server_reply;
       } catch (reason) {
         console.error(
-          `Error on POST /xircuits/file/generate ${dataToSend}.\n${reason}`
+          'Error on POST /xircuits/file/compile', data, reason
         );
       }
-    };
+    }
 
-    app.commands.addCommand(commandIDs.createArbitraryFile, {
+    app.commands.addCommand(commandIDs.compileFile, {
       execute: async args => {
-        const current_path = tracker.currentWidget.context.path;
-        const path = current_path;
-        const message = typeof args['pythonCode'] === undefined ? '' : (args['pythonCode'] as string);
+        const path = tracker.currentWidget.context.path;
         const showOutput = typeof args['showOutput'] === undefined ? false : (args['showOutput'] as boolean);
-        const request = await requestToGenerateArbitraryFile(path, message); // send this file and create new file
+
+        const python_paths = {};
+        (args['componentList'] === undefined ? [] : args['componentList'] as []).filter(it => it['python_path']).forEach(it => {
+          python_paths[it['name']] = it['python_path']
+        });
+
+        const request = await requestToGenerateCompileFile(path, python_paths);
 
         if (request["message"] == "completed") {
-          const model_path = current_path.split(".xircuits")[0] + ".py";
+          const model_path = path.split(".xircuits")[0] + ".py";
           docmanager.closeFile(model_path);
           if (showOutput) {
             alert(`${model_path} successfully compiled!`);
