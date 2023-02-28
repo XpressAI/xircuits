@@ -562,7 +562,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return true;
 	}
 
-	const handleSaveClick = () => {
+	const handleSaveClick = async () => {
 		// Only save xircuit if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
@@ -571,7 +571,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		onChange()
 		setInitialize(true);
 		setSaved(true);
-		commands.execute(commandIDs.saveDocManager);
+		await commands.execute(commandIDs.saveDocManager);
 	}
 
 	const handleCompileClick = () => {
