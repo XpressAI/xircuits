@@ -7,7 +7,7 @@ These components will always be included in the Xircuits installation.
 
 | Name     | Description                                                                                    |                                                                                                                                                            |
 | -------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Learning | Deep learning related components using Tensorflow Keras.                                       | [Link](https://github.com/XpressAI/xircuits/tree/master/xai_components/xai_tensorflow_keras) |
+| Tensorflow Keras | Deep learning related components using Tensorflow Keras.                                       | [Link](https://github.com/XpressAI/xircuits/tree/master/xai_components/xai_tensorflow_keras) |
 | Pytorch  | Components that use Pytorch's ML library.                                                      | [Link](https://github.com/XpressAI/xircuits/tree/master/xai_components/xai_pytorch)   |
 | Spark    | Components built using the Pyspark library. Run these components with the Xircuits Remote Run! | [Link](https://github.com/XpressAI/xircuits/tree/master/xai_components/xai_spark)       |
 | Template | Great components for new learners and to experiment outputs.                                   | [Link](https://github.com/XpressAI/xircuits/tree/master/xai_components/xai_template) |
