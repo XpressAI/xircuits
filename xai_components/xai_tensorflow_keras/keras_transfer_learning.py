@@ -410,7 +410,7 @@ class KerasModelCompiler(Component):
         self.compiled_model.value = self.model.value
         model_config = {
             "lr": self.compiled_model.value.optimizer.lr.numpy().item(),
-            "optimizer_name": self.compiled_model.value.optimizer._name,
+            "optimizer_name": self.compiled_model.value.optimizer.name,
             "loss": self.compiled_model.value.loss,
         }
 

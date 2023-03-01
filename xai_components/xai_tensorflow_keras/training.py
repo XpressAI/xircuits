@@ -332,10 +332,10 @@ class KerasCreate2DInputModel(Component):
             optimizer='adam',
             metrics=['accuracy']
         )
-
+                
         model_config = {
             'lr': model.optimizer.lr.numpy().item(),
-            'optimizer_name': model.optimizer._name,
+            'optimizer_name': model.optimizer.name,
             'loss': model.loss,
         }
 
