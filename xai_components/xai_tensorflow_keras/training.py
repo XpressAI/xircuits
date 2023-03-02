@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 @xai_component
-class ReadDataSet(Component):
+class ReadKerasDataSet(Component):
     """Loads a Keras image dataset or creates a dataset from a directory.
     
     ### Reference:
@@ -244,7 +244,7 @@ class TrainTestSplit(Component):
         self.done = True
 
 @xai_component
-class Create1DInputModel(Component):
+class KerasCreate1DInputModel(Component):
     """Takes a 1D dataset tuple and creates a 1D Keras model.
 
     ##### inPorts:
@@ -283,7 +283,7 @@ class Create1DInputModel(Component):
         self.done = True
 
 @xai_component
-class Create2DInputModel(Component):
+class KerasCreate2DInputModel(Component):
     """Takes a 2D dataset tuple and creates a 2D Keras model.
 
     ##### inPorts:
@@ -332,10 +332,10 @@ class Create2DInputModel(Component):
             optimizer='adam',
             metrics=['accuracy']
         )
-
+                
         model_config = {
             'lr': model.optimizer.lr.numpy().item(),
-            'optimizer_name': model.optimizer._name,
+            'optimizer_name': model.optimizer.name,
             'loss': model.loss,
         }
 
@@ -346,7 +346,7 @@ class Create2DInputModel(Component):
 
 
 @xai_component
-class TrainImageClassifier(Component):
+class KerasTrainImageClassifier(Component):
     """Trains a Keras model for image classification.
 
     ##### inPorts:
@@ -399,7 +399,7 @@ class TrainImageClassifier(Component):
 
 
 @xai_component
-class EvaluateAccuracy(Component):
+class KerasEvaluateAccuracy(Component):
     """Evaluates a Keras model against a dataset
 
     ##### inPorts:
