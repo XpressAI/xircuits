@@ -1,6 +1,7 @@
 from xai_components.base import InArg, InCompArg, OutArg, Component, xai_component
 import os
 import sys
+from pyspark.mllib.linalg import SparseVector
 
 os.environ['PYSPARK_PYTHON'] = sys.executable
 os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
@@ -22,7 +23,7 @@ class SparkSparseVector(Component):
     - sparse_vector: the converted sparse vector
     """
     vector_list: InCompArg[list]
-    sparse_vector: OutArg[sparse_vector]
+    sparse_vector: OutArg[SparseVector]
 
     def __init__(self):
 
@@ -64,7 +65,7 @@ class SparkLabeledPoint(Component):
 
     label: InCompArg[float]
     dense_vector: InArg[list]
-    sparse_vector: InArg[sparse_vector]
+    sparse_vector: InArg[SparseVector]
 
     labeled_point: OutArg[any]
 
@@ -208,6 +209,7 @@ class SparkLoadLIBSVM(Component):
     """    
     in_sparksession: InCompArg[any]
     file_input: InCompArg[str]
+    options: InArg[any]
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
 
@@ -216,6 +218,7 @@ class SparkLoadLIBSVM(Component):
         self.done = False
         self.in_sparksession = InCompArg(None)
         self.file_input = InCompArg(None)
+        self.options = InArg(None)
 
         self.out_sparksession = OutArg(None)
         self.out_dataframe = OutArg(None)
