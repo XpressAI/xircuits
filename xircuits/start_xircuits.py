@@ -11,11 +11,11 @@ from .handlers.request_submodule import request_submodule_library
 
 def init_xircuits():
 
-    url = "https://raw.githubusercontent.com/XpressAI/xircuits/master/.xircuits/config.ini"
+    import pkg_resources
+    import shutil
     path = ".xircuits"
-    os.mkdir(path)
-    request.urlretrieve(url, path+"/config.ini")
-
+    config_path = pkg_resources.resource_filename('xai_components', '.xircuits')
+    shutil.copytree(config_path, path)
 
 def download_examples():
     
