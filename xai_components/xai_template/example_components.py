@@ -18,78 +18,6 @@ class HelloComponent(Component):
 
         self.done = True
 
-@xai_component(color="red")
-class TestFlowPort(Component):
-    """
-    Example on how to branch a workflow with a condition. Default condition is True.
-    
-    **How it works**
-    
-    When the condition is True, it'll run the workflow from outFlow port(when_A ▶) until there no more node connected. When condition is False, vice versa.
-    
-    Then, it'll continue to run finished port (▶) until it reach Finish node.
-    
-    Note: Finished port (▶) must be **connected** and Finish node **MUST** be inside finished port workflow. 
-    """
-    when_A: BaseComponent
-    when_B: BaseComponent
-    condition: InArg[bool]
-    
-    def __init__(self):
-
-        self.done = False
-        self.condition = InArg(True)
-        self.when_A = BaseComponent
-        self.when_B = BaseComponent
-
-    def execute(self, ctx) -> None:
-        
-        condition = self.condition.value
-        if condition:
-            self.when_A.do(ctx)
-        else:
-            self.when_B.do(ctx)
-
-@xai_component
-class AlphabetSwitch(Component):
-    """
-    Example on how to branch a workflow randomly.
-    
-    **How it works**
-    
-    This node will choose a random alphabet between 'a','b' and 'c'. 
-    
-    When choosen, it'll run that alphabet workflow until there no more node connected.
-    
-    Then, it'll continue to run finished port (▶) until it reach Finish node.
-    
-    Running xircuits again might choose a different alphabet workflow.
-    
-    Note: Finished port (▶) must be **connected** and Finish node **MUST** be inside finished port workflow. 
-    """
-    when_A: BaseComponent
-    when_B: BaseComponent
-    when_C: BaseComponent
-    
-    def __init__(self):
-
-        self.done = False
-        self.when_A = BaseComponent
-        self.when_B = BaseComponent
-        self.when_C = BaseComponent
-
-    def execute(self, ctx) -> None:
-        import random
-
-        alphabet = random.choice(['a', 'b', 'c'])
-        print('Running alphabet: ' + alphabet)
-        if alphabet == "a":
-            self.when_A.do(ctx)
-        if alphabet == "b":
-            self.when_B.do(ctx)
-        if alphabet == "c":
-            self.when_C.do(ctx)
-        self.done = True
 
 @xai_component
 class HelloHyperparameter(Component):
@@ -207,41 +135,32 @@ class HelloContext(Component):
 
         self.done = True
         
-@xai_component(color="red")
-class AddImport(Component):
-    """A special component that adds lines to the compiled python script header.
-    Typically used to add imports.
+@xai_component
+class MultiBranchComponent(BaseComponent):
+    if_A: BaseComponent
+    if_B: BaseComponent
+    if_C: BaseComponent
+    done: bool
 
-    ##### Reference:
-    - [Add Import Component](https://xircuits.io/docs/references/special-components#add-import-component)
-
-    ##### inPorts:
-    import_str: provided string will be converted to a line in the script header.
+    abc: InArg[str]
     
-    ##### Example:
-    Without `AddImport`, the generated header would look like:
-    ```
-    from argparse import ArgumentParser
-    from datetime import datetime
-    from time import sleep
-    import sys
-    ``` 
-
-    After adding String `print("NEW LINE ADDED")` to the `import_str` port:
-    ```
-    from argparse import ArgumentParser
-    from datetime import datetime
-    from time import sleep
-    print("NEW LINE ADDED")
-    from xai_template.example_components import AddImport
-    ```
-    """
-    import_str: InArg[str]
-
     def __init__(self):
-        self.import_str = InArg.empty()
         self.done = False
+        self.abc = InArg.empty()
 
-    def execute(self, ctx) -> None:
-
-        self.done = True
+    def do(self, ctx) -> BaseComponent:
+        if self.abc.value == "a":
+            next = self.if_A
+        elif self.abc.value == "b":
+            next = self.if_B
+        elif self.abc.value == "c":
+            next = self.if_C
+        else:
+            next = None
+        
+        while next:
+            is_done, next = next.do(ctx)
+        try:
+            return self.done, self.next
+        except:
+            return self.done, None
