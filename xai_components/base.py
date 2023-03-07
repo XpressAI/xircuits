@@ -88,7 +88,7 @@ class SubGraphExecutor:
         
     def do(self, ctx):
         comp = self.comp
-        #is_done = False
+        
         while comp is not None:
             is_done, comp = comp.do(ctx)
         return is_done, None

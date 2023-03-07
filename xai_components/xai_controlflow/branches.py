@@ -14,11 +14,16 @@ class BranchComponent(BaseComponent):
 
     def do(self, ctx) -> BaseComponent:
         if self.condition.value:
-            return self.done, self.when_true
+            next = self.when_true
         else:
-            return self.done, self.when_false
-
-
+            next = self.when_false
+        while next:
+            is_done, next = next.do(ctx)
+        try:
+            return self.done, self.next
+        except:
+            return self.done, None
+    
 @xai_component
 class LoopComponent(Component):
     body: BaseComponent
