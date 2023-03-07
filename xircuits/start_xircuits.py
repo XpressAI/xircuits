@@ -11,11 +11,11 @@ from .handlers.request_submodule import request_submodule_library
 
 def init_xircuits():
 
-    url = "https://raw.githubusercontent.com/XpressAI/xircuits/master/.xircuits/config.ini"
+    import pkg_resources
+    import shutil
     path = ".xircuits"
-    os.mkdir(path)
-    request.urlretrieve(url, path+"/config.ini")
-
+    config_path = pkg_resources.resource_filename('xircuits', '.xircuits')
+    shutil.copytree(config_path, path)
 
 def download_examples():
     
@@ -62,7 +62,7 @@ def main():
         if val.lower() == ("y" or "yes"):
             request_folder("xai_components", branch=args.branch)
 
-    # launch if extra arguments pro
+    # handler for extra jupyterlab launch options
     if extra_args:
         try:
             launch_cmd = "jupyter lab" + " " + " ".join(extra_args)
