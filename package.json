@@ -11,7 +11,7 @@
   "bugs": {
     "url": "https://github.com/XpressAI/xircuits/issues"
   },
-  "license": "BSD-3-Clause",
+  "license": "Apache-2.0",
   "author": {
     "name": "Xpress AI",
     "email": "eduardo@xpress.ai"
