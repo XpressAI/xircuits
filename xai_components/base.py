@@ -56,6 +56,19 @@ class ExecutionContext:
 
 
 class BaseComponent:
+
+    def __init__(self):
+        all_ports = self.__annotations__
+        for key, type_arg in all_ports.items():
+            if isinstance(type_arg, InArg[any].__class__):
+                setattr(self, key, InArg.empty())
+            elif isinstance(type_arg, InCompArg[any].__class__):
+                setattr(self, key, InCompArg.empty())
+            elif isinstance(type_arg, OutArg[any].__class__):
+                setattr(self, key, OutArg.empty())
+            elif type_arg == str(self.__class__):
+                setattr(self, key, None)
+
     @classmethod
     def set_execution_context(cls, context: ExecutionContext) -> None:
         cls.execution_context = context
@@ -70,6 +83,10 @@ class BaseComponent:
 class Component(BaseComponent):
     next: BaseComponent
     done: bool
+
+    def __init__(self):
+        super().__init__()
+        self.done = False
 
     def do(self, ctx) -> Tuple[bool, BaseComponent]:
         print(f"\nExecuting: {self.__class__.__name__}")

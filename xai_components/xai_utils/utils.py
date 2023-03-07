@@ -10,10 +10,6 @@ class Print(Component):
     msg: InArg[any]
     done: bool
     
-    def __init__(self):
-        self.msg = InArg.empty()
-        self.done = False
-        
     def execute(self, ctx) -> None:
         print(str(self.msg.value))
         
