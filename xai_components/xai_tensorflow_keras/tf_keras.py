@@ -59,19 +59,6 @@ class LoadKerasModel(Component):
 
     model: OutArg[any]
 
-    def __init__(self):
-        self.done = False
-        self.model_name = InCompArg(None)
-        self.include_top = InArg(None)
-        self.weights = InArg(None)
-        self.input_tensor = InArg(None)
-        self.pooling = InArg(None)
-        self.classes = InArg(None)
-        self.args = InArg(None)
-
-        self.model = OutArg(None)
-
-
     def execute(self,ctx) -> None:
 
         args = self.args.value if self.args.value else {}
@@ -108,13 +95,6 @@ class KerasPredict(Component):
     img_string: InCompArg[str]
     class_list: InArg[any]
     target_shape: InArg[tuple]
-
-    def __init__(self):
-        self.done = False
-        self.model = InCompArg(None)
-        self.img_string = InCompArg(None)
-        self.class_list = InArg(None)
-        self.target_shape = InArg(None)
 
     def execute(self, ctx) -> None:
         model = self.model.value
@@ -284,17 +264,6 @@ class ResNet50(Component):
     kwargs: InArg[int]
     model: OutArg[any]
 
-    def __init__(self):
-        self.done = False
-        self.include_top = InArg(None)
-        self.weights = InArg(None)
-        self.input_tensor = InArg(None)
-        self.pooling = InArg(None)
-        self.classes = InArg(None)
-        self.kwargs = InArg(None)
-        self.model = OutArg(None)
-
-
     def execute(self, ctx) -> None:
         model_config = resnet_model_config()
 
@@ -368,17 +337,6 @@ class ResNet101(Component):
     classes: InArg[int]
     kwargs: InArg[int]
     model: OutArg[any]
-
-    def __init__(self):
-        self.done = False
-        self.include_top = InArg(None)
-        self.weights = InArg(None)
-        self.input_tensor = InArg(None)
-        self.pooling = InArg(None)
-        self.classes = InArg(None)
-        self.kwargs = InArg(None)
-        self.model = OutArg(None)
-
 
     def execute(self, ctx) -> None:
         model_config = resnet_model_config()
@@ -454,17 +412,6 @@ class ResNet152(Component):
     classes: InArg[int]
     kwargs: InArg[int]
     model: OutArg[any]
-
-    def __init__(self):
-        self.done = False
-        self.include_top = InArg(None)
-        self.weights = InArg(None)
-        self.input_tensor = InArg(None)
-        self.pooling = InArg(None)
-        self.classes = InArg(None)
-        self.kwargs = InArg(None)
-        self.model = OutArg(None)
-
 
     def execute(self, ctx) -> None:
         model_config = resnet_model_config()
@@ -564,17 +511,6 @@ class VGG16(Component):
     classifier_activation: InArg[int]
     model: OutArg[any]
 
-    def __init__(self):
-        self.done = False
-        self.include_top = InArg(None)
-        self.weights = InArg(None)
-        self.input_tensor = InArg(None)
-        self.pooling = InArg(None)
-        self.classes = InArg(None)
-        self.classifier_activation = InArg(None)
-        self.model = OutArg(None)
-
-
     def execute(self, ctx) -> None:
 
         model_config = vgg_model_config()
@@ -655,17 +591,6 @@ class VGG19(Component):
     classifier_activation: InArg[int]
     model: OutArg[any]
 
-    def __init__(self):
-        self.done = False
-        self.include_top = InArg(None)
-        self.weights = InArg(None)
-        self.input_tensor = InArg(None)
-        self.pooling = InArg(None)
-        self.classes = InArg(None)
-        self.classifier_activation = InArg(None)
-        self.model = OutArg(None)
-
-
     def execute(self, ctx) -> None:
 
         model_config = vgg_model_config()
@@ -743,17 +668,6 @@ class Xception(Component):
     classes: InArg[int]
     classifier_activation: InArg[int]
     model: OutArg[any]
-
-    def __init__(self):
-        self.done = False
-        self.include_top = InArg(None)
-        self.weights = InArg(None)
-        self.input_tensor = InArg(None)
-        self.pooling = InArg(None)
-        self.classes = InArg(None)
-        self.classifier_activation = InArg(None)
-        self.model = OutArg(None)
-
 
     def execute(self, ctx) -> None:
         
@@ -877,24 +791,6 @@ class MobileNet(Component):
     kwargs: InArg[any]
     
     model: OutArg[any]
-
-    def __init__(self):
-
-        self.done = False
-        self.input_shape = InArg(None)
-        self.alpha = InArg(None)  
-        self.depth_multiplier = InArg(None)   
-        self.dropout = InArg(None)
-        self.include_top = InArg(None)
-        self.weights = InArg(None)
-        self.input_tensor = InArg(None)   
-        self.pooling = InArg(None)
-        self.classes = InArg(None)
-        self.classifier_activation = InArg(None)
-        self.kwargs = InArg(None)
-
-        self.model = OutArg(None)
-
 
     def execute(self, ctx) -> None:
 

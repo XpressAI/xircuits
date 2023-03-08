@@ -19,17 +19,9 @@ class ConcatString(Component):
     b: InArg[str]
     out: OutArg[str]
     done: bool
-    
-    def __init__(self):
-        self.a = InArg.empty()
-        self.b = InArg.empty()
-        self.out = InArg.empty()
-        self.done = False
-    
+
     def execute(self, cts) -> None:
         self.out.value = self.a.value + self.b.value
-
-
     
 @xai_component
 class ZipDirectory(Component):
@@ -69,13 +61,6 @@ class ZipDirectory(Component):
     zip_fn: InArg[str]
     dir_name: InCompArg[str]
     include_dir: InArg[bool]
-
-    def __init__(self):
-
-        self.done = False
-        self.zip_fn = InArg.empty()
-        self.dir_name = InCompArg.empty()
-        self.include_dir = InArg.empty()
 
     def execute(self, ctx) -> None:
         
@@ -126,11 +111,6 @@ class DeleteFile(Component):
     """
     filename: InCompArg[str]
 
-    def __init__(self):
-
-        self.done = False
-        self.filename = InArg.empty()
-
     def execute(self, ctx) -> None:
 
         filename = self.filename.value if self.filename.value else None
@@ -161,17 +141,6 @@ class TimerComponent(Component):
     out_timer: OutArg[time.time]
     elapsed_time: OutArg[int]
     
-    def __init__(self):
-
-        self.done = False
-        
-        self.in_timer = InArg.empty()
-        self.timer_message = InArg.empty()
-
-        self.out_timer = OutArg.empty()
-        self.elapsed_time = OutArg.empty()
-        
-
     def execute(self, ctx) -> None:
                 
         current_time = time.time()
@@ -199,12 +168,6 @@ class SleepComponent(Component):
     """    
     sleep_timer: InArg[float]
 
-    def __init__(self):
-
-        self.done = False
-        
-        self.sleep_timer = InArg.empty()
-                
     def execute(self, ctx) -> None:
         
         sleep_timer = self.sleep_timer.value if self.sleep_timer.value else 5.0
