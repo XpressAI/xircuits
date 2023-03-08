@@ -39,14 +39,6 @@ class ReadKerasDataSet(Component):
     dataset: OutArg[Tuple[np.array, np.array]]
     class_dict: OutArg[dict]
 
-
-    def __init__(self):
-        self.done = False
-        self.dataset_name = InCompArg.empty()
-        self.dataset = OutArg.empty()
-        self.class_dict = OutArg.empty()
-
-
     def execute(self, ctx) -> None:
 
         if self.dataset_name.value == 'mnist':
@@ -162,11 +154,6 @@ class FlattenImageData(Component):
     dataset: InCompArg[Tuple[np.array, np.array]]
     resized_dataset: OutArg[Tuple[np.array, np.array]]
 
-    def __init__(self):
-        self.done = False
-        self.dataset = InCompArg.empty()
-        self.resized_dataset = OutArg.empty()
-
     def execute(self, ctx) -> None:
 
         x = self.dataset.value[0]
@@ -206,16 +193,6 @@ class TrainTestSplit(Component):
     stratify: InArg[any]
     train: OutArg[Tuple[np.array, np.array]] 
     test: OutArg[Tuple[np.array, np.array]] 
-
-    def __init__(self):
-        self.done = False
-        self.dataset = InCompArg.empty()
-        self.train_split = InArg.empty()
-        self.random_state = InArg.empty()
-        self.shuffle = InArg.empty()
-        self.stratify = InArg.empty()
-        self.train = OutArg.empty()
-        self.test = OutArg.empty()
 
     def execute(self, ctx) -> None:
         
@@ -257,11 +234,6 @@ class KerasCreate1DInputModel(Component):
     training_data: InCompArg[Tuple[np.array, np.array]]
     model: OutArg[keras.Sequential]
 
-    def __init__(self):
-        self.done = False
-        self.training_data = InCompArg.empty()
-        self.model = OutArg.empty()
-
     def execute(self, ctx) -> None:
         x_shape = self.training_data.value[0].shape
         y_shape = self.training_data.value[1].shape
@@ -298,14 +270,6 @@ class KerasCreate2DInputModel(Component):
 
     model: OutArg[keras.Sequential]
     model_config: OutArg[dict]
-
-
-    def __init__(self):
-        self.done = False
-        self.training_data = InCompArg.empty()
-        self.model = OutArg.empty()
-        self.model_config = OutArg.empty()
-
 
     def execute(self, ctx) -> None:
 
@@ -366,15 +330,6 @@ class KerasTrainImageClassifier(Component):
     trained_model: OutArg[keras.Sequential]
     training_metrics: OutArg[dict]
 
-    def __init__(self):
-        self.done = False
-
-        self.model = InCompArg.empty()
-        self.training_data = InCompArg.empty()
-        self.training_epochs = InArg.empty()
-        self.trained_model = OutArg.empty()
-        self.training_metrics = OutArg.empty()
-
     def execute(self, ctx) -> None:
 
         model = self.model.value
@@ -415,12 +370,6 @@ class KerasEvaluateAccuracy(Component):
 
     metrics: OutArg[Dict[str, str]]
 
-    def __init__(self):
-        self.done = False
-        self.model = InCompArg.empty()
-        self.eval_dataset = InCompArg.empty()
-        self.metrics = OutArg.empty()
-
     def execute(self, ctx) -> None:
         (loss, acc) = self.model.value.evaluate(self.eval_dataset.value[0], self.eval_dataset.value[1], verbose=0)
         metrics = {
@@ -454,12 +403,8 @@ class ShouldStop(Component):
     should_retrain: OutArg[bool]
 
     def __init__(self):
-        self.done = False
-        self.target_accuracy = InCompArg.empty()
-        self.metrics = InArg.empty()
-        self.max_retries = InArg.empty()
-
-        self.should_retrain = OutArg(True)
+        super().__init__()
+        self.should_retrain.value = True
         self.retries = 0
 
     def execute(self, ctx) -> None:
@@ -496,13 +441,6 @@ class SaveKerasModel(Component):
     model: InCompArg[any]
     model_name: InArg[str]
     model_h5_path: OutArg[str]
-
-    def __init__(self):
-        self.done = False
-        self.model = InCompArg.empty()
-        self.model_name = InArg.empty()
-
-        self.model_h5_path = OutArg.empty()
 
     def execute(self, ctx) -> None:
         model = self.model.value

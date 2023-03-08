@@ -4,10 +4,6 @@ from xai_components.base import InArg, OutArg, InCompArg, Component, BaseCompone
 class HelloComponent(Component):
     """The simplest component that greets the user. 
     """
-    def __init__(self):
-
-        self.done = False
-
     def execute(self, ctx) -> None:
         
         #If the import is only exclusive to 1 component, it is a good practice to import inside execute()
@@ -27,11 +23,6 @@ class HelloHyperparameter(Component):
     - input_str: try connecting a Literal String or Hyperparameter String.
     """
     input_str: InArg[str]
-
-    def __init__(self):
-
-        self.done = False
-        self.input_str = InArg.empty()
 
     def execute(self, ctx) -> None:
         input_str = self.input_str.value
@@ -53,12 +44,6 @@ class CompulsoryHyperparameter(Component):
     #if your component requires a certain parameter to be supplied, use In-Comp(ulsory)-Argument ports.
     comp_str: InCompArg[str]
     comp_int: InCompArg[int]
-
-    def __init__(self):
-        self.done = False
-        self.input_str = InArg.empty()
-        self.comp_str = InCompArg.empty()
-        self.comp_int = InCompArg.empty()
 
     def execute(self, ctx) -> None:
         input_str = self.input_str.value
@@ -83,12 +68,6 @@ class HelloListTupleDict(Component):
     input_list: InArg[list]
     input_tuple: InArg[tuple]
     input_dict: InArg[dict]
-
-    def __init__(self):
-        self.done = False
-        self.input_tuple = InArg.empty()
-        self.input_list = InArg.empty()
-        self.input_dict = InArg.empty()
 
     def execute(self, ctx) -> None:
 
@@ -120,10 +99,6 @@ class HelloContext(Component):
     """
     context_dict: InArg[dict]
 
-    def __init__(self):
-        self.done = False
-        self.context_dict = InArg.empty()
-
     def execute(self, ctx) -> None:
         
         print(f"Current Context:\n{ctx}")
@@ -143,10 +118,6 @@ class MultiBranchComponent(BaseComponent):
     done: bool
 
     abc: InArg[str]
-    
-    def __init__(self):
-        self.done = False
-        self.abc = InArg.empty()
 
     def do(self, ctx) -> BaseComponent:
         if self.abc.value == "a":

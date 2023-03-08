@@ -30,14 +30,6 @@ class LoadTorchVisionDataset(Component):
     training_data: OutArg[torch.utils.data.Dataset]
     test_data: OutArg[torch.utils.data.Dataset]
 
-    def __init__(self):
-        self.done = False
-        self.dataset_name = InCompArg(None)
-        self.dataset_dir = InArg(None)
-
-        self.training_data = OutArg(None)
-        self.test_data = OutArg(None)
-
 
     def execute(self,ctx) -> None:
 
@@ -90,16 +82,6 @@ class TorchDataLoader(Component):
     train_dataloader: OutArg[torch.utils.data.DataLoader]
     test_dataloader: OutArg[torch.utils.data.DataLoader]
 
-    def __init__(self):
-        self.done = False
-
-        self.training_data = InCompArg(None)
-        self.test_data = InCompArg(None)
-        self.batch_size = InArg(None)
-
-        self.train_dataloader = OutArg(None)
-        self.test_dataloader = OutArg(None)
-
     def execute(self,ctx) -> None:
 
         from torch.utils.data import DataLoader
@@ -132,13 +114,6 @@ class ExampleTorchModelConfig(Component):
     model_config: OutArg[nn.Module]
     loss_fn: OutArg[any]
     optimizer: OutArg[any]
-
-    def __init__(self):
-        self.done = False
-
-        self.model_config = OutArg(None)
-        self.loss_fn = OutArg(None)
-        self.optimizer = OutArg(None)
 
     def execute(self,ctx) -> None:
         
@@ -196,17 +171,6 @@ class TrainTorchModel(Component):
 
     trained_model: OutArg[nn.Module]
 
-    def __init__(self):
-        self.done = False
-
-        self.train_dataloader = InCompArg(None)
-        self.model_config = InCompArg(None)
-        self.loss_fn = InCompArg(None)
-        self.optimizer = InCompArg(None)
-        self.epochs = InArg(None)
-        
-        self.trained_model = OutArg(None)
-
     def execute(self,ctx) -> None:
 
         dataloader = self.train_dataloader.value
@@ -254,13 +218,7 @@ class TestTorchModel(Component):
 
     loss_fn: InCompArg[any]
     
-    def __init__(self):
-        self.done = False
-        
-        self.model = InCompArg(None)
-        self.test_dataloader = InCompArg(None)
-        self.loss_fn = InCompArg(None)
-        
+
     def execute(self,ctx) -> None:
         
         dataloader = self.test_dataloader.value
@@ -297,12 +255,6 @@ class SaveTorchModelState(Component):
     model: InCompArg[nn.Module]
     model_path: InArg[str]
 
-    def __init__(self):
-        self.done = False
-
-        self.model = InCompArg(None)
-        self.model_path = InArg(None)
-
     def execute(self,ctx) -> None:
         
         model_path = self.model_path.value if self.model_path.value else os.path.splitext(sys.argv[0])[0] + ".pth"
@@ -325,14 +277,6 @@ class LoadTorchModelState(Component):
     model_path: InCompArg[str]
 
     loaded_model: OutArg[nn.Module]
-
-    def __init__(self):
-
-        self.done = False
-        self.model_config = InCompArg(None)
-        self.model_path = InCompArg(None)
-
-        self.loaded_model = OutArg(None)
 
     def execute(self,ctx) -> None:
 
@@ -357,13 +301,6 @@ class TorchModelPredict(Component):
     model: InCompArg[nn.Module]
     test_data: InCompArg[any]
     class_list: InCompArg[list]
-
-    def __init__(self):
-
-        self.done = False
-        self.model = InCompArg(None)
-        self.test_data = InCompArg(None)
-        self.class_list = InCompArg(None)
 
     def execute(self,ctx) -> None:
 
@@ -398,14 +335,6 @@ class Image2TorchTensor(Component):
     resize: InArg[tuple]
 
     tensor: OutArg[torch.Tensor]
-
-    def __init__(self):
-
-        self.done = False
-        self.img_path = InCompArg(None)
-        self.resize = InArg(None)
-
-        self.tensor = OutArg(None)
 
     def execute(self,ctx) -> None:
 
@@ -442,13 +371,6 @@ class TorchModelPredictFromTensor(Component):
     model: InCompArg[nn.Module]
     tensor: InCompArg[torch.Tensor]
     class_list: InCompArg[list]
-
-    def __init__(self):
-
-        self.done = False
-        self.model = InCompArg(None)
-        self.tensor = InCompArg(None)
-        self.class_list = InCompArg(None)
 
     def execute(self,ctx) -> None:
 

@@ -25,12 +25,6 @@ class SparkSparseVector(Component):
     vector_list: InCompArg[list]
     sparse_vector: OutArg[SparseVector]
 
-    def __init__(self):
-
-        self.done = False
-        self.vector_list = InCompArg(None)
-        self.sparse_vector = OutArg(None)
-
     def execute(self, ctx) -> None:
         
         from pyspark.mllib.linalg import SparseVector
@@ -69,16 +63,6 @@ class SparkLabeledPoint(Component):
 
     labeled_point: OutArg[any]
 
-
-    def __init__(self):
-
-        self.done = False
-        self.label = InCompArg(None)
-        self.dense_vector = InArg(None)
-        self.sparse_vector = InArg(None)
-
-        self.labeled_point = OutArg(None)
-
     def execute(self, ctx) -> None:
         
         from pyspark.mllib.regression import LabeledPoint
@@ -113,16 +97,6 @@ class SparkLoadImageFolder(Component):
 
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
-
-    def __init__(self):
-
-        self.done = False
-        self.in_sparksession = InCompArg(None)
-        self.folder_path = InCompArg(None)
-
-        self.out_sparksession = OutArg(None)
-        self.out_dataframe = OutArg(None)
-
 
     def execute(self, ctx) -> None:
 
@@ -160,19 +134,6 @@ class SparkSplitDataFrame(Component):
 
     train_dataframe: OutArg[any]
     test_dataframe: OutArg[any]
-
-
-    def __init__(self):
-
-        self.done = False
-        self.in_dataframe = InArg(None)
-        self.train_split = InArg(None)
-        self.seed = InArg(None)
-
-        self.train_dataframe = OutArg(None)
-        self.test_dataframe = OutArg(None)
-
-
 
     def execute(self, ctx) -> None:
 
@@ -212,17 +173,6 @@ class SparkLoadLIBSVM(Component):
     options: InArg[any]
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
-
-    def __init__(self):
-
-        self.done = False
-        self.in_sparksession = InCompArg(None)
-        self.file_input = InCompArg(None)
-        self.options = InArg(None)
-
-        self.out_sparksession = OutArg(None)
-        self.out_dataframe = OutArg(None)
-
 
     def execute(self, ctx) -> None:
 
@@ -266,16 +216,6 @@ class SparkLogisticRegression(Component):
 
     model: OutArg[any]
 
-    def __init__(self):
-
-        self.done = False
-        self.train_dataframe = InCompArg(None)
-        self.family = InArg(None)
-        self.options = InArg(None)
-
-        self.model = OutArg(None)
-
-
     def execute(self, ctx) -> None:
 
         from pyspark.ml.classification import LogisticRegression
@@ -316,12 +256,6 @@ class SparkPredict(Component):
     """    
     model: InCompArg[any]
     test_df: InCompArg[any]
-
-    def __init__(self):
-
-        self.done = False
-        self.model = InCompArg(None)
-        self.test_df = InCompArg(None)
 
     def execute(self, ctx) -> None:
 
