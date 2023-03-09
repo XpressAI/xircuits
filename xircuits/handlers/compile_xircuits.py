@@ -25,10 +25,24 @@ class CompileXircuitsFileRouteHandler(APIHandler):
 
         component_python_paths = input_data["pythonPaths"]
 
-        with open(self.__get_notebook_absolute_path__(input_file_path), 'r', encoding='utf-8') as infile:
-            with open(self.__get_notebook_absolute_path__(output_file_path), 'w') as outfile:
-                compile(infile, outfile, component_python_paths)
+        data = {}
 
-        data = {"message": "completed"}
+        try:
+            with open(self.__get_notebook_absolute_path__(input_file_path), 'r', encoding='utf-8') as infile:
+                with open(self.__get_notebook_absolute_path__(output_file_path), 'w') as outfile:
+                    compile(infile, outfile, component_python_paths)
 
-        self.finish(json.dumps(data))
+            data = {"message": "completed"}
+
+        except SyntaxError as e:
+            error_message = str(e)
+            error_code = e.text
+            msg = (f"{error_message}\n{error_code}")
+            data = {"message": msg}
+        
+        except Exception as e:
+            msg = (f"An error occurred: {str(e)}")
+            data = {"message": msg}
+
+        finally:
+            self.finish(json.dumps(data))
