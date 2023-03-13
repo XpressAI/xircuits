@@ -1,6 +1,8 @@
+import os
 from urllib import request
 from git import Repo
 from git.remote import RemoteProgress
+from pathlib import Path
 
 class Progress(RemoteProgress):
     def update(self, *args):
@@ -31,8 +33,11 @@ def get_submodule_config(user_query):
 
 def request_submodule_library(component_library_query):
 
-    module_url = "https://raw.githubusercontent.com/XpressAI/xircuits/master/.gitmodules"
-    request.urlretrieve(module_url, ".xircuits/.gitmodules")
+    submodule_config = Path(os.getcwd()) / ".xircuits" / ".gitmodules"
+
+    if not submodule_config.exists():
+        module_url = "https://raw.githubusercontent.com/XpressAI/xircuits/master/.gitmodules"
+        request.urlretrieve(module_url, ".xircuits/.gitmodules")
     
     # ensure syntax is as xai_components/xai_library_name
     if "xai" not in component_library_query:

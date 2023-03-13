@@ -7,7 +7,7 @@ import os
 import argparse
 
 from .handlers.request_folder import request_folder
-from .handlers.request_submodule import request_submodule_library
+from .handlers.request_submodule import get_submodule_config, request_submodule_library
 
 def init_xircuits():
 
@@ -40,6 +40,22 @@ def download_component_library():
     else:
         for component_lib in args.sublib:
             request_submodule_library(component_lib)
+
+def download_submodule_library():
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('submodule_library')
+    parser.add_argument("--no-install", action='store_false')
+
+    args = parser.parse_args()
+    request_submodule_library(args.submodule_library)
+
+    if not args.no_install:
+        submodule_path, _ = get_submodule_config(args.submodule_library)
+
+        print("Installing " + args.submodule_library + "...")
+        install_cmd = "cmd /c pip install -r " + submodule_path + "/requirements.txt"
+        os.system(install_cmd)
 
 def main():
 
