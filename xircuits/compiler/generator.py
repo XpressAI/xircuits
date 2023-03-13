@@ -1,7 +1,7 @@
 import ast
 import itertools
 import re
-
+import json
 import sys
 
 if sys.version_info >= (3, 9):
@@ -121,11 +121,16 @@ def main(args):
                 )
 
                 if port.source.id not in named_nodes:
+
                     # Literal
                     assignment_target += ".value"
                     tpl = ast.parse("%s = 1" % (assignment_target))
                     if port.source.name == "Literal String":
                         value = port.sourceLabel
+                    elif port.source.name == "Literal List":
+                        value = json.loads("[" + port.sourceLabel + "]")
+                    elif port.source.name == "Literal Dict":
+                        value = json.loads("{" + port.sourceLabel + "}")
                     else:
                         value = eval(port.sourceLabel)
                     tpl.body[0].value.value = value
