@@ -236,7 +236,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
             alert(`${model_path} successfully compiled!`);
           }
         } else {
-          alert("Failed to generate arbitrary file!");
+          console.log(request["message"])
+          alert("Failed to generate compiled code. Please check console logs for more details.");
         }
       }
     });
