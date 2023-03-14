@@ -1,5 +1,4 @@
 import os
-from urllib import request
 from git import Repo
 from git.remote import RemoteProgress
 from pathlib import Path
@@ -35,10 +34,6 @@ def request_submodule_library(component_library_query):
 
     submodule_config = Path(os.getcwd()) / ".xircuits" / ".gitmodules"
 
-    if not submodule_config.exists():
-        module_url = "https://raw.githubusercontent.com/XpressAI/xircuits/master/.gitmodules"
-        request.urlretrieve(module_url, ".xircuits/.gitmodules")
-    
     # ensure syntax is as xai_components/xai_library_name
     if "xai" not in component_library_query:
         component_library_query = "xai_" + component_library_query
