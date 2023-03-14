@@ -9,6 +9,11 @@ import setuptools
 from setuptools import setup, find_packages
 
 import os
+import shutil
+
+# Before setup build actions
+shutil.copy('.gitmodules', 'xircuits/.xircuits/.gitmodules')
+
 
 HERE = Path(__file__).parent.resolve()
 
