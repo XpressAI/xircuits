@@ -117,7 +117,7 @@ $ xircuits
 
 
 # Development
-Creating workflows and components in Xircuits is easy. We've provided extensive guides for you in our [documentation](xircuits.io). Here are a few quick links to get you started:
+Creating workflows and components in Xircuits is easy. We've provided extensive guides for you in our [documentation](https://xircuits.io/). Here are a few quick links to get you started:
 
 
 - **Tutorials**: [Your First Xircuits Worflow](https://xircuits.io/docs/tutorials/running-a-xircuits-workflow) | [Running a Xircuits Project Template](https://xircuits.io/docs/tutorials/running-a-xircuits-project-template)

@@ -16,13 +16,11 @@ These components will always be included in the Xircuits installation.
 
 ## External Library
 
-Recognized additional component libraries that you can download using:
+Recognized additional component libraries that you can download and install using:
 
 ```
-$ xircuits-components --sublib componentLibraryName
+$ xircuits-submodules xai_componentLibName
 ```
-
-Don't forget to install their packages after fetching the library!
 
 | Name                                                                                                                                                                                                       | Version |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
@@ -31,7 +29,6 @@ Don't forget to install their packages after fetching the library!
 | <b>[Streamlit](https://github.com/XpressAI/xai-streamlit)</b><br>Turn Xircuits workflows into shareable web apps in minutes.                                                                                                                                  | 0.1.0   |
 | <b>[RabbitMQ](https://github.com/XpressAI/xai-rabbitmq)</b><br>Message broker in Xircuits that just works.                                                                                                                                                    | 0.1.0   |
 | <b>[MQTT](https://github.com/XpressAI/xai-mqtt)</b><br>Xircuits library that implments the standard for IoT Messaging.                                                                                                                                    | 0.1.0   |
-| 
-<b>Modelstash</b><br>Coming Soon...             
+| <b>Modelstash</b><br>Coming Soon...             |
 
 Want your component library listed here? Just submit a PR to the Xircuits repository. For more information, refer to the [Xircuits component library documentation](https://xircuits.io/docs/technical-concepts/xircuits-component-library).
