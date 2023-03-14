@@ -45,8 +45,8 @@ def download_submodule_library():
     
     parser = argparse.ArgumentParser()
     parser.add_argument('submodule_library')
-    parser.add_argument("--no-install", action='store_false')
-
+    parser.add_argument("--no-install", default=False, action='store_false')
+    
     args = parser.parse_args()
     request_submodule_library(args.submodule_library)
 
