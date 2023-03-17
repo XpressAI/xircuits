@@ -5,14 +5,14 @@ from pathlib import Path
 from urllib import request
 import os
 import argparse
-
+import pkg_resources
+import shutil
 from .handlers.request_folder import request_folder
 from .handlers.request_submodule import get_submodule_config, request_submodule_library
 
 def init_xircuits():
 
-    import pkg_resources
-    import shutil
+
     path = ".xircuits"
     config_path = pkg_resources.resource_filename('xircuits', '.xircuits')
     shutil.copytree(config_path, path)
@@ -60,7 +60,7 @@ def download_submodule_library():
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--branch', nargs='?', default="master", help='pull files from a xircuits branch')
+    parser.add_argument('--branch', nargs='?', help='pull files from a xircuits branch')
 
     parsed, extra_args = parser.parse_known_args()
 
@@ -76,7 +76,12 @@ def main():
     if not component_library_path.exists():
         val = input("Xircuits Component Library is not found. Would you like to load it in the current path (Y/N)? ")
         if val.lower() == ("y" or "yes"):
-            request_folder("xai_components", branch=args.branch)
+            if args.branch is None:
+                xai_component_path = pkg_resources.resource_filename('xai_components', '')
+                shutil.copytree(xai_component_path, "xai_components")
+
+            else:
+                request_folder("xai_components", branch=args.branch)
 
     # handler for extra jupyterlab launch options
     if extra_args:
