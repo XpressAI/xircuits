@@ -2,7 +2,7 @@ name: Mirror to Ebrains
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, dev ]
 
 jobs:
   to_ebrains:
@@ -15,6 +15,13 @@ jobs:
           source_branch: "master"
           destination_repo: "https://ghpusher:${{ secrets.EBRAINS_GITLAB_ACCESS_TOKEN }}@gitlab.ebrains.eu/tvb/tvb-ext-xircuits.git"
           destination_branch: "master"
+      - name: syncdev
+        uses: wei/git-sync@v3
+        with:
+          source_repo: "the-virtual-brain/tvb-ext-xircuits"
+          source_branch: "dev"
+          destination_repo: "https://ghpusher:${{ secrets.EBRAINS_GITLAB_ACCESS_TOKEN }}@gitlab.ebrains.eu/tvb/tvb-ext-xircuits.git"
+          destination_branch: "dev"
       - name: synctags
         uses: wei/git-sync@v3
         with:
