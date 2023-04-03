@@ -260,16 +260,16 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
       }
     });
 
-    widget.toolbar.insertItem(0, 'xircuits-add-save', saveButton);
-    widget.toolbar.insertItem(1, 'xircuits-add-undo', undoButton);
-    widget.toolbar.insertItem(2, 'xircuits-add-redo', redoButton);
-    widget.toolbar.insertItem(3, 'xircuits-add-reload', reloadButton);
-    widget.toolbar.insertItem(4, 'xircuits-add-cut', cutButton);
-    widget.toolbar.insertItem(5, 'xircuits-add-copy', copyButton);
-    widget.toolbar.insertItem(6, 'xircuits-add-paste', pasteButton);
-    widget.toolbar.insertItem(7, 'xircuits-add-lock', lockButton);
-    widget.toolbar.insertItem(8, 'xircuits-add-log', logButton);
-    widget.toolbar.insertItem(9, 'xircuits-add-test', testButton);
+    widget.toolbar.insertItem(0, 'xircuits-add-undo', undoButton);
+    widget.toolbar.insertItem(1, 'xircuits-add-redo', redoButton);
+    widget.toolbar.insertItem(2, 'xircuits-add-reload', reloadButton);
+    widget.toolbar.insertItem(3, 'xircuits-add-cut', cutButton);
+    widget.toolbar.insertItem(4, 'xircuits-add-copy', copyButton);
+    widget.toolbar.insertItem(5, 'xircuits-add-paste', pasteButton);
+    widget.toolbar.insertItem(6, 'xircuits-add-lock', lockButton);
+    widget.toolbar.insertItem(7, 'xircuits-add-log', logButton);
+    widget.toolbar.insertItem(8, 'xircuits-add-test', testButton);
+    widget.toolbar.insertItem(9, 'xircuits-add-save', saveButton);
     widget.toolbar.insertItem(10, 'xircuits-add-compile', compileButton);
     widget.toolbar.insertItem(11, 'xircuits-add-run', compileAndRunButton);
     widget.toolbar.insertItem(12, 'xircuits-run-type', new RunSwitcher(this));
