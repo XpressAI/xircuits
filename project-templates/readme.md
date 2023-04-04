@@ -14,6 +14,9 @@ $ bash setup.sh
 ## List of Open Source Project Templates
 The following are some open source Xircuits template projects by our developers and open source contributors. If you would like to showcase your own Xircuits project here, give this page a PR!
 
+<div align="center">
+
+
 | Use Case | Author |
 | -------- | ------ |
 | [Image Classification](https://github.com/XpressAI/x-template-image_classification) | [MansourAlawi](https://github.com/mansouralawi) | 
@@ -24,4 +27,6 @@ The following are some open source Xircuits template projects by our developers 
 | [Chatbot](https://github.com/XpressAI/x-template-chatbot) | [annabelle1217](https://github.com/annabelle1217) |
 | [Semantic Segmentation](https://github.com/XpressAI/x-template-semantic_segmentation) | [quietrex](https://github.com/quietrex)
 
-For more information, checkout our documentation on [how to use Xircuits project templates](https://xircuits.io/tutorials/running-a-xircuits-project-template) or [how to create your own project from our template](https://xircuits.io/developer-guide/creating-a-xircuits-project-template).
+</div>
+
+For more information, checkout our [project template documentation page!](https://xircuits.io/docs/project-template/). Learn [how to use Xircuits project templates](https://xircuits.io/docs/main/tutorials/running-a-xircuits-project-template) or [how to create your own project from our template](https://xircuits.io/docs/main/developer-guide/creating-a-xircuits-project-template).

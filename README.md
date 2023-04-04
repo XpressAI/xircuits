@@ -120,9 +120,9 @@ $ xircuits
 Creating workflows and components in Xircuits is easy. We've provided extensive guides for you in our [documentation](https://xircuits.io/). Here are a few quick links to get you started:
 
 
-- **Tutorials**: [Your First Xircuits Worflow](https://xircuits.io/docs/tutorials/running-a-xircuits-workflow) | [Running a Xircuits Project Template](https://xircuits.io/docs/tutorials/running-a-xircuits-project-template)
-- **Component Development**: [Creating a Xircuits Component](https://xircuits.io/docs/developer-guide/creating-a-xircuits-component) | [Creating a Xircuits Component Library](https://xircuits.io/docs/developer-guide/creating-a-xircuits-component-library)
-- **Advanced**: [Xircuits Core Development](https://xircuits.io/docs/developer-guide/developing-xircuits-core-features)
+- **Tutorials**: [Your First Xircuits Worflow](https://xircuits.io/docs/main/tutorials/running-a-xircuits-workflow) | [Running a Xircuits Project Template](https://xircuits.io/docs/main/tutorials/running-a-xircuits-project-template)
+- **Component Development**: [Creating a Xircuits Component](https://xircuits.io/docs/main/developer-guide/creating-a-xircuits-component) | [Creating a Xircuits Component Library](https://xircuits.io/docs/main/developer-guide/creating-a-xircuits-component-library)
+- **Advanced**: [Xircuits Core Development](https://xircuits.io/docs/main/developer-guide/developing-xircuits-core-features)
 
 # Use Cases
 
