@@ -19,9 +19,9 @@ namespace S {
 	export const Label = styled.div`
 		padding: 0 5px;
 		flex-grow: 1;
-		text-overflow: ellipsis;
+		white-space: pre-wrap; // Preserve line breaks and wrap text to the next line
 		overflow:hidden;
-		max-width: 640px;
+		max-width: 40ch;
 	`;
 
 	export const SymbolContainer = styled.div<{ symbolType: string; selected: boolean; isOutPort: boolean }>`
