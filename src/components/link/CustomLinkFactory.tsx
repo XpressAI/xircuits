@@ -14,9 +14,11 @@ namespace S {
 		}
 	`;
 
+	const animationDuration = 4; // Seconds
+
 	const selected = css`
 		stroke-dasharray: 10, 2;
-		animation: ${Keyframes} 1s linear infinite;
+		animation: ${Keyframes} ${animationDuration}s linear infinite;
 	`;
 
 	export const Path = styled.path<{ selected: boolean }>`
@@ -67,4 +69,3 @@ export class TriangleLinkFactory extends DefaultLinkFactory {
 		);
 	}
 }
-
