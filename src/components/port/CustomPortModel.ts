@@ -8,6 +8,17 @@ import {PortModel} from "@projectstorm/react-diagrams-core";
  */
 export  class CustomPortModel extends DefaultPortModel  {
 
+    private _description : string;
+
+     get description(): string {
+        return this._description;
+    }
+
+    set description(value: string) {
+        this._description = value;
+    }
+
+
 
     canLinkToPort(port: PortModel): boolean {
         if (port instanceof DefaultPortModel) {

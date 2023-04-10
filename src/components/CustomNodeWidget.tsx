@@ -102,9 +102,10 @@ export interface DefaultNodeProps {
  */
 export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
 
-    generatePort = (port) => {
-        return <CustomPortLabel engine={this.props.engine} port={port} key={port.getID()} node={this.props.node} />;
-    };
+    portsNo = this.props.node.getInPorts().length + this.props.node.getOutPorts().length;
+
+    tooltipDescriptionRef = React.createRef<HTMLDivElement>();
+
     element:Object;
     state = {
 
@@ -127,7 +128,63 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
             original: 'https://picsum.photos/id/1019/1000/600/',
             thumbnail: 'https://picsum.photos/id/1019/250/150/'
         },
-       ]
+       ],
+        showParamDescriptionList: new Array(this.portsNo).fill(false),
+        paramName: ""
+    };
+
+    /**
+     * creates a particular function for each component so that it can set only it's state
+     * @param id
+     */
+    setShowParamDescription = (id : number) => {
+        const _setShowParamDescription = (newShowDescription : boolean) => {
+            this.setState({
+                showParamDescriptionList: this.state.showParamDescriptionList.map((value, index) => (
+                        id === index ? newShowDescription : false
+                    )
+                ),
+                showDescription: false
+            })
+        }
+        return _setShowParamDescription;
+    }
+
+    setDescriptionStr = (paramName: string) => {
+        const _setDescriptionStr = async (descriptionStr : string) => {
+            await this.setState({
+                descriptionStr : descriptionStr,
+                paramName: paramName
+            });
+            ReactTooltip.show(this.element as Element);
+        }
+        return _setDescriptionStr;
+    }
+
+    generatePort = (port, index) => {
+        const argumentDescriptions = this.props.node['extras']['argumentDescriptions'];
+
+        // remove the ☆ from the beginning of the label
+		const name = port.getOptions().label[0] === "★" ? port.getOptions().label.slice(1) : port.getOptions().label;
+
+        const description = argumentDescriptions && (name in argumentDescriptions) ? argumentDescriptions[name] : "";
+
+        const isOutPort = port.getOptions().name.includes('parameter-out');
+
+        index = isOutPort ? index + this.props.node.getInPorts().length: index;
+
+        return (
+            <CustomPortLabel
+                engine={this.props.engine}
+                port={port}
+                key={port.getID()}
+                node={this.props.node}
+                showDescription={this.state.showParamDescriptionList[index]}
+                setShowDescription={this.setShowParamDescription(index)}
+                setDescriptionStr = {this.setDescriptionStr}
+                description={description}
+            />
+        );
     };
 
     showTooltip() {
@@ -206,8 +263,12 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
      * Show/Hide Component's Description Tooltip
      */
     async handleDescription() {
-        await this.setState({ showDescription: !this.state.showDescription });
-        this.getDescriptionStr();
+        await this.setState({
+            showDescription: !this.state.showDescription,
+            showParamDescriptionList: new Array(this.portsNo).fill(false),
+            paramName: ""
+        });
+        await this.getDescriptionStr();
         ReactTooltip.show(this.element as Element);
     }
 
@@ -234,7 +295,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         delete this.props.node.getOptions().extras["tip"];
         this.props.node.getOptions().extras["borderColor"]="rgb(0,192,255)";
     }
-    
+
     render() {
         if (this.props.node['extras']['type'] == 'comment') {
             return (
@@ -301,39 +362,43 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                         </S.Ports>
                     </S.Node>
                     {/** Description Tooltip */}
-                    {this.state.showDescription && <ReactTooltip
+                    {(this.state.showDescription || this.state.showParamDescriptionList.reduce((prev, cur) => prev || cur, false)) && <ReactTooltip
                         id={this.props.node.getOptions().id}
                         className='description-tooltip'
                         arrowColor='rgb(255, 255, 255)'
                         clickable
-                        afterShow={() => { this.setState({ showDescription: true }) }}
-                        afterHide={() => { this.setState({ showDescription: false }) }}
                         delayHide={60000}
-                        delayUpdate={5000}
+                        delayUpdate={0}
                         getContent={() =>
-                            <div data-no-drag style={{ cursor: 'default' }}>
+                            <div data-no-drag style={{ cursor: 'default' }} ref={this.tooltipDescriptionRef}>
                                 <button
                                     type="button"
                                     className="close"
                                     data-dismiss="modal"
                                     aria-label="Close"
-                                    onClick={() => { this.setState({ showDescription: false }); }}>
+                                    onClick={() => { this.setState({
+                                        showDescription: false,
+                                        showParamDescriptionList: new Array(this.portsNo).fill(false)
+                                    }); }}
+                                >
                                     <span aria-hidden="true">&times;</span>
                                 </button>
-                                <S.DescriptionName color={this.props.node.getOptions().color}>{this.props.node.getOptions()["name"]}</S.DescriptionName>
+                                <S.DescriptionName color={this.props.node.getOptions().color}>{this.props.node.getOptions()["name"] + " " + this.state.paramName}</S.DescriptionName>
                                 <p className='description-title'>Description:</p>
-                                <div 
+                                <div
                                     onWheel={(e) => e.stopPropagation()}
                                     className='description-container'>
-                                    <div className='markdown-body' dangerouslySetInnerHTML={this.renderText(this.state.descriptionStr)} />
+                                    <div className='markdown-body' dangerouslySetInnerHTML = {{__html : this.state.descriptionStr}}/>
                                 </div>
                             </div>}
                         overridePosition={(
                             { left, top },
                             currentEvent, currentTarget, node, refNode) => {
+
                             const currentNode = this.props.node;
                             const nodeDimension = { x: currentNode.width, y: currentNode.height };
                             const nodePosition = { x: currentNode.getX(), y: currentNode.getY() };
+
                             let newPositionX = nodePosition.x;
                             let newPositionY = nodePosition.y;
                             let offset = 0;
@@ -346,7 +411,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
 
                             if (refNode == 'top') {
                                 newPositionX = newPositionX - 208 + offset + (nodeDimension.x / 2);
-                                newPositionY = newPositionY - 220;
+                                newPositionY = newPositionY + 66 - this.tooltipDescriptionRef.current.clientHeight;
                             }
                             else if (refNode == 'bottom') {
                                 newPositionX = newPositionX - 208 + offset + (nodeDimension.x / 2);
