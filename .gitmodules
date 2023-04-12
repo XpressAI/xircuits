@@ -10,3 +10,12 @@
 [submodule "xai_components/xai_streamlit"]
 	path = xai_components/xai_streamlit
 	url = https://github.com/XpressAI/xai-streamlit
+[submodule "xai_components/xai_rabbitmq"]
+	path = xai_components/xai_rabbitmq
+	url = https://github.com/XpressAI/xai-rabbitmq
+[submodule "xai_components/xai_mqtt"]
+	path = xai_components/xai_mqtt
+	url = https://github.com/XpressAI/xai-mqtt
+[submodule "xai_components/xai_vecto"]
+	path = xai_components/xai_vecto
+	url = https://github.com/XpressAI/xai-vecto

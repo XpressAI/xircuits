@@ -34,15 +34,6 @@ class xSparkSession(Component):
     config: InArg[str]
     sparksession: OutArg[any]
 
-    def __init__(self):
-
-        self.done = False
-        self.master = InArg(None)
-        self.appname = InArg(None)
-        self.config = InArg(None)
-        self.sparksession = OutArg(None)
-
-
     def execute(self, ctx) -> None:
 
         master_url = self.master.value if self.master.value else "local"
@@ -80,16 +71,6 @@ class SparkReadPandas(Component):
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
 
-
-    def __init__(self):
-
-        self.done = False
-        self.in_sparksession = InCompArg(None)
-        self.pandas_dataframe = InCompArg(None)
-        self.out_sparksession = OutArg(None)
-        self.out_dataframe = OutArg(None)
-
-
     def execute(self, ctx) -> None:
 
         spark = self.in_sparksession.value
@@ -119,15 +100,6 @@ class SparkReadFile(Component):
     file_input: InCompArg[str]
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
-
-    def __init__(self):
-
-        self.done = False
-        self.in_sparksession = InCompArg(None)
-        self.file_input = InCompArg(None)
-        self.out_sparksession = OutArg(None)
-        self.out_dataframe = OutArg(None)
-
 
     def execute(self, ctx) -> None:
 
@@ -180,17 +152,6 @@ class SparkReadCSV(Component):
     out_sparksession: OutArg[any]
     out_dataframe: OutArg[any]
 
-    def __init__(self):
-
-        self.done = False
-        self.in_sparksession = InCompArg(None)
-        self.file_input = InCompArg(None)
-        self.separator = InArg(None)
-        self.header = InArg(True)
-        self.out_sparksession = OutArg(None)
-        self.out_dataframe = OutArg(None)
-
-
     def execute(self, ctx) -> None:
 
         spark = self.in_sparksession.value
@@ -228,12 +189,8 @@ class SparkWriteFile(Component):
     out_sparksession: OutArg[any]
 
     def __init__(self):
-
-        self.done = False
-        self.dataframe = InCompArg(None)
-        self.output_name = InCompArg(None)
-        self.header = InArg(True)
-        self.out_sparksession = OutArg(None)
+        super().__init__()
+        self.header.value = True
 
     def execute(self, ctx) -> None:
 
@@ -274,18 +231,6 @@ class SparkSQL(Component):
 
     out_sparksession: OutArg[any]
     sql_dataframe: OutArg[any]
-
-
-    def __init__(self):
-
-        self.done = False
-        self.in_sparksession = InCompArg(None)
-        self.dataframe = InCompArg(None)
-        self.sql_string = InCompArg(None)
-        self.table_name = InArg(None)
-
-        self.out_sparksession = OutArg(None)
-        self.sql_dataframe = OutArg(None)
 
     def execute(self, ctx) -> None:
 
@@ -328,16 +273,6 @@ class SparkVisualize(Component):
     x_axis: InCompArg[str]
     y_axis: InArg[str]
     output_name: InArg[str]
-
-    def __init__(self):
-        
-        self.done = False
-        self.dataframe = InCompArg(None)
-        self.plot_type = InArg(None)
-        self.x_axis = InCompArg(None)
-        self.y_axis = InArg(None)    
-        self.output_name = InArg(None)    
-
 
     def execute(self, ctx) -> None:
         

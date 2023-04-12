@@ -69,19 +69,16 @@ class KerasTransferLearningModel(Component):
     model: OutArg[any]
 
     def __init__(self):
-        self.done = False
-        self.base_model_name = InArg.empty()
-        self.include_top = InArg(True)
-        self.weights = InArg("imagenet")
-        self.input_shape = InArg.empty()
-        self.freeze_all = InArg(True)
-        self.fine_tune_from = InArg(0)
-        self.classes = InArg(1000)
-        self.binary = InArg(False)
-        self.classifier_activation = InArg("softmax")
-        self.kwargs = InArg({})
+        super().__init__()
 
-        self.model = OutArg.empty()
+        self.include_top.value = True
+        self.weights.value = "imagenet"
+        self.freeze_all.value = True
+        self.fine_tune_from.value = 0
+        self.classes.value = 1000
+        self.binary.value = False
+        self.classifier_activation.value = "softmax"
+        self.kwargs.value = {}
 
     def execute(self, ctx):
 
@@ -209,15 +206,11 @@ class TFDataset(Component):
 
     def __init__(self):
         self.done = False
-        self.dataset_name = InCompArg.empty()
-        self.batch_size = InArg(32)
-        self.shuffle_files = InArg(False)
-        self.as_supervised = InArg(True)
-        self.kwargs = InArg({})
 
-        self.all_data = OutArg.empty()
-        self.train_data = OutArg.empty()
-        self.test_data = OutArg.empty()
+        self.batch_size.value = 32
+        self.shuffle_files.value = False
+        self.as_supervised.value = True
+        self.kwargs.value = {}
 
     def execute(self, ctx):
         import tensorflow_datasets as tfds
@@ -267,16 +260,8 @@ class TrainKerasModel(Component):
     training_metrics: OutArg[dict]
 
     def __init__(self):
-        self.done = False
-
-        self.model = InCompArg.empty()
-        self.training_data = InCompArg.empty()
-        self.batch_size = InCompArg.empty()
-        self.epochs = InCompArg.empty()
-        self.kwargs = InArg({})
-
-        self.trained_model = OutArg.empty()
-        self.training_metrics = OutArg.empty()
+        super().__init__()
+        self.kwargs.value = {}
 
     def execute(self, ctx):
 
@@ -320,12 +305,6 @@ class TFDSEvaluateAccuracy(Component):
     eval_dataset: InCompArg[any]
 
     metrics: OutArg[Dict[str, str]]
-
-    def __init__(self):
-        self.done = False
-        self.model = InCompArg.empty()
-        self.eval_dataset = InCompArg.empty()
-        self.metrics = OutArg.empty()
 
     def execute(self, ctx):
 
@@ -385,16 +364,6 @@ class KerasModelCompiler(Component):
     compiled_model: OutArg[any]
     model_config: OutArg[dict]
 
-    def __init__(self):
-        self.done = False
-        self.model = InCompArg.empty()
-        self.optimizer_identifier = InCompArg.empty()
-        self.loss_identifier = InCompArg.empty()
-        self.metrics = InCompArg.empty()
-
-        self.compiled_model = OutArg.empty()
-        self.model_config = OutArg.empty()
-
     def execute(self, ctx):
 
         assert isinstance(
@@ -410,7 +379,7 @@ class KerasModelCompiler(Component):
         self.compiled_model.value = self.model.value
         model_config = {
             "lr": self.compiled_model.value.optimizer.lr.numpy().item(),
-            "optimizer_name": self.compiled_model.value.optimizer._name,
+            "optimizer_name": self.compiled_model.value.optimizer.name,
             "loss": self.compiled_model.value.loss,
         }
 
@@ -430,11 +399,6 @@ class SaveKerasModel(Component):
     """
     model: InCompArg[any]
     model_name: InCompArg[any]
-
-    def __init__(self):
-        self.done = False
-        self.model = InCompArg.empty()
-        self.model_name = InCompArg.empty()
 
     def execute(self, ctx):
 

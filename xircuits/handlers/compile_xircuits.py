@@ -6,6 +6,7 @@ from jupyter_server.base.handlers import APIHandler
 from pathlib import Path
 
 from xircuits.compiler import compile
+import traceback
 
 
 class CompileXircuitsFileRouteHandler(APIHandler):
@@ -25,10 +26,21 @@ class CompileXircuitsFileRouteHandler(APIHandler):
 
         component_python_paths = input_data["pythonPaths"]
 
-        with open(self.__get_notebook_absolute_path__(input_file_path), 'r', encoding='utf-8') as infile:
-            with open(self.__get_notebook_absolute_path__(output_file_path), 'w') as outfile:
-                compile(infile, outfile, component_python_paths)
+        msg = ""
 
-        data = {"message": "completed"}
+        try:
+            with open(self.__get_notebook_absolute_path__(input_file_path), 'r', encoding='utf-8') as infile:
+                with open(self.__get_notebook_absolute_path__(output_file_path), 'w') as outfile:
+                    compile(infile, outfile, component_python_paths)
 
-        self.finish(json.dumps(data))
+            msg = "completed"
+        
+        except Exception:
+            msg = traceback.format_exc()
+            print(msg)
+            pass
+        
+        finally:
+                
+            data = {"message": msg}
+            self.finish(json.dumps(data))

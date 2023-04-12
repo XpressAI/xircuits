@@ -28,16 +28,9 @@ class TorchModel(Component):
     optimizer: OutArg[any]
 
     def __init__(self):
-        self.done = False
-
-        self.model_in = InArg.empty()
-        self.loss_in = InArg.empty()
-        self.learning_rate = InArg(1e-3)
-        self.optimizer_in = InArg.empty()
-        self.should_flatten = InArg(False)
-        self.model_config = OutArg.empty()
-        self.loss_fn = OutArg.empty()
-        self.optimizer = OutArg.empty()
+        super().__init__()
+        self.learning_rate.value = 1e-3
+        self.should_flatten.value = False
 
     def execute(self,ctx) -> None:
         should_flatten = self.should_flatten.value
@@ -99,15 +92,6 @@ class TorchAddLinearLayer(Component):
     bias: InArg[bool]
     model_out: OutArg[list]
 
-    def __init__(self):
-        self.done = False
-
-        self.model_in = InArg.empty()
-        self.in_features = InArg.empty()
-        self.out_features = InArg.empty()
-        self.bias = InArg.empty()
-        self.model_out = OutArg.empty()
-
     def execute(self,ctx) -> None:
         bias = True if self.bias.value is None else False
         in_size = self.in_features.value
@@ -139,21 +123,14 @@ class TorchAddConv1DLayer(Component):
 
 
     def __init__(self):
-        self.done = False
-
-        self.model_in = InArg.empty()
-
-        self.in_channels = InCompArg.empty()
-        self.out_channels = InCompArg.empty()
-        self.kernel_size = InCompArg.empty()
-        self.stride = InArg(1)
-        self.padding = InArg(0)
-        self.dilation = InArg(1)
-        self.groups = InArg(1)
-        self.bias = InArg(True)
-        self.padding_mode = InArg('zeros')
-
-        self.model_out = OutArg.empty()
+        super().__init__()
+        self.stride.value = 1
+        self.padding.value = 0
+        self.dilation.value = 1
+        self.groups.value = 1
+        self.bias.value = True
+        self.padding_mode.value = 'zeros'
+        
 
     def execute(self,ctx) -> None:
 
@@ -193,21 +170,13 @@ class TorchAddConv2DLayer(Component):
 
 
     def __init__(self):
-        self.done = False
-
-        self.model_in = InArg.empty()
-
-        self.in_channels = InCompArg.empty()
-        self.out_channels = InCompArg.empty()
-        self.kernel_size = InCompArg.empty()
-        self.stride = InArg(1)
-        self.padding = InArg(0)
-        self.dilation = InArg(1)
-        self.groups = InArg(1)
-        self.bias = InArg(True)
-        self.padding_mode = InArg('zeros')
-
-        self.model_out = OutArg.empty()
+        super().__init__()
+        self.stride.value = 1
+        self.padding.value = 0
+        self.dilation.value = 1
+        self.groups.value = 1
+        self.bias.value = True
+        self.padding_mode.value = 'zeros'
 
     def execute(self,ctx) -> None:
 
@@ -245,20 +214,14 @@ class TorchAddTransformerEncoderLayer(Component):
 
 
     def __init__(self):
-        self.done = False
+        super().__init__()
 
-        self.model_in = InArg.empty()
-
-        self.d_model = InCompArg.empty()
-        self.nhead = InCompArg.empty()
-        self.dim_feedforward = InArg(2048)
-        self.dropout = InArg(0.1)
-        self.activation = InArg('relu')
-        self.layer_norm_eps = InArg(1e-05)
-        self.batch_first = InArg(False)
-        self.norm_first = InArg(False)
-
-        self.model_out = OutArg.empty()
+        self.dim_feedforward.value = 2048
+        self.dropout.value = 0.1
+        self.activation.value = 'relu'
+        self.layer_norm_eps.value = 1e-05
+        self.batch_first.value = False
+        self.norm_first.value = False
 
     def execute(self,ctx) -> None:
 
@@ -295,20 +258,13 @@ class TorchAddTransformerDecoderLayer(Component):
 
 
     def __init__(self):
-        self.done = False
-
-        self.model_in = InArg.empty()
-
-        self.d_model = InCompArg.empty()
-        self.nhead = InCompArg.empty()
-        self.dim_feedforward = InArg(2048)
-        self.dropout = InArg(0.1)
-        self.activation = InArg('relu')
-        self.layer_norm_eps = InArg(1e-05)
-        self.batch_first = InArg(False)
-        self.norm_first = InArg(False)
-
-        self.model_out = OutArg.empty()
+        super().__init__()
+        self.dim_feedforward.value = 2048
+        self.dropout.value = 0.1
+        self.activation.value = 'relu'
+        self.layer_norm_eps.value = 1e-05
+        self.batch_first.value = False
+        self.norm_first.value = False
 
     def execute(self,ctx) -> None:
 
@@ -346,20 +302,14 @@ class TorchLSTM(Component):
 
 
     def __init__(self):
-        self.done = False
+        super().__init__()
 
-        self.model_in = InArg.empty()
-
-        self.input_size = InCompArg.empty()
-        self.hidden_size = InCompArg.empty()
-        self.num_layers = InArg(1)
-        self.bias = InArg(True)
-        self.batch_first = InArg(False)
-        self.dropout = InArg(0)
-        self.bidirectional = InArg(False)
-        self.proj_size = InArg(0)
-
-        self.model_out = OutArg.empty()
+        self.num_layers.value = 1
+        self.bias.value = True
+        self.batch_first.value = False
+        self.dropout.value = 0
+        self.bidirectional.value = False
+        self.proj_size.value = 0
 
     def execute(self,ctx) -> None:
 
@@ -383,13 +333,7 @@ class TorchAddReluLayer(Component):
     
     model_in: InArg[list]
     model_out: OutArg[list]
-    
-    def __init__(self):
-        self.done = False
-        
-        self.model_in = InArg.empty()
-        self.model_out = OutArg.empty()
-    
+
     def execute(self, ctx) -> None:
         if self.model_in.value is None:
             self.model_out.value = [nn.ReLU()]
@@ -403,13 +347,7 @@ class TorchAddDropoutLayer(Component):
     model_in: InArg[list]
     prob_zero: InArg[float]
     model_out: OutArg[list]
-    
-    def __init__(self):
-        self.done = False
-        
-        self.model_in = InArg.empty()
-        self.prob_zero = InArg.empty()
-        self.model_out = OutArg.empty()
+
     
     def execute(self, ctx) -> None:
         prob = 0.5

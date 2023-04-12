@@ -58,7 +58,7 @@ jobs:
 
     - name: Install Xircuits
       run: |
-        whl_name=$(echo dist/*whl)[learning]
+        whl_name=$(echo dist/*whl)[tensorflow_keras]
         pip install $whl_name
 
     - name: Setup Playwright

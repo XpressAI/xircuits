@@ -5,17 +5,17 @@ from pathlib import Path
 from urllib import request
 import os
 import argparse
-
+import pkg_resources
+import shutil
 from .handlers.request_folder import request_folder
-from .handlers.request_submodule import request_submodule_library
+from .handlers.request_submodule import get_submodule_config, request_submodule_library
 
 def init_xircuits():
 
-    url = "https://raw.githubusercontent.com/XpressAI/xircuits/master/.xircuits/config.ini"
-    path = ".xircuits"
-    os.mkdir(path)
-    request.urlretrieve(url, path+"/config.ini")
 
+    path = ".xircuits"
+    config_path = pkg_resources.resource_filename('xircuits', '.xircuits')
+    shutil.copytree(config_path, path)
 
 def download_examples():
     
@@ -41,10 +41,26 @@ def download_component_library():
         for component_lib in args.sublib:
             request_submodule_library(component_lib)
 
+def download_submodule_library():
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('submodule_library')
+    parser.add_argument("--no-install", default=False, action='store_true')
+
+    args = parser.parse_args()
+    request_submodule_library(args.submodule_library)
+
+    if not args.no_install:
+        submodule_path, _ = get_submodule_config(args.submodule_library)
+
+        print("Installing " + args.submodule_library + "...")
+        install_cmd = "cmd /c pip install -r " + submodule_path + "/requirements.txt"
+        os.system(install_cmd)
+
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--branch', nargs='?', default="master", help='pull files from a xircuits branch')
+    parser.add_argument('--branch', nargs='?', help='pull files from a xircuits branch')
 
     parsed, extra_args = parser.parse_known_args()
 
@@ -60,9 +76,14 @@ def main():
     if not component_library_path.exists():
         val = input("Xircuits Component Library is not found. Would you like to load it in the current path (Y/N)? ")
         if val.lower() == ("y" or "yes"):
-            request_folder("xai_components", branch=args.branch)
+            if args.branch is None:
+                xai_component_path = pkg_resources.resource_filename('xai_components', '')
+                shutil.copytree(xai_component_path, "xai_components")
 
-    # launch if extra arguments pro
+            else:
+                request_folder("xai_components", branch=args.branch)
+
+    # handler for extra jupyterlab launch options
     if extra_args:
         try:
             launch_cmd = "jupyter lab" + " " + " ".join(extra_args)

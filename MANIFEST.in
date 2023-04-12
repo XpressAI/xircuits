@@ -28,3 +28,4 @@ global-exclude .git
 global-exclude .ipynb_checkpoints
 
 global-include config.ini
+global-include .gitmodules

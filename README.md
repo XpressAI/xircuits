@@ -27,7 +27,7 @@
         <img alt="Documentation" src="https://img.shields.io/website/http/xircuits.io.svg?color=orange">
     </a>
      <a>
-        <img alt="Python" src="https://img.shields.io/badge/Python-3.8%20%7C%203.9%20%7C%203.10-blue">
+        <img alt="Python" src="https://img.shields.io/badge/Python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11-blue">
     </a>
 </p>
 
@@ -117,12 +117,12 @@ $ xircuits
 
 
 # Development
-Creating workflows and components in Xircuits is easy. We've provided extensive guides for you in our [documentation](xircuits.io). Here are a few quick links to get you started:
+Creating workflows and components in Xircuits is easy. We've provided extensive guides for you in our [documentation](https://xircuits.io/). Here are a few quick links to get you started:
 
 
-- **Tutorials**: [Your First Xircuits Worflow](https://xircuits.io/docs/tutorials/running-a-xircuits-workflow) | [Running a Xircuits Project Template](https://xircuits.io/docs/tutorials/running-a-xircuits-project-template)
-- **Component Development**: [Creating a Xircuits Component](https://xircuits.io/docs/developer-guide/creating-a-xircuits-component) | [Creating a Xircuits Component Library](https://xircuits.io/docs/developer-guide/creating-a-xircuits-component-library)
-- **Advanced**: [Xircuits Core Development](https://xircuits.io/docs/developer-guide/developing-xircuits-core-features)
+- **Tutorials**: [Your First Xircuits Worflow](https://xircuits.io/docs/main/tutorials/running-a-xircuits-workflow) | [Running a Xircuits Project Template](https://xircuits.io/docs/main/tutorials/running-a-xircuits-project-template)
+- **Component Development**: [Creating a Xircuits Component](https://xircuits.io/docs/main/developer-guide/creating-a-xircuits-component) | [Creating a Xircuits Component Library](https://xircuits.io/docs/main/developer-guide/creating-a-xircuits-component-library)
+- **Advanced**: [Xircuits Core Development](https://xircuits.io/docs/main/developer-guide/developing-xircuits-core-features)
 
 # Use Cases
 

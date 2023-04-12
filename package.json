@@ -1,6 +1,6 @@
 {
   "name": "xircuits",
-  "version": "1.6.1",
+  "version": "1.7.1",
   "description": "A JupyterLab extension for rendering and editing xircuit files.",
   "keywords": [
     "jupyter",
@@ -11,7 +11,7 @@
   "bugs": {
     "url": "https://github.com/XpressAI/xircuits/issues"
   },
-  "license": "BSD-3-Clause",
+  "license": "Apache-2.0",
   "author": {
     "name": "Xpress AI",
     "email": "eduardo@xpress.ai"
@@ -84,7 +84,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
-    "@jupyterlab/builder": "^3.1.0",
+    "@jupyterlab/builder": "^3.6.1",
     "@types/dagre": "^0.7.44",
     "@types/marked": "^4.0.3",
     "@types/react": "^17.0.0",

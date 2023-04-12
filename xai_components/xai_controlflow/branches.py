@@ -1,34 +1,31 @@
 from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component
 
 @xai_component
-class BranchComponent(BaseComponent):
+class BranchComponent(Component):
     when_true: BaseComponent
     when_false: BaseComponent
     done: bool
 
     condition: InArg[bool]
     
-    def __init__(self):
-        self.done = False
-        self.condition = InArg.empty()
-
     def do(self, ctx) -> BaseComponent:
         if self.condition.value:
-            return self.done, self.when_true
+            next = self.when_true
         else:
-            return self.done, self.when_false
-
-
+            next = self.when_false
+        while next:
+            is_done, next = next.do(ctx)
+        try:
+            return self.done, self.next
+        except:
+            return self.done, None
+    
 @xai_component
 class LoopComponent(Component):
     body: BaseComponent
 
     condition: InArg[bool]
     
-    def __init__(self):
-        self.done = False
-        self.condition = InArg.empty()
-
     def do(self, ctx) -> BaseComponent:
         while self.condition.value:
             is_done, next_body = self.body.do(ctx)
@@ -46,10 +43,7 @@ class CounterComponent(Component):
     state: any
     
     def __init__(self):
-        self.done = False
-        self.start_number = InArg.empty()
-        self.step = InArg.empty()
-        self.out_number = OutArg.empty()
+        super().__init__()
         self.state = None
         
     def execute(self, ctx) -> None:
@@ -68,14 +62,6 @@ class ComparisonComponent(Component):
     
     out: OutArg[bool]
 
-    
-    def __init__(self):
-        self.done = False
-        self.a = InArg.empty()
-        self.b = InArg.empty()
-        self.op = InArg.empty()
-        self.out = OutArg.empty()
-        
     def execute(self, ctx) -> None:
         self.out.value = eval(str(self.a.value) + " " + self.op.value + " " + str(self.b.value))
 
@@ -100,8 +86,7 @@ class GetVariableComponent(Component):
     value: OutArg[any]
     
     def __init__(self):
-        self.done = False
-        self.name = InArg.empty()
+        super().__init__()
         self.value = MutableVariable()
         
     def execute(self, ctx) -> None:
@@ -111,12 +96,7 @@ class GetVariableComponent(Component):
 class SetVariableComponent(Component):
     name: InArg[str]
     value: InArg[any]
-    
-    def __init__(self):
-        self.done = False
-        self.name = InArg.empty()
-        self.value = InArg.empty()
-        
+
     def execute(self, ctx) -> None:
         ctx[self.name.value] = self.value.value
 
@@ -129,9 +109,7 @@ class DefineVariableComponent(Component):
 
     
     def __init__(self):
-        self.done = False
-        self.name = InArg.empty()
-        self.value = InArg.empty()
+        super().__init__()
         self.ref = MutableVariable()
         
     def execute(self, ctx) -> None:
