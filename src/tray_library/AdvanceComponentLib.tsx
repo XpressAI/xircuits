@@ -32,7 +32,9 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
             "type": nodeData.type,
             "path": nodeData.file_path,
             "description": nodeData.docstring,
-            "lineNo": nodeData.lineno
+            "lineNo": nodeData.lineno,
+            "template": nodeData.template,
+            "options": nodeData.options
         }
     });
     node.addInPortEnhance('▶', 'in-0');
@@ -48,7 +50,7 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
         let name = variable["name"];
         let type = type_name_remappings[variable["type"]] || variable["type"];
         // if node type includes comma, then multiple types are accepted for that node (ex: str,float; str,int; etc.)
-        if (type.includes(',')) {
+        if (type && type.includes(',')) {
             // take care of remapping, even when multiple types are accepted for the node
             for (let mapping in type_name_remappings) {
                 type = type.replace(mapping, type_name_remappings[mapping]);
