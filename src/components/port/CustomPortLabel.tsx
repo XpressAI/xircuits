@@ -122,7 +122,7 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 			</S.SymbolContainer>);
 
 		const label = (
-			<S.Label>
+			<S.Label style={{textAlign: (!this.props.port.getOptions().in && this.props.port.getOptions().label === '▶') ? 'right': 'left'}}>
 				{this.props.port.getOptions().label}
 			</S.Label>);
 
