@@ -316,7 +316,7 @@ export  class CustomPortModel extends DefaultPortModel  {
         // port type is of form: Union[type1, type2]
         portType = portType.replace('Union', '');    // remove Union word
         portType = portType.replace(/[\[\]]/g, '');  // remove square brackets
-        portType = portType.replace(', ', ' or ');
+        portType = portType.replace(',', ' or ');
         return portType;
     }
 
