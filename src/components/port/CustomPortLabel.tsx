@@ -64,6 +64,10 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 		} else {
 			portType = portName.split("-")[1];
 		}
+		// if multiple types provided, show the symbol for the first provided type
+		if (portType.includes(',')) {
+			portType = 'union';
+		}
 
 		switch (portType) {
 			case "string":
@@ -89,6 +93,9 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 				break;
 			case "dict":
 				symbolLabel = '{ }';
+				break;
+			case "union":
+				symbolLabel = ' U';
 				break;
 			case "any":
 				symbolLabel = '[_]';

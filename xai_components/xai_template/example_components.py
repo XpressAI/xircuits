@@ -1,5 +1,5 @@
 from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component
-
+from typing import Union
 @xai_component(color="red")
 class HelloComponent(Component):
     """The simplest component that greets the user. 
@@ -84,6 +84,14 @@ class HelloListTupleDict(Component):
         print(input_dict)
 
         self.done = True
+
+@xai_component
+class MultiType(Component):
+    """Component with in-port that accept multiple data types"""
+    msg: InArg[Union[int, float, str]]
+    
+    def execute(self, ctx) -> None:
+        print(str(self.msg.value))
 
 @xai_component
 class HelloContext(Component):
