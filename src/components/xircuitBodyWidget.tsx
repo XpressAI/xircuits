@@ -1421,7 +1421,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [isComponentPanelShown, setIsComponentPanelShown] = useState(false);
 	const [actionPanelShown, setActionPanelShown] = useState(false);
 	const [dontHidePanel, setDontHidePanel] = useState(false);
-	const [isPanelAtLeft, setIsPanelAtLeft] = useState<boolean>(true);
 	const [componentPanelPosition, setComponentPanelPosition] = useState({ x: 0, y: 0 });
 	const [actionPanelPosition, setActionPanelPosition] = useState({ x: 0, y: 0 });
 	const [nodePosition, setNodePosition] = useState<any>();
@@ -1439,32 +1438,30 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			x: canvas.innerWidth / 2,
 			y: canvas.innerHeight / 2,
 		}
+		console.log(newCenterPosition.x,newPanelPosition.x,newCenterPosition.y,newPanelPosition.y)
 		const menuDimension = {
-			x: 95,
+			x: 105,
 			y: 290
 		}
 		const fileBrowserWidth = document.getElementsByClassName("p-SplitPanel-child")[1].clientWidth;
 		const tabWidth = document.getElementsByClassName("lm-TabBar")[0].clientWidth;
+		const yOffset = 84
 		if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
 			// Bottom right
-			setIsPanelAtLeft(false);
-			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x - tabWidth;
-			newPanelPosition.y = newPanelPosition.y - menuDimension.y - 84;
+			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth - menuDimension.x;
+			newPanelPosition.y = newPanelPosition.y - menuDimension.y - yOffset;
 		} else if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y < newCenterPosition.y) {
 			// Top right
-			setIsPanelAtLeft(false);
-			newPanelPosition.x = canvas.innerWidth - newPanelPosition.x - tabWidth;
-			newPanelPosition.y = newPanelPosition.y - 84;
+			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth - menuDimension.x;
+			newPanelPosition.y = newPanelPosition.y - yOffset;
 		} else if (newPanelPosition.x < newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
 			// Bottom left
-			setIsPanelAtLeft(true);
 			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth;
-			newPanelPosition.y = newPanelPosition.y - menuDimension.y - 84;
+			newPanelPosition.y = newPanelPosition.y - menuDimension.y - yOffset;
 		} else {
 			// Top left
-			setIsPanelAtLeft(true);
 			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth;
-			newPanelPosition.y = newPanelPosition.y - 84;
+			newPanelPosition.y = newPanelPosition.y - yOffset;
 		}
 		setComponentPanelPosition(newPanelPosition);
 		setActionPanelPosition(newPanelPosition);
@@ -1629,8 +1626,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								id='component-panel'
 								style={{
 									top: componentPanelPosition.y,
-									right: !isPanelAtLeft ? componentPanelPosition.x : null,
-									left: isPanelAtLeft ? componentPanelPosition.x : null
+									left:componentPanelPosition.x
 								}}
 								className="add-component-panel">
 								<ComponentsPanel
@@ -1649,8 +1645,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								id='context-menu'
 								style={{
 									top: actionPanelPosition.y,
-									right: !isPanelAtLeft ? actionPanelPosition.x : null,
-									left: isPanelAtLeft ? actionPanelPosition.x : null
+									left: actionPanelPosition.x
 								}}
 								className="node-action-context-menu">
 								<NodeActionsPanel
