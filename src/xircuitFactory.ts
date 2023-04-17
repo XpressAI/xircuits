@@ -227,16 +227,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
       }
     });
 
-    /**
-     * Create a test button toolbar item.
-     */
-    let testButton = new ToolbarButton({
-      icon: editIcon,
-      tooltip: 'For testing purposes',
-      onClick: (): void => {
-        this.commands.execute(commandIDs.testXircuit)
-      }
-    });
+
 
     /**
      * Create a compile button toolbar item.
@@ -268,7 +259,6 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.insertItem(5, 'xircuits-add-paste', pasteButton);
     widget.toolbar.insertItem(6, 'xircuits-add-lock', lockButton);
     widget.toolbar.insertItem(7, 'xircuits-add-log', logButton);
-    widget.toolbar.insertItem(8, 'xircuits-add-test', testButton);
     widget.toolbar.insertItem(9, 'xircuits-add-save', saveButton);
     widget.toolbar.insertItem(10, 'xircuits-add-compile', compileButton);
     widget.toolbar.insertItem(11, 'xircuits-add-run', compileAndRunButton);
