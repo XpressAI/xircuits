@@ -39,16 +39,6 @@ export interface BodyWidgetProps {
 	runXircuitSignal: Signal<XPipePanel, any>;
 	runTypeXircuitSignal: Signal<XPipePanel, any>;
 	lockNodeSignal: Signal<XPipePanel, any>;
-	breakpointXircuitSignal: Signal<XPipePanel, any>;
-	currentNodeSignal: Signal<XPipePanel, any>;
-	testXircuitSignal: Signal<XPipePanel, any>;
-	continueDebugSignal: Signal<XPipePanel, any>;
-	nextNodeDebugSignal: Signal<XPipePanel, any>;
-	stepOverDebugSignal: Signal<XPipePanel, any>;
-	terminateDebugSignal: Signal<XPipePanel, any>;
-	stepInDebugSignal: Signal<XPipePanel, any>;
-	stepOutDebugSignal: Signal<XPipePanel, any>;
-	evaluateDebugSignal: Signal<XPipePanel, any>;
 }
 
 export const Body = styled.div`
