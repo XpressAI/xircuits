@@ -169,7 +169,7 @@ def main(args):
         trailer = """
 next_component = %s
 while next_component:
-    is_done, next_component = next_component.do(ctx)        
+    next_component = next_component.do(ctx)        
         """ % (named_nodes[self.graph.ports[0].target.id])
         code.append(ast.parse(trailer))
 
