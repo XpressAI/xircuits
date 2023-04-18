@@ -81,7 +81,6 @@ export class OutputPanel extends StackedPanel {
     dispose(): void {
         this._sessionContext.sessionManager.shutdown(this._sessionContext.session.id);
         this._sessionContext.dispose();
-        this._xircuitFactory.terminateDebugSignal.emit(this);
         this._sessionContext.sessionManager.refreshRunning();
         super.dispose();
     }

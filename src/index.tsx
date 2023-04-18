@@ -15,7 +15,6 @@ import { ILauncher } from '@jupyterlab/launcher';
 import { XircuitFactory } from './xircuitFactory';
 import Sidebar from './tray_library/Sidebar';
 import { IDocumentManager } from '@jupyterlab/docmanager';
-import { XircuitsDebugger } from './debugger/SidebarDebugger';
 import { ITranslator } from '@jupyterlab/translation';
 import { Log, logPlugin } from './log/LogPlugin';
 import { requestAPI } from './server/handler';
@@ -148,25 +147,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     restorer.add(sidebarWidget, sidebarWidget.id);
     app.shell.add(sidebarWidget, "left");
 
-    // Creating the sidebar debugger
-    const sidebarDebugger = new XircuitsDebugger.Sidebar({ app, translator, widgetFactory })
-    sidebarDebugger.id = 'xircuits-debugger-sidebar';
-    sidebarDebugger.title.icon = debuggerIcon;
-    sidebarDebugger.title.caption = "Xircuits Debugger";
-    restorer.add(sidebarDebugger, sidebarDebugger.id);
-    app.shell.add(sidebarDebugger, 'right', { rank: 1001 });
-
     // Additional commands for node action
     addNodeActionCommands(app, tracker, translator);
-
-    // Add a command to open xircuits sidebar debugger
-    app.commands.addCommand(commandIDs.openDebugger, {
-      execute: () => {
-        if (sidebarDebugger.isHidden) {
-          app.shell.activateById(sidebarDebugger.id);
-        }
-      },
-    });
 
     // Add a command for creating a new xircuits file.
     app.commands.addCommand(commandIDs.createNewXircuit, {
@@ -307,7 +289,6 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         const current_path = tracker.currentWidget.context.path;
         const model_path = current_path.split(".xircuits")[0] + ".py";
         const message = typeof args['runCommand'] === 'undefined' ? '' : (args['runCommand'] as string);
-        const debug_mode = typeof args['debug_mode'] === 'undefined' ? '' : (args['debug_mode'] as string);
         const runType = typeof args['runType'] === 'undefined' ? '' : (args['runType'] as string);
         const config = typeof args['config'] === 'undefined' ? '' : (args['config'] as string);
 
@@ -322,7 +303,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
             // Run subprocess when run type is Remote Run
             code += doRemoteRun(model_path, config['command'], config['msg'], config['url']);
           } else {
-            code += "%run " + model_path + message + debug_mode
+            code += "%run " + model_path + message
           }
 
           outputPanel.execute(code, xircuitsLogger);
@@ -355,24 +336,10 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    // Add command signal to debug xircuits
-    app.commands.addCommand(commandIDs.debugXircuit, {
-      execute: args => {
-        widgetFactory.debugXircuitSignal.emit(args);
-      }
-    });
-
     // Add command signal to lock xircuits
     app.commands.addCommand(commandIDs.lockXircuit, {
       execute: args => {
         widgetFactory.lockNodeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to test xircuits
-    app.commands.addCommand(commandIDs.testXircuit, {
-      execute: args => {
-        widgetFactory.testXircuitSignal.emit(args);
       }
     });
 

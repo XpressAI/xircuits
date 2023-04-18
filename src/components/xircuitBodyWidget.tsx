@@ -38,19 +38,7 @@ export interface BodyWidgetProps {
 	compileXircuitSignal: Signal<XPipePanel, any>;
 	runXircuitSignal: Signal<XPipePanel, any>;
 	runTypeXircuitSignal: Signal<XPipePanel, any>;
-	debugXircuitSignal: Signal<XPipePanel, any>;
 	lockNodeSignal: Signal<XPipePanel, any>;
-	breakpointXircuitSignal: Signal<XPipePanel, any>;
-	currentNodeSignal: Signal<XPipePanel, any>;
-	testXircuitSignal: Signal<XPipePanel, any>;
-	continueDebugSignal: Signal<XPipePanel, any>;
-	nextNodeDebugSignal: Signal<XPipePanel, any>;
-	stepOverDebugSignal: Signal<XPipePanel, any>;
-	terminateDebugSignal: Signal<XPipePanel, any>;
-	stepInDebugSignal: Signal<XPipePanel, any>;
-	stepOutDebugSignal: Signal<XPipePanel, any>;
-	evaluateDebugSignal: Signal<XPipePanel, any>;
-	debugModeSignal: Signal<XPipePanel, any>;
 }
 
 export const Body = styled.div`
@@ -59,17 +47,6 @@ export const Body = styled.div`
 		flex-direction: column;
 		min-height: 100%;
 		height: 800px;
-	`;
-
-export const Header = styled.div`
-		display: flex;
-		background: rgb(30, 30, 30);
-		flex-grow: 0;
-		flex-shrink: 0;
-		color: white;
-		font-family: Helvetica, Arial, sans-serif;
-		padding: 10px;
-		align-items: center;
 	`;
 
 export const Content = styled.div`
@@ -83,17 +60,14 @@ export const Layer = styled.div`
 	`;
 
 export const commandIDs = {
-	openXircuitEditor: 'Xircuit-editor:open',
 	openDocManager: 'docmanager:open',
 	newDocManager: 'docmanager:new-untitled',
 	saveDocManager: 'docmanager:save',
 	reloadDocManager: 'docmanager:reload',
-	revertDocManager: 'docmanager:restore-checkpoint',
 	createNewXircuit: 'Xircuit-editor:create-new',
 	saveXircuit: 'Xircuit-editor:save-node',
 	compileXircuit: 'Xircuit-editor:compile-node',
 	runXircuit: 'Xircuit-editor:run-node',
-	debugXircuit: 'Xircuit-editor:debug-node',
 	lockXircuit: 'Xircuit-editor:lock-node',
 	openScript: 'Xircuit-editor:open-node-script',
 	undo: 'Xircuit-editor:undo',
@@ -109,20 +83,10 @@ export const commandIDs = {
 	connectLinkToObviousPorts: 'Xircuit-editor:connect-obvious-link',
 	addCommentNode: 'Xircuit-editor:add-comment-node',
 	compileFile: 'Xircuit-editor:compile-file',
-	openDebugger: 'Xircuit-debugger:open',
-	breakpointXircuit: 'Xircuit-editor:breakpoint-node',
 	nextNode: 'Xircuit-editor:next-node',
-	testXircuit: 'Xircuit-editor:test-node',
 	outputMsg: 'Xircuit-log:logOutputMessage',
 	executeToOutputPanel: 'Xircuit-output-panel:execute'
 };
-
-
-//create your forceUpdate hook
-function useForceUpdate() {
-	const [value, setValue] = useState(0); // integer state
-	return () => setValue(value => value + 1); // update the state to force render
-}
 
 
 export const BodyWidget: FC<BodyWidgetProps> = ({
@@ -132,60 +96,32 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	shell,
 	commands,
 	widgetId,
-	serviceManager,
 	fetchComponentsSignal,
 	saveXircuitSignal,
 	compileXircuitSignal,
 	runXircuitSignal,
 	runTypeXircuitSignal,
-	debugXircuitSignal,
 	lockNodeSignal,
-	breakpointXircuitSignal,
-	currentNodeSignal,
-	testXircuitSignal,
-	continueDebugSignal,
-	nextNodeDebugSignal,
-	stepOverDebugSignal,
-	terminateDebugSignal,
-	stepInDebugSignal,
-	stepOutDebugSignal,
-	evaluateDebugSignal,
-	debugModeSignal
 }) => {
+	const xircuitLogger = new Log(app);
 
-	const [prevState, updateState] = useState(0);
-	const forceUpdate = useCallback(() => updateState(prevState => prevState + 1), []);
 	const [saved, setSaved] = useState(false);
 	const [compiled, setCompiled] = useState(false);
 	const [initialize, setInitialize] = useState(true);
-	const [nodesColor, setNodesColor] = useState([]);
-	const [displaySavedAndCompiled, setDisplaySavedAndCompiled] = useState(false);
-	const [displayDebug, setDisplayDebug] = useState(false);
-	const [displayHyperparameter, setDisplayHyperparameter] = useState(false);
 	const [runConfigs, setRunConfigs] = useState<any>("");
 	const [lastConfig, setLastConfigs] = useState<any>("");
 	const [stringNodes, setStringNodes] = useState<string[]>([]);
 	const [intNodes, setIntNodes] = useState<string[]>([]);
 	const [floatNodes, setFloatNodes] = useState<string[]>([]);
 	const [boolNodes, setBoolNodes] = useState<string[]>([]);
-	const [stringNodesValue, setStringNodesValue] = useState<string[]>([]);
-	const [intNodesValue, setIntNodesValue] = useState<number[]>([0]);
-	const [floatNodesValue, setFloatNodesValue] = useState<number[]>([0.00]);
-	const [boolNodesValue, setBoolNodesValue] = useState<boolean[]>([false]);
 	const [componentList, setComponentList] = useState([]);
-	const [runOnce, setRunOnce] = useState(false);
-	const [displayRcDialog, setDisplayRcDialog] = useState(false);
-	const [disableRcDialog, setDisableRcDialog] = useState(false);
-	const [debugMode, setDebugMode] = useState<boolean>(false);
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const [runType, setRunType] = useState<string>("run");
 	const [runTypesCfg, setRunTypesCfg] = useState<string>("");
 	const initialRender = useRef(true);
-	const xircuitLogger = new Log(app);
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
-	const needAppend = useRef("");
 
 	const onChange = useCallback(
 		(): void => {
@@ -287,17 +223,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		} catch (e) {
 			return false;
 		}
-	}
-
-	const getBindingIndexById = (nodeModels: any[], id: string): number | null => {
-		for (let i = 0; i < nodeModels.length; i++) {
-			let nodeModel = nodeModels[i];
-
-			if (nodeModel.getID() === id) {
-				return i;
-			}
-		}
-		return null;
 	}
 
 	const getTargetNodeModelId = (linkModels: LinkModel[], sourceId: string): string | null => {
@@ -481,7 +406,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						let latestBranchNode = branchNodes[branchNodes.length - 1];
 						branchWorkflow(latestBranchNode.currentNode.getID());
 						continue;
-					};
+					}
 
 					// When there is no more branch workflow to iterate, continue with the finish port workflow
 					const latestFinishedNode = finishedNodes[finishedNodes.length - 1];
@@ -598,14 +523,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		commands.execute(commandIDs.compileFile, { showOutput, componentList });
 	}
 
-	const handleUnsaved = () => {
-
-		onHide('displaySavedAndCompiled');
-		handleSaveClick();
-		handleCompileClick();
-	}
-
-	const saveAndCompileAndRun = async (debuggerMode: boolean) => {
+	const saveAndCompileAndRun = async () => {
 
 		//This is to avoid running xircuits while in dirty state
 		if (contextRef.current.model.dirty) {
@@ -632,12 +550,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let allCompulsoryNodesConnected = checkAllCompulsoryInPortsConnected();
 
 		if (!allNodesConnected) {
-			if (!debugMode) {
-				alert("Please connect all the nodes before running.");
-				return;
-			}
-			alert("Please connect all the nodes before debugging.");
-			return;
+			alert("Please connect all the nodes before running.");
 		}
 		if (!allCompulsoryNodesConnected) {
 			alert("Please connect all [★]COMPULSORY InPorts.");
@@ -650,27 +563,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (runType == 'run') {
 			commands.execute(commandIDs.compileFile, { showOutput, componentList });
 			setCompiled(true);
-		}
-
-		// Compile Mode
-		if (debuggerMode) {
-			const runCommand = await handleRunDialog();
-			const debug_mode = "--debug_mode True";
-			if (runCommand) {
-				commands.execute(commandIDs.executeToOutputPanel, { runCommand, debug_mode });
-				commands.execute(commandIDs.openDebugger);
-				setDebugMode(true);
-				setInDebugMode(false);
-				let allNodes = getAllNodesFromStartToFinish();
-				allNodes.forEach((node) => {
-					node.setSelected(false);
-				});
-
-				setCurrentIndex(0);
-				let currentNode = allNodes[0];
-				currentNode.setSelected(true);
-			}
-			return;
 		}
 
 		// Run Mode
@@ -691,22 +583,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		saveAndCompileAndRun(false);
-	}
-
-	const handleDebugClick = async () => {
-		// Only debug xircuit if it is currently in focus
-		// This must be first to avoid unnecessary complication
-		if (shell.currentWidget?.id !== widgetId) {
-			return;
-		}
-
-		resetColorCodeOnStart(true);
-
-		saveAndCompileAndRun(true);
-
-		// let allNodes = diagramEngine.getModel().getNodes();
-		// allNodes[1].getOptions().extras["imageGalleryItems"] = "xxx";
+		saveAndCompileAndRun();
 	}
 
 	const handleLockClick = () => {
@@ -728,62 +605,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		});
 	}
 
-	const handleToggleBreakpoint = () => {
-		// Only toggle breakpoint if it is currently in focus
-		// This must be first to avoid unnecessary complication
-		if (shell.currentWidget?.id !== widgetId) {
-			return;
-		}
-
-		xircuitsApp.getDiagramEngine().getModel().getNodes().forEach((item) => {
-			if (item.getOptions()["selected"] == true) {
-				let name = item.getOptions()["name"];
-
-				if (name.startsWith("🔴")) {
-					item.getOptions()["name"] = name.split("🔴")[1]
-				}
-				else {
-					item.getOptions()["name"] = "🔴" + name
-				}
-				item.setSelected(true);
-				item.setSelected(false);
-			}
-		});
-	}
-
-	function delay(ms: number) {
-		return new Promise(resolve => setTimeout(resolve, ms));
-	}
-
-	const getContinuePost = async () => {
-		await sendingRunCommand("clear");
-
-		await sendingRunCommand("continue");
-
-		return await sendingRunCommand("get/output");
-	};
-
-	const terminateExecution = async () => {
-		return await sendingRunCommand("terminate");
-	};
-
-	async function sendingRunCommand(command: string) {
-		const dataToSend = { "command": command };
-
-		try {
-			const server_reply = await requestAPI<any>('debug/enable', {
-				body: JSON.stringify(dataToSend),
-				method: 'POST',
-			});
-
-			return server_reply;
-		} catch (reason) {
-			console.error(
-				`Error on POST /xircuit/debug/enable ${dataToSend}.\n${reason}`
-			);
-		}
-	};
-
 	async function getRunTypesFromConfig(request: string) {
 		const dataToSend = { "config_request": request };
 	
@@ -799,341 +620,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				`Error on POST config/run ${dataToSend}.\n${reason}`
 			);
 		}
-	};
-
-	const runFromNodeToNode = async () => {
-		if (!debugMode) {
-			alert("Not in debug mode");
-			return;
-		}
-
-		let allNodes = getAllNodesFromStartToFinish();
-		let prevNode: NodeModel;
-		let currentNode: NodeModel;
-
-		let count = currentIndex;
-		currentNode = allNodes[count];
-		prevNode = allNodes[count];
-
-		if (currentNode.getOptions()["name"].startsWith("🔴")) {
-			prevNode.setSelected(true);
-			prevNode.getOptions()["color"] = "rgb(150,150,150)";
-			currentNode = allNodes[count + 1];
-
-			if (currentNode.getOptions()["name"].startsWith("🔴")) {
-				if (currentNode.getOptions()["name"] != "🔴Start" && currentNode.getOptions()["name"] != "Start") {
-					await sendingRunCommand("run");
-
-					let req_run_command = await sendingRunCommand("get_run");
-					let output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
-					while (output_req.split(",").length != count) {
-						await delay(1500);
-						req_run_command = await sendingRunCommand("get_run");
-						output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
-					}
-
-					await getContinuePost();
-					await delay(1000);
-
-					let item2 = await sendingRunCommand("get/output");
-					let item = currentNode;
-
-					currentNodeSignal.emit({
-						item, item2
-					});
-				}
-				await delay(1000);
-				prevNode.setSelected(false);
-				currentNode.setSelected(true);
-
-				if (currentNode.getOptions()["name"] != "Finish" && currentNode.getOptions()["name"] != "🔴Finish") {
-					count = count + 1;
-					currentNode = allNodes[count];
-					setCurrentIndex(count);
-				}
-			}
-			await delay(1000);
-			prevNode.setSelected(false);
-		}
-
-		while (!currentNode.getOptions()["name"].startsWith("🔴")) {
-			prevNode = currentNode;
-			prevNode.setSelected(true);
-			prevNode.getOptions()["color"] = "rgb(150,150,150)";
-			if (currentNode.getOptions()["name"] != "Start" && currentNode.getOptions()["name"] != "🔴Start") {
-				await delay(1000);
-
-				prevNode.setSelected(false);
-				currentNode.setSelected(true);
-
-				await sendingRunCommand("run");
-
-				let req_run_command = await sendingRunCommand("get_run");
-				let output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
-				while (output_req.split(",").length != count) {
-					await delay(1500);
-					req_run_command = await sendingRunCommand("get_run");
-					output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
-				}
-			}
-			await delay(1000);
-			prevNode.setSelected(false);
-
-			prevNode = currentNode;
-			count = count + 1;
-			currentNode = allNodes[count];
-
-			currentNode.setSelected(true);
-
-			setInDebugMode(true);
-
-			if (currentNode.getOptions()["name"] == "Finish" || currentNode.getOptions()["name"] == "🔴Finish") {
-				prevNode.setSelected(false);
-				currentNode.setSelected(true);
-				currentNode.getOptions()["color"] = "rgb(150,150,150)";
-
-				await delay(1000);
-
-				currentNode.setSelected(false);
-
-				alert("Finish Execution.");
-
-				setCurrentIndex(-1);
-				setDebugMode(false);
-				setInDebugMode(false);
-
-				allNodes.forEach((node) => {
-					node.setSelected(true);
-					node.getOptions()["color"] = node["color"];
-				});
-				return;
-			}
-
-			setCurrentIndex(count);
-
-			await getContinuePost();
-			await delay(1000);
-
-			let item2 = await sendingRunCommand("get/output");
-			let item = currentNode;
-
-			currentNodeSignal.emit({
-				item, item2
-			});
-		}
-
-		if (currentNode.getOptions()["name"] == "Finish" || currentNode.getOptions()["name"] == "🔴Finish") {
-			await delay(1000);
-			prevNode.setSelected(false);
-			currentNode.setSelected(true);
-			currentNode.getOptions()["color"] = "rgb(150,150,150)";
-
-			setCurrentIndex(-1);
-			setDebugMode(false);
-			setInDebugMode(false);
-
-			alert("Finish Execution.");
-
-			allNodes.forEach((node) => {
-				node.setSelected(true);
-				node.getOptions()["color"] = node["color"];
-			});
-		}
-	}
-
-	const handleToggleContinueDebug = async () => {
-		// Only toggle continue if it is currently in focus
-		// This must be first to avoid unnecessary complication
-		if (shell.currentWidget?.id !== widgetId) {
-			return;
-		}
-		if (currentIndex == 0) {
-			resetColorCodeOnStart(true);
-		}
-
-		await runFromNodeToNode();
-	}
-
-	const handleToggleNextNode = async () => {
-		// Only toggle next node if it is currently in focus
-		// This must be first to avoid unnecessary complication
-		if (shell.currentWidget?.id !== widgetId) {
-			return;
-		}
-
-		if (!debugMode) {
-			alert("Not in debug mode");
-			return;
-		}
-
-		let allNodes = getAllNodesFromStartToFinish();
-		let currentNode: NodeModel;
-		let prevNode: NodeModel;
-		let count = currentIndex;
-
-		currentNode = allNodes[count];
-		prevNode = allNodes[count];
-
-		if (currentNode.getOptions()["name"] == "Start" || currentNode.getOptions()["name"] == "🔴Start") {
-			currentNode.setSelected(true);
-			await getContinuePost();
-
-			currentNode.getOptions()["color"] = "rgb(150,150,150)";
-			currentNode.setSelected(false);
-
-			count += 1;
-			currentNode = allNodes[count];
-			currentNode.setSelected(true);
-			prevNode.setSelected(false);
-			setCurrentIndex(count);
-			await delay(1500);
-			let item2 = await sendingRunCommand("get/output");
-			await delay(1000);
-
-			let item = currentNode;
-			currentNodeSignal.emit({
-				item, item2
-			});
-
-		} else {
-			await sendingRunCommand("run");
-
-			let req_run_command = await sendingRunCommand("get_run");
-			let output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
-
-			while (output_req.split(",").length != count) {
-				await delay(1500);
-				req_run_command = await sendingRunCommand("get_run");
-				output_req = req_run_command["output"] === undefined ? '' : req_run_command["output"];
-			}
-
-			await getContinuePost();
-			prevNode.setSelected(true);
-			count += 1;
-			currentNode = allNodes[count];
-
-			currentNode.setSelected(true);
-			prevNode.getOptions()["color"] = "rgb(150,150,150)";
-			prevNode.setSelected(false);
-			setCurrentIndex(count);
-
-			await delay(1500);
-			let item2 = await sendingRunCommand("get/output");
-			let item = currentNode;
-
-			currentNodeSignal.emit({
-				item, item2
-			});
-		}
-
-		if (currentNode.getOptions()["name"] == "Finish") {
-			currentNode.getOptions()["color"] = "rgb(150,150,150)";
-			currentNode.setSelected(false);
-			currentNode.setSelected(true);
-
-			setCurrentIndex(-1);
-			setDebugMode(false);
-			setInDebugMode(false);
-
-			allNodes.forEach((node) => {
-				node.getOptions()["color"] = "rgb(150,150,150)";
-				node.setSelected(false);
-				node.setSelected(true);
-				node.getOptions()["color"] = node["color"];
-			});
-
-			alert("Finish Execution.");
-		}
-	}
-
-	const handleToggleStepOverDebug = async () => {
-		// Only toggle step over if it is currently in focus
-		// This must be first to avoid unnecessary complication
-		if (shell.currentWidget?.id !== widgetId) {
-			return;
-		}
-
-		if (currentIndex == 0) {
-			resetColorCodeOnStart(true);
-		}
-
-		await runFromNodeToNode();
-	}
-
-	const resetColorCodeOnStart = (onStart: boolean) => {
-		let allNodes = getAllNodesFromStartToFinish();
-		if (onStart) {
-			allNodes.forEach((node) => {
-				node.setSelected(true);
-				node.getOptions()["color"] = node["color"];
-				node.setSelected(false);
-			});
-
-			allNodes[0].setSelected(true);
-			return;
-		}
-
-		allNodes.forEach((node) => {
-			node.setSelected(true);
-			node.getOptions()["color"] = node["color"];
-		});
-	}
-
-	const handleToggleTerminateDebug = () => {
-		// Only toggle continue if it is currently in focus
-		// This must be first to avoid unnecessary complication
-		if (shell.currentWidget?.id !== widgetId) {
-			return;
-		}
-
-		if (!debugMode) {
-			return
-		}
-
-		resetColorCodeOnStart(false);
-
-		terminateExecution();
-
-		setCurrentIndex(-1);
-		setDebugMode(false);
-		setInDebugMode(false);
-		alert("Execution has been terminated.");
-	}
-
-	const handleToggleStepInDebug = () => {
-		// Only toggle step in if it is currently in focus
-		// This must be first to avoid unnecessary complication
-		if (shell.currentWidget?.id !== widgetId) {
-			return;
-		}
-		alert("Step In");
-	}
-
-	const handleToggleStepOutDebug = () => {
-		// Only toggle step out if it is currently in focus
-		// This must be first to avoid unnecessary complication
-		if (shell.currentWidget?.id !== widgetId) {
-			return;
-		}
-		alert("Step Out");
-	}
-
-	const handleToggleEvaluateDebug = () => {
-		// Only toggle continue if it is currently in focus
-		// This must be first to avoid unnecessary complication
-		if (shell.currentWidget?.id !== widgetId) {
-			return;
-		}
-		alert("Evaluate Code");
-	}
-
-	const handleTestClick = () => {
-		// Only test xircuit if it is currently in focus
-		// This must be first to avoid unnecessary complication
-		if (shell.currentWidget?.id !== widgetId) {
-			return;
-		}
-		alert("Testing");
 	}
 
 	const getRunTypeFromConfig = async () => {
@@ -1152,10 +638,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setRunConfigs(configuration["run_types_config"]);
 	}
 
-	const hideRcDialog = () => {
-		setDisplayRcDialog(false);
-	}
-
 	useEffect(() => {
 		// Get run configuration when in 'Remote Run' mode only
 		if (runType == 'remote-run') {
@@ -1165,6 +647,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		context.ready.then(() => {
+			const setterByType = {
+				'String': setStringNodes,
+				'Int': setIntNodes,
+				'Float': setFloatNodes,
+				'Boolean': setBoolNodes
+			}
+
+
 			if (initialize) {
 				let allNodes = xircuitsApp.getDiagramEngine().getModel().getNodes();
 				let nodesCount = allNodes.length;
@@ -1175,23 +665,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						let regEx = /\(([^)]+)\)/;
 						let result = nodeName.match(regEx);
 						let nodeText = nodeName.split(": ");
-						if (result[1] == 'String') {
-							setStringNodes(stringNodes => ([...stringNodes, nodeText[nodeText.length - 1]].sort()));
-						} else if (result[1] == 'Int') {
-							setIntNodes(intNodes => ([...intNodes, nodeText[nodeText.length - 1]].sort()));
-						} else if (result[1] == 'Float') {
-							setFloatNodes(floatNodes => ([...floatNodes, nodeText[nodeText.length - 1]].sort()));
-						} else if (result[1] == 'Boolean') {
-							setBoolNodes(boolNodes => ([...boolNodes, nodeText[nodeText.length - 1]].sort()));
-						}
+						setterByType[result[1]](nodes => ([...nodes, nodeText[nodeText.length -1]].sort()));
 					}
 				}
 			}
 			else {
-				setStringNodes([]);
-				setIntNodes([]);
-				setFloatNodes([]);
-				setBoolNodes([]);
+				Object.values(setterByType).forEach(set => set([]));
 			}
 		})
 	}, [initialize, runType]);
@@ -1222,7 +701,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return false;
 		}
 
-		let commandStr = ' ';
 		// Remember the last config chose and set the chosen config to output
 		let config;
 		let runType = dialogResult["value"]['runType'] ?? "";
@@ -1236,60 +714,25 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			})
 		}
 
-		stringNodes.forEach((param) => {
-			if (param == 'experiment name') {
-				var dt = new Date();
+		const date = new Date();
+		xircuitLogger.info(`experiment name: ${date.toLocaleString()}`)
 
-				let dateTime = `${dt.getFullYear().toString().padStart(4, '0')}-${(
-					dt.getMonth() + 1).toString().padStart(2, '0')}-${dt.getDate().toString().padStart(2, '0')} ${dt.getHours().toString().padStart(2, '0')}:${dt.getMinutes().toString().padStart(2, '0')}:${dt.getSeconds().toString().padStart(2, '0')}`
-
-				xircuitLogger.info(param + ": " + dateTime);
-			}
-			else {
-				if (dialogResult["value"][param]) {
-					xircuitLogger.info(param + ": " + dialogResult["value"][param]);
+		const commandStr = [
+			stringNodes.filter(param => param != "experiment name"),
+			boolNodes, intNodes, floatNodes
+		].filter(it => !!it).reduce((s, nodes) => {
+			return nodes
+				.filter(param => !!dialogResult.value[param])
+				.reduce((cmd, param) => {
+					xircuitLogger.info(param + ": " + dialogResult.value[param]);
 					let filteredParam = param.replace(/\s+/g, "_");
 					filteredParam = filteredParam.toLowerCase();
-					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] + ' ';
-				}
-			}
-		});
+					return `${cmd} --${filteredParam} ${dialogResult.value[param]}`;
+				}, s);
+		}, "");
 
-		if (boolNodes) {
-			boolNodes.forEach((param) => {
-				xircuitLogger.info(param + ": " + dialogResult["value"][param]);
-				if (dialogResult["value"][param]) {
-					let filteredParam = param.replace(/\s+/g, "_");
-					filteredParam = filteredParam.toLowerCase();
-					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] + ' ';
-				}
-			});
-		}
-
-		if (intNodes) {
-			intNodes.forEach((param) => {
-				xircuitLogger.info(param + ": " + dialogResult["value"][param]);
-				if (dialogResult["value"][param]) {
-					let filteredParam = param.replace(/\s+/g, "_");
-					filteredParam = filteredParam.toLowerCase();
-					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] + ' ';
-				}
-			});
-		}
-
-		if (floatNodes) {
-			floatNodes.forEach((param) => {
-				xircuitLogger.info(param + ": " + dialogResult["value"][param]);
-				if (dialogResult["value"][param]) {
-					let filteredParam = param.replace(/\s+/g, "_");
-					filteredParam = filteredParam.toLowerCase();
-					commandStr += '--' + filteredParam + ' ' + dialogResult["value"][param] + ' ';
-				}
-			});
-		}
 		return { commandStr, config };
 	};
-
 
 	const connectSignal = ([signal, handler]) => {
 		useEffect(() => {
@@ -1304,17 +747,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		[saveXircuitSignal, handleSaveClick],
 		[compileXircuitSignal, handleCompileClick],
 		[runXircuitSignal, handleRunClick],
-		[debugXircuitSignal, handleDebugClick],
-		[lockNodeSignal, handleLockClick],
-		[breakpointXircuitSignal, handleToggleBreakpoint],
-		[testXircuitSignal, handleTestClick],
-		[continueDebugSignal, handleToggleContinueDebug],
-		[nextNodeDebugSignal, handleToggleNextNode],
-		[stepOverDebugSignal, handleToggleStepOverDebug],
-		[terminateDebugSignal, handleToggleTerminateDebug],
-		[stepInDebugSignal, handleToggleStepInDebug],
-		[stepOutDebugSignal, handleToggleStepOutDebug],
-		[evaluateDebugSignal, handleToggleEvaluateDebug]
+		[lockNodeSignal, handleLockClick]
 	];
 
 	signalConnections.forEach(connectSignal);
@@ -1333,32 +766,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		});
 	}, [runTypeXircuitSignal])
 
-	useEffect(() => {
-		debugModeSignal.emit({
-			debugMode,
-			inDebugMode
-		});
-	}, [debugMode, inDebugMode])
-
-	const dialogFuncMap = {
-		'displayDebug': setDisplayDebug,
-		'displayHyperparameter': setDisplayHyperparameter,
-		'displaySavedAndCompiled': setDisplaySavedAndCompiled
-	}
-
-	const onClick = (name: string) => {
-		dialogFuncMap[`${name}`](true);
-	}
-
-	const onHide = (name: string) => {
-		dialogFuncMap[`${name}`](false);
-		if (name == "displayHyperparameter") {
-			setStringNodes(["name"]);
-			setIntNodes([]);
-			setFloatNodes([]);
-			setBoolNodes([]);
-		}
-	}
 
 	const connectLinkToItsLiteral = async (linkName, event) => {
 		let portType = linkName.split("-")[1];
@@ -1413,8 +820,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (node == undefined) return;
 		let nodePosition = event.linkEvent;
 		let sourceLink = { link: event.link, sourcePort: event.sourcePort };
-		app.commands.execute(commandIDs.addNodeGivenPosition, { node, nodePosition });
-		app.commands.execute(commandIDs.connectNodeByLink, { targetNode: node, sourceLink, isParameterLink: true });
+		await app.commands.execute(commandIDs.addNodeGivenPosition, { node, nodePosition });
+		await app.commands.execute(commandIDs.connectNodeByLink, { targetNode: node, sourceLink, isParameterLink: true });
 	}
 
 	/**Component Panel & Node Action Panel Context Menu */
@@ -1522,100 +929,66 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setActionPanelShown(true);
 	};
 
+	const preventDefault = (event) => {
+		event.preventDefault();
+	}
+
+	const handleDropEvent = async (event) => {
+		let data = JSON.parse(event.dataTransfer.getData("storm-diagram-node"));
+
+		let component_task = componentList.map(x => x["task"]);
+		let drop_node = component_task.indexOf(data.name);
+		let current_node: any;
+		let node = null;
+
+		if (drop_node != -1) {
+			current_node = componentList[drop_node];
+		}
+
+		if (current_node != undefined) {
+			if (current_node.header == "GENERAL") {
+				node = await GeneralComponentLibrary({ model: current_node });
+			} else if (current_node.header == "ADVANCED") {
+				node = AdvancedComponentLibrary({ model: current_node });
+			}
+		}
+
+		// note:  can not use the same port name in the same node,or the same name port can not link to other ports
+		// you can use shift + click and then use delete to delete link
+		if (node != null) {
+			let point = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
+			node.setPosition(point);
+			xircuitsApp.getDiagramEngine().getModel().addNode(node);
+			if (node["name"].startsWith("Argument")) {
+				setInitialize(true);
+			}
+			setSaved(false);
+			setCompiled(false);
+		}
+	};
+
+	const handleClick = (event) => {
+		if (event.ctrlKey || event.metaKey) {
+			showComponentPanel(event);
+			return;
+		}
+		if (dontHidePanel) {
+			return;
+		}
+		hidePanel();
+	};
+
 	return (
 		<Body>
-			{/* <Header>
-				<RcDialog
-					visible={displayRcDialog}
-					animation="slide-fade"
-					maskAnimation="fade"
-					onClose={hideRcDialog}
-					style={{ width: 600 }}
-					title={(
-						<div
-							style={{
-								width: '100%',
-								cursor: 'pointer',
-							}}
-							onMouseOver={() => {
-								if (disableRcDialog){
-									setDisableRcDialog(false)
-								}
-							}}
-							onMouseOut={() => {
-								setDisableRcDialog(true)
-							}}
-							onFocus={ () => {} }
-							onBlur={ () => {}}
-							// end
-						>Image Viewer</div>
-					)}
-					modalRender={modal => <Draggable disabled={disableRcDialog}>{modal}</Draggable>}>
-				</RcDialog>
-			</Header> */}
 			<Content>
 				<Layer
-					onDrop={async (event) => {
-						var data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
-
-						let component_task = componentList.map(x => x["task"]);
-						let drop_node = component_task.indexOf(data.name);
-						let current_node: any;
-						let node = null;
-
-						if (drop_node != -1) {
-							current_node = componentList[drop_node];
-						}
-
-						if (current_node != undefined) {
-							if (current_node.header == "GENERAL") {
-								node = await GeneralComponentLibrary({ model: current_node });
-							} else if (current_node.header == "ADVANCED") {
-								node = AdvancedComponentLibrary({ model: current_node });
-							}
-						}
-
-						// note:  can not use the same port name in the same node,or the same name port can not link to other ports
-						// you can use shift + click and then use delete to delete link
-						if (node != null) {
-							let point = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
-							node.setPosition(point);
-							xircuitsApp.getDiagramEngine().getModel().addNode(node);
-							if (node["name"].startsWith("Argument")) {
-								setInitialize(true);
-							}
-							setSaved(false);
-							setCompiled(false);
-							forceUpdate();
-						}
-					}}
-
-					onDragOver={(event) => {
-						event.preventDefault();
-					}}
-
-					onMouseOver={(event) => {
-						event.preventDefault();
-					}}
-
-					onMouseUp={(event) => {
-						event.preventDefault();
-					}}
-
-					onMouseDown={(event) => {
-						event.preventDefault();
-					}}
+					onDrop={handleDropEvent}
+					onDragOver={preventDefault}
+					onMouseOver={preventDefault}
+					onMouseUp={preventDefault}
+					onMouseDown={preventDefault}
 					onContextMenu={showNodeActionPanel}
-					onClick={(event) => {
-						if (event.ctrlKey || event.metaKey) {
-							showComponentPanel(event);
-							return;
-						}
-						if(dontHidePanel){
-							return;
-						}
-						hidePanel();
-					}}>
+					onClick={handleClick}>
 					<DemoCanvasWidget>
 						<CanvasWidget engine={xircuitsApp.getDiagramEngine()} />
 						{/**Add Component Panel(ctrl + left-click, dropped link)*/}

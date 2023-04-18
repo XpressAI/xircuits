@@ -23,19 +23,7 @@ export class XPipePanel extends ReactWidget {
   compileXircuitSignal: Signal<this, any>;
   runXircuitSignal: Signal<this, any>;
   runTypeXircuitSignal: Signal<this, any>;
-  debugXircuitSignal: Signal<this, any>;
   lockNodeSignal: Signal<this, any>;
-  breakpointXircuitSignal: Signal<this, any>;
-  currentNodeSignal: Signal<this, any>;
-  testXircuitSignal: Signal<this, any>;
-  continueDebugSignal: Signal<this, any>;
-  nextNodeDebugSignal: Signal<this, any>;
-  stepOverDebugSignal: Signal<this, any>;
-  terminateDebugSignal: Signal<this, any>;
-  stepInDebugSignal: Signal<this, any>;
-  stepOutDebugSignal: Signal<this, any>;
-  evaluateDebugSignal: Signal<this, any>;
-  debugModeSignal: Signal<this, any>;
 
   constructor(options: any) {
     super(options);
@@ -49,19 +37,7 @@ export class XPipePanel extends ReactWidget {
     this.compileXircuitSignal = options.compileXircuitSignal;
     this.runXircuitSignal = options.runXircuitSignal;
     this.runTypeXircuitSignal = options.runTypeXircuitSignal;
-    this.debugXircuitSignal = options.debugXircuitSignal;
     this.lockNodeSignal = options.lockNodeSignal;
-    this.breakpointXircuitSignal = options.breakpointXircuitSignal;
-    this.currentNodeSignal = options.currentNodeSignal;
-    this.testXircuitSignal = options.testXircuitSignal;
-    this.continueDebugSignal = options.continueDebugSignal;
-    this.nextNodeDebugSignal = options.nextNodeDebugSignal;
-    this.stepOverDebugSignal = options.stepOverDebugSignal;
-    this.terminateDebugSignal = options.terminateDebugSignal;
-    this.stepInDebugSignal = options.stepInDebugSignal;
-    this.stepOutDebugSignal = options.stepOutDebugSignal;
-    this.evaluateDebugSignal = options.evaluateDebugSignal;
-    this.debugModeSignal = options.debugModeSignal;
     this.xircuitsApp = new XircuitsApplication(this.app, this.shell);
   }
 
@@ -111,19 +87,7 @@ export class XPipePanel extends ReactWidget {
         compileXircuitSignal={this.compileXircuitSignal}
         runXircuitSignal={this.runXircuitSignal}
         runTypeXircuitSignal={this.runTypeXircuitSignal}
-        debugXircuitSignal={this.debugXircuitSignal}
         lockNodeSignal={this.lockNodeSignal}
-        breakpointXircuitSignal={this.breakpointXircuitSignal}
-        currentNodeSignal={this.currentNodeSignal}
-        testXircuitSignal={this.testXircuitSignal}
-        continueDebugSignal={this.continueDebugSignal}
-        nextNodeDebugSignal={this.nextNodeDebugSignal}
-        stepOverDebugSignal={this.stepOverDebugSignal}
-        terminateDebugSignal={this.terminateDebugSignal}
-        stepInDebugSignal={this.stepInDebugSignal}
-        stepOutDebugSignal={this.stepOutDebugSignal}
-        evaluateDebugSignal={this.evaluateDebugSignal}
-        debugModeSignal={this.debugModeSignal}
       />
     );
   }
