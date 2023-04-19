@@ -4,7 +4,6 @@ from xai_components.base import InArg, OutArg, InCompArg, Component, BaseCompone
 class BranchComponent(Component):
     when_true: BaseComponent
     when_false: BaseComponent
-    done: bool
 
     condition: InArg[bool]
     
@@ -14,11 +13,11 @@ class BranchComponent(Component):
         else:
             next = self.when_false
         while next:
-            is_done, next = next.do(ctx)
+            next = next.do(ctx)
         try:
-            return self.done, self.next
+            return self.next
         except:
-            return self.done, None
+            return None
     
 @xai_component
 class LoopComponent(Component):
@@ -28,11 +27,11 @@ class LoopComponent(Component):
     
     def do(self, ctx) -> BaseComponent:
         while self.condition.value:
-            is_done, next_body = self.body.do(ctx)
+            next_body = self.body.do(ctx)
             while next_body:
-                is_done, next_body = next_body.do(ctx)
-            return self.done, self
-        return self.done, self.next
+                next_body = next_body.do(ctx)
+            return self
+        return self.next
     
 @xai_component
 class CounterComponent(Component):

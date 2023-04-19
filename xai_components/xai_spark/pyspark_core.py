@@ -50,8 +50,6 @@ class xSparkSession(Component):
             spark = SparkSession.builder.getOrCreate()
         
         self.sparksession.value = spark
-        self.done = True
-
 
 @xai_component
 class SparkReadPandas(Component):
@@ -80,8 +78,6 @@ class SparkReadPandas(Component):
 
         self.out_sparksession.value = spark
         self.out_dataframe.value = spark_df
-
-        self.done = True
 
 @xai_component
 class SparkReadFile(Component):
@@ -128,8 +124,6 @@ class SparkReadFile(Component):
 
         self.out_sparksession.value = spark
         self.out_dataframe.value = df
-        self.done = True
-
 
 @xai_component
 class SparkReadCSV(Component):
@@ -167,8 +161,6 @@ class SparkReadCSV(Component):
 
         self.out_sparksession.value = spark
         self.out_dataframe.value = df
-        self.done = True
-
 
 @xai_component
 class SparkWriteFile(Component):
@@ -207,8 +199,6 @@ class SparkWriteFile(Component):
             df.write.orc(filepath)
         else:
             print("Unrecognized file format! Please input csv / parquet / orc.")
-
-        self.done = True
 
 @xai_component
 class SparkSQL(Component):
@@ -252,8 +242,6 @@ class SparkSQL(Component):
         
         self.out_sparksession.value = spark
         self.sql_dataframe.value = sql_df
-        self.done = True
-
 @xai_component
 class SparkVisualize(Component):
     """Visualizes a Spark dataframe.
@@ -297,4 +285,3 @@ class SparkVisualize(Component):
         plt.tight_layout()
         plt.savefig(output_name)
         plt.show()
-        self.done = True

@@ -161,8 +161,6 @@ class KerasTransferLearningModel(Component):
 
         self.model.value = model
 
-        self.done = True
-
 
 @xai_component()
 class TFDataset(Component):
@@ -205,8 +203,7 @@ class TFDataset(Component):
     test_data: OutArg[any]
 
     def __init__(self):
-        self.done = False
-
+        super().__init__()
         self.batch_size.value = 32
         self.shuffle_files.value = False
         self.as_supervised.value = True
@@ -230,8 +227,6 @@ class TFDataset(Component):
         self.all_data.value = ds
         self.train_data.value = ds.get("train")
         self.test_data.value = ds.get("test")
-
-        self.done = True
 
 
 @xai_component(type="train")
@@ -285,8 +280,6 @@ class TrainKerasModel(Component):
         self.trained_model.value = model
         self.training_metrics.value = training_metrics
 
-        self.done = True
-
 
 @xai_component(type="eval")
 class TFDSEvaluateAccuracy(Component):
@@ -314,8 +307,6 @@ class TFDSEvaluateAccuracy(Component):
         print(metrics)
 
         self.metrics.value = metrics
-
-        self.done = True
 
 
 @xai_component
@@ -385,8 +376,6 @@ class KerasModelCompiler(Component):
 
         self.model_config.value = model_config
 
-        self.done = True
-
 
 @xai_component
 class SaveKerasModel(Component):
@@ -410,5 +399,3 @@ class SaveKerasModel(Component):
 
         print(f"Saving Tensorflow Keras model to: {Path.cwd()}")
         self.model.value.save(f"{self.model_name.value}.h5")
-
-        self.done = True

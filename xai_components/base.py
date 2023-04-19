@@ -82,17 +82,12 @@ class BaseComponent:
 
 class Component(BaseComponent):
     next: BaseComponent
-    done: bool
-
-    def __init__(self):
-        super().__init__()
-        self.done = False
 
     def do(self, ctx) -> Tuple[bool, BaseComponent]:
         print(f"\nExecuting: {self.__class__.__name__}")
         self.execute(ctx)
 
-        return self.done, self.next
+        return self.next
 
     def debug_repr(self) -> str:
         return "<h1>Component</h1>"
@@ -107,8 +102,8 @@ class SubGraphExecutor:
         comp = self.comp
         
         while comp is not None:
-            is_done, comp = comp.do(ctx)
-        return is_done, None
+            comp = comp.do(ctx)
+        return None
 
 
 def execute_graph(args: Namespace, start: BaseComponent, ctx) -> None:

@@ -136,8 +136,6 @@ class ReadKerasDataSet(Component):
             print("Dataset was not found!")
 
 
-        self.done = True
-
 @xai_component
 class FlattenImageData(Component):
 
@@ -161,8 +159,6 @@ class FlattenImageData(Component):
 
         self.resized_dataset.value = (x, self.dataset.value[1])
         print(f"resized_dataset = {np.shape(self.resized_dataset.value)}")
-
-        self.done = True
 
 
 @xai_component
@@ -218,8 +214,6 @@ class TrainTestSplit(Component):
 
         self.train.value = train
         self.test.value = test
-        self.done = True
-
 @xai_component
 class KerasCreate1DInputModel(Component):
     """Takes a 1D dataset tuple and creates a 1D Keras model.
@@ -251,8 +245,6 @@ class KerasCreate1DInputModel(Component):
         )
 
         self.model.value = model
-
-        self.done = True
 
 @xai_component
 class KerasCreate2DInputModel(Component):
@@ -306,8 +298,6 @@ class KerasCreate2DInputModel(Component):
         self.model.value = model
         self.model_config.value = model_config
 
-        self.done = True
-
 
 @xai_component
 class KerasTrainImageClassifier(Component):
@@ -350,8 +340,6 @@ class KerasTrainImageClassifier(Component):
 
         self.trained_model.value = model
         self.training_metrics.value = training_metrics
-        self.done = True
-
 
 @xai_component
 class KerasEvaluateAccuracy(Component):
@@ -379,8 +367,6 @@ class KerasEvaluateAccuracy(Component):
         print(metrics)
 
         self.metrics.value = metrics
-
-        self.done = True
 
 
 @xai_component
@@ -424,8 +410,6 @@ class ShouldStop(Component):
         else:
             print('Unable to achieve target accuracy.  Giving up.')
             self.should_retrain.value = False
-        self.done = True
-
 @xai_component
 class SaveKerasModel(Component):
     """Saves current Keras model.
@@ -448,5 +432,3 @@ class SaveKerasModel(Component):
         model.save(model_name)
         print(f"Saving Keras h5 model at: {model_name}")
         self.model_h5_path.value = model_name
-
-        self.done = True

@@ -73,7 +73,6 @@ class LoadKerasModel(Component):
             if self.model_name.value:
                 print(f"model_name:{e} not found!\nPlease refer to the official keras list of supported models: https://keras.io/api/applications/")
 
-        self.done = True
 
 
 @xai_component
@@ -192,7 +191,6 @@ class KerasPredict(Component):
             print(preds)
 
 
-        self.done = True
 
 class resnet_model_config:
     include_top: bool #true
@@ -281,7 +279,6 @@ class ResNet50(Component):
 
         model = applications.ResNet50(model_config)
         self.model.value = model
-        self.done = True
 
 @xai_component
 class ResNet101(Component):
@@ -355,7 +352,6 @@ class ResNet101(Component):
 
         model = applications.ResNet101(model_config)
         self.model.value = model
-        self.done = True
 
 
 @xai_component
@@ -429,7 +425,6 @@ class ResNet152(Component):
 
         model = applications.ResNet152(model_config)
         self.model.value = model
-        self.done = True
 
 
 class vgg_model_config:
@@ -529,7 +524,6 @@ class VGG16(Component):
 
         model = applications.VGG16(model_config)
         self.model.value = model
-        self.done = True
 
 
 @xai_component
@@ -609,7 +603,6 @@ class VGG19(Component):
 
         model = applications.VGG19(model_config)
         self.model.value = model
-        self.done = True
 
 @xai_component
 class Xception(Component):
@@ -688,7 +681,6 @@ class Xception(Component):
 
         model = applications.Xception(model_config)
         self.model.value = model
-        self.done = True
 
 
 class mobile_model_config:
@@ -810,4 +802,3 @@ class MobileNet(Component):
 
         model = applications.MobileNet(model_config)
         self.model.value = model
-        self.done = True
