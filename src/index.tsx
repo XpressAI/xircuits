@@ -233,7 +233,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     async function createPanel(): Promise<OutputPanel> {
       outputPanel = new OutputPanel(app.serviceManager, rendermime, widgetFactory, translator);
       app.shell.add(outputPanel, 'main', {
-        mode: 'split-bottom'
+        mode: 'split-right'
       });
       return outputPanel;
     }
