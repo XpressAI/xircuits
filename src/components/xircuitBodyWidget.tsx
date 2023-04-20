@@ -123,14 +123,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
 
+
+	let modelUpdateInProgress = false;
 	const onChange = useCallback(
 		(): void => {
 			if (contextRef.current.isReady) {
 				let currentModel = xircuitsApp.getDiagramEngine().getModel().serialize();
+				modelUpdateInProgress = true;
 				contextRef.current.model.fromString(
 					JSON.stringify(currentModel, replacer, 4)
 				);
 				setSaved(false);
+				modelUpdateInProgress = false;
 			}
 		}, []);
 
@@ -143,6 +147,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		const currentContext = contextRef.current;
 
 		const changeHandler = (): void => {
+			if(modelUpdateInProgress){ return; }
+
 			const modelStr = currentContext.model.toString();
 			if (!isJSON(modelStr)) {
 				// When context can't be parsed, just return
