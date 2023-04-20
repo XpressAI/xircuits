@@ -22,3 +22,6 @@
 [submodule "xai_components/xai_openai"]
 	path = xai_components/xai_openai
 	url = https://github.com/XpressAI/xai-openai
+[submodule "xai_components/xai_gpt_agent_toolkit"]
+	path = xai_components/xai_gpt_agent_toolkit
+	url = https://github.com/XpressAI/xai-gpt-agent-toolkit
