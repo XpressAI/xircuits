@@ -132,7 +132,7 @@ export const logPlugin: JupyterFrontEndPlugin<void> = {
         app.commands.notifyCommandChanged();
       });
 
-      app.shell.add(logConsoleWidget, 'main', { mode: 'split-bottom' });
+      app.shell.add(logConsoleWidget, 'main', { mode: 'split-right' });
       loggertracker.add(logConsoleWidget);
 
       logConsoleWidget.update();
