@@ -22,9 +22,20 @@ import { XircuitFactory } from '../xircuitFactory';
  */
 const PANEL_CLASS = 'jp-RovaPanel';
 
-/**
- * A panel with the ability to add other children.
- */
+class CustomOutputArea extends SimplifiedOutputArea {
+    constructor(options) {
+        super(options);
+
+        // Listen to the content change signal of the output area model
+        this.model.changed.connect(this._scrollToBottom, this);
+    }
+
+    private _scrollToBottom(): void {
+        // Scroll the output area to the bottom
+        this.node.scrollTop = this.node.scrollHeight;
+    }
+}
+
 export class OutputPanel extends StackedPanel {
     constructor(
         manager: ServiceManager.IManager,
@@ -49,7 +60,7 @@ export class OutputPanel extends StackedPanel {
         });
 
         this._outputareamodel = new OutputAreaModel();
-        this._outputarea = new SimplifiedOutputArea({
+        this._outputarea = new CustomOutputArea({
             model: this._outputareamodel,
             rendermime: rendermime,
         });
@@ -129,7 +140,7 @@ export class OutputPanel extends StackedPanel {
     }
 
     private _sessionContext: SessionContext;
-    private _outputarea: SimplifiedOutputArea;
+    private _outputarea: CustomOutputArea;
     private _outputareamodel: OutputAreaModel;
     private _xircuitFactory: XircuitFactory;
 
