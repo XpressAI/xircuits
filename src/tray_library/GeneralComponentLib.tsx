@@ -14,6 +14,22 @@ export function cancelDialog(dialogResult) {
     return false
 }
 
+function checkInput(input: any): boolean {
+    try {
+      JSON.parse(input);
+    } catch (e) {
+        if (input.includes("'")) {
+          alert("Invalid Input: Please use double quotes instead of single quotes.");
+        } else {
+          // Other JSON parsing errors
+          alert("Invalid Input: " + e.message);
+        }
+      return false;
+    }
+  
+    return true;
+  }
+
 export async function GeneralComponentLibrary(props: GeneralComponentLibraryProps){
     let node = null;
     const nodeData = props.model;
@@ -146,6 +162,9 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (cancelDialog(dialogResult)) return;
                 inputValue = dialogResult["value"]['List'];
+                if (!checkInput(inputValue)) {
+                    return false;
+                  }
             }
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance(inputValue, 'out-0');
