@@ -81,7 +81,7 @@ export async function getItsLiteralType(){
 			break;
 		default:
 			// When type is undefined, show error
-			errorMsg = `Type is undefined or not provided. Please insert the first chararacter as shown in example` ;
+			errorMsg = `Type is undefined or not provided. Please insert the first character as shown in example.` ;
 			break;
 	}
 	return { nodeType, varInput, errorMsg}
@@ -95,7 +95,7 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 		setChecked(!checked);
 	};
 
-	function DictExample() {
+	function DatatypeExample() {
 		if (type == 'Dict') {
 			return (
 				<h5 style={{ marginTop: 0, marginBottom: 5 }}>
@@ -188,7 +188,7 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 					Enter {title.includes('parameter') ? 'Argument Name' : `${type} Value`} ({isStoreDataType ? 'Without Brackets' : 'Without Quotes'}):
 				</h3>
 				: null}
-			<DictExample />
+			<DatatypeExample />
 			<InputValueDialog />
 		</form>
 	);

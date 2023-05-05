@@ -15,6 +15,7 @@ import { CommentDialog } from '../dialog/CommentDialog';
 import React from 'react';
 import { showFormDialog } from '../dialog/FormDialog';
 import { inputDialog } from '../dialog/LiteralInputDialog';
+import { checkInput } from '../helpers/InputSanitizer';
 
 /**
  * Add the commands for node actions.
@@ -563,9 +564,10 @@ export function addNodeActionCommands(
 
             var updatedContent = dialogResult["value"][updateTitle];
 
-            while (!checkInput(updatedContent)){
+            while (!checkInput(updatedContent, literalType)){
                 const dialogOptions = inputDialog(updateTitle, updatedContent, literalType, isStoreDataType, isTextareaInput);
                 const dialogResult = await showFormDialog(dialogOptions);
+                if (dialogResult["button"]["label"] == 'Cancel') return;
                 updatedContent = dialogResult["value"][updateTitle];
             }
             const strContent: string = updatedContent;
@@ -644,19 +646,3 @@ export function addNodeActionCommands(
         }
     }
 }
-
-function checkInput(input: any): boolean {
-    try {
-      JSON.parse(input);
-    } catch (e) {
-        if (input.includes("'")) {
-          alert("Invalid Input: Please use double quotes instead of single quotes.");
-        } else {
-          // Other JSON parsing errors
-          alert("Invalid Input: " + e.message);
-        }
-      return false;
-    }
-  
-    return true;
-  }
