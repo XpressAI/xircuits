@@ -25,3 +25,6 @@
 [submodule "xai_components/xai_gpt_agent_toolkit"]
 	path = xai_components/xai_gpt_agent_toolkit
 	url = https://github.com/XpressAI/xai-gpt-agent-toolkit
+[submodule "xai_components/xai_slack"]
+	path = xai_components/xai_slack
+	url = https://github.com/XpressAI/xai-slack
