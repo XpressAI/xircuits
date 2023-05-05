@@ -553,14 +553,22 @@ export function addNodeActionCommands(
                 default:
                     break;
             }
-            const newTitle = `Update ${literalType}`;
-            const dialogOptions = inputDialog(newTitle, oldValue, literalType, isStoreDataType, isTextareaInput);
+            const updateTitle = `Update ${literalType}`;
+            const dialogOptions = inputDialog(updateTitle, oldValue, literalType, isStoreDataType, isTextareaInput);
             const dialogResult = await showFormDialog(dialogOptions);
             if (dialogResult["button"]["label"] == 'Cancel') {
                 // When Cancel is clicked on the dialog, just return
                 return;
             }
-            const strContent: string = dialogResult["value"][newTitle];
+
+            var updatedContent = dialogResult["value"][updateTitle];
+
+            while (!checkInput(updatedContent)){
+                const dialogOptions = inputDialog(updateTitle, updatedContent, literalType, isStoreDataType, isTextareaInput);
+                const dialogResult = await showFormDialog(dialogOptions);
+                updatedContent = dialogResult["value"][updateTitle];
+            }
+            const strContent: string = updatedContent;
 
             node = new CustomNodeModel({ name: selected_node["name"], color: selected_node["color"], extras: { "type": selected_node["extras"]["type"] } });
             node.addOutPortEnhance(strContent, 'out-0');
@@ -636,3 +644,19 @@ export function addNodeActionCommands(
         }
     }
 }
+
+function checkInput(input: any): boolean {
+    try {
+      JSON.parse(input);
+    } catch (e) {
+        if (input.includes("'")) {
+          alert("Invalid Input: Please use double quotes instead of single quotes.");
+        } else {
+          // Other JSON parsing errors
+          alert("Invalid Input: " + e.message);
+        }
+      return false;
+    }
+  
+    return true;
+  }
