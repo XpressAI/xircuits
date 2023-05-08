@@ -25,10 +25,12 @@ function checkInput(input: any, datatype: string): boolean {
     } catch (e) {
         let errorMessage = "Invalid " + datatype + " input: ";
         if (wrappedInput.includes("'")) {
-            alert(errorMessage + "Please use double quotes instead of single quotes.");
+            alert(errorMessage + "Please use double quotes instead of single quotes for " + wrappedInput);
+        } else if (/(?:\{|\[|\()(?:\w+)/.test(wrappedInput)) {
+            alert(errorMessage + "Please make sure to quote your variables in " + wrappedInput);
         } else {
             // Other JSON parsing errors
-            alert(errorMessage + e.message);
+            alert(errorMessage + e.message + " for " + wrappedInput);
         }
         return false;
     }
