@@ -24,14 +24,36 @@ function checkInput(input: any, datatype: string): boolean {
         JSON.parse(wrappedInput);
     } catch (e) {
         let errorMessage = "Invalid " + datatype + " input: ";
+        let exampleMessage = "\nExample of a correct " + datatype + " format: ";
+        let example = "";
+
         if (wrappedInput.includes("'")) {
-            alert(errorMessage + "Please use double quotes instead of single quotes for " + wrappedInput);
+            errorMessage += "Please use double quotes instead of single quotes.";
         } else if (/(?:\{|\[|\()(?:\w+)/.test(wrappedInput)) {
-            alert(errorMessage + "Please make sure to quote your variables in " + wrappedInput);
+            errorMessage += "Please make sure to use double quotes for your variables.";
         } else {
             // Other JSON parsing errors
-            alert(errorMessage + e.message + " for " + wrappedInput);
+            errorMessage += "Please check the console log for details.";
+            console.error("Parsing error:", e.message);
         }
+
+        // Add example message
+        switch (lowercaseDatatype) {
+            case "string":
+                example = '"example_string"';
+                break;
+            case "tuple":
+                example = '"item1", "item2", "item3"';
+                break;
+            case "list":
+                example = '"item1", "item2", 123';
+                break;
+            case "dict":
+                example = '"key1": "value1", "key2": 123';
+                break;
+        }
+
+        alert(errorMessage + "\n\nYour input: " + input + "\n" + exampleMessage + example);
         return false;
     }
 
