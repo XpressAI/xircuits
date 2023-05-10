@@ -15,6 +15,7 @@ import { CommentDialog } from '../dialog/CommentDialog';
 import React from 'react';
 import { showFormDialog } from '../dialog/FormDialog';
 import { inputDialog } from '../dialog/LiteralInputDialog';
+import { checkInput } from '../helpers/InputSanitizer';
 
 /**
  * Add the commands for node actions.
@@ -556,14 +557,23 @@ export function addNodeActionCommands(
                 default:
                     break;
             }
-            const newTitle = `Update ${literalType}`;
-            const dialogOptions = inputDialog(newTitle, oldValue, literalType, isStoreDataType, isTextareaInput);
+            const updateTitle = `Update ${literalType}`;
+            const dialogOptions = inputDialog(updateTitle, oldValue, literalType, isStoreDataType, isTextareaInput);
             const dialogResult = await showFormDialog(dialogOptions);
             if (dialogResult["button"]["label"] == 'Cancel') {
                 // When Cancel is clicked on the dialog, just return
                 return;
             }
-            const strContent: string = dialogResult["value"][newTitle];
+
+            var updatedContent = dialogResult["value"][updateTitle];
+
+            while (!checkInput(updatedContent, literalType)){
+                const dialogOptions = inputDialog(updateTitle, updatedContent, literalType, isStoreDataType, isTextareaInput);
+                const dialogResult = await showFormDialog(dialogOptions);
+                if (dialogResult["button"]["label"] == 'Cancel') return;
+                updatedContent = dialogResult["value"][updateTitle];
+            }
+            const strContent: string = updatedContent;
 
             node = new CustomNodeModel({ name: selected_node["name"], color: selected_node["color"], extras: { "type": selected_node["extras"]["type"] } });
             node.addOutPortEnhance(strContent, 'out-0');

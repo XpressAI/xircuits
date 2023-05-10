@@ -5,6 +5,7 @@ import { Dialog } from '@jupyterlab/apputils';
 import Switch from "react-switch";
 import { showFormDialog } from './FormDialog';
 import { cancelDialog } from '../tray_library/GeneralComponentLib';
+import { checkInput } from '../helpers/InputSanitizer';
 
 export function inputDialog(titleName: string, oldValue: any, type: string, isStoreDataType?: boolean, inputType?: string) {
 	let title = titleName;
@@ -27,63 +28,28 @@ export function inputDialog(titleName: string, oldValue: any, type: string, isSt
 
 export async function getItsLiteralType(){
 	// When inPort is 'any' type, get the correct literal type based on the first character inputed
-	let nodeType: string;
 	let varOfAnyTypeTitle = 'Enter your variable value';
 	const dialogOptions = inputDialog(varOfAnyTypeTitle, "", 'Variable');
 	const dialogResult = await showFormDialog(dialogOptions);
 	if (cancelDialog(dialogResult)) return;
-	const varValue = dialogResult["value"][varOfAnyTypeTitle];
-	const varType = varValue.charAt(0);
-	const varInput : string = varValue.slice(1);
-	let errorMsg : string;
-	switch (varType) {
-		case '"':
-			nodeType = 'String';
-			break;
-		case '#':
-			const isInputFloat = varInput.search('.');
-			let onlyNum = Number(varInput);
-			if (isNaN(onlyNum)){
-				errorMsg = `Variable's input (${varInput}) contain non-numeric value. Only allow '.' for Float` ;
-				break;
-			}
-			if (isInputFloat == 0) {
-				nodeType = 'Float';
-			} else {
-				nodeType = 'Integer';
-			}
-			break;
-		case '[':
-			nodeType = 'List';
-			break;
-		case '(':
-			nodeType = 'Tuple';
-			break;
-		case '{':
-			nodeType = 'Dict';
-			break;
-		case '!':
-			let boolValue = varValue.slice(1);
-			switch (boolValue) {
-				case 'true':
-				case 'True':
-				case '1':
-				case 't':
-					nodeType = 'True';
-					break;
-				case 'false':
-				case 'False':
-				case '0':
-				case 'nil':
-					nodeType = 'False';
-					break;
-			}
-			break;
-		default:
-			// When type is undefined, show error
-			errorMsg = `Type is undefined or not provided. Please insert the first chararacter as shown in example` ;
-			break;
+	let varValue = dialogResult["value"][varOfAnyTypeTitle];
+	let varType = varValue.charAt(0);
+	let varInput : string = varValue.slice(1);
+	var { nodeType, errorMsg } = varTypeChecker(varType, varInput, varValue);
+	
+	while (!checkInput(varInput, nodeType)){
+
+		const dialogOptions = inputDialog(varOfAnyTypeTitle, varValue, 'Variable');
+		const dialogResult = await showFormDialog(dialogOptions);
+		
+		if (cancelDialog(dialogResult)) return;
+		varValue = dialogResult["value"][varOfAnyTypeTitle];
+		varType = varValue.charAt(0);
+		varInput = varValue.slice(1);
+		var { nodeType, errorMsg } = varTypeChecker(varType, varInput, varValue);
+
 	}
+
 	return { nodeType, varInput, errorMsg}
 }
 
@@ -207,4 +173,60 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 			<InputValueDialog />
 		</form>
 	);
+}
+
+function varTypeChecker(varType:string, varInput:string, varValue:string){
+	var nodeType;
+	var errorMsg;
+
+	switch (varType) {
+		case '"':
+			nodeType = 'String';
+			break;
+		case '#':
+			const isInputFloat = varInput.search('.');
+			let onlyNum = Number(varInput);
+			if (isNaN(onlyNum)){
+				errorMsg = `Variable's input (${varInput}) contain non-numeric value. Only allow '.' for Float` ;
+				break;
+			}
+			if (isInputFloat == 0) {
+				nodeType = 'Float';
+			} else {
+				nodeType = 'Integer';
+			}
+			break;
+		case '[':
+			nodeType = 'List';
+			break;
+		case '(':
+			nodeType = 'Tuple';
+			break;
+		case '{':
+			nodeType = 'Dict';
+			break;
+		case '!':
+			let boolValue = varValue.slice(1);
+			switch (boolValue) {
+				case 'true':
+				case 'True':
+				case '1':
+				case 't':
+					nodeType = 'True';
+					break;
+				case 'false':
+				case 'False':
+				case '0':
+				case 'nil':
+					nodeType = 'False';
+					break;
+			}
+			break;
+		default:
+			// When type is undefined, show error
+			errorMsg = `Type is undefined or not provided. Please insert the first character as shown in example.` ;
+			break;
+	}
+
+	return { nodeType, errorMsg };
 }
