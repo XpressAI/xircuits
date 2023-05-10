@@ -266,8 +266,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
                 if (cancelDialog(dialogResult)) return;
                 inputValue = dialogResult["value"]['Secret'];
             }
-
-        }
+            
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance(inputValue, 'out-0');
 
