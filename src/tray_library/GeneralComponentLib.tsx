@@ -258,6 +258,16 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
                 if (cancelDialog(dialogResult)) return;
                 inputValue = dialogResult["value"]['Secret'];
             }
+
+            while (!checkInput(inputValue, 'secret')){
+                const dialogOptions = inputDialog('Secret', "", 'Secret', false);
+                const dialogResult = await showFormDialog(dialogOptions);
+
+                if (cancelDialog(dialogResult)) return;
+                inputValue = dialogResult["value"]['Secret'];
+            }
+
+        }
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance(inputValue, 'out-0');
 
