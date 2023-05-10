@@ -42,7 +42,7 @@ function checkInput(input: any, datatype: string): boolean {
         switch (lowercaseDatatype) {
             case "string":
             case "secret":
-            example = '"example_string"';
+                example = '"example_string"';
                 break;
             case "tuple":
                 example = '"item1", "item2", "item3"';
@@ -55,7 +55,11 @@ function checkInput(input: any, datatype: string): boolean {
                 break;
         }
 
-        alert(errorMessage + "\n\nYour input: " + input + "\n" + exampleMessage + example);
+        if (lowercaseDatatype !== "secret") {
+            errorMessage += "\n\nYour input: " + input;
+        }
+
+        alert(errorMessage + "\n" + exampleMessage + example);
         return false;
     }
 
