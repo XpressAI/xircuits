@@ -4,6 +4,7 @@ function checkInput(input: any, datatype: string): boolean {
 
     switch (lowercaseDatatype) {
         case "string":
+        case "secret":
             wrappedInput = `"${input}"`;
             break;
         case "tuple":
@@ -40,7 +41,8 @@ function checkInput(input: any, datatype: string): boolean {
         // Add example message
         switch (lowercaseDatatype) {
             case "string":
-                example = '"example_string"';
+            case "secret":
+            example = '"example_string"';
                 break;
             case "tuple":
                 example = '"item1", "item2", "item3"';
