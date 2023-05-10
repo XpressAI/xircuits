@@ -248,6 +248,39 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         }
 
+    } else if (nodeData.type === 'secret') {
+
+        if ((nodeName).startsWith("Literal")) {
+
+            if (variableValue == '' || variableValue == undefined) {
+                const dialogOptions = inputDialog('Secret', "", 'Secret', false);
+                const dialogResult = await showFormDialog(dialogOptions);
+                if (cancelDialog(dialogResult)) return;
+                inputValue = dialogResult["value"]['Secret'];
+            }
+
+            while (!checkInput(inputValue, 'secret')){
+                const dialogOptions = inputDialog('Secret', "", 'Secret', false);
+                const dialogResult = await showFormDialog(dialogOptions);
+
+                if (cancelDialog(dialogResult)) return;
+                inputValue = dialogResult["value"]['Secret'];
+            }
+            
+            node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
+            node.addOutPortEnhance(inputValue, 'out-0');
+
+        } else {
+
+            const dialogOptions = inputDialog(hyperparameterTitle, "", 'String');
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (cancelDialog(dialogResult)) return;
+            inputValue = dialogResult["value"][hyperparameterTitle];
+            node = new CustomNodeModel({ name: "Argument (Secret): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
+            node.addOutPortEnhance('▶', 'parameter-out-0');
+
+        }
+
     // } else if (props.type === 'debug') {
     //     node = new CustomNodeModel({ name: props.name, color: props.color, extras: { "type": props.type } });
     //     node.addInPortEnhance('▶', 'in-0');

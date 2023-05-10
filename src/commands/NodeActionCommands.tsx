@@ -548,6 +548,9 @@ export function addNodeActionCommands(
                 case "Dict":
                     isStoreDataType = true;
                     break;
+                case "Secret":
+                    isStoreDataType = false;
+                    break;
                 case "True":
                 case "False":
                     return;

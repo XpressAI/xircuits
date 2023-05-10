@@ -61,7 +61,7 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 		setChecked(!checked);
 	};
 
-	function DatatypeExample() {
+	function InputDialogueMessageDisplay() {
 		if (type == 'Dict') {
 			return (
 				<h5 style={{ marginTop: 0, marginBottom: 5 }}>
@@ -72,6 +72,13 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 			return (
 				<h5 style={{ marginTop: 0, marginBottom: 5 }}>
 					For Example: "a", "b", "c"
+				</h5>
+			);
+		} else if (type == 'Secret') {
+			return (
+				<h5 style={{ marginTop: 0, marginBottom: 5 }}>
+					Warning: Literal Secrets are masked in the frontend only. <br />
+					They can still be accessed in the raw .xircuits file or appear as strings in the compiled script.
 				</h5>
 			);
 		} else if (type == 'Variable'){
@@ -143,7 +150,15 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 					style={{ width: 350 }}
 					defaultValue={oldValue} />
 			);
-		}
+		} else if (type == 'Secret') {
+        return (
+            <input
+                name={title}
+                type="password"
+                style={{ width: 480 }}
+                defaultValue={oldValue} />
+        );
+    }
 		return null;
 	}
 
@@ -154,7 +169,7 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 					Enter {title.includes('parameter') ? 'Argument Name' : `${type} Value`} ({isStoreDataType ? 'Without Brackets' : 'Without Quotes'}):
 				</h3>
 				: null}
-			<DatatypeExample />
+			<InputDialogueMessageDisplay />
 			<InputValueDialog />
 		</form>
 	);
