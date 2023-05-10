@@ -550,7 +550,7 @@ export function addNodeActionCommands(
                 case "Secret":
                     isStoreDataType = false;
                     break;
-                    case "True":
+                case "True":
                 case "False":
                     return;
                 default:

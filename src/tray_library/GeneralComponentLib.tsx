@@ -213,7 +213,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
         if ((nodeName).startsWith("Literal")) {
 
             if (variableValue == '' || variableValue == undefined) {
-                const dialogOptions = inputDialog('Secret', "", 'Secret', true);
+                const dialogOptions = inputDialog('Secret', "", 'Secret', false);
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (cancelDialog(dialogResult)) return;
                 inputValue = dialogResult["value"]['Secret'];
