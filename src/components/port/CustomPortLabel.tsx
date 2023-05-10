@@ -97,7 +97,10 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 			case "union":
 				symbolLabel = ' U';
 				break;
-			case "any":
+			case "secret":
+				symbolLabel = '🗝️';
+				break;
+				case "any":
 				symbolLabel = '[_]';
 				break;
 			case "0":
@@ -127,10 +130,12 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 					{symbolLabel}
 				</S.Symbol>
 			</S.SymbolContainer>);
+		
+		const nodeType = this.props.node.getOptions().name
 
 		const label = (
-			<S.Label style={{textAlign: (!this.props.port.getOptions().in && this.props.port.getOptions().label === '▶') ? 'right': 'left'}}>
-				{this.props.port.getOptions().label}
+			<S.Label style={{ textAlign: (!this.props.port.getOptions().in && this.props.port.getOptions().label === '▶') ? 'right' : 'left' }}>
+				{nodeType === "Literal Secret" ? "*****" : this.props.port.getOptions().label}
 			</S.Label>);
 
 		return (

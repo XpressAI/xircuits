@@ -177,7 +177,15 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 					style={{ width: 350 }}
 					defaultValue={oldValue} />
 			);
-		}
+		} else if (type == 'Secret') {
+        return (
+            <input
+                name={title}
+                type="password"
+                style={{ width: 350 }}
+                defaultValue={oldValue} />
+        );
+    }
 		return null;
 	}
 

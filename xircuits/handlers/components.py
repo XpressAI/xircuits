@@ -36,6 +36,8 @@ DEFAULT_COMPONENTS = {
     10:{ "name": "Literal List", "returnType": "list","color":"yellow"},
     11:{ "name": "Literal Tuple", "returnType": "tuple","color":"purple"},
     12:{ "name": "Literal Dict", "returnType": "dict","color":"orange"},
+    13:{ "name": "Literal Secret", "returnType": "secret","color":"black"},
+
     # Comment this first since we don't use it
     # 1: { "name": "Math Operation", "returnType": "math"},
     # 2: { "name": "Convert to Aurora", "returnType": "convert"},

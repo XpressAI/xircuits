@@ -131,6 +131,8 @@ def main(args):
                         value = json.loads("[" + port.sourceLabel + "]")
                     elif port.source.name == "Literal Dict":
                         value = json.loads("{" + port.sourceLabel + "}")
+                    elif port.source.name == "Literal Secret":
+                        value = port.sourceLabel
                     else:
                         value = eval(port.sourceLabel)
                     tpl.body[0].value.value = value
