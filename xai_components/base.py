@@ -122,3 +122,12 @@ def execute_graph(args: Namespace, start: BaseComponent, ctx) -> None:
         next_component = start.do(ctx)
         while next_component:
             next_component = next_component.do(ctx)
+            
+
+class secret:
+
+    def __init__(self, value):
+        self.__value = value
+
+    def get_value(self):
+        return self.__value
