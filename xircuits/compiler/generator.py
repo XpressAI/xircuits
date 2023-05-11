@@ -131,6 +131,8 @@ def main(args):
                         value = json.loads("[" + port.sourceLabel + "]")
                     elif port.source.name == "Literal Dict":
                         value = json.loads("{" + port.sourceLabel + "}")
+                    elif port.source.name == "Literal Secret":
+                        value = port.sourceLabel
                     else:
                         value = eval(port.sourceLabel)
                     tpl.body[0].value.value = value
@@ -169,7 +171,7 @@ def main(args):
         trailer = """
 next_component = %s
 while next_component:
-    is_done, next_component = next_component.do(ctx)        
+    next_component = next_component.do(ctx)        
         """ % (named_nodes[self.graph.ports[0].target.id])
         code.append(ast.parse(trailer))
 

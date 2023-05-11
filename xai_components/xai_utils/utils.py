@@ -8,7 +8,6 @@ import time
 @xai_component
 class Print(Component):
     msg: InArg[any]
-    done: bool
     
     def execute(self, ctx) -> None:
         print(str(self.msg.value))
@@ -18,7 +17,6 @@ class ConcatString(Component):
     a: InArg[str]
     b: InArg[str]
     out: OutArg[str]
-    done: bool
 
     def execute(self, cts) -> None:
         self.out.value = self.a.value + self.b.value
@@ -100,8 +98,6 @@ class ZipDirectory(Component):
 
         zipObj.close()        
        
-        self.done = True
-
 @xai_component
 class DeleteFile(Component):
     """Deletes a file.
@@ -119,8 +115,6 @@ class DeleteFile(Component):
           os.remove(filename)
         else:
           print(filename + " does not exist.") 
-
-        self.done = True
 
 @xai_component(color="green")
 class TimerComponent(Component):

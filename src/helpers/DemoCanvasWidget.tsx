@@ -12,6 +12,7 @@ export interface DemoCanvasWidgetProps {
 		background-color: ${(p) => p.background};
 		background-size: 50px 50px;
 		display: flex;
+		width : 15360px; // Prevent Dev tool effects on smaller monitors  
 
 		> * {
 			height: 100%;

@@ -35,7 +35,6 @@ class SparkSparseVector(Component):
         sparse_vector
 
         self.sparse_vector.value = sparse_vector
-        self.done = True
 
 
 @xai_component
@@ -74,7 +73,6 @@ class SparkLabeledPoint(Component):
         print(labeled_point)
 
         self.labeled_point.value = labeled_point
-        self.done = True
 
 
 @xai_component
@@ -109,7 +107,6 @@ class SparkLoadImageFolder(Component):
         self.out_sparksession.value = spark
         self.out_dataframe.value = df
 
-        self.done = True
 
 @xai_component
 class SparkSplitDataFrame(Component):
@@ -153,7 +150,6 @@ class SparkSplitDataFrame(Component):
 
         self.train_dataframe.value = train
         self.test_dataframe.value = test
-        self.done = True
 
 
 @xai_component
@@ -190,7 +186,6 @@ class SparkLoadLIBSVM(Component):
 
         self.out_sparksession.value = spark
         self.out_dataframe.value = df
-        self.done = True
 
 
 @xai_component
@@ -241,7 +236,6 @@ class SparkLogisticRegression(Component):
             print("Intercept: " + str(model.intercept))
 
         self.model.value = model
-        self.done = True
 
 
 @xai_component
@@ -265,4 +259,3 @@ class SparkPredict(Component):
 
         test_result.predictions.show()
 
-        self.done = True

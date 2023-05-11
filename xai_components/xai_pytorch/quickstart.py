@@ -57,7 +57,6 @@ class LoadTorchVisionDataset(Component):
 
         self.training_data.value = training_data
         self.test_data.value = test_data
-        self.done = True
 
 @xai_component
 class TorchDataLoader(Component):

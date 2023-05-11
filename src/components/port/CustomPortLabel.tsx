@@ -64,6 +64,10 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 		} else {
 			portType = portName.split("-")[1];
 		}
+		// if multiple types provided, show the symbol for the first provided type
+		if (portType.includes(',')) {
+			portType = 'union';
+		}
 
 		switch (portType) {
 			case "string":
@@ -90,7 +94,13 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 			case "dict":
 				symbolLabel = '{ }';
 				break;
-			case "any":
+			case "union":
+				symbolLabel = ' U';
+				break;
+			case "secret":
+				symbolLabel = '🗝️';
+				break;
+				case "any":
 				symbolLabel = '[_]';
 				break;
 			case "0":
@@ -120,10 +130,12 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 					{symbolLabel}
 				</S.Symbol>
 			</S.SymbolContainer>);
+		
+		const nodeType = this.props.node.getOptions().name
 
 		const label = (
-			<S.Label>
-				{this.props.port.getOptions().label}
+			<S.Label style={{ textAlign: (!this.props.port.getOptions().in && this.props.port.getOptions().label === '▶') ? 'right' : 'left' }}>
+				{nodeType === "Literal Secret" ? "*****" : this.props.port.getOptions().label}
 			</S.Label>);
 
 		return (

@@ -1,6 +1,8 @@
 import { CustomNodeModel } from "../components/CustomNodeModel";
 import { inputDialog } from "../dialog/LiteralInputDialog";
 import { showFormDialog } from "../dialog/FormDialog";
+import { checkInput } from "../helpers/InputSanitizer";
+
 interface GeneralComponentLibraryProps{
     model : any;
     variableValue?: any;
@@ -54,7 +56,16 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
                 const dialogOptions = inputDialog('String', "", 'String', false ,'textarea');
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (cancelDialog(dialogResult)) return;
+                
                 inputValue = dialogResult["value"]['String'];
+
+                while (!checkInput(inputValue, 'string')){
+                    const dialogOptions = inputDialog('String', inputValue, 'String', false ,'textarea');
+                    const dialogResult = await showFormDialog(dialogOptions);
+                    if (cancelDialog(dialogResult)) return;
+
+                    inputValue = dialogResult["value"]['String'];
+                }
             }
 
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
@@ -145,7 +156,17 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
                 const dialogOptions = inputDialog('List', "", 'List', true);
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (cancelDialog(dialogResult)) return;
+
                 inputValue = dialogResult["value"]['List'];
+                
+                while (!checkInput(inputValue, 'list')){
+                    const dialogOptions = inputDialog('List', inputValue, 'List', true);
+                    const dialogResult = await showFormDialog(dialogOptions);
+
+                    if (cancelDialog(dialogResult)) return;
+                    inputValue = dialogResult["value"]['List'];
+                }
+                
             }
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance(inputValue, 'out-0');
@@ -169,7 +190,17 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
                 const dialogOptions = inputDialog('Tuple', "", 'Tuple', true);
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (cancelDialog(dialogResult)) return;
+
                 inputValue = dialogResult["value"]['Tuple'];
+                
+                while (!checkInput(inputValue, 'tuple')){
+                    const dialogOptions = inputDialog('Tuple', inputValue, 'Tuple', true);
+                    const dialogResult = await showFormDialog(dialogOptions);
+
+                    if (cancelDialog(dialogResult)) return;
+                    inputValue = dialogResult["value"]['Tuple'];
+                }
+
             }
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance(inputValue, 'out-0');
@@ -193,6 +224,15 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (cancelDialog(dialogResult)) return;
                 inputValue = dialogResult["value"]['Dict'];
+
+                while (!checkInput(inputValue, 'dict')){
+                    const dialogOptions = inputDialog('Dict', inputValue, 'Dict', true);
+                    const dialogResult = await showFormDialog(dialogOptions);
+
+                    if (cancelDialog(dialogResult)) return;
+                    inputValue = dialogResult["value"]['Dict'];
+                }
+
             }
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance(inputValue, 'out-0');
@@ -204,6 +244,39 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
             if (cancelDialog(dialogResult)) return;
             inputValue = dialogResult["value"][hyperparameterTitle];
             node = new CustomNodeModel({ name: "Argument (Dict): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
+            node.addOutPortEnhance('▶', 'parameter-out-0');
+
+        }
+
+    } else if (nodeData.type === 'secret') {
+
+        if ((nodeName).startsWith("Literal")) {
+
+            if (variableValue == '' || variableValue == undefined) {
+                const dialogOptions = inputDialog('Secret', "", 'Secret', false);
+                const dialogResult = await showFormDialog(dialogOptions);
+                if (cancelDialog(dialogResult)) return;
+                inputValue = dialogResult["value"]['Secret'];
+            }
+
+            while (!checkInput(inputValue, 'secret')){
+                const dialogOptions = inputDialog('Secret', "", 'Secret', false);
+                const dialogResult = await showFormDialog(dialogOptions);
+
+                if (cancelDialog(dialogResult)) return;
+                inputValue = dialogResult["value"]['Secret'];
+            }
+            
+            node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
+            node.addOutPortEnhance(inputValue, 'out-0');
+
+        } else {
+
+            const dialogOptions = inputDialog(hyperparameterTitle, "", 'String');
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (cancelDialog(dialogResult)) return;
+            inputValue = dialogResult["value"][hyperparameterTitle];
+            node = new CustomNodeModel({ name: "Argument (Secret): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance('▶', 'parameter-out-0');
 
         }

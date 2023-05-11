@@ -43,19 +43,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
   compileXircuitSignal: Signal<this, any>;
   runXircuitSignal: Signal<this, any>;
   runTypeXircuitSignal: Signal<this, any>;
-  debugXircuitSignal: Signal<this, any>;
   lockNodeSignal: Signal<this, any>;
-  breakpointXircuitSignal: Signal<this, any>;
-  currentNodeSignal: Signal<this, any>;
-  testXircuitSignal: Signal<this, any>;
-  continueDebugSignal: Signal<this, any>;
-  nextNodeDebugSignal: Signal<this, any>;
-  stepOverDebugSignal: Signal<this, any>;
-  terminateDebugSignal: Signal<this, any>;
-  stepInDebugSignal: Signal<this, any>;
-  stepOutDebugSignal: Signal<this, any>;
-  evaluateDebugSignal: Signal<this, any>;
-  debugModeSignal: Signal<this, any>;
 
   constructor(options: any) {
     super(options);
@@ -68,19 +56,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
     this.compileXircuitSignal = new Signal<this, any>(this);
     this.runXircuitSignal = new Signal<this, any>(this);
     this.runTypeXircuitSignal = new Signal<this, any>(this);
-    this.debugXircuitSignal = new Signal<this, any>(this);
     this.lockNodeSignal = new Signal<this, any>(this);
-    this.breakpointXircuitSignal = new Signal<this, any>(this);
-    this.currentNodeSignal = new Signal<this, any>(this);
-    this.testXircuitSignal = new Signal<this, any>(this);
-    this.continueDebugSignal = new Signal<this, any>(this);
-    this.nextNodeDebugSignal = new Signal<this, any>(this);
-    this.stepOverDebugSignal = new Signal<this, any>(this);
-    this.terminateDebugSignal = new Signal<this, any>(this);
-    this.stepInDebugSignal = new Signal<this, any>(this);
-    this.stepOutDebugSignal = new Signal<this, any>(this);
-    this.evaluateDebugSignal = new Signal<this, any>(this);
-    this.debugModeSignal = new Signal<this, any>(this);
   }
 
   protected createNewWidget(context: DocumentRegistry.Context): DocumentWidget {
@@ -96,19 +72,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
       compileXircuitSignal: this.compileXircuitSignal,
       runXircuitSignal: this.runXircuitSignal,
       runTypeXircuitSignal: this.runTypeXircuitSignal,
-      debugXircuitSignal: this.debugXircuitSignal,
       lockNodeSignal: this.lockNodeSignal,
-      breakpointXircuitSignal: this.breakpointXircuitSignal,
-      currentNodeSignal: this.currentNodeSignal,
-      testXircuitSignal: this.testXircuitSignal,
-      continueDebugSignal: this.continueDebugSignal,
-      nextNodeDebugSignal: this.nextNodeDebugSignal,
-      stepOverDebugSignal: this.stepOverDebugSignal,
-      terminateDebugSignal: this.terminateDebugSignal,
-      stepInDebugSignal: this.stepInDebugSignal,
-      stepOutDebugSignal: this.stepOutDebugSignal,
-      evaluateDebugSignal: this.evaluateDebugSignal,
-      debugModeSignal: this.debugModeSignal
     };
 
     const content = new XPipePanel(props);
@@ -227,16 +191,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
       }
     });
 
-    /**
-     * Create a test button toolbar item.
-     */
-    let testButton = new ToolbarButton({
-      icon: editIcon,
-      tooltip: 'For testing purposes',
-      onClick: (): void => {
-        this.commands.execute(commandIDs.testXircuit)
-      }
-    });
+
 
     /**
      * Create a compile button toolbar item.
@@ -268,7 +223,6 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.insertItem(5, 'xircuits-add-paste', pasteButton);
     widget.toolbar.insertItem(6, 'xircuits-add-lock', lockButton);
     widget.toolbar.insertItem(7, 'xircuits-add-log', logButton);
-    widget.toolbar.insertItem(8, 'xircuits-add-test', testButton);
     widget.toolbar.insertItem(9, 'xircuits-add-save', saveButton);
     widget.toolbar.insertItem(10, 'xircuits-add-compile', compileButton);
     widget.toolbar.insertItem(11, 'xircuits-add-run', compileAndRunButton);
