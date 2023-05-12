@@ -28,3 +28,6 @@
 [submodule "xai_components/xai_slack"]
 	path = xai_components/xai_slack
 	url = https://github.com/XpressAI/xai-slack
+[submodule "xai_components/xai_discord"]
+	path = xai_components/xai_discord
+	url = https://github.com/XpressAI/xai-discord
