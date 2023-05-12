@@ -126,8 +126,11 @@ Creating workflows and components in Xircuits is easy. We've provided extensive 
 
 # Use Cases
 
-### Machine Learning
-![ML example](https://user-images.githubusercontent.com/68586800/160897662-cfe31276-fe33-4400-b0a8-4f4b32263d2b.gif)
+### GPT Agent Toolkit | BabyAGI
+![BabyAGI demo](https://github.com/XpressAI/xai-gpt-agent-toolkit/blob/main/demo.gif?raw=true)
+
+### Discord Bots
+![DiscordCVBot](https://user-images.githubusercontent.com/68586800/232880388-0a999fa2-f9cf-40df-be51-73601afc8963.gif)
 
 ### PySpark
 ![spark submit](https://user-images.githubusercontent.com/68586800/156138662-f3181471-6433-49dd-a8c1-2f73eea14d11.png)
@@ -140,8 +143,6 @@ Creating workflows and components in Xircuits is easy. We've provided extensive 
 
 ### NLP
 ![nlp](https://user-images.githubusercontent.com/68586800/161892702-fbe51b93-846d-410a-bb80-75255c1a9565.gif)
-### Clustering
-![clustering](https://user-images.githubusercontent.com/68586800/161884656-ec2a3d33-e56d-4cdf-8c16-4fc964c1b8f3.gif)
 
 ## Developers Discord
 Have any questions? Feel free to chat with the devs at our [Discord](https://discord.com/invite/vgEg2ZtxCw)!
