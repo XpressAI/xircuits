@@ -7,6 +7,9 @@ assignees: ''
 
 ---
 
+**Xircuits Version**
+Run `pip show xircuits` to get the version, or mention you've used a specific .whl from a branch.
+
 **What kind of feature is it?**
 - [ ] Xircuits Core (Jupyterlab related features)
 - [ ] Xircuits Canvas (Custom RD related features)

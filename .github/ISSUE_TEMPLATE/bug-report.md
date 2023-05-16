@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Create a report to help us improve
+about: Share your findings to help us squash those bugs
 title: ''
 labels: ''
 assignees: ''
@@ -14,6 +14,9 @@ assignees: ''
 - [ ] Testing Automation
 - [ ] Documentation
 - [ ] Not Sure
+
+**Xircuits Version**
+Run `pip show xircuits` to get the version, or mention you've used a specific .whl from a branch.
 
 **Describe the bug**
 A clear and concise description of what the bug is.
