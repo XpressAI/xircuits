@@ -25,7 +25,7 @@ import {
 } from '@jupyterlab/ui-components';
 import { ToolbarButton } from '@jupyterlab/apputils';
 import { commandIDs } from './components/xircuitBodyWidget';
-import { CommandIDs } from './log/LogPlugin';
+import { LoggerCommandIDs } from './log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
 import { RunSwitcher } from './components/RunSwitcher';
 import { lockIcon, xircuitsIcon } from './ui-components/icons';
@@ -44,6 +44,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
   runXircuitSignal: Signal<this, any>;
   runTypeXircuitSignal: Signal<this, any>;
   lockNodeSignal: Signal<this, any>;
+  reloadAllNodesSignal: Signal<this, any>;
 
   constructor(options: any) {
     super(options);
@@ -57,6 +58,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
     this.runXircuitSignal = new Signal<this, any>(this);
     this.runTypeXircuitSignal = new Signal<this, any>(this);
     this.lockNodeSignal = new Signal<this, any>(this);
+    this.reloadAllNodesSignal = new Signal<this, any>(this);
   }
 
   protected createNewWidget(context: DocumentRegistry.Context): DocumentWidget {
@@ -73,6 +75,8 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
       runXircuitSignal: this.runXircuitSignal,
       runTypeXircuitSignal: this.runTypeXircuitSignal,
       lockNodeSignal: this.lockNodeSignal,
+      reloadAllNodesSignal: this.reloadAllNodesSignal,
+
     };
 
     const content = new XPipePanel(props);
@@ -187,11 +191,20 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
       icon: listIcon,
       tooltip: 'Open log',
       onClick: (): void => {
-        this.commands.execute(CommandIDs.openLog);
+        this.commands.execute(LoggerCommandIDs.openLog);
       }
     });
 
-
+    /**
+     * Create a reload all button toolbar item.
+     */
+    let reloadAllNodesButton = new ToolbarButton({
+      icon: bugIcon,
+      tooltip: 'Reload all nodes',
+      onClick: (): void => {
+        this.commands.execute(commandIDs.reloadAllNodes);
+      }
+    });
 
     /**
      * Create a compile button toolbar item.
@@ -223,6 +236,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.insertItem(5, 'xircuits-add-paste', pasteButton);
     widget.toolbar.insertItem(6, 'xircuits-add-lock', lockButton);
     widget.toolbar.insertItem(7, 'xircuits-add-log', logButton);
+    widget.toolbar.insertItem(8, 'xircuits-add-reload-all', reloadAllNodesButton);
     widget.toolbar.insertItem(9, 'xircuits-add-save', saveButton);
     widget.toolbar.insertItem(10, 'xircuits-add-compile', compileButton);
     widget.toolbar.insertItem(11, 'xircuits-add-run', compileAndRunButton);

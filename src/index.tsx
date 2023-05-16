@@ -343,6 +343,13 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     });
 
+    // Add command signal to reloadAllNodes
+    app.commands.addCommand(commandIDs.reloadAllNodes, {
+      execute: args => {
+        widgetFactory.reloadAllNodesSignal.emit(args);
+      }
+    });
+
     // Add a launcher item if the launcher is available.
     if (launcher) {
       launcher.add({

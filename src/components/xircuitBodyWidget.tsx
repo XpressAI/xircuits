@@ -39,6 +39,7 @@ export interface BodyWidgetProps {
 	runXircuitSignal: Signal<XPipePanel, any>;
 	runTypeXircuitSignal: Signal<XPipePanel, any>;
 	lockNodeSignal: Signal<XPipePanel, any>;
+	reloadAllNodesSignal: Signal<XPipePanel, any>;
 }
 
 export const Body = styled.div`
@@ -76,6 +77,7 @@ export const commandIDs = {
 	copyNode: 'Xircuit-editor:copy-node',
 	pasteNode: 'Xircuit-editor:paste-node',
 	reloadNode: 'Xircuit-editor:reload-node',
+	reloadAllNodes: 'Xircuit-editor:reload-all-nodes',
 	editNode: 'Xircuit-editor:edit-node',
 	deleteNode: 'Xircuit-editor:delete-node',
 	addNodeGivenPosition: 'Xircuit-editor:add-node', 
@@ -102,6 +104,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	runXircuitSignal,
 	runTypeXircuitSignal,
 	lockNodeSignal,
+	reloadAllNodesSignal,
 }) => {
 	const xircuitLogger = new Log(app);
 
@@ -605,6 +608,20 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		});
 	}
 
+	const handleReloadAll = () => {
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
+		let allNodes = getAllNodesFromStartToFinish();
+		allNodes.forEach((node) => {
+			node.setSelected(true);
+			app.commands.execute(commandIDs.reloadNode)
+			node.setSelected(false);
+		});
+	}
+
 	async function getRunTypesFromConfig(request: string) {
 		const dataToSend = { "config_request": request };
 	
@@ -747,7 +764,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		[saveXircuitSignal, handleSaveClick],
 		[compileXircuitSignal, handleCompileClick],
 		[runXircuitSignal, handleRunClick],
-		[lockNodeSignal, handleLockClick]
+		[lockNodeSignal, handleLockClick],
+		[reloadAllNodesSignal, handleReloadAll]
 	];
 
 	signalConnections.forEach(connectSignal);
