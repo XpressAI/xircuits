@@ -82,7 +82,6 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 				</h5>
 			);
 		} else if (type == 'Variable'){
-			let dictSymbol = '{';
 			return (
 				<h5 style={{ marginTop: 0, marginBottom: 5 }}>
 					<p>Determine your variable type by inserting the first char as below: </p>
@@ -91,7 +90,7 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 					<li> # with '.' : Float</li>
 					<li> [ : List</li>
 					<li> ( : Tuple</li>
-					<li> {dictSymbol} : Dict</li>
+					<li> {'{'} : Dict</li>
 					<li> !true / !True / !1 / !t : True</li>
 					<li> !false / !False / !0 / !nil : False</li>
 					<p>For Example: "Hello World or #15 or !true</p>
@@ -184,17 +183,12 @@ function varTypeChecker(varType:string, varInput:string, varValue:string){
 			nodeType = 'String';
 			break;
 		case '#':
-			const isInputFloat = varInput.search('.');
 			let onlyNum = Number(varInput);
-			if (isNaN(onlyNum)){
-				errorMsg = `Variable's input (${varInput}) contain non-numeric value. Only allow '.' for Float` ;
+			if (isNaN(onlyNum)) {
+				errorMsg = `Variable's input (${varInput}) not a numeric value.`;
 				break;
 			}
-			if (isInputFloat == 0) {
-				nodeType = 'Float';
-			} else {
-				nodeType = 'Integer';
-			}
+			nodeType = Number.isInteger(onlyNum) ? 'Integer' : 'Float';
 			break;
 		case '[':
 			nodeType = 'List';

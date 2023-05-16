@@ -3,6 +3,10 @@ function checkInput(input: any, datatype: string): boolean {
     let lowercaseDatatype = datatype.toLowerCase();
 
     switch (lowercaseDatatype) {
+        case "int":
+        case "integer":
+        case "float":
+            wrappedInput = `${input}`;
         case "string":
         case "secret":
             wrappedInput = `"${input}"`;
