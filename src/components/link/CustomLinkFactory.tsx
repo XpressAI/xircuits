@@ -14,6 +14,8 @@ namespace S {
 		}
 	`;
 
+	const animationDuration = 4; // Seconds
+
 	const selected = css`
 		stroke-dasharray: 10, 2;
 		animation: ${Keyframes} 1s steps(24) infinite;
@@ -67,4 +69,3 @@ export class TriangleLinkFactory extends DefaultLinkFactory {
 		);
 	}
 }
-
