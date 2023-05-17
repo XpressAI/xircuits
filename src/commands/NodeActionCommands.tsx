@@ -208,6 +208,9 @@ export function addNodeActionCommands(
                 })
                 return
             }
+            if (selected_node.name.startsWith("Start") || selected_node.name.startsWith("Finish")) {
+                return
+            }
 
             const current_node = await fetchNodeByName(selected_node.name)
             const node = AdvancedComponentLibrary({ model: current_node });
@@ -217,53 +220,40 @@ export function addNodeActionCommands(
             node.setPosition(nodePosition);
             widget.xircuitsApp.getDiagramEngine().getModel().addNode(node);
 
-            // Get all connected links
-            let links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
-
             try {
-                // Update the links
-                for (let linkID in links) {
-
-                    let link = links[linkID];
-
-                    if (link["sourcePort"] && link["targetPort"]) {
-
-                        const oldSourcePortLink = link['sourcePort'];
-                        const oldTargetPortLink = link['targetPort'];
-                        const sourcePortName = oldSourcePortLink.options.name;
-                        const targetPortName = oldTargetPortLink.options.name;
-                        const selectedNodeId = selected_node.getOptions()["id"];
-                        let newLink = new DefaultLinkModel();
-
-                        // When old link came from outPorts of selected node
-                        if (oldSourcePortLink.parent.name == node.name) {
-                            // Set rendered node's outPorts as sourcePort
-                            let sourcePort = node.getPorts()[sourcePortName];
-                            newLink.setSourcePort(sourcePort);
-
-                            // This to make sure the target new link came from the same node as previous link
-                            let sourceLinkNodeId = oldSourcePortLink.getParent().getID();
-                            if (sourceLinkNodeId == selectedNodeId) {
-                                newLink.setTargetPort(oldTargetPortLink);
-                            }
-                        }
-                        // When old link go to inPorts of selected node
-                        else if (oldTargetPortLink.parent.name == node.name) {
-                            // This to make sure the source new link came from the same node as previous link
-                            let targetLinkNodeId = oldTargetPortLink.getParent().getID();
-                            if (targetLinkNodeId == selectedNodeId) {
-                                newLink.setSourcePort(oldSourcePortLink);
+                let ports = selected_node.getPorts();
+                for (let portName in ports) {
+                    let port = ports[portName];
+            
+                    for (let linkID in port.links) {
+                        let link = port.links[linkID];
+            
+                        if (link.getSourcePort() === port) {
+                            let sourcePortName = link.getSourcePort().getName();
+                            let newSourcePort = node.getPorts()[sourcePortName];
+                            if (newSourcePort) {
+                                link.setSourcePort(newSourcePort);
+                            } else {
+                                console.error("Error: Source port not found in the new node.");
                             }
 
-                            // Set rendered node's inPorts as targetPort
-                            let targetPort = node.getPorts()[targetPortName];
-                            newLink.setTargetPort(targetPort);
+                        } else if (link.getTargetPort() === port) {
+                            let targetPortName = link.getTargetPort().getName();
+                            let newTargetPort = node.getPorts()[targetPortName];
+                            if (newTargetPort) {
+                                link.setTargetPort(newTargetPort);
+                            } else {
+                                console.error("Error: Target port not found in the new node.");
+                            }
                         }
-                        widget.xircuitsApp.getDiagramEngine().getModel().addLink(newLink);
+            
+                        widget.xircuitsApp.getDiagramEngine().getModel().addLink(link);
                     }
                 }
-            } catch{
-                // No-op
+            } 
+            catch (error) {
+                // Code to handle the exception
+                console.log('An error occurred:', error.message);
             }
             finally {
                 // Remove old node
