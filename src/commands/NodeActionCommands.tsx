@@ -211,7 +211,7 @@ export function addNodeActionCommands(
                         title: `${selected_node.name} cannot be reloaded`,
                         buttons: [Dialog.warnButton({ label: 'OK' })]
                     })
-                    return
+                    continue
                 }
                 if (selected_node.name.startsWith("Start") || selected_node.name.startsWith("Finish")) {
                     continue

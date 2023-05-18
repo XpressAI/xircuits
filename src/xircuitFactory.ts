@@ -28,7 +28,7 @@ import { commandIDs } from './components/xircuitBodyWidget';
 import { LoggerCommandIDs } from './log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
 import { RunSwitcher } from './components/RunSwitcher';
-import { lockIcon, xircuitsIcon } from './ui-components/icons';
+import { lockIcon, reloadAllIcon, xircuitsIcon } from './ui-components/icons';
 
 const XPIPE_CLASS = 'xircuits-editor';
 
@@ -199,7 +199,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
      * Create a reload all button toolbar item.
      */
     let reloadAllNodesButton = new ToolbarButton({
-      icon: bugIcon,
+      icon: reloadAllIcon,
       tooltip: 'Reload all nodes',
       onClick: (): void => {
         this.commands.execute(commandIDs.reloadAllNodes);
