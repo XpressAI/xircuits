@@ -218,7 +218,19 @@ export function addNodeActionCommands(
                 }
 
                 let current_node = await fetchNodeByName(selected_node.name)
-                let node = AdvancedComponentLibrary({ model: current_node });
+
+                let node;
+
+                try {
+                    node = AdvancedComponentLibrary({ model: current_node });
+                  } catch (error) {
+                    let path = selected_node.getOptions()["extras"].path;
+                    console.log(`Error reloading component from path: ${path}. Error: ${error.message}`);
+                    selected_node.getOptions().extras["tip"] = `Component could not be loaded from path: \`${path}\`.\nPlease ensure that the component exists!`;
+                    selected_node.getOptions().extras["borderColor"]="red";
+                    continue;
+                  }
+
                 let nodePositionX = selected_node.getX();
                 let nodePositionY = selected_node.getY();
                 
