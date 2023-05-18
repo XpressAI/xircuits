@@ -3,6 +3,7 @@ import { commandIDs } from '../components/xircuitBodyWidget';
 import { ITranslator } from '@jupyterlab/translation';
 import { IXircuitsDocTracker } from '../index';
 import * as _ from 'lodash';
+import { NodeModel } from '@projectstorm/react-diagrams';
 import { CustomNodeModel } from '../components/CustomNodeModel';
 import { XPipePanel } from '../xircuitWidget';
 import { Dialog, showDialog } from '@jupyterlab/apputils';
@@ -38,7 +39,7 @@ export function addNodeActionCommands(
         );
     }
 
-    function selectedNode() {
+    function getLastSelectedNode() {
         const widget = tracker.currentWidget?.content as XPipePanel;
         const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
         let node;
@@ -49,7 +50,7 @@ export function addNodeActionCommands(
     //Add command to open node's script at specific line
     commands.addCommand(commandIDs.openScript, {
         execute: async (args) => {
-            const node = selectedNode();
+            const node = getLastSelectedNode();
             const nodePath = args['nodePath'] as string ?? node.extras.path;
             const nodeName = args['nodeName'] as string ?? node.name;
             const nodeLineNo = args['nodeLineNo'] as number ?? node.extras.lineNo;
@@ -171,7 +172,7 @@ export function addNodeActionCommands(
         label: trans.__('Edit'),
         isEnabled: () => {
             let isNodeSelected: boolean;
-            const node = selectedNode();
+            const node = getLastSelectedNode();
             if (node.getOptions()["name"].startsWith("Literal")) {
                 isNodeSelected = true;
             }
@@ -194,74 +195,95 @@ export function addNodeActionCommands(
         }
     });
 
-    //Add command to reload selected node
+    // Add command to reload selected node
     commands.addCommand(commandIDs.reloadNode, {
         execute: async () => {
             const widget = tracker.currentWidget?.content as XPipePanel;
-            const selected_node = selectedNode();
+            const selected_entities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
+            const selected_nodes = selected_entities.filter(entity => entity instanceof NodeModel) as CustomNodeModel[];
+            const nodesToRemove = [];
 
-            // When a General Component is selected, just return
-            if (selected_node.name.startsWith("Literal") || selected_node.name.startsWith("Argument")) {
-                showDialog({
-                    title: `${selected_node.name} cannot be reloaded`,
-                    buttons: [Dialog.warnButton({ label: 'OK' })]
-                })
-                return
-            }
-            if (selected_node.name.startsWith("Start") || selected_node.name.startsWith("Finish")) {
-                return
-            }
+            for (let selected_node of selected_nodes) {
 
-            const current_node = await fetchNodeByName(selected_node.name)
-            const node = AdvancedComponentLibrary({ model: current_node });
-            const nodePosition = selected_node.position;
+                // When a General Component is selected, just return
+                if (selected_node.name.startsWith("Literal") || selected_node.name.startsWith("Argument")) {
+                    showDialog({
+                        title: `${selected_node.name} cannot be reloaded`,
+                        buttons: [Dialog.warnButton({ label: 'OK' })]
+                    })
+                    return
+                }
+                if (selected_node.name.startsWith("Start") || selected_node.name.startsWith("Finish")) {
+                    continue
+                }
 
-            // Add node at given position
-            node.setPosition(nodePosition);
-            widget.xircuitsApp.getDiagramEngine().getModel().addNode(node);
+                let current_node = await fetchNodeByName(selected_node.name)
+                let node = AdvancedComponentLibrary({ model: current_node });
+                let nodePositionX = selected_node.getX();
+                let nodePositionY = selected_node.getY();
+                
+                // Add node at given position
+                node.setPosition(nodePositionX, nodePositionY);
+                widget.xircuitsApp.getDiagramEngine().getModel().addNode(node);
 
-            try {
-                let ports = selected_node.getPorts();
-                for (let portName in ports) {
-                    let port = ports[portName];
-            
-                    for (let linkID in port.links) {
-                        let link = port.links[linkID];
-            
-                        if (link.getSourcePort() === port) {
-                            let sourcePortName = link.getSourcePort().getName();
-                            let newSourcePort = node.getPorts()[sourcePortName];
-                            if (newSourcePort) {
-                                link.setSourcePort(newSourcePort);
-                            } else {
-                                console.error("Error: Source port not found in the new node.");
+                try {
+                    let ports = selected_node.getPorts();
+                    for (let portName in ports) {
+                        let port = ports[portName];
+                
+                        for (let linkID in port.links) {
+                            let link = port.links[linkID];
+                
+                            if (link.getSourcePort() === port) {
+                                let sourcePortName = link.getSourcePort().getName();
+                                let newSourcePort = node.getPorts()[sourcePortName];
+                                if (newSourcePort) {
+                                    link.setSourcePort(newSourcePort);
+                                } else {
+                                    console.log(`Source port '${sourcePortName}' not found in reloaded node '${node.name}'.`);
+                                    widget.xircuitsApp.getDiagramEngine().getModel().removeLink(link);
+                                    continue
+                                }
+                
+                            } else if (link.getTargetPort() === port) {
+                                let targetPortName = link.getTargetPort().getName();
+                                let newTargetPort = node.getPorts()[targetPortName];
+                                if (newTargetPort) {
+                                    link.setTargetPort(newTargetPort);
+                                } else {
+                                    console.log(`Target port '${targetPortName}' not found in reloaded node '${node.name}'.`);
+                                    widget.xircuitsApp.getDiagramEngine().getModel().removeLink(link);
+                                    continue
+                                }
                             }
-
-                        } else if (link.getTargetPort() === port) {
-                            let targetPortName = link.getTargetPort().getName();
-                            let newTargetPort = node.getPorts()[targetPortName];
-                            if (newTargetPort) {
-                                link.setTargetPort(newTargetPort);
-                            } else {
-                                console.error("Error: Target port not found in the new node.");
-                            }
+                
+                            widget.xircuitsApp.getDiagramEngine().getModel().addLink(link);
                         }
-            
-                        widget.xircuitsApp.getDiagramEngine().getModel().addLink(link);
                     }
                 }
-            } 
-            catch (error) {
-                // Code to handle the exception
-                console.log('An error occurred:', error.message);
+
+                catch (error) {
+                    // Code to handle the exception
+                    console.log('An error occurred:', error.message);
+                }
+                finally {
+                    // Add old node to nodesToRemove
+                    nodesToRemove.push(selected_node);
+                }
             }
-            finally {
-                // Remove old node
-                selected_node.remove();
+
+            // Remove old nodes
+            for (const nodeToRemove of nodesToRemove) {
+                widget.xircuitsApp.getDiagramEngine().getModel().removeNode(nodeToRemove);
             }
+
+            // Repaint canvas
+            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+
         },
         label: trans.__('Reload node')
     });
+
 
     //Add command to add node given position
     commands.addCommand(commandIDs.addNodeGivenPosition, {
@@ -512,7 +534,7 @@ export function addNodeActionCommands(
         const widget = tracker.currentWidget?.content as XPipePanel;
 
         if (widget) {
-            const selected_node = selectedNode();
+            const selected_node = getLastSelectedNode();
 
             if (!selected_node.getOptions()["name"].startsWith("Literal")) {
                 showDialog({
@@ -598,6 +620,7 @@ export function addNodeActionCommands(
 
             // Remove old node
             selected_node.remove();
+            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         }
     }
 
@@ -605,7 +628,7 @@ export function addNodeActionCommands(
         const widget = tracker.currentWidget?.content as XPipePanel;
 
         if (widget) {
-            const node = selectedNode();
+            const node = getLastSelectedNode();
             if (!node) {
                 // When no node selected, just return
                 return;

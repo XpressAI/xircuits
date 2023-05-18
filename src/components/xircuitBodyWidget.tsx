@@ -615,11 +615,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		let allNodes = getAllNodesFromStartToFinish();
-		allNodes.forEach((node) => {
-			node.setSelected(true);
-			app.commands.execute(commandIDs.reloadNode)
-			node.setSelected(false);
-		});
+		allNodes.forEach(node => node.setSelected(true));
+		app.commands.execute(commandIDs.reloadNode);
+		allNodes.forEach(node => node.setSelected(false));
+		
 	}
 
 	async function getRunTypesFromConfig(request: string) {
