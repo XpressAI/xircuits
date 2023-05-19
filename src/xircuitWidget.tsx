@@ -24,6 +24,7 @@ export class XPipePanel extends ReactWidget {
   runXircuitSignal: Signal<this, any>;
   runTypeXircuitSignal: Signal<this, any>;
   lockNodeSignal: Signal<this, any>;
+  reloadAllNodesSignal: Signal<this, any>;
 
   constructor(options: any) {
     super(options);
@@ -38,6 +39,7 @@ export class XPipePanel extends ReactWidget {
     this.runXircuitSignal = options.runXircuitSignal;
     this.runTypeXircuitSignal = options.runTypeXircuitSignal;
     this.lockNodeSignal = options.lockNodeSignal;
+    this.reloadAllNodesSignal = options.reloadAllNodesSignal;
     this.xircuitsApp = new XircuitsApplication(this.app, this.shell);
   }
 
@@ -88,6 +90,7 @@ export class XPipePanel extends ReactWidget {
         runXircuitSignal={this.runXircuitSignal}
         runTypeXircuitSignal={this.runTypeXircuitSignal}
         lockNodeSignal={this.lockNodeSignal}
+        reloadAllNodesSignal={this.reloadAllNodesSignal}
       />
     );
   }
