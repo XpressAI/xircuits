@@ -614,10 +614,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		let allNodes = getAllNodesFromStartToFinish();
+		let allNodes = xircuitsApp.getDiagramEngine().getModel().getNodes()
 		allNodes.forEach(node => node.setSelected(true));
 		app.commands.execute(commandIDs.reloadNode);
-		allNodes.forEach(node => node.setSelected(false));
 		
 	}
 

@@ -202,19 +202,19 @@ export function addNodeActionCommands(
             const selected_entities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
             const selected_nodes = selected_entities.filter(entity => entity instanceof NodeModel) as CustomNodeModel[];
             const nodesToRemove = [];
+            const linksToRemove = [];
+            const nodesToHighlight = [];
 
             for (let selected_node of selected_nodes) {
 
-                // When a General Component is selected, just return
-                if (selected_node.name.startsWith("Literal") || selected_node.name.startsWith("Argument")) {
-                    showDialog({
-                        title: `${selected_node.name} cannot be reloaded`,
-                        buttons: [Dialog.warnButton({ label: 'OK' })]
-                    })
-                    continue
-                }
-                if (selected_node.name.startsWith("Start") || selected_node.name.startsWith("Finish")) {
-                    continue
+                if (
+                    selected_node.name.startsWith("Literal") || 
+                    selected_node.name.startsWith("Argument") ||
+                    selected_node.name.startsWith("Start") ||
+                    selected_node.name.startsWith("Finish")
+                ) {
+                    console.info(selected_node.name + " cannot be reloaded.");
+                    continue;
                 }
 
                 let current_node = await fetchNodeByName(selected_node.name)
@@ -228,6 +228,7 @@ export function addNodeActionCommands(
                     console.log(`Error reloading component from path: ${path}. Error: ${error.message}`);
                     selected_node.getOptions().extras["tip"] = `Component could not be loaded from path: \`${path}\`.\nPlease ensure that the component exists!`;
                     selected_node.getOptions().extras["borderColor"]="red";
+                    nodesToHighlight.push(selected_node)
                     continue;
                   }
 
@@ -237,7 +238,6 @@ export function addNodeActionCommands(
                 // Add node at given position
                 node.setPosition(nodePositionX, nodePositionY);
                 widget.xircuitsApp.getDiagramEngine().getModel().addNode(node);
-
                 try {
                     let ports = selected_node.getPorts();
                     for (let portName in ports) {
@@ -253,7 +253,7 @@ export function addNodeActionCommands(
                                     link.setSourcePort(newSourcePort);
                                 } else {
                                     console.log(`Source port '${sourcePortName}' not found in reloaded node '${node.name}'.`);
-                                    widget.xircuitsApp.getDiagramEngine().getModel().removeLink(link);
+                                    linksToRemove.push(link)
                                     continue
                                 }
                 
@@ -264,7 +264,7 @@ export function addNodeActionCommands(
                                     link.setTargetPort(newTargetPort);
                                 } else {
                                     console.log(`Target port '${targetPortName}' not found in reloaded node '${node.name}'.`);
-                                    widget.xircuitsApp.getDiagramEngine().getModel().removeLink(link);
+                                    linksToRemove.push(link)
                                     continue
                                 }
                             }
@@ -284,12 +284,18 @@ export function addNodeActionCommands(
                 }
             }
 
-            // Remove old nodes
+            // Remove old nodes and links
             for (const nodeToRemove of nodesToRemove) {
                 widget.xircuitsApp.getDiagramEngine().getModel().removeNode(nodeToRemove);
             }
 
+            for (const linkToRemove of linksToRemove) {
+                widget.xircuitsApp.getDiagramEngine().getModel().removeLink(linkToRemove);
+            }
+
             // Repaint canvas
+            selected_nodes.forEach(node => node.setSelected(false));
+            nodesToHighlight.forEach(node => node.setSelected(true));
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();
 
         },
