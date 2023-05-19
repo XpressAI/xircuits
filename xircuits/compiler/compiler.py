@@ -18,7 +18,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('source_file', type=argparse.FileType('r', encoding='utf-8'))
-    parser.add_argument('out_file', type=argparse.FileType('w'))
+    parser.add_argument('out_file', type=argparse.FileType('w', encoding='utf-8'))
     parser.add_argument("python_paths_file", nargs='?', default=None, type=argparse.FileType('r'),
                         help="JSON file with a mapping of component name to required python path. "
                              "e.g. {'MyComponent': '/some/path'}")

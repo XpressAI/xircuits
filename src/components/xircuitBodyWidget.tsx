@@ -801,20 +801,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				if (portAnyType == undefined) return;
 				nodeType = portAnyType.nodeType;
 				varInput = portAnyType.varInput;
-				errorMsg = portAnyType.errorMsg;
 				break;
 			default:
 				nodeType = portType.charAt(0).toUpperCase() + portType.slice(1);
 				break;
 		}
-		if (errorMsg != undefined) {
-			if (nodeType == ('Float' || 'Integer')) {
-				showErrorDialog('Error : Input have non-numeric values', errorMsg);
-			} else {
-				showErrorDialog('Error : Type undefined', errorMsg);
-			}
-			return;
-		}
+
 		let current_node = await fetchNodeByName('Literal ' + nodeType);
 		let node = await GeneralComponentLibrary({ model: current_node, variableValue: varInput });
 		if (node == undefined) return;
