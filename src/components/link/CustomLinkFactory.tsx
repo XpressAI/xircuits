@@ -16,7 +16,7 @@ namespace S {
 
 	const selected = css`
 		stroke-dasharray: 10, 2;
-		animation: ${Keyframes} 1s linear infinite;
+		animation: ${Keyframes} 1s steps(24) infinite;
 	`;
 
 	export const Path = styled.path<{ selected: boolean }>`
