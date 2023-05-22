@@ -35,7 +35,7 @@ export async function getItsLiteralType(){
 	let varValue = dialogResult["value"][varOfAnyTypeTitle];
 	let varType = varValue.charAt(0);
 	let varInput : string = varValue.slice(1);
-	var { nodeType, errorMsg } = varTypeChecker(varType, varInput, varValue);
+	let nodeType = varTypeChecker(varType, varInput, varValue);
 	
 	while (!checkInput(varInput, nodeType)){
 
@@ -46,11 +46,11 @@ export async function getItsLiteralType(){
 		varValue = dialogResult["value"][varOfAnyTypeTitle];
 		varType = varValue.charAt(0);
 		varInput = varValue.slice(1);
-		var { nodeType, errorMsg } = varTypeChecker(varType, varInput, varValue);
+		 nodeType = varTypeChecker(varType, varInput, varValue);
 
 	}
 
-	return { nodeType, varInput, errorMsg}
+	return { nodeType, varInput }
 }
 
 export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inputType }): JSX.Element => {
@@ -82,16 +82,14 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 				</h5>
 			);
 		} else if (type == 'Variable'){
-			let dictSymbol = '{';
 			return (
 				<h5 style={{ marginTop: 0, marginBottom: 5 }}>
 					<p>Determine your variable type by inserting the first char as below: </p>
 					<li> " : String</li>
-					<li> # : Integer</li>
-					<li> # with '.' : Float</li>
+					<li> # : Integer or Float</li>
 					<li> [ : List</li>
 					<li> ( : Tuple</li>
-					<li> {dictSymbol} : Dict</li>
+					<li> {'{'} : Dict</li>
 					<li> !true / !True / !1 / !t : True</li>
 					<li> !false / !False / !0 / !nil : False</li>
 					<p>For Example: "Hello World or #15 or !true</p>
@@ -175,58 +173,28 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 	);
 }
 
-function varTypeChecker(varType:string, varInput:string, varValue:string){
-	var nodeType;
-	var errorMsg;
+function varTypeChecker(varType, varInput, varValue){
+    const typeCheckDict = {
+        '"': () => 'String',
+        '#': () => Number.isInteger(Number(varInput)) ? 'Integer' : 'Float',
+        '[': () => 'List',
+        '(': () => 'Tuple',
+        '{': () => 'Dict',
+        '!': () => {
+            let boolValue = varValue.slice(1).toLowerCase();
+            if (boolValue === 'true' || boolValue === '1' || boolValue === 't') {
+                return 'True';
+            } else if (boolValue === 'false' || boolValue === '0' || boolValue === 'nil') {
+                return 'False';
+            }
+        }
+    };
 
-	switch (varType) {
-		case '"':
-			nodeType = 'String';
-			break;
-		case '#':
-			const isInputFloat = varInput.search('.');
-			let onlyNum = Number(varInput);
-			if (isNaN(onlyNum)){
-				errorMsg = `Variable's input (${varInput}) contain non-numeric value. Only allow '.' for Float` ;
-				break;
-			}
-			if (isInputFloat == 0) {
-				nodeType = 'Float';
-			} else {
-				nodeType = 'Integer';
-			}
-			break;
-		case '[':
-			nodeType = 'List';
-			break;
-		case '(':
-			nodeType = 'Tuple';
-			break;
-		case '{':
-			nodeType = 'Dict';
-			break;
-		case '!':
-			let boolValue = varValue.slice(1);
-			switch (boolValue) {
-				case 'true':
-				case 'True':
-				case '1':
-				case 't':
-					nodeType = 'True';
-					break;
-				case 'false':
-				case 'False':
-				case '0':
-				case 'nil':
-					nodeType = 'False';
-					break;
-			}
-			break;
-		default:
-			// When type is undefined, show error
-			errorMsg = `Type is undefined or not provided. Please insert the first character as shown in example.` ;
-			break;
-	}
+    let nodeType = typeCheckDict[varType] ? typeCheckDict[varType]() : 'undefined_any';
 
-	return { nodeType, errorMsg };
+    if (nodeType == 'undefined_any') {
+        console.error(`Type is undefined or not provided. Please insert the first character as shown in example.`);
+    }
+
+    return nodeType;
 }

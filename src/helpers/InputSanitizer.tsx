@@ -1,65 +1,79 @@
-function checkInput(input: any, datatype: string): boolean {
-    let wrappedInput = "";
-    let lowercaseDatatype = datatype.toLowerCase();
+function checkInput(input: any, dataType: string): boolean {
 
-    switch (lowercaseDatatype) {
+    const normalizedDataType = dataType.toLowerCase();
+    let processedInput = "";
+    let errorDetails = "";
+    let exampleInput = "";
+
+    const formatError = (detail: string, example: string) => `Invalid ${dataType} input: ${detail} \nExample of a correct ${dataType} format: ${example}`;
+    
+    switch (normalizedDataType) {
+        case "int":
+        case "integer":
+        case "float":
+            if (isNaN(Number(input))) {
+                errorDetails = "Input is not a number.";
+                exampleInput = normalizedDataType === "float" ? "e.g. 3.14" : "e.g. 3";
+                alert(formatError(errorDetails, exampleInput));
+                return false;
+            }
+            processedInput = `${input}`;
+            break;
         case "string":
         case "secret":
-            wrappedInput = `"${input}"`;
+            processedInput = JSON.stringify(input);
             break;
         case "tuple":
-            wrappedInput = `(${input})`;
+            processedInput = `(${input})`;
             break;
         case "list":
-            wrappedInput = `[${input}]`;
+            processedInput = `[${input}]`;
             break;
         case "dict":
-            wrappedInput = `{${input}}`;
+            processedInput = `{${input}}`;
             break;
+        case "undefined_any":
+            //handler if called from any inputDialogue
+            alert(`Type is undefined or not provided. Please insert the first character as shown in example.`);
+            return false;
         default:
             alert("Invalid datatype: Please provide a valid datatype.");
             return false;
     }
 
     try {
-        JSON.parse(wrappedInput);
+        JSON.parse(processedInput);
     } catch (e) {
-        let errorMessage = "Invalid " + datatype + " input: ";
-        let exampleMessage = "\nExample of a correct " + datatype + " format: ";
-        let example = "";
-
-        if (wrappedInput.includes("'")) {
-            errorMessage += "Please use double quotes instead of single quotes.";
-        } else if (/(?:\{|\[|\()(?:\w+)/.test(wrappedInput)) {
-            errorMessage += "Please make sure to use double quotes for your variables.";
+        if (processedInput.includes("'")) {
+            errorDetails = "Please use double quotes instead of single quotes.";
+        } else if (/(?:\{|\[|\()(?:\w+)/.test(processedInput)) {
+            errorDetails = "Please ensure to use double quotes for your variables.";
         } else {
-            // Other JSON parsing errors
-            errorMessage += "Please check the console log for details.";
+            errorDetails = "Please check the console log for details.";
             console.error("Parsing error:", e.message);
         }
 
-        // Add example message
-        switch (lowercaseDatatype) {
+        switch (normalizedDataType) {
             case "string":
             case "secret":
-                example = '"example_string"';
+                exampleInput = '"example_string"';
                 break;
             case "tuple":
-                example = '"item1", "item2", "item3"';
+                exampleInput = '"item1", "item2", "item3"';
                 break;
             case "list":
-                example = '"item1", "item2", 123';
+                exampleInput = '"item1", "item2", 123';
                 break;
             case "dict":
-                example = '"key1": "value1", "key2": 123';
+                exampleInput = '"key1": "value1", "key2": 123';
                 break;
         }
 
-        if (lowercaseDatatype !== "secret") {
-            errorMessage += "\n\nYour input: " + input;
+        if (normalizedDataType !== "secret") {
+            errorDetails += "\n\nYour input: " + input;
         }
 
-        alert(errorMessage + "\n" + exampleMessage + example);
+        alert(formatError(errorDetails, exampleInput));
         return false;
     }
 

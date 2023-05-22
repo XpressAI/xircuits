@@ -31,7 +31,8 @@ class CodeGenerator:
             self._generate_trailer()
         ))
 
-        filelike.write(unparse(ast.Module(body=module_body, type_ignores=[])))
+        with open(filelike.name, 'w', encoding='utf-8') as f:
+            f.write(unparse(ast.Module(body=module_body, type_ignores=[])))
 
     def _generate_python_path(self):
         fixed_code = """
