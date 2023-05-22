@@ -43,3 +43,18 @@ def request_submodule_library(component_library_query):
     
     print("Cloning " + submodule_path + " from " + submodule_url)
     Repo.clone_from(submodule_url, submodule_path, progress=Progress())
+
+
+def get_submodules(repo, ref="master"):
+    try:
+        gitmodules_content = repo.get_contents(".gitmodules", ref=ref)
+        gitmodules = gitmodules_content.decoded_content.decode("utf-8")
+        
+        submodules = []
+        for line in gitmodules.split("\n"):
+            if "path = " in line:
+                submodules.append(line.split(" = ")[-1].strip())
+        return submodules
+    
+    except:
+        return []

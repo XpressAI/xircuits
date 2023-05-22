@@ -106,7 +106,7 @@ setup_args = dict(
         'console_scripts': [
             'xircuits = xircuits.start_xircuits:main',
             'xircuits-examples = xircuits.start_xircuits:download_examples',
-            'xircuits-components = xircuits.start_xircuits:download_component_library',
+            'xircuits-components = xircuits.start_xircuits:fetch_component_library',
             'xircuits-submodules = xircuits.start_xircuits:download_submodule_library',
             'xircuits-compile = xircuits.compiler.compiler:main'
             ]}
