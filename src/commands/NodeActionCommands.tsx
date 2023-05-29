@@ -456,49 +456,38 @@ export function addNodeActionCommands(
     function cutNode(): void {
         const widget = tracker.currentWidget?.content as XPipePanel;
 
-        if (widget) {
-            const engine = widget.xircuitsApp.getDiagramEngine();
-            const selected = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities()
-            const copies = selected.map(entity =>
-                entity.serialize()
-            );
+        if (!widget) return;
 
-            // TODO: Need to make this event working to be on the command manager, so the user can undo
-            // and redo it.
-            // engine.fireEvent(
-            //     {
-            //         nodes: selected,
-            //         links: selected.reduce(
-            //             (arr, node) => [...arr, ...node.getAllLinks()],
-            //             [],
-            //         ),
-            //     },
-            //     'entitiesRemoved',
-            // );
-            selected.forEach(node => node.remove());
-            engine.repaintCanvas();
+        const engine = widget.xircuitsApp.getDiagramEngine();
+        const selected = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities()
+        const copies = selected.map(entity =>
+            entity.serialize()
+        );
 
-            localStorage.setItem('clipboard', JSON.stringify(copies));
+        selected.forEach(node => node.remove());
+        engine.repaintCanvas();
 
-        }
+        localStorage.setItem('clipboard', JSON.stringify(copies));
+
+    
     }
 
     function copyNode(): void {
         const widget = tracker.currentWidget?.content as XPipePanel;
 
-        if (widget) {
-            const copies = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities().map(entity =>
-                entity.serialize(),
-            );
+        if (!widget) return;
+        console.log("copy called!")
 
-            localStorage.setItem('clipboard', JSON.stringify(copies));
+        const copies = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities().map(entity =>
+            entity.serialize(),
+        );
 
-        }
+        localStorage.setItem('clipboard', JSON.stringify(copies));
     }
 
     function pasteNode(): void {
         const widget = tracker.currentWidget?.content as XPipePanel;
-        
+    
         if (!widget) return;
     
         const engine = widget.xircuitsApp.getDiagramEngine();
@@ -514,26 +503,31 @@ export function addNodeActionCommands(
         const clipboardNodes = clipboard.filter(serialized => serialized.type.includes('node'));
         const clipboardLinks = clipboard.filter(serialized => serialized.type.includes('link'));
     
+        let totalX = 0, totalY = 0, nodesCount = clipboardNodes.length;
+    
         clipboardNodes.forEach(serializedNode => {
-
-            // for each nodes in clipboard, fetch the instance based on the id.
             let originalNodeInstance = model.getNodes().find(node => node.getID() === serializedNode.id);
             let clonedNodeModelInstance;
-            
+    
             if (originalNodeInstance) {
                 clonedNodeModelInstance = originalNodeInstance.clone();
             } else {
-                // if node does not exist in the new canvas, create a new instance
                 clonedNodeModelInstance = createNewNodeInstance(model, engine, serializedNode);
             }
     
             newNodeModels.push(clonedNodeModelInstance);
-            // map the serialized node to the newly generated node
             idMap = mapNodeAndPortIds(serializedNode, clonedNodeModelInstance, idMap);
+    
+            totalX += clonedNodeModelInstance.getX();
+            totalY += clonedNodeModelInstance.getY();
         });
     
-        placeNodes(model, newNodeModels);
-        recreateLinks(model, clipboardLinks, idMap);
+        // Calculate the center of the group of nodes.
+        const centerX = totalX / nodesCount;
+        const centerY = totalY / nodesCount;
+    
+        placeNodes(engine, model, newNodeModels, widget.mousePosition, centerX, centerY);
+        recreateLinks(engine, model, clipboardLinks, idMap, widget.mousePosition, centerX, centerY);
     
         engine.repaintCanvas();
     }
@@ -573,28 +567,42 @@ export function addNodeActionCommands(
         return idMap;
     }
     
-    function placeNodes(model: SRD.DiagramModel, newNodeModels: CustomNodeModel[]): void {
-        newNodeModels.forEach(modelInstance => {
-            modelInstance.setPosition(modelInstance.getX() + 10, modelInstance.getY() + 10);
+    function placeNodes(engine: SRD.DiagramEngine, model: SRD.DiagramModel, newNodeModels: CustomNodeModel[], mousePosition: { x: number; y: number }, centerX: number, centerY: number): void {
+        let clientMouseEvent = { clientX: mousePosition.x, clientY: mousePosition.y };
+        let relativeMousePosition = engine.getRelativeMousePoint(clientMouseEvent);
+    
+        newNodeModels.forEach((modelInstance) => {
+            // Get the offset position of the node relative to the group's center
+            let nodeOffsetX = modelInstance.getX() - centerX;
+            let nodeOffsetY = modelInstance.getY() - centerY;
+    
+            modelInstance.setPosition(
+                relativeMousePosition.x + nodeOffsetX,
+                relativeMousePosition.y + nodeOffsetY
+            );
+    
             model.addNode(modelInstance);
     
-            if (modelInstance.getOptions()['type'] == 'default') model.removeNode(modelInstance);
+            if (modelInstance.getOptions()['type'] === 'default') {
+                model.removeNode(modelInstance);
+            }
     
             modelInstance.setSelected(true);
         });
     }
     
-    function recreateLinks(model: SRD.DiagramModel, clipboardLinks, idMap): void {
+    
+    function recreateLinks(engine: SRD.DiagramEngine, model: SRD.DiagramModel, clipboardLinks, idMap, mousePosition: { x: number; y: number }, centerX: number, centerY: number): void {
         clipboardLinks.forEach(serializedLink => {
             const newSourceID = idMap[serializedLink.sourcePort];
             const newTargetID = idMap[serializedLink.targetPort];
     
             if (newSourceID && newTargetID) {
                 const { sourcePort, targetPort } = getSourceAndTargetPorts(model, newSourceID, newTargetID);
-                if(sourcePort && targetPort) recreateLink(model, serializedLink, sourcePort, targetPort);
+                if(sourcePort && targetPort) recreateLink(engine, model, serializedLink, sourcePort, targetPort, mousePosition, centerX, centerY);
             }
         });
-    }
+    }    
     
     function getSourceAndTargetPorts(model: SRD.DiagramModel, newSourceID: string, newTargetID: string): { sourcePort, targetPort } {
         let sourcePort, targetPort;
@@ -609,29 +617,40 @@ export function addNodeActionCommands(
         return { sourcePort, targetPort };
     }
     
-    function recreateLink(model: SRD.DiagramModel, serializedLink, sourcePort, targetPort): void {
+    function recreateLink(engine: SRD.DiagramEngine, model: SRD.DiagramModel, serializedLink, sourcePort, targetPort, mousePosition: { x: number; y: number }, centerX: number, centerY: number): void {
         let originalLink = model.getLinks().find(link => link.getID() === serializedLink.id);
         let clonedLink;
         let points = [];
+    
+        let clientMouseEvent = { clientX: mousePosition.x, clientY: mousePosition.y };
+        let relativeMousePosition = engine.getRelativeMousePoint(clientMouseEvent);
     
         if (originalLink) {
             clonedLink = originalLink.clone();
         } else {
             clonedLink = createNewLink(serializedLink);
-            points = serializedLink.points.map(point => new PointModel({ id: point.id, 
-                                                                        link: clonedLink, 
-                                                                        position: new Point(point.x, point.y) 
-                                                                    }));
+            points = serializedLink.points.map(point => new PointModel({ id: point.id, link: clonedLink, position: new Point(point.x, point.y) }));
         }
     
         clonedLink.setSourcePort(sourcePort);
         clonedLink.setTargetPort(targetPort);
-    
         clonedLink.setSelected(true);
-
-        // if we have points in the original links, recreate them
+    
         if (points.length > 0) clonedLink.setPoints(points);
-        clonedLink.getPoints().forEach(point => point.setSelected(true));
+    
+        clonedLink.getPoints().forEach((point) => {
+            // Adjust each point's position relative to the group's center
+            let pointOffsetX = point.getX() - centerX;
+            let pointOffsetY = point.getY() - centerY;
+    
+            point.setPosition(
+                relativeMousePosition.x + pointOffsetX,
+                relativeMousePosition.y + pointOffsetY
+            );
+    
+            point.setSelected(true);
+        });
+    
         model.addLink(clonedLink);
     }
     
@@ -640,7 +659,6 @@ export function addNodeActionCommands(
         else if(serializedLink.type === 'triangle-link') return new TriangleLinkModel(serializedLink);
     }
     
-
 
     async function editLiteral(): Promise<void> {
         const widget = tracker.currentWidget?.content as XPipePanel;

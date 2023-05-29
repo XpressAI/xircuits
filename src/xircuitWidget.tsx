@@ -3,8 +3,7 @@ import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
 import { Context } from '@jupyterlab/docregistry';
 import { BodyWidget } from './components/xircuitBodyWidget';
-import React, {  } from 'react';
-import * as _ from 'lodash';
+import React from 'react';
 import { ServiceManager } from '@jupyterlab/services';
 import { XircuitsApplication } from './components/XircuitsApp';
 
@@ -26,6 +25,9 @@ export class XPipePanel extends ReactWidget {
   lockNodeSignal: Signal<this, any>;
   reloadAllNodesSignal: Signal<this, any>;
 
+  // Add mousePosition state
+  mousePosition = { x: 0, y: 0 };
+
   constructor(options: any) {
     super(options);
     this.app = options.app;
@@ -44,20 +46,18 @@ export class XPipePanel extends ReactWidget {
   }
 
   handleEvent(event: Event): void {
-    if(event.type === 'mouseup'){
-      // force focus on the editor in order stop key event propagation (e.g. "Delete" key) into unintended
-      // parts of jupyter lab.
+    if (event instanceof MouseEvent && event.type === 'mouseup') {
+      // Update mousePosition state with current mouse position
+      this.mousePosition = { x: event.clientX, y: event.clientY };
+      
       this.node.focus();
-      // Just to enable back the loses focus event
       this.node.addEventListener('blur', this, true);
-    }else if(event.type === 'blur'){
-      // Unselect any selected nodes when the editor loses focus
+    } else if (event.type === 'blur') {
       const deactivate = x => x.setSelected(false);
       const model = this.xircuitsApp.getDiagramEngine().getModel();
       model.getNodes().forEach(deactivate);
       model.getLinks().forEach(deactivate);
-    }else if(event.type === 'contextmenu'){
-      // Disable loses focus event when opening context menu
+    } else if (event.type === 'contextmenu') {
       this.node.removeEventListener('blur', this, true);
     }
   }
