@@ -1,3 +1,4 @@
+import * as SRD from '@projectstorm/react-diagrams';
 import { JupyterFrontEnd } from '@jupyterlab/application';
 import { commandIDs } from '../components/xircuitBodyWidget';
 import { ITranslator } from '@jupyterlab/translation';
@@ -497,144 +498,148 @@ export function addNodeActionCommands(
 
     function pasteNode(): void {
         const widget = tracker.currentWidget?.content as XPipePanel;
+        
+        if (!widget) return;
     
-        if (widget) {
-            const engine = widget.xircuitsApp.getDiagramEngine();
-            const model = widget.xircuitsApp.getDiagramEngine().getModel();
+        const engine = widget.xircuitsApp.getDiagramEngine();
+        const model = engine.getModel();
+        const clipboard = JSON.parse(localStorage.getItem('clipboard'));
     
-            const clipboard = JSON.parse(localStorage.getItem('clipboard'));
-            if (!clipboard) return;
+        if (!clipboard) return;
+        model.clearSelection();
     
-            model.clearSelection();
+        const newNodeModels = [];
+        let idMap = {};
+    
+        const clipboardNodes = clipboard.filter(serialized => serialized.type.includes('node'));
+        const clipboardLinks = clipboard.filter(serialized => serialized.type.includes('link'));
+    
+        clipboardNodes.forEach(serializedNode => {
+
+            // for each nodes in clipboard, fetch the instance based on the id.
+            let originalNodeInstance = model.getNodes().find(node => node.getID() === serializedNode.id);
+            let clonedNodeModelInstance;
             
-            const newNodeModels = [];
-            let idMap = {};
-            
-            let clipboardNodes = clipboard.filter(serialized => serialized.type.includes('node'));
-            let clipboardLinks = clipboard.filter(serialized => serialized.type.includes('link'));
-
-            for(let serializedNode of clipboardNodes) {
-                
-                let originalNodeInstance = model.getNodes().find(node => node.getID() == serializedNode.id);
-
-                let clonedNodeModelInstance;
-                
-                // This will return false if you paste from a canvas without the original node
-                if (originalNodeInstance) {
-                    clonedNodeModelInstance = originalNodeInstance.clone();
-                } else {
-                    // Create new node
-                    const clonedNodeModelInstance = model
-                        .getActiveNodeLayer()
-                        .getChildModelFactoryBank(engine)
-                        .getFactory(serializedNode.type)
-                        .generateModel({ initialConfig: serializedNode });
-
-                    clonedNodeModelInstance.deserialize({
-                        engine: engine,
-                        data: serializedNode,
-                        registerModel: () => {},
-                        getModel: function <T extends BaseModel<BaseModelGenerics>>(id: string): Promise<T> {
-                            throw new Error('Function not implemented.');
-                        }
-                    });
-                }
-                
-                newNodeModels.push(clonedNodeModelInstance);
-
-                // Map the node ID
-                idMap[serializedNode.id] = clonedNodeModelInstance.getID();
-
-                // Map the port IDs by name
-                serializedNode.ports.forEach(serializedPort => {
-                    // We will find the corresponding new port by matching the name
-                    const correspondingNewPort: any = Object.values(clonedNodeModelInstance.getPorts()).find((newPort: CustomPortModel) => newPort.getName() === serializedPort.name);
-                
-                    // Check if a corresponding port was found
-                    if(correspondingNewPort){
-                        // Map the port ID
-                        idMap[serializedPort.id] = correspondingNewPort.getID();
-                    }
-                });
-
+            if (originalNodeInstance) {
+                clonedNodeModelInstance = originalNodeInstance.clone();
+            } else {
+                // if node does not exist in the new canvas, create a new instance
+                clonedNodeModelInstance = createNewNodeInstance(model, engine, serializedNode);
             }
-            
-            for(let modelInstance of newNodeModels) {
-                const oldX = modelInstance.getX();
-                const oldY = modelInstance.getY();
     
-                modelInstance.setPosition(oldX + 10, oldY + 10)
-                model.addNode(modelInstance);
-                // Remove any empty/default node
-                if (modelInstance.getOptions()['type'] == 'default') model.removeNode(modelInstance)
-                modelInstance.setSelected(true);
-            }
-
-            // Now go through the clipboard again, this time recreating the links
-            clipboardLinks.forEach(serializedLink => {
-
-                // Use the idMap to get the new IDs of the source and target ports
-                const newSourceID = idMap[serializedLink.sourcePort];
-                const newTargetID = idMap[serializedLink.targetPort];
-
-                // Ensure that both source and target ports exist
-                if (newSourceID && newTargetID) {
-
-                    // Get the ports from their respective nodes
-                    let sourcePort, targetPort;
-
-                    model.getSelectedEntities().forEach((node: NodeModel) => {
-
-                        if(node.getPortFromID(newSourceID)) {
-                            sourcePort = node.getPortFromID(newSourceID);
-                        }
-                        if(node.getPortFromID(newTargetID)) {
-                            targetPort = node.getPortFromID(newTargetID);
-                        }
-                    });
-
-                    if(sourcePort && targetPort) {
-
-                        let originalLink = model.getLinks().find(link => link.getID() == serializedLink.id);
-                
-                        let clonedLink;
-                        let points = [];
-
-                        if (originalLink) {
-                            clonedLink = originalLink.clone();
-                        } else {
-                            if(serializedLink.type === 'custom-link') {
-                                clonedLink = new CustomLinkModel(serializedLink);
-                            } else if(serializedLink.type === 'triangle-link') {
-                                clonedLink = new TriangleLinkModel(serializedLink);
-                            }
-
-                            // Add points to the link
-                            serializedLink.points.forEach((point)=> {
-                                    let newPoint = new PointModel({ id:point.id, link: clonedLink, position: new Point(point.x, point.y) })
-                                    points.push(newPoint)
-                            })
-                        }
-                
-                        clonedLink.setSourcePort(sourcePort);
-                        clonedLink.setTargetPort(targetPort);
-
-                        clonedLink.setSelected(true);
-                        if (points.length > 0) { clonedLink.setPoints(points); }
-                        clonedLink.getPoints().forEach(point => point.setSelected(true));
-                        model.addLink(clonedLink);
-
-                    }
-                }
-            
-            });
-
-            // TODO: Need to make this event working to be on the command manager, so the user can undo
-            // and redo it.
-            // engine.fireEvent({ nodes: models }, 'componentsAdded');
-            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
-        }
+            newNodeModels.push(clonedNodeModelInstance);
+            // map the serialized node to the newly generated node
+            idMap = mapNodeAndPortIds(serializedNode, clonedNodeModelInstance, idMap);
+        });
+    
+        placeNodes(model, newNodeModels);
+        recreateLinks(model, clipboardLinks, idMap);
+    
+        engine.repaintCanvas();
     }
+    
+    function createNewNodeInstance(model: SRD.DiagramModel, engine: SRD.DiagramEngine, serializedNode): NodeModel {
+        const clonedNodeModelInstance = model.getActiveNodeLayer()
+                                        .getChildModelFactoryBank(engine)
+                                        .getFactory(serializedNode.type)
+                                        .generateModel({ initialConfig: serializedNode });
+    
+        clonedNodeModelInstance.deserialize({
+            engine: engine,
+            data: serializedNode,
+            registerModel: () => {},
+            getModel: function <T extends BaseModel<BaseModelGenerics>>(id: string): Promise<T> {
+                throw new Error('Function not implemented.');
+            }
+        });
+    
+        return clonedNodeModelInstance;
+    }
+    
+    function mapNodeAndPortIds(serializedNode, clonedNodeModelInstance: CustomNodeModel, idMap) {
+        // Map the ID of the serialized node to the ID of the cloned node instance.
+        idMap[serializedNode.id] = clonedNodeModelInstance.getID();
+    
+        // For each serialized port in the serialized node...
+        serializedNode.ports.forEach(serializedPort => {
+            // ...find the corresponding port in the cloned node instance by comparing names.
+            const correspondingNewPort: any = Object.values(clonedNodeModelInstance.getPorts()).find((newPort: CustomPortModel) => newPort.getName() === serializedPort.name);
+    
+            // If the corresponding port exists, map the ID of the serialized port to the ID of the cloned port.
+            if(correspondingNewPort) idMap[serializedPort.id] = correspondingNewPort.getID();
+        });
+    
+        // Return the updated ID map.
+        return idMap;
+    }
+    
+    function placeNodes(model: SRD.DiagramModel, newNodeModels: CustomNodeModel[]): void {
+        newNodeModels.forEach(modelInstance => {
+            modelInstance.setPosition(modelInstance.getX() + 10, modelInstance.getY() + 10);
+            model.addNode(modelInstance);
+    
+            if (modelInstance.getOptions()['type'] == 'default') model.removeNode(modelInstance);
+    
+            modelInstance.setSelected(true);
+        });
+    }
+    
+    function recreateLinks(model: SRD.DiagramModel, clipboardLinks, idMap): void {
+        clipboardLinks.forEach(serializedLink => {
+            const newSourceID = idMap[serializedLink.sourcePort];
+            const newTargetID = idMap[serializedLink.targetPort];
+    
+            if (newSourceID && newTargetID) {
+                const { sourcePort, targetPort } = getSourceAndTargetPorts(model, newSourceID, newTargetID);
+                if(sourcePort && targetPort) recreateLink(model, serializedLink, sourcePort, targetPort);
+            }
+        });
+    }
+    
+    function getSourceAndTargetPorts(model: SRD.DiagramModel, newSourceID: string, newTargetID: string): { sourcePort, targetPort } {
+        let sourcePort, targetPort;
+    
+        model.getSelectedEntities().forEach((entity) => {
+            if (entity instanceof NodeModel) {
+                if(entity.getPortFromID(newSourceID)) sourcePort = entity.getPortFromID(newSourceID);
+                if(entity.getPortFromID(newTargetID)) targetPort = entity.getPortFromID(newTargetID);
+            }
+        });
+    
+        return { sourcePort, targetPort };
+    }
+    
+    function recreateLink(model: SRD.DiagramModel, serializedLink, sourcePort, targetPort): void {
+        let originalLink = model.getLinks().find(link => link.getID() === serializedLink.id);
+        let clonedLink;
+        let points = [];
+    
+        if (originalLink) {
+            clonedLink = originalLink.clone();
+        } else {
+            clonedLink = createNewLink(serializedLink);
+            points = serializedLink.points.map(point => new PointModel({ id: point.id, 
+                                                                        link: clonedLink, 
+                                                                        position: new Point(point.x, point.y) 
+                                                                    }));
+        }
+    
+        clonedLink.setSourcePort(sourcePort);
+        clonedLink.setTargetPort(targetPort);
+    
+        clonedLink.setSelected(true);
+
+        // if we have points in the original links, recreate them
+        if (points.length > 0) clonedLink.setPoints(points);
+        clonedLink.getPoints().forEach(point => point.setSelected(true));
+        model.addLink(clonedLink);
+    }
+    
+    function createNewLink(serializedLink): CustomLinkModel {
+        if(serializedLink.type === 'custom-link') return new CustomLinkModel(serializedLink);
+        else if(serializedLink.type === 'triangle-link') return new TriangleLinkModel(serializedLink);
+    }
+    
 
 
     async function editLiteral(): Promise<void> {
