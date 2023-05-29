@@ -113,7 +113,9 @@ export class XircuitsApplication {
                                 // Set points on link if exist
                                 const points = [];
                                 linkPoints.map((point)=> {
-                                        points.push(new PointModel({ id:point.id, link: link, position: new Point(point.x, point.y) }));
+                                        let newPoint = new PointModel({ id:point.id, link: link, position: new Point(point.x, point.y) })
+                                        if (point.selected) { newPoint.setSelected(true) };
+                                        points.push(newPoint)
                                 })
 
                                 newLink.setSourcePort(sourcePort);

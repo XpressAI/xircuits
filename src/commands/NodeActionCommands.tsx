@@ -506,37 +506,25 @@ export function addNodeActionCommands(
             const newNodeModels = [];
             let idMap = {};
             
-            for(let serialized of clipboard) {
+            let clipboardNodes = clipboard.filter(serialized => serialized.type.includes('node'));
+            let clipboardLinks = clipboard.filter(serialized => serialized.type.includes('link'));
 
-                if (serialized.type.includes('link')) {
+            for(let serializedNode of clipboardNodes) {
+
+                if (serializedNode.type.includes('link')) {
                     continue; // Skip this iteration if it's a link
                 }
 
-                // reload original node then clone to get same properties but different IDs
-                const originalNode = model
-                .getActiveNodeLayer()
-                .getChildModelFactoryBank(engine)
-                .getFactory(serialized.type)
-                .generateModel({ initialConfig: serialized })
-                
-                originalNode.deserialize({
-                    engine: engine,
-                    data: serialized,
-                    registerModel: () => { },
-                    getModel: function <T extends BaseModel<BaseModelGenerics>>(id: string): Promise<T> {
-                        throw new Error('Function not implemented.');
-                    }
-                });
+                let clonedNodeModelInstance: CustomNodeModel = model.getNodes().find(node => node.getID() == serializedNode.id).clone();
 
-                let clonedNodeModelInstance: CustomNodeModel = originalNode.clone()
 
                 newNodeModels.push(clonedNodeModelInstance);
 
                 // Map the node ID
-                idMap[serialized.id] = clonedNodeModelInstance.getID();
+                idMap[serializedNode.id] = clonedNodeModelInstance.getID();
 
                 // Map the port IDs by name
-                serialized.ports.forEach(serializedPort => {
+                serializedNode.ports.forEach(serializedPort => {
                     // We will find the corresponding new port by matching the name
                     const correspondingNewPort = Object.values(clonedNodeModelInstance.getPorts()).find(newPort => newPort.getName() === serializedPort.name);
 
@@ -561,38 +549,42 @@ export function addNodeActionCommands(
             }
 
             // Now go through the clipboard again, this time recreating the links
-            clipboard.forEach(serialized => {
-                if (serialized.type.includes('link')) {
-                    // Use the idMap to get the new IDs of the source and target ports
-                    const newSourceID = idMap[serialized.sourcePort];
-                    const newTargetID = idMap[serialized.targetPort];
+            clipboardLinks.forEach(serializedLink => {
+                
+                // Use the idMap to get the new IDs of the source and target ports
+                const newSourceID = idMap[serializedLink.sourcePort];
+                const newTargetID = idMap[serializedLink.targetPort];
 
-                    // Ensure that both source and target ports exist
-                    if (newSourceID && newTargetID) {
-                        // Create a new link
-                        let link = new DefaultLinkModel();
+                // Ensure that both source and target ports exist
+                if (newSourceID && newTargetID) {
 
-                        // Get the ports from their respective nodes
-                        let sourcePort, targetPort;
+                    // Get the ports from their respective nodes
+                    let sourcePort, targetPort;
 
-                        model.getSelectedEntities().forEach((node: NodeModel) => {
+                    model.getSelectedEntities().forEach((node: NodeModel) => {
 
-                            if(node.getPortFromID(newSourceID)) {
-                                sourcePort = node.getPortFromID(newSourceID);
-                            }
-                            if(node.getPortFromID(newTargetID)) {
-                                targetPort = node.getPortFromID(newTargetID);
-                            }
-                        });
-
-                        if(sourcePort && targetPort) {
-                            link.setSourcePort(sourcePort);
-                            link.setTargetPort(targetPort);
-
-                            model.addLink(link);
+                        if(node.getPortFromID(newSourceID)) {
+                            sourcePort = node.getPortFromID(newSourceID);
                         }
+                        if(node.getPortFromID(newTargetID)) {
+                            targetPort = node.getPortFromID(newTargetID);
+                        }
+                    });
+
+                    if(sourcePort && targetPort) {
+
+                        // find the link model object in the model engine
+                        let clonedLink = model.getLinks().find(link => link.getID() == serializedLink.id).clone();
+                        clonedLink.setSourcePort(sourcePort);
+                        clonedLink.setTargetPort(targetPort);
+
+                        clonedLink.setSelected(true);
+                        clonedLink.getPoints().forEach(point => point.setSelected(true));
+                        model.addLink(clonedLink);
+
                     }
                 }
+            
             });
 
             // TODO: Need to make this event working to be on the command manager, so the user can undo
