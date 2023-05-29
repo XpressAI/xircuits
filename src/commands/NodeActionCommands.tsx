@@ -455,7 +455,7 @@ export function addNodeActionCommands(
             const engine = widget.xircuitsApp.getDiagramEngine();
             const selected = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities()
             const copies = selected.map(entity =>
-                entity.clone().serialize()
+                entity.serialize()
             );
 
             // TODO: Need to make this event working to be on the command manager, so the user can undo
@@ -483,7 +483,7 @@ export function addNodeActionCommands(
 
         if (widget) {
             const copies = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities().map(entity =>
-                entity.clone().serialize(),
+                entity.serialize(),
             );
 
             localStorage.setItem('clipboard', JSON.stringify(copies));
@@ -493,24 +493,33 @@ export function addNodeActionCommands(
 
     function pasteNode(): void {
         const widget = tracker.currentWidget?.content as XPipePanel;
-
+    
         if (widget) {
             const engine = widget.xircuitsApp.getDiagramEngine();
             const model = widget.xircuitsApp.getDiagramEngine().getModel();
-
+    
             const clipboard = JSON.parse(localStorage.getItem('clipboard'));
             if (!clipboard) return;
-
+    
             model.clearSelection();
+            
+            const newNodeModels = [];
+            let idMap = {};
+            
+            for(let serialized of clipboard) {
 
-            const models = clipboard.map(serialized => {
-                const modelInstance = model
-                    .getActiveNodeLayer()
-                    .getChildModelFactoryBank(engine)
-                    .getFactory(serialized.type)
-                    .generateModel({ initialConfig: serialized });
+                if (serialized.type.includes('link')) {
+                    continue; // Skip this iteration if it's a link
+                }
 
-                modelInstance.deserialize({
+                // reload original node then clone to get same properties but different IDs
+                const originalNode = model
+                .getActiveNodeLayer()
+                .getChildModelFactoryBank(engine)
+                .getFactory(serialized.type)
+                .generateModel({ initialConfig: serialized })
+                
+                originalNode.deserialize({
                     engine: engine,
                     data: serialized,
                     registerModel: () => { },
@@ -519,34 +528,80 @@ export function addNodeActionCommands(
                     }
                 });
 
-                return modelInstance;
-            });
+                let clonedNodeModelInstance: CustomNodeModel = originalNode.clone()
 
-            models.forEach(modelInstance => {
+                newNodeModels.push(clonedNodeModelInstance);
+
+                // Map the node ID
+                idMap[serialized.id] = clonedNodeModelInstance.getID();
+
+                // Map the port IDs by name
+                serialized.ports.forEach(serializedPort => {
+                    // We will find the corresponding new port by matching the name
+                    const correspondingNewPort = Object.values(clonedNodeModelInstance.getPorts()).find(newPort => newPort.getName() === serializedPort.name);
+
+                    // Check if a corresponding port was found
+                    if(correspondingNewPort){
+                        // Map the port ID
+                        idMap[serializedPort.id] = correspondingNewPort.getID();
+                    }
+                });
+
+            }
+            
+            for(let modelInstance of newNodeModels) {
                 const oldX = modelInstance.getX();
                 const oldY = modelInstance.getY();
-
+    
                 modelInstance.setPosition(oldX + 10, oldY + 10)
                 model.addNode(modelInstance);
                 // Remove any empty/default node
                 if (modelInstance.getOptions()['type'] == 'default') model.removeNode(modelInstance)
                 modelInstance.setSelected(true);
+            }
+
+            // Now go through the clipboard again, this time recreating the links
+            clipboard.forEach(serialized => {
+                if (serialized.type.includes('link')) {
+                    // Use the idMap to get the new IDs of the source and target ports
+                    const newSourceID = idMap[serialized.sourcePort];
+                    const newTargetID = idMap[serialized.targetPort];
+
+                    // Ensure that both source and target ports exist
+                    if (newSourceID && newTargetID) {
+                        // Create a new link
+                        let link = new DefaultLinkModel();
+
+                        // Get the ports from their respective nodes
+                        let sourcePort, targetPort;
+
+                        model.getSelectedEntities().forEach((node: NodeModel) => {
+
+                            if(node.getPortFromID(newSourceID)) {
+                                sourcePort = node.getPortFromID(newSourceID);
+                            }
+                            if(node.getPortFromID(newTargetID)) {
+                                targetPort = node.getPortFromID(newTargetID);
+                            }
+                        });
+
+                        if(sourcePort && targetPort) {
+                            link.setSourcePort(sourcePort);
+                            link.setTargetPort(targetPort);
+
+                            model.addLink(link);
+                        }
+                    }
+                }
             });
 
-            localStorage.setItem(
-                'clipboard',
-                JSON.stringify(
-                    models.map(modelInstance =>
-                        modelInstance.clone().serialize(),
-                    ),
-                ),
-            );
             // TODO: Need to make this event working to be on the command manager, so the user can undo
             // and redo it.
             // engine.fireEvent({ nodes: models }, 'componentsAdded');
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         }
     }
+
 
     async function editLiteral(): Promise<void> {
         const widget = tracker.currentWidget?.content as XPipePanel;
