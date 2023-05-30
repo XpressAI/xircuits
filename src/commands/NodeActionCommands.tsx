@@ -476,7 +476,6 @@ export function addNodeActionCommands(
         const widget = tracker.currentWidget?.content as XPipePanel;
 
         if (!widget) return;
-        console.log("copy called!")
 
         const copies = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities().map(entity =>
             entity.serialize(),
@@ -487,7 +486,6 @@ export function addNodeActionCommands(
 
     function pasteNode(): void {
         const widget = tracker.currentWidget?.content as XPipePanel;
-    
         if (!widget) return;
     
         const engine = widget.xircuitsApp.getDiagramEngine();
@@ -506,6 +504,12 @@ export function addNodeActionCommands(
         let totalX = 0, totalY = 0, nodesCount = clipboardNodes.length;
     
         clipboardNodes.forEach(serializedNode => {
+
+            if (serializedNode.name === 'Start' || serializedNode.name === 'Finish') {
+                console.log(serializedNode.name, " cannot be copied!")
+                return;
+            }
+
             let originalNodeInstance = model.getNodes().find(node => node.getID() === serializedNode.id);
             let clonedNodeModelInstance;
     

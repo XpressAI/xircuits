@@ -8,20 +8,29 @@ interface CustomActionEventOptions {
 
 export class CustomActionEvent extends Action {
     constructor(options: CustomActionEventOptions) {
+        
         super({
             type: InputType.KEY_DOWN,
             fire: (event: ActionEvent<React.KeyboardEvent>) => {
                 const app = options.app;
                 const keyCode = event.event.key;
                 const ctrlKey = event.event.ctrlKey;
+                
+                const executeIf = (condition, command) => {
+                    if(condition){
+                        // @ts-ignore
+                        event.event.stopImmediatePropagation();
+                        app.commands.execute(command)
+                    }
+                }
 
-                if (ctrlKey && keyCode === 'z') app.commands.execute(commandIDs.undo);
-                if (ctrlKey && keyCode === 'y') app.commands.execute(commandIDs.redo);
-                if (ctrlKey && keyCode === 's') app.commands.execute(commandIDs.saveXircuit);
-                if (ctrlKey && keyCode === 'x') app.commands.execute(commandIDs.cutNode);
-                if (ctrlKey && keyCode === 'c') app.commands.execute(commandIDs.copyNode);
-                if (ctrlKey && keyCode === 'v') app.commands.execute(commandIDs.pasteNode);
-                if (keyCode == 'Delete' || keyCode == 'Backspace') app.commands.execute(commandIDs.deleteNode);
+                executeIf(ctrlKey && keyCode === 'z', commandIDs.undo);
+                executeIf(ctrlKey && keyCode === 'y', commandIDs.redo);
+                executeIf(ctrlKey && keyCode === 's', commandIDs.saveXircuit);
+                executeIf(ctrlKey && keyCode === 'x', commandIDs.cutNode);
+                executeIf(ctrlKey && keyCode === 'c', commandIDs.copyNode);
+                executeIf(ctrlKey && keyCode === 'v', commandIDs.pasteNode);
+                executeIf(keyCode == 'Delete' || keyCode == 'Backspace', commandIDs.deleteNode);
             }
         });
     }
