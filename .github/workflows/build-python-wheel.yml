@@ -60,13 +60,13 @@ jobs:
         python -m build
 
     - name: Upload Dist Directory Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: xircuits-wheel-${{ env.branch_name }}-${{ env.git_hash }}
         path: dist
 
     - name: Upload Wheel Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
-        name: xircuits-wheel-${{ env.branch_name }}-${{ env.git_hash }}
+        name: xircuits-wheel-${{ env.branch_name }}-${{ env.git_hash }}.whl
         path: dist/*.whl
