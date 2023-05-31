@@ -101,7 +101,7 @@ def main(args):
         for node in component_nodes:
             # Handle argument connections
             for port in (p for p in node.ports if
-                         p.direction == 'in' and p.type == 'triangle' and p.source.name.startswith('Argument ')):
+                         p.direction == 'in' and p.type == 'triangle-link' and p.source.name.startswith('Argument ')):
                 # Unfortunately, we don't have the information anywhere else and updating the file format isn't an option at the moment
                 pattern = re.compile(r'^Argument \(.+?\): (.+)$')
                 arg_name = pattern.match(port.source.name).group(1)
@@ -115,7 +115,7 @@ def main(args):
                 code.append(tpl)
 
             # Handle regular connections
-            for port in (p for p in node.ports if p.direction == 'in' and p.type != 'triangle'):
+            for port in (p for p in node.ports if p.direction == 'in' and p.type != 'triangle-link'):
                 assignment_target = "%s.%s" % (
                     named_nodes[port.target.id],
                     port.targetLabel
@@ -148,7 +148,7 @@ def main(args):
         # Set up control flow
         for node in component_nodes:
             has_next = False
-            for port in (p for p in node.ports if p.direction == "out" and p.type == "triangle"):
+            for port in (p for p in node.ports if p.direction == "out" and p.type == "triangle-link"):
                 has_next = True
                 if port.name == "out-0":
                     assignment_target = "%s.next" % named_nodes[port.source.id]

@@ -5,7 +5,7 @@ import { CustomPortModel } from '../port/CustomPortModel';
 export class CustomLinkModel extends DefaultLinkModel {
 	constructor(options: DefaultLinkModelOptions = {}) {
 		super({
-			type: 'custom',
+			type: 'custom-link',
 			width: 3,
 			...options
 		});
@@ -22,7 +22,7 @@ export class CustomLinkPortModel extends CustomPortModel {
 export class TriangleLinkModel extends DefaultLinkModel {
 	constructor(options: DefaultLinkModelOptions = {}) {
 		super({
-			type: 'triangle',
+			type: 'triangle-link',
 			width: 3,
 			...options
 		});

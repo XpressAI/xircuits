@@ -28,7 +28,7 @@ namespace S {
 
 export class CustomLinkFactory extends DefaultLinkFactory {
 	constructor() {
-		super('custom');
+		super('custom-link');
 	}
 
 	generateModel(): CustomLinkModel {
@@ -49,7 +49,7 @@ export class CustomLinkFactory extends DefaultLinkFactory {
 
 export class TriangleLinkFactory extends DefaultLinkFactory {
 	constructor() {
-		super('triangle');
+		super('triangle-link');
 	}
 
 	generateModel(): TriangleLinkModel {
