@@ -59,8 +59,14 @@ jobs:
         python -m pip install --upgrade build &&
         python -m build
 
-    - name: Upload Artifacts
+    - name: Upload Dist Directory Artifact
       uses: actions/upload-artifact@v2
       with:
         name: xircuits-wheel-${{ env.branch_name }}-${{ env.git_hash }}
         path: dist
+
+    - name: Upload Wheel Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: xircuits-wheel-${{ env.branch_name }}-${{ env.git_hash }}
+        path: dist/*.whl
