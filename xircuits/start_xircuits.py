@@ -12,10 +12,20 @@ from .handlers.request_submodule import get_submodule_config, request_submodule_
 
 def init_xircuits():
 
+    package_name = 'xircuits'
+    copy_from_installed_wheel(package_name, 
+                              resource='.xircuits', 
+                              dest_path='.xircuits')
 
-    path = ".xircuits"
-    config_path = pkg_resources.resource_filename('xircuits', '.xircuits')
-    shutil.copytree(config_path, path)
+
+def copy_from_installed_wheel(package_name, resource="", dest_path=None):
+    
+    if dest_path is None:
+        dest_path = package_name
+
+    resource_path = pkg_resources.resource_filename(package_name, resource)
+    shutil.copytree(resource_path, dest_path)
+
 
 def download_examples():
     
@@ -28,18 +38,22 @@ def download_examples():
     request_folder("datasets", branch=args.branch)
 
 
-def download_component_library():
-
+def fetch_component_library():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--download", default=False, action='store_true')
     parser.add_argument('--branch', nargs='?', default="master", help='pull files from a xircuits branch')
     parser.add_argument('--sublib', nargs='*', help='pull component library from a xircuits submodule')
-
     args = parser.parse_args()
-    if not args.sublib:
-        request_folder("xai_components", branch=args.branch)
+
+    if args.download:
+        if not args.sublib:
+            request_folder("xai_components", branch=args.branch)
+        else:
+            for component_lib in args.sublib:
+                request_submodule_library(component_lib)
     else:
-        for component_lib in args.sublib:
-            request_submodule_library(component_lib)
+        copy_from_installed_wheel("xai_components")
+
 
 def download_submodule_library():
     
@@ -77,8 +91,7 @@ def main():
         val = input("Xircuits Component Library is not found. Would you like to load it in the current path (Y/N)? ")
         if val.lower() == ("y" or "yes"):
             if args.branch is None:
-                xai_component_path = pkg_resources.resource_filename('xai_components', '')
-                shutil.copytree(xai_component_path, "xai_components")
+                copy_from_installed_wheel('xai_components', '', 'xai_components')
 
             else:
                 request_folder("xai_components", branch=args.branch)
