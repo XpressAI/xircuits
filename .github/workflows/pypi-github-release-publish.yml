@@ -1,4 +1,4 @@
-name: Publish to PyPI
+name: Publish to PyPI and Github Release
 
 on:
   release:
@@ -52,3 +52,11 @@ jobs:
       run: |
         pip install twine
         twine upload dist/*
+
+    - name: Publish to GitHub Releases
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          dist/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
