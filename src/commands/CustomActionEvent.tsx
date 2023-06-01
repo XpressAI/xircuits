@@ -24,14 +24,18 @@ export class CustomActionEvent extends Action {
                     }
                 }
 
-                executeIf(ctrlKey && keyCode === 'z', commandIDs.undo);
-                executeIf(ctrlKey && keyCode === 'y', commandIDs.redo);
-                executeIf(ctrlKey && keyCode === 's', commandIDs.saveXircuit);
-                executeIf(ctrlKey && keyCode === 'x', commandIDs.cutNode);
-                executeIf(ctrlKey && keyCode === 'c', commandIDs.copyNode);
-                executeIf(ctrlKey && keyCode === 'v', commandIDs.pasteNode);
-                executeIf(keyCode == 'Delete' || keyCode == 'Backspace', commandIDs.deleteNode);
+                // @ts-ignore
+                if (app.shell._tracker._activeWidget && app.shell._tracker._activeWidget.node.contains(event.event.target)){
+                    executeIf(ctrlKey && keyCode === 'z', commandIDs.undo);
+                    executeIf(ctrlKey && keyCode === 'y', commandIDs.redo);
+                    executeIf(ctrlKey && keyCode === 's', commandIDs.saveXircuit);
+                    executeIf(ctrlKey && keyCode === 'x', commandIDs.cutNode);
+                    executeIf(ctrlKey && keyCode === 'c', commandIDs.copyNode);
+                    executeIf(ctrlKey && keyCode === 'v', commandIDs.pasteNode);
+                    executeIf(keyCode == 'Delete' || keyCode == 'Backspace', commandIDs.deleteNode);
+                }
             }
+
         });
     }
 }
