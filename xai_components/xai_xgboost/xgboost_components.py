@@ -1,11 +1,9 @@
 from xai_components.base import InArg, OutArg, InCompArg, Component, xai_component
 
 @xai_component
-class XGBoostBinaryClassifier(Component):
+class XGBoostClassifier(Component):
     """
-    Trains an XGBoost classifier with a binary logistic objective.
-
-    This component uses the XGBoost library to train a binary classifier.
+    Trains an XGBoost classifier. Default will use binary logistic.
 
     #### Reference:
     - [XGBoost](https://xgboost.readthedocs.io/en/latest/python/python_api.html#xgboost.XGBClassifier)
@@ -46,11 +44,9 @@ class XGBoostBinaryClassifier(Component):
 
 
 @xai_component
-class XGBoostBinaryPredict(Component):
+class XGBoostPredict(Component):
     """
-    Makes predictions using a trained XGBoost binary classifier and optionally evaluates the accuracy of those predictions.
-
-    This component uses the XGBoost library to make predictions and optionally evaluate them.
+    Makes predictions using a trained XGBoost classifier and optionally evaluates the accuracy of those predictions.
 
     #### Reference:
     - [XGBoost](https://xgboost.readthedocs.io/en/latest/python/python_api.html#xgboost.XGBClassifier)
