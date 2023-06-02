@@ -9,7 +9,7 @@ import shutil
 from .handlers.request_folder import request_folder
 from .handlers.request_submodule import get_submodule_config, request_submodule_library
 import subprocess
-import platform
+import sys
 
 def init_xircuits():
 
@@ -69,11 +69,7 @@ def download_submodule_library():
         submodule_path, _ = get_submodule_config(args.submodule_library)
 
         print("Installing " + args.submodule_library + "...")
-        if platform.system() == "Windows":
-            install_cmd = ["cmd", "/c", "pip", "install", "-r", submodule_path + "/requirements.txt"]
-        else:
-            install_cmd = ["pip", "install", "-r", submodule_path + "/requirements.txt"]
-        subprocess.run(install_cmd, check=True)
+        subprocess.run([sys.executable, "-m", "pip", "install", "-r",  submodule_path + "/requirements.txt"], check=True)
 
 def main():
 
