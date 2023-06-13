@@ -5,8 +5,8 @@ import { ZoomCanvasAction } from '@projectstorm/react-canvas-core';
 import { CustomActionEvent } from '../commands/CustomActionEvent';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { CustomDiagramState } from './state/CustomDiagramState'
-import { CustomLinkModel, TriangleLinkModel } from './link/CustomLinkModel';
-import { CustomLinkFactory, TriangleLinkFactory } from './link/CustomLinkFactory';
+import { ParameterLinkModel, TriangleLinkModel } from './link/CustomLinkModel';
+import { ParameterLinkFactory, TriangleLinkFactory } from './link/CustomLinkFactory';
 import { PointModel } from '@projectstorm/react-diagrams';
 import { Point } from '@projectstorm/geometry';
 
@@ -21,7 +21,7 @@ export class XircuitsApplication {
                 this.diagramEngine = SRD.default({ registerDefaultZoomCanvasAction: false, registerDefaultDeleteItemsAction: false });
                 this.activeModel = new SRD.DiagramModel();
                 this.diagramEngine.getNodeFactories().registerFactory(new CustomNodeFactory(app, shell));
-                this.diagramEngine.getLinkFactories().registerFactory(new CustomLinkFactory());
+                this.diagramEngine.getLinkFactories().registerFactory(new ParameterLinkFactory());
                 this.diagramEngine.getLinkFactories().registerFactory(new TriangleLinkFactory());
                 this.diagramEngine.getActionEventBus().registerAction(new ZoomCanvasAction({ inverseZoom: true }))
                 this.diagramEngine.getActionEventBus().registerAction(new CustomActionEvent({ app }));
@@ -87,7 +87,7 @@ export class XircuitsApplication {
 
                         if (link.sourcePort && link.targetPort) {
 
-                                let newLink = new CustomLinkModel({ id: link.id });
+                                let newLink = new ParameterLinkModel({ id: link.id });
                                 const newTriangleLink = new TriangleLinkModel({ id: link.id });
                                 const sourceNode = tempModel.getNode(link.source);
                                 const targetNode = tempModel.getNode(link.target);

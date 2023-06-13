@@ -1,8 +1,6 @@
 import { DefaultLinkModel, DefaultLinkModelOptions } from '@projectstorm/react-diagrams';
 import { CustomPortModel } from '../port/CustomPortModel';
 
-// Custom link
-
 export interface CustomLinkModelOptions extends DefaultLinkModelOptions {
     disableAnimation?: boolean;
 }
@@ -10,7 +8,7 @@ export interface CustomLinkModelOptions extends DefaultLinkModelOptions {
 export class CustomLinkModel extends DefaultLinkModel {
 	constructor(options: CustomLinkModelOptions = {}) {
 		super({
-			type: 'custom-link',
+			type: 'parameter-link',
 			width: 3,
 			...options
 		});
@@ -27,16 +25,35 @@ export class CustomLinkPortModel extends CustomPortModel {
 	}
 }
 
-// Triangle link
-export interface TriangleLinkModelOptions extends DefaultLinkModelOptions {
-    disableAnimation?: boolean;
+// Parameter link
+export interface ParameterLinkModelOptions extends CustomLinkModelOptions {}
+
+export class ParameterLinkModel extends CustomLinkModel {
+	constructor(options: ParameterLinkModelOptions = {}) {
+		super({
+			type: 'parameter-link',
+			...options
+		});
+	}
+
+	getOptions(): ParameterLinkModelOptions {
+		return super.getOptions() as ParameterLinkModelOptions;
+	}
 }
 
-export class TriangleLinkModel extends DefaultLinkModel {
+export class ParameterLinkPortModel extends CustomPortModel {
+	createLinkModel(): ParameterLinkModel | null {
+		return new ParameterLinkModel();
+	}
+}
+
+// Triangle link
+export interface TriangleLinkModelOptions extends CustomLinkModelOptions {}
+
+export class TriangleLinkModel extends CustomLinkModel {
 	constructor(options: TriangleLinkModelOptions = {}) {
 		super({
 			type: 'triangle-link',
-			width: 3,
 			...options
 		});
 	}

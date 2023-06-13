@@ -19,7 +19,7 @@ import { showFormDialog } from '../dialog/FormDialog';
 import { inputDialog } from '../dialog/LiteralInputDialog';
 import { checkInput } from '../helpers/InputSanitizer';
 import { CustomPortModel } from '../components/port/CustomPortModel';
-import { CustomLinkModel, TriangleLinkModel } from '../components/link/CustomLinkModel';
+import { CustomLinkModel, ParameterLinkModel, TriangleLinkModel } from '../components/link/CustomLinkModel';
 import { PointModel } from '@projectstorm/react-diagrams';
 import { Point } from '@projectstorm/geometry';
 
@@ -314,7 +314,7 @@ export function addNodeActionCommands(
             const widget = tracker.currentWidget?.content as XPipePanel;
             const allLinks = widget.xircuitsApp.getDiagramEngine().getModel().getLinks()
             allLinks.forEach(link => {
-                const customLink = link as CustomLinkModel | TriangleLinkModel;
+                const customLink = link as ParameterLinkModel | TriangleLinkModel;
                 customLink.getOptions().disableAnimation = true;
                     });
             
@@ -677,7 +677,7 @@ export function addNodeActionCommands(
     }
     
     function createNewLink(serializedLink): CustomLinkModel {
-        if(serializedLink.type === 'custom-link') return new CustomLinkModel(serializedLink);
+        if(serializedLink.type === 'parameter-link') return new ParameterLinkModel(serializedLink);
         else if(serializedLink.type === 'triangle-link') return new TriangleLinkModel(serializedLink);
     }
     

@@ -1,6 +1,6 @@
 import { DefaultLinkFactory } from '@projectstorm/react-diagrams';
 import * as React from 'react';
-import { CustomLinkModel, TriangleLinkModel } from './CustomLinkModel';
+import { ParameterLinkModel, TriangleLinkModel } from './CustomLinkModel';
 import styled from '@emotion/styled';
 import { css, keyframes } from '@emotion/react';
 
@@ -31,16 +31,16 @@ namespace S {
 	`;
 }
 
-export class CustomLinkFactory extends DefaultLinkFactory {
+export class ParameterLinkFactory extends DefaultLinkFactory {
 	constructor() {
-		super('custom-link');
+		super('parameter-link');
 	}
 
-	generateModel(): CustomLinkModel {
-		return new CustomLinkModel();
+	generateModel(): ParameterLinkModel {
+		return new ParameterLinkModel();
 	}
 
-	generateLinkSegment(model: CustomLinkModel, selected: boolean, path: string) {
+	generateLinkSegment(model: ParameterLinkModel, selected: boolean, path: string) {
 		return (
 			<S.Path
 				selected={selected}
