@@ -315,15 +315,14 @@ export function addNodeActionCommands(
             const allLinks = widget.xircuitsApp.getDiagramEngine().getModel().getLinks()
             allLinks.forEach(link => {
                 const customLink = link as ParameterLinkModel | TriangleLinkModel;
-                customLink.getOptions().disableAnimation = true;
+                customLink.getOptions().isAnimationEnabled = false;
                     });
             
-                widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
 
         },
-        label: trans.__('Toggled link animation off.')
+        label: trans.__('Toggle link animation off.')
     });
-
 
 
     //Add command to add node given position

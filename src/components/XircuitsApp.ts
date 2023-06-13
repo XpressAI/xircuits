@@ -121,6 +121,7 @@ export class XircuitsApplication {
                                 newLink.setSourcePort(sourcePort);
                                 newLink.setTargetPort(targetPort);
                                 newLink.setSelected(link.selected);
+                                newLink.setAnimate(link.isAnimationEnabled !== false);
 
                                 if (initialRender) {
                                         // When initial rendering of xircuits, 
