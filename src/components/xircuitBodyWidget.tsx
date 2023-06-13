@@ -40,6 +40,7 @@ export interface BodyWidgetProps {
 	runTypeXircuitSignal: Signal<XPipePanel, any>;
 	lockNodeSignal: Signal<XPipePanel, any>;
 	reloadAllNodesSignal: Signal<XPipePanel, any>;
+	toggleLinkAnimationSignal: Signal<XPipePanel, any>;
 }
 
 export const Body = styled.div`
@@ -78,6 +79,7 @@ export const commandIDs = {
 	pasteNode: 'Xircuit-editor:paste-node',
 	reloadNode: 'Xircuit-editor:reload-node',
 	reloadAllNodes: 'Xircuit-editor:reload-all-nodes',
+	toggleLinkAnimation: 'Xircuit-editor:toggle-link-animation',
 	editNode: 'Xircuit-editor:edit-node',
 	deleteNode: 'Xircuit-editor:delete-node',
 	addNodeGivenPosition: 'Xircuit-editor:add-node', 
@@ -105,6 +107,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	runTypeXircuitSignal,
 	lockNodeSignal,
 	reloadAllNodesSignal,
+	toggleLinkAnimationSignal,
 }) => {
 	const xircuitLogger = new Log(app);
 
@@ -120,6 +123,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [componentList, setComponentList] = useState([]);
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
+	const [linkAnimationState, setlinkAnimationState] = useState<boolean>(false);
 	const [runType, setRunType] = useState<string>("run");
 	const [runTypesCfg, setRunTypesCfg] = useState<string>("");
 	const initialRender = useRef(true);
@@ -620,6 +624,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		
 	}
 
+	const handletoggleLinkAnimation = () => {
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+		app.commands.execute(commandIDs.toggleLinkAnimation);
+	}
+
 	async function getRunTypesFromConfig(request: string) {
 		const dataToSend = { "config_request": request };
 	
@@ -763,7 +775,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		[compileXircuitSignal, handleCompileClick],
 		[runXircuitSignal, handleRunClick],
 		[lockNodeSignal, handleLockClick],
-		[reloadAllNodesSignal, handleReloadAll]
+		[reloadAllNodesSignal, handleReloadAll],
+		[toggleLinkAnimationSignal, handletoggleLinkAnimation]
 	];
 
 	signalConnections.forEach(connectSignal);

@@ -45,6 +45,8 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
   runTypeXircuitSignal: Signal<this, any>;
   lockNodeSignal: Signal<this, any>;
   reloadAllNodesSignal: Signal<this, any>;
+  toggleLinkAnimationSignal: Signal<this, any>;
+
 
   constructor(options: any) {
     super(options);
@@ -59,6 +61,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
     this.runTypeXircuitSignal = new Signal<this, any>(this);
     this.lockNodeSignal = new Signal<this, any>(this);
     this.reloadAllNodesSignal = new Signal<this, any>(this);
+    this.toggleLinkAnimationSignal = new Signal<this, any>(this);
   }
 
   protected createNewWidget(context: DocumentRegistry.Context): DocumentWidget {
@@ -76,6 +79,8 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
       runTypeXircuitSignal: this.runTypeXircuitSignal,
       lockNodeSignal: this.lockNodeSignal,
       reloadAllNodesSignal: this.reloadAllNodesSignal,
+      toggleLinkAnimationSignal: this.toggleLinkAnimationSignal,
+
 
     };
 
@@ -207,6 +212,17 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
     });
 
     /**
+     * Create a log button toolbar item.
+     */
+      let toggleLinkAnimationButton = new ToolbarButton({
+        icon: bugIcon,
+        tooltip: 'Toggle animation for links',
+        onClick: (): void => {
+          this.commands.execute(commandIDs.toggleLinkAnimation);
+        }
+      });
+    
+    /**
      * Create a compile button toolbar item.
      */
     let compileButton = new ToolbarButton({
@@ -236,13 +252,15 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.insertItem(5, 'xircuits-add-paste', pasteButton);
     widget.toolbar.insertItem(6, 'xircuits-add-lock', lockButton);
     widget.toolbar.insertItem(7, 'xircuits-add-log', logButton);
-    widget.toolbar.insertItem(8, 'xircuits-add-reload-all', reloadAllNodesButton);
-    widget.toolbar.insertItem(9, 'xircuits-add-save', saveButton);
-    widget.toolbar.insertItem(10, 'xircuits-add-compile', compileButton);
-    widget.toolbar.insertItem(11, 'xircuits-add-run', compileAndRunButton);
-    widget.toolbar.insertItem(12, 'xircuits-run-type', new RunSwitcher(this));
+    widget.toolbar.insertItem(8, 'xircuits-add-toggle-link-animation', toggleLinkAnimationButton);
+    widget.toolbar.insertItem(9, 'xircuits-add-reload-all', reloadAllNodesButton);
+    widget.toolbar.insertItem(10, 'xircuits-add-save', saveButton);
+    widget.toolbar.insertItem(11, 'xircuits-add-compile', compileButton);
+    widget.toolbar.insertItem(12, 'xircuits-add-run', compileAndRunButton);
+    widget.toolbar.insertItem(13, 'xircuits-run-type', new RunSwitcher(this));
     // TODO: Fix debugger
     // widget.toolbar.insertItem(5,'xircuits-add-debug', debugButton);
+    
 
     return widget;
   }

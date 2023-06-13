@@ -24,6 +24,7 @@ export class XPipePanel extends ReactWidget {
   runTypeXircuitSignal: Signal<this, any>;
   lockNodeSignal: Signal<this, any>;
   reloadAllNodesSignal: Signal<this, any>;
+  toggleLinkAnimationSignal: Signal<this, any>;
 
   // Add mousePosition state
   mousePosition = { x: 0, y: 0 };
@@ -42,6 +43,7 @@ export class XPipePanel extends ReactWidget {
     this.runTypeXircuitSignal = options.runTypeXircuitSignal;
     this.lockNodeSignal = options.lockNodeSignal;
     this.reloadAllNodesSignal = options.reloadAllNodesSignal;
+    this.toggleLinkAnimationSignal = options.toggleLinkAnimationSignal;
     this.xircuitsApp = new XircuitsApplication(this.app, this.shell);
   }
 
@@ -91,6 +93,7 @@ export class XPipePanel extends ReactWidget {
         runTypeXircuitSignal={this.runTypeXircuitSignal}
         lockNodeSignal={this.lockNodeSignal}
         reloadAllNodesSignal={this.reloadAllNodesSignal}
+        toggleLinkAnimationSignal={this.toggleLinkAnimationSignal}
       />
     );
   }

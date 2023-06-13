@@ -308,6 +308,24 @@ export function addNodeActionCommands(
     });
 
 
+    // Add command toggle link animation
+    commands.addCommand(commandIDs.toggleLinkAnimation, {
+        execute: async () => {
+            const widget = tracker.currentWidget?.content as XPipePanel;
+            const allLinks = widget.xircuitsApp.getDiagramEngine().getModel().getLinks()
+            allLinks.forEach(link => {
+                const customLink = link as CustomLinkModel | TriangleLinkModel;
+                customLink.getOptions().disableAnimation = true;
+                    });
+            
+                widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+
+        },
+        label: trans.__('Toggled link animation off.')
+    });
+
+
+
     //Add command to add node given position
     commands.addCommand(commandIDs.addNodeGivenPosition, {
         execute: (args) => {
