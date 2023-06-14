@@ -40,7 +40,7 @@ export interface BodyWidgetProps {
 	runTypeXircuitSignal: Signal<XPipePanel, any>;
 	lockNodeSignal: Signal<XPipePanel, any>;
 	reloadAllNodesSignal: Signal<XPipePanel, any>;
-	toggleLinkAnimationSignal: Signal<XPipePanel, any>;
+	toggleAllLinkAnimationSignal: Signal<XPipePanel, any>;
 }
 
 export const Body = styled.div`
@@ -80,6 +80,7 @@ export const commandIDs = {
 	reloadNode: 'Xircuit-editor:reload-node',
 	reloadAllNodes: 'Xircuit-editor:reload-all-nodes',
 	toggleLinkAnimation: 'Xircuit-editor:toggle-link-animation',
+	toggleAllLinkAnimation: 'Xircuit-editor:toggle-all-link-animation',
 	editNode: 'Xircuit-editor:edit-node',
 	deleteNode: 'Xircuit-editor:delete-node',
 	addNodeGivenPosition: 'Xircuit-editor:add-node', 
@@ -107,7 +108,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	runTypeXircuitSignal,
 	lockNodeSignal,
 	reloadAllNodesSignal,
-	toggleLinkAnimationSignal,
+	toggleAllLinkAnimationSignal,
 }) => {
 	const xircuitLogger = new Log(app);
 
@@ -624,12 +625,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		
 	}
 
-	const handletoggleLinkAnimation = () => {
+	const handleToggleAllLinkAnimation = () => {
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		app.commands.execute(commandIDs.toggleLinkAnimation);
+		
+		// Execute the command and pass in the new state.
+		app.commands.execute(commandIDs.toggleLinkAnimation, { animationState: !linkAnimationState });
+		
+		// Then update the state in the React component.
+		setlinkAnimationState(!linkAnimationState);
 	}
 
 	async function getRunTypesFromConfig(request: string) {
@@ -776,7 +782,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		[runXircuitSignal, handleRunClick],
 		[lockNodeSignal, handleLockClick],
 		[reloadAllNodesSignal, handleReloadAll],
-		[toggleLinkAnimationSignal, handletoggleLinkAnimation]
+		[toggleAllLinkAnimationSignal, handleToggleAllLinkAnimation]
 	];
 
 	signalConnections.forEach(connectSignal);

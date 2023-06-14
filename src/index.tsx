@@ -350,6 +350,13 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     });
 
+    // Add command signal to toggle all link animations.
+    app.commands.addCommand(commandIDs.toggleAllLinkAnimation, {
+      execute: args => {
+        widgetFactory.toggleAllLinkAnimationSignal.emit(args);
+      }
+    });
+
     // Add a launcher item if the launcher is available.
     if (launcher) {
       launcher.add({

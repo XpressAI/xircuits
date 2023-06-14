@@ -310,18 +310,17 @@ export function addNodeActionCommands(
 
     // Add command toggle link animation
     commands.addCommand(commandIDs.toggleLinkAnimation, {
-        execute: async () => {
+        execute: async (args: { animationState: boolean }) => {
             const widget = tracker.currentWidget?.content as XPipePanel;
             const allLinks = widget.xircuitsApp.getDiagramEngine().getModel().getLinks()
             allLinks.forEach(link => {
                 const customLink = link as ParameterLinkModel | TriangleLinkModel;
-                customLink.getOptions().isAnimationEnabled = false;
-                    });
-            
-            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+                customLink.getOptions().isAnimationEnabled = args.animationState;
+            });
 
+            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         },
-        label: trans.__('Toggle link animation off.')
+        label: trans.__('Toggle link animation.')
     });
 
 
