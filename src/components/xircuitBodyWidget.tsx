@@ -24,6 +24,7 @@ import { cancelDialog, GeneralComponentLibrary } from '../tray_library/GeneralCo
 import { NodeActionsPanel } from '../context-menu/NodeActionsPanel';
 import { AdvancedComponentLibrary, fetchNodeByName } from '../tray_library/AdvanceComponentLib';
 import { inputDialog, getItsLiteralType } from '../dialog/LiteralInputDialog';
+import { lowPowerMode, setLowPowerMode } from './state/powerModeState';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -79,7 +80,6 @@ export const commandIDs = {
 	pasteNode: 'Xircuit-editor:paste-node',
 	reloadNode: 'Xircuit-editor:reload-node',
 	reloadAllNodes: 'Xircuit-editor:reload-all-nodes',
-	toggleLinkAnimation: 'Xircuit-editor:toggle-link-animation',
 	toggleAllLinkAnimation: 'Xircuit-editor:toggle-all-link-animation',
 	editNode: 'Xircuit-editor:edit-node',
 	deleteNode: 'Xircuit-editor:delete-node',
@@ -124,7 +124,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [componentList, setComponentList] = useState([]);
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
-	const [linkAnimationState, setlinkAnimationState] = useState<boolean>(false);
 	const [runType, setRunType] = useState<string>("run");
 	const [runTypesCfg, setRunTypesCfg] = useState<string>("");
 	const initialRender = useRef(true);
@@ -630,12 +629,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		
-		// Execute the command and pass in the new state.
-		app.commands.execute(commandIDs.toggleLinkAnimation, { animationState: !linkAnimationState });
-		
-		// Then update the state in the React component.
-		setlinkAnimationState(!linkAnimationState);
+
+		let powerMode = lowPowerMode;
+		setLowPowerMode(!powerMode)
 	}
 
 	async function getRunTypesFromConfig(request: string) {

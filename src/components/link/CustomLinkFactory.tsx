@@ -19,17 +19,16 @@ namespace S {
 		animation: ${Keyframes} 1s steps(24) infinite;
 	`;
 
-	const noAnimation = css`
-		animation: none;
-	`;
-
-	export const Path = styled.path<{ selected: boolean, isAnimationEnabled?: boolean }>`
+	export const Path = styled.path<{ selected: boolean }>`
 		${(p) => p.selected && selected};
-		${(p) => p.isAnimationEnabled === false && noAnimation}; // Animation will be disabled only when isAnimationEnabled is explicitly set to false
+
 		fill: none;
 		pointer-events: auto;
+		
+		body.low-powered-mode & {
+			animation: none !important;
+		}
 	`;
-
 }
 
 export class ParameterLinkFactory extends DefaultLinkFactory {
@@ -45,7 +44,6 @@ export class ParameterLinkFactory extends DefaultLinkFactory {
 		return (
 			<S.Path
 				selected={selected}
-				isAnimationEnabled={model.getOptions().isAnimationEnabled}
 				stroke={selected ? 'yellow' : model.getOptions().color}
 				strokeWidth={model.getOptions().width}
 				d={path}
@@ -67,7 +65,6 @@ export class TriangleLinkFactory extends DefaultLinkFactory {
 		return (
 			<S.Path
 				selected={!selected}
-				isAnimationEnabled={model.getOptions().isAnimationEnabled}
 				stroke={!selected ? model.getOptions().selectedColor : 'yellow'}
 				strokeWidth={model.getOptions().width}
 				d={path}

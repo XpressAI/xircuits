@@ -2,7 +2,7 @@ import { DefaultLinkModel, DefaultLinkModelOptions } from '@projectstorm/react-d
 import { CustomPortModel } from '../port/CustomPortModel';
 
 export interface CustomLinkModelOptions extends DefaultLinkModelOptions {
-    isAnimationEnabled?: boolean;
+
 }
 
 export class CustomLinkModel extends DefaultLinkModel {
@@ -10,7 +10,6 @@ export class CustomLinkModel extends DefaultLinkModel {
 		super({
 			type: 'custom-link',
 			width: 3,
-			isAnimationEnabled: true,
 			...options
 		});
 	}
@@ -18,16 +17,10 @@ export class CustomLinkModel extends DefaultLinkModel {
 	getOptions(): CustomLinkModelOptions {
 		return super.getOptions() as CustomLinkModelOptions;
 	}
-
-	setAnimate(value: boolean): void {
-		const options = this.getOptions();
-		options.isAnimationEnabled = value;
-	}
 	
 	serialize() {
 		return {
 			...super.serialize(),
-			isAnimationEnabled: this.getOptions().isAnimationEnabled
 		};
 	}
 }

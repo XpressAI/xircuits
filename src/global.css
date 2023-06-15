@@ -1,0 +1,4 @@
+/* Override any animation styles when the 'low-powered-mode' class is present on the body */
+body.low-powered-mode {
+    animation: none !important;
+  }
