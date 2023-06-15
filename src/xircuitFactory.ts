@@ -28,8 +28,7 @@ import { commandIDs } from './components/xircuitBodyWidget';
 import { LoggerCommandIDs } from './log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
 import { RunSwitcher } from './components/RunSwitcher';
-import { lockIcon, reloadAllIcon, xircuitsIcon } from './ui-components/icons';
-
+import { lockIcon, reloadAllIcon, xircuitsIcon, toggleAnimationIcon } from './ui-components/icons';
 const XPIPE_CLASS = 'xircuits-editor';
 
 export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
@@ -214,13 +213,13 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
     /**
      * Create a button to toggle all link animation toolbar item.
      */
-      let toggleAllLinkAnimationButton = new ToolbarButton({
-        icon: bugIcon,
-        tooltip: 'Toggle animation for links',
-        onClick: (): void => {
-          this.commands.execute(commandIDs.toggleAllLinkAnimation);
-        }
-      });
+    let toggleAllLinkAnimationButton = new ToolbarButton({
+      icon: toggleAnimationIcon,
+      tooltip: 'Toggle animation for links',
+      onClick: (): void => {
+        this.commands.execute(commandIDs.toggleAllLinkAnimation);
+      }
+    });
     
     /**
      * Create a compile button toolbar item.
