@@ -7,7 +7,7 @@ import nextSvg from '../../style/icons/next.svg';
 import revertSvg from '../../style/icons/revert.svg';
 import componentLibSvg from '../../style/icons/component-library.svg';
 import reloadAllSvg from '../../style/icons/reload-all.svg';
-import toggleAnimationSvg from '../../style/icons/line.svg';
+import toggleAnimationSvg from '../../style/icons/low-power.svg';
 
 export const xircuitsFaviconLink = 'https://raw.githubusercontent.com/XpressAI/xircuits/master/style/icons/xpress-logo.ico';
 export const xircuitsIcon = new LabIcon({ name: 'xircuits:xircuits', svgstr: xircuitsSvg });

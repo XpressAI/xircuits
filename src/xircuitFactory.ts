@@ -215,7 +215,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
      */
     let toggleAllLinkAnimationButton = new ToolbarButton({
       icon: toggleAnimationIcon,
-      tooltip: 'Toggle animation for links',
+      tooltip: 'Toggle low power mode by disabling link animation',
       onClick: (): void => {
         this.commands.execute(commandIDs.toggleAllLinkAnimation);
       }
