@@ -24,6 +24,7 @@ import { cancelDialog, GeneralComponentLibrary } from '../tray_library/GeneralCo
 import { NodeActionsPanel } from '../context-menu/NodeActionsPanel';
 import { AdvancedComponentLibrary, fetchNodeByName } from '../tray_library/AdvanceComponentLib';
 import { inputDialog, getItsLiteralType } from '../dialog/LiteralInputDialog';
+import { lowPowerMode, setLowPowerMode } from './state/powerModeState';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -40,6 +41,7 @@ export interface BodyWidgetProps {
 	runTypeXircuitSignal: Signal<XPipePanel, any>;
 	lockNodeSignal: Signal<XPipePanel, any>;
 	reloadAllNodesSignal: Signal<XPipePanel, any>;
+	toggleAllLinkAnimationSignal: Signal<XPipePanel, any>;
 }
 
 export const Body = styled.div`
@@ -78,6 +80,7 @@ export const commandIDs = {
 	pasteNode: 'Xircuit-editor:paste-node',
 	reloadNode: 'Xircuit-editor:reload-node',
 	reloadAllNodes: 'Xircuit-editor:reload-all-nodes',
+	toggleAllLinkAnimation: 'Xircuit-editor:toggle-all-link-animation',
 	editNode: 'Xircuit-editor:edit-node',
 	deleteNode: 'Xircuit-editor:delete-node',
 	addNodeGivenPosition: 'Xircuit-editor:add-node', 
@@ -105,6 +108,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	runTypeXircuitSignal,
 	lockNodeSignal,
 	reloadAllNodesSignal,
+	toggleAllLinkAnimationSignal,
 }) => {
 	const xircuitLogger = new Log(app);
 
@@ -620,6 +624,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		
 	}
 
+	const handleToggleAllLinkAnimation = () => {
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
+		let powerMode = lowPowerMode;
+		setLowPowerMode(!powerMode)
+	}
+
 	async function getRunTypesFromConfig(request: string) {
 		const dataToSend = { "config_request": request };
 	
@@ -763,7 +777,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		[compileXircuitSignal, handleCompileClick],
 		[runXircuitSignal, handleRunClick],
 		[lockNodeSignal, handleLockClick],
-		[reloadAllNodesSignal, handleReloadAll]
+		[reloadAllNodesSignal, handleReloadAll],
+		[toggleAllLinkAnimationSignal, handleToggleAllLinkAnimation]
 	];
 
 	signalConnections.forEach(connectSignal);

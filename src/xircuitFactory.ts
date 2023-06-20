@@ -28,8 +28,7 @@ import { commandIDs } from './components/xircuitBodyWidget';
 import { LoggerCommandIDs } from './log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
 import { RunSwitcher } from './components/RunSwitcher';
-import { lockIcon, reloadAllIcon, xircuitsIcon } from './ui-components/icons';
-
+import { lockIcon, reloadAllIcon, xircuitsIcon, toggleAnimationIcon } from './ui-components/icons';
 const XPIPE_CLASS = 'xircuits-editor';
 
 export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
@@ -45,6 +44,8 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
   runTypeXircuitSignal: Signal<this, any>;
   lockNodeSignal: Signal<this, any>;
   reloadAllNodesSignal: Signal<this, any>;
+  toggleAllLinkAnimationSignal: Signal<this, any>;
+
 
   constructor(options: any) {
     super(options);
@@ -59,6 +60,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
     this.runTypeXircuitSignal = new Signal<this, any>(this);
     this.lockNodeSignal = new Signal<this, any>(this);
     this.reloadAllNodesSignal = new Signal<this, any>(this);
+    this.toggleAllLinkAnimationSignal = new Signal<this, any>(this);
   }
 
   protected createNewWidget(context: DocumentRegistry.Context): DocumentWidget {
@@ -76,6 +78,8 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
       runTypeXircuitSignal: this.runTypeXircuitSignal,
       lockNodeSignal: this.lockNodeSignal,
       reloadAllNodesSignal: this.reloadAllNodesSignal,
+      toggleAllLinkAnimationSignal: this.toggleAllLinkAnimationSignal,
+
 
     };
 
@@ -207,6 +211,17 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
     });
 
     /**
+     * Create a button to toggle all link animation toolbar item.
+     */
+    let toggleAllLinkAnimationButton = new ToolbarButton({
+      icon: toggleAnimationIcon,
+      tooltip: 'Toggle low power mode by disabling link animation',
+      onClick: (): void => {
+        this.commands.execute(commandIDs.toggleAllLinkAnimation);
+      }
+    });
+    
+    /**
      * Create a compile button toolbar item.
      */
     let compileButton = new ToolbarButton({
@@ -236,13 +251,15 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.insertItem(5, 'xircuits-add-paste', pasteButton);
     widget.toolbar.insertItem(6, 'xircuits-add-lock', lockButton);
     widget.toolbar.insertItem(7, 'xircuits-add-log', logButton);
-    widget.toolbar.insertItem(8, 'xircuits-add-reload-all', reloadAllNodesButton);
-    widget.toolbar.insertItem(9, 'xircuits-add-save', saveButton);
-    widget.toolbar.insertItem(10, 'xircuits-add-compile', compileButton);
-    widget.toolbar.insertItem(11, 'xircuits-add-run', compileAndRunButton);
-    widget.toolbar.insertItem(12, 'xircuits-run-type', new RunSwitcher(this));
+    widget.toolbar.insertItem(8, 'xircuits-add-toggle-all-link-animation', toggleAllLinkAnimationButton);
+    widget.toolbar.insertItem(9, 'xircuits-add-reload-all', reloadAllNodesButton);
+    widget.toolbar.insertItem(10, 'xircuits-add-save', saveButton);
+    widget.toolbar.insertItem(11, 'xircuits-add-compile', compileButton);
+    widget.toolbar.insertItem(12, 'xircuits-add-run', compileAndRunButton);
+    widget.toolbar.insertItem(13, 'xircuits-run-type', new RunSwitcher(this));
     // TODO: Fix debugger
     // widget.toolbar.insertItem(5,'xircuits-add-debug', debugButton);
+    
 
     return widget;
   }
