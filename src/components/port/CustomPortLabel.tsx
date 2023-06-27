@@ -99,8 +99,10 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 				break;
 			case "secret":
 				symbolLabel = '🗝️';
+			case "chat":
+				symbolLabel = '🗨';
 				break;
-				case "any":
+			case "any":
 				symbolLabel = '[_]';
 				break;
 			case "0":

@@ -30,6 +30,7 @@ function checkInput(input: any, dataType: string): boolean {
             processedInput = `[${input}]`;
             break;
         case "dict":
+        case "chat":
             processedInput = `{${input}}`;
             break;
         case "undefined_any":

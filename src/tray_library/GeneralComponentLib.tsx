@@ -272,7 +272,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         } else {
 
-            const dialogOptions = inputDialog(hyperparameterTitle, "", 'String');
+            const dialogOptions = inputDialog(hyperparameterTitle, "", 'Secret');
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             inputValue = dialogResult["value"][hyperparameterTitle];
@@ -280,30 +280,39 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
             node.addOutPortEnhance('▶', 'parameter-out-0');
 
         }
+    } else if (nodeData.type === 'chat') {
 
-    // } else if (props.type === 'debug') {
-    //     node = new CustomNodeModel({ name: props.name, color: props.color, extras: { "type": props.type } });
-    //     node.addInPortEnhance('▶', 'in-0');
-    //     node.addInPortEnhance('props Set', 'parameter-in-1');
-    //     node.addOutPortEnhance('▶', 'out-0');
+    if ((nodeName).startsWith("Literal")) {
 
-    // } else if (props.type === 'enough') {
+        if (variableValue == '' || variableValue == undefined) {
+            const dialogOptions = inputDialog('Chat', "", 'Chat', false);
+            const dialogResult = await showFormDialog(dialogOptions);
+            if (cancelDialog(dialogResult)) return;
+            inputValue = dialogResult["value"]['Chat'];
+        }
 
-    //     node = new CustomNodeModel({ name: props.name, color: props.color, extras: { "type": props.type } });
+        while (!checkInput(inputValue, 'chat')){
+            const dialogOptions = inputDialog('Chat', "", 'Chat', false);
+            const dialogResult = await showFormDialog(dialogOptions);
 
-    //     node.addInPortEnhance('▶', 'in-0');
-    //     node.addInPortEnhance('Target Accuracy', 'parameter-float-in-1');
-    //     node.addInPortEnhance('Max Retries', 'parameter-int-in-2');
-    //     node.addInPortEnhance('Metrics', 'parameter-string-in-3');
+            if (cancelDialog(dialogResult)) return;
+            inputValue = dialogResult["value"]['Chat'];
+        }
+        
+        node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
+        node.addOutPortEnhance(inputValue, 'out-0');
 
-    //     node.addOutPortEnhance('▶', 'out-0');
-    //     node.addOutPortEnhance('Should Retrain', 'out-1');
+    } else {
 
-    } 
-    // else if (nodeData.type === 'literal') {
+        const dialogOptions = inputDialog(hyperparameterTitle, "", 'Chat');
+        const dialogResult = await showFormDialog(dialogOptions);
+        if (cancelDialog(dialogResult)) return;
+        inputValue = dialogResult["value"][hyperparameterTitle];
+        node = new CustomNodeModel({ name: "Argument (Chat): " + inputValue, color: nodeData.color, extras: { "type": nodeData.type } });
+        node.addOutPortEnhance('▶', 'parameter-out-0');
 
-    //     node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-    //     node.addOutPortEnhance('Value', 'out-0');
-    // }
+    }
+} 
+
     return node;
 }

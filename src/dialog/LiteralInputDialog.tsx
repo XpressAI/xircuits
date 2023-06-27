@@ -81,6 +81,12 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
 					They can still be accessed in the raw .xircuits file or appear as strings in the compiled script.
 				</h5>
 			);
+		} else if (type == 'Chat') {
+			return (
+				<h5 style={{ marginTop: 0, marginBottom: 5 }}>
+					Placeholder for Literal Chat<br />
+				</h5>
+			);
 		} else if (type == 'Variable'){
 			return (
 				<h5 style={{ marginTop: 0, marginBottom: 5 }}>
@@ -153,6 +159,13 @@ export const LiteralInputDialog = ({ title, oldValue, type, isStoreDataType, inp
             <input
                 name={title}
                 type="password"
+                style={{ width: 480 }}
+                defaultValue={oldValue} />
+        );
+    } else if (type == 'Chat') {
+        return (
+            <input
+                name={title}
                 style={{ width: 480 }}
                 defaultValue={oldValue} />
         );

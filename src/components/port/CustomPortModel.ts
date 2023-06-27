@@ -6,6 +6,12 @@ import {PortModel} from "@projectstorm/react-diagrams-core";
  * custom port model enable it can execute some rule
  * before it can link to another
  */
+
+const PARAMETER_NODE_TYPES = [
+    'boolean', 'int', 'float', 'string', 'list', 'tuple', 
+    'dict', 'secret', 'chat'
+];
+
 export  class CustomPortModel extends DefaultPortModel  {
 
 
@@ -146,16 +152,7 @@ export  class CustomPortModel extends DefaultPortModel  {
     }
 
     isParameterNode = (nodeModelType: string) => {
-        return (
-            nodeModelType === 'boolean' ||
-            nodeModelType === 'int' ||
-            nodeModelType === 'float' ||
-            nodeModelType === 'string' ||
-            nodeModelType === 'list' ||
-            nodeModelType === 'tuple' ||
-            nodeModelType === 'dict' ||
-            nodeModelType === 'secret'
-        );
+        return PARAMETER_NODE_TYPES.includes(nodeModelType);
     }
 
     canTriangleLinkToTriangle = (thisPort, port) => {
@@ -219,16 +216,7 @@ export  class CustomPortModel extends DefaultPortModel  {
 
         //console.log("sourceNode is:", sourceNode.getOptions()["name"], "\ntargetNode is:", targetNode.getOptions()["name"]);
 
-        while ((sourceNode != null) &&
-                nodeType != 'Start' &&
-                nodeType != 'boolean' &&
-                nodeType != 'int' &&
-                nodeType != 'float' &&
-                nodeType != 'string' &&
-                nodeType != 'list' &&
-                nodeType != 'tuple' &&
-                nodeType != 'dict' &&
-                nodeType != 'secret'){
+        while (sourceNode != null && nodeType != 'Start' && !PARAMETER_NODE_TYPES.includes(nodeType)) {
             //console.log("Curent sourceNode:", sourceNode.getOptions()["name"]);
             let inPorts = sourceNode.getInPorts();
             

@@ -692,7 +692,8 @@ export function addNodeActionCommands(
                 case "List":
                 case "Tuple":
                 case "Dict":
-                    isStoreDataType = true;
+                case "Chat":
+                isStoreDataType = true;
                     break;
                 case "Secret":
                     isStoreDataType = false;
