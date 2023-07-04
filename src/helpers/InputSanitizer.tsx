@@ -23,10 +23,8 @@ function checkInput(input: any, dataType: string): boolean {
         case "secret":
             processedInput = JSON.stringify(input);
             break;
-        case "tuple":
-            processedInput = `(${input})`;
-            break;
         case "list":
+        case "tuple": // validate tuple as list,as JS doesn't have native tuples
             processedInput = `[${input}]`;
             break;
         case "dict":
@@ -60,8 +58,6 @@ function checkInput(input: any, dataType: string): boolean {
                 exampleInput = '"example_string"';
                 break;
             case "tuple":
-                exampleInput = '"item1", "item2", "item3"';
-                break;
             case "list":
                 exampleInput = '"item1", "item2", 123';
                 break;
