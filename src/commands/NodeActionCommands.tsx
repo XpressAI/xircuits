@@ -683,20 +683,11 @@ export function addNodeActionCommands(
             const oldValue = selected_node.getPorts()["out-0"].getOptions()["label"];
             const literalType = selected_node["name"].split(" ")[1];
             let isStoreDataType: boolean = false;
-            let isTextareaInput: string = "";
+            let inputType: string = "";
             
             switch(literalType){
                 case "String":
-                    isTextareaInput = 'textarea';
-                    break;
-                case "List":
-                case "Tuple":
-                case "Dict":
-                case "Chat":
-                isStoreDataType = true;
-                    break;
-                case "Secret":
-                    isStoreDataType = false;
+                    inputType = 'textarea';
                     break;
                 case "True":
                 case "False":
@@ -705,7 +696,7 @@ export function addNodeActionCommands(
                     break;
             }
             const updateTitle = `Update ${literalType}`;
-            const dialogOptions = inputDialog(updateTitle, oldValue, literalType, isStoreDataType, isTextareaInput);
+            const dialogOptions = inputDialog({ title:updateTitle, oldValue:oldValue, type:literalType, inputType});
             const dialogResult = await showFormDialog(dialogOptions);
             if (dialogResult["button"]["label"] == 'Cancel') {
                 // When Cancel is clicked on the dialog, just return
@@ -715,7 +706,7 @@ export function addNodeActionCommands(
             var updatedContent = dialogResult["value"][updateTitle];
 
             while (!checkInput(updatedContent, literalType)){
-                const dialogOptions = inputDialog(updateTitle, updatedContent, literalType, isStoreDataType, isTextareaInput);
+                const dialogOptions = inputDialog({ title:updateTitle, oldValue:updatedContent, type:literalType, inputType});
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (dialogResult["button"]["label"] == 'Cancel') return;
                 updatedContent = dialogResult["value"][updateTitle];
