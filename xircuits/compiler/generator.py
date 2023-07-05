@@ -136,6 +136,11 @@ def main(args):
                         value = port.sourceLabel
                     elif port.source.name == "Literal Chat":
                         value = json.loads("{" + port.sourceLabel + "}")
+                    elif port.source.name == "Literal Tuple":
+                        value = eval(port.sourceLabel)
+                        if not isinstance(value, tuple):
+                            # handler for single entry tuple
+                            value = (value,)
                     else:
                         value = eval(port.sourceLabel)
                     tpl.body[0].value.value = value
