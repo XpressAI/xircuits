@@ -11,7 +11,7 @@ import { ListInput } from './input-dialogues/ListInput';
 import { ChatInput } from './input-dialogues/ChatInput';
 import { SecretInput } from './input-dialogues/SecretInput';
 import { VariableInput } from './input-dialogues/VariableInput';
-import { ParameterInput } from './input-dialogues/ParameterInput';
+import { ArgumentInput } from './input-dialogues/ArgumentInput';
 
 export interface InputDialogueProps {
 	title: string;
@@ -51,14 +51,14 @@ export const LiteralInputDialog = ({ title, oldValue, type, inputType }): JSX.El
 		Variable: VariableInput,
 		Secret: SecretInput,
 		Chat: ChatInput,
-		Parameter: ParameterInput,
+		Argument: ArgumentInput,
 	};
 
 	const InputValueDialog = () => {
 		const InputComponent = inputComponents[inputType === 'textarea' ? inputType : type];
 		
 		// The `type` prop is now passed to all components
-		const extraProps = { type };
+		const extraProps = { type, inputType };
 
 		return InputComponent ? <InputComponent title={title} oldValue={oldValue} {...extraProps} /> : null;
 	}

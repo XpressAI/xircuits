@@ -1,10 +1,10 @@
 import React from 'react';
 
-export const ParameterInput = ({ title, oldValue, type }): JSX.Element => {
+export const ArgumentInput = ({ title, oldValue, inputType }): JSX.Element => {
     return (
         <form>
             <h3 style={{ marginTop: 0, marginBottom: 5 }}>
-                Enter {type} Argument Name (Without Quotes):
+                Enter {inputType} Argument Name:
             </h3>
         <input
             name={title}

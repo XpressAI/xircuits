@@ -88,7 +88,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
             node.addOutPortEnhance(inputValue, 'out-0');
         }
         else {
-            const dialogOptions = inputDialog({ title: argumentTitle, oldValue: "", type:'String'});
+            const dialogOptions = inputDialog({ title: argumentTitle, oldValue: "", type:'Argument', inputType:'String'});
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             inputValue = dialogResult["value"][argumentTitle];
@@ -109,7 +109,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
             node.addOutPortEnhance(inputValue, 'out-0');
 
         } else {
-            const dialogOptions = inputDialog({ title: argumentTitle, oldValue: "", type:'String'});
+            const dialogOptions = inputDialog({ title: argumentTitle, oldValue: "", type:'Argument', inputType:'Integer'});
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             inputValue = dialogResult["value"][argumentTitle];
@@ -132,7 +132,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         } else {
 
-            const dialogOptions = inputDialog({ title: argumentTitle, oldValue: "", type:'String'});
+            const dialogOptions = inputDialog({ title: argumentTitle, oldValue: "", type:'Argument', inputType:'Float'});
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             inputValue = dialogResult["value"][argumentTitle];
@@ -155,7 +155,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
         } else {
 
-            const dialogOptions = inputDialog({ title: argumentTitle, oldValue: "", type:'String'});
+            const dialogOptions = inputDialog({ title: argumentTitle, oldValue: "", type:'Argument', inputType:'Boolean'});
             const dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             inputValue = dialogResult["value"][argumentTitle];
@@ -272,8 +272,6 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
                 if (cancelDialog(dialogResult)) return;
                 inputValue = dialogResult["value"];
                 inputValue = convertToOpenAI(inputValue)
-                // inputValue = JSON.stringify(inputValue);
-                // inputValue = inputValue.slice(1, -1); // Remove the first and last character
             }
 
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
