@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import TextareaAutosize from 'react-textarea-autosize';
 
 type OldValueProps = {
     messages?: Array<{ role: string, content: string }>
@@ -26,40 +27,57 @@ export const ChatInput = ({ title, oldValue = {}, onSubmit }: { title: string, o
         setMessages(newMessages);
     };
 
+    const gridContainer = {
+        display: 'grid',
+        gridTemplateColumns: '1fr',
+        gridGap: '10px',
+        padding: '20px',
+        width: '400px',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+    };
+
+    const flexContainer = {
+        display: 'flex',
+        marginBottom: '10px',
+    };
+
+    const selectStyle = {
+        flex: '1',
+    };
+
     return (
         <form>
-            <div className="jp-mod-styled">
-                <label className="jp-mod-styled">Messages</label>
+            <div style={gridContainer} className="jp-mod-styled">
+                <label>Messages</label>
                 {messages.map((message, index) => (
                     <div key={index} className="jp-mod-styled">
-                        <label className="jp-mod-styled">Role</label>
-                        <select
-                            name="role"
-                            value={message.role}
-                            onChange={(e) => updateMessage(index, 'role', e.target.value)}
-                            className="jp-mod-styled"
-                        >
-                            <option value="">Select a role</option>
-                            <option value="system">system</option>
-                            <option value="user">user</option>
-                            <option value="assistant">assistant</option>
-                            <option value="function">function</option>
-                        </select>
-
-                        <label className="jp-mod-styled">Content</label>
-                        <input
+                        <div style={flexContainer}>
+                            <select
+                                name="role"
+                                value={message.role}
+                                onChange={(e) => updateMessage(index, 'role', e.target.value)}
+                                style={selectStyle} className="jp-mod-styled"
+                            >
+                                <option value="">Select a role</option>
+                                <option value="system">system</option>
+                                <option value="user">user</option>
+                                <option value="assistant">assistant</option>
+                                <option value="function">function</option>
+                            </select>
+                            <button type="button" onClick={() => removeMessage(index)} className="jp-mod-styled">Remove</button>
+                        </div>
+                        <TextareaAutosize
+                            minRows={4}
                             name="content"
-                            value={message.content}
+                            style={{ width: '100%', fontSize: 12 }}
                             onChange={(e) => updateMessage(index, 'content', e.target.value)}
-                            className="jp-mod-styled"
-                        />
-
-                        <button type="button" onClick={() => removeMessage(index)} className="jp-mod-styled">Remove</button>
+                            autoFocus />
                     </div>
                 ))}
-                <button type="button" onClick={addMessage} className="jp-mod-styled">Add Message</button>
+                <button type="button" onClick={addMessage} style={{gridColumn: 'span 1'}} className="jp-mod-styled">Add Message</button>
             </div>
-			<input type="hidden" name="messages" value={hiddenMessagesValue} />
+            <input type="hidden" name="messages" value={hiddenMessagesValue} />
         </form>
     );
 }
