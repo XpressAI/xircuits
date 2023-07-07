@@ -271,7 +271,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (cancelDialog(dialogResult)) return;
                 inputValue = dialogResult["value"];
-                inputValue = convertToOpenAI(inputValue)
+                inputValue = JSON.stringify(inputValue)
             }
 
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });

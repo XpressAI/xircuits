@@ -11,13 +11,16 @@ export const formDialogWidget = (
   // order to trigger a render of the DOM nodes from the React element.
   MessageLoop.sendMessage(widget, Widget.Msg.UpdateRequest);
 
-  widget.getValue = (): any => {
+widget.getValue = (): any => {
     const form = widget.node.querySelector('form');
-    const formValues: { [key: string]: any } = {};
+    let formValues: { [key: string]: any } = {};
     for (const element of Object.values(
       form?.elements ?? []
     ) as HTMLInputElement[]) {
-      switch (element.type) {
+      switch (element.name) {
+        case 'messages':
+          formValues = JSON.parse(element.value);
+          break;
         case 'checkbox':
           formValues[element.name] = element.checked;
           break;
