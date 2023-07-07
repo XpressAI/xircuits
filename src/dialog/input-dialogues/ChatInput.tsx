@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 
-export const ChatInput = ({ title, oldValue }): JSX.Element => {
+type OldValueProps = {
+    model?: string,
+    temperature?: number,
+    top_p?: number,
+    messages?: Array<{ role: string, content: string }>
+}
+
+export const ChatInput = ({ title, oldValue = {} }: { title: string, oldValue?: OldValueProps }): JSX.Element => {
     const [messages, setMessages] = useState(oldValue.messages || [{ role: '', content: '' }]);
 
     const addMessage = () => {
@@ -18,60 +25,40 @@ export const ChatInput = ({ title, oldValue }): JSX.Element => {
     };
 
     return (
-			<div>
-			  <label>Model</label>
-			  <select name="model" defaultValue={oldValue.model}>
-				<option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-				{/* Add other options here as needed */}
-			  </select>
-		
-			  <label>Temperature</label>
-			  <input
-				name="temperature"
-				type="number"
-				min="0"
-				max="2"
-				step="0.01"
-				defaultValue={oldValue.temperature}
-			  />
-		
-			  <label>Top_p</label>
-			  <input
-				name="top_p"
-				type="number"
-				min="0"
-				max="1"
-				step="0.01"
-				defaultValue={oldValue.top_p}
-			  />
-		
-			  <label>Messages</label>
-			  {messages.map((message, index) => (
-				<div key={index}>
-				  <label>Role</label>
-				  <select
+		<form>
+
+			<div className="jp-mod-styled">
+
+			<label className="jp-mod-styled">Messages</label>
+			{messages.map((message, index) => (
+				<div key={index} className="jp-mod-styled">
+				<label className="jp-mod-styled">Role</label>
+				<select
 					name={`role${index}`}
 					value={message.role}
 					onChange={(e) => updateMessage(index, 'role', e.target.value)}
-				  >
+					className="jp-mod-styled"
+				>
 					<option value="system">system</option>
 					<option value="user">user</option>
 					<option value="assistant">assistant</option>
 					<option value="function">function</option>
-				  </select>
-		
-				  <label>Content</label>
-				  <input
+				</select>
+
+				<label className="jp-mod-styled">Content</label>
+				<input
 					name={`content${index}`}
 					value={message.content}
 					onChange={(e) => updateMessage(index, 'content', e.target.value)}
-				  />
-		
-				  <button type="button" onClick={() => removeMessage(index)}>Remove</button>
+					className="jp-mod-styled"
+				/>
+
+				<button type="button" onClick={() => removeMessage(index)} className="jp-mod-styled">Remove</button>
 				</div>
-			  ))}
-		
-			  <button type="button" onClick={addMessage}>Add Message</button>
+			))}
+
+			<button type="button" onClick={addMessage} className="jp-mod-styled">Add Message</button>
 			</div>
-		  );
-		}
+		</form>
+    );
+}
