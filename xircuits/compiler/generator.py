@@ -135,7 +135,7 @@ def main(args):
                     elif port.source.name == "Literal Secret":
                         value = port.sourceLabel
                     elif port.source.name == "Literal Chat":
-                        value = json.loads("{" + port.sourceLabel + "}")
+                        value = json.loads(port.sourceLabel)
                     elif port.source.name == "Literal Tuple":
                         value = eval(port.sourceLabel)
                         if not isinstance(value, tuple):

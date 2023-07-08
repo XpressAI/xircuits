@@ -680,13 +680,16 @@ export function addNodeActionCommands(
 
             let node = null;
             const links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
-            const oldValue = selected_node.getPorts()["out-0"].getOptions()["label"];
+            var oldValue = selected_node.getPorts()["out-0"].getOptions()["label"];
             const literalType = selected_node["name"].split(" ")[1];
             let inputType: string = "";
             
             switch(literalType){
                 case "String":
                     inputType = 'textarea';
+                    break;
+                case "Chat":
+                    oldValue = JSON.parse(oldValue);
                     break;
                 case "True":
                 case "False":

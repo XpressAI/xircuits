@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 
-type OldValueProps = {
-    messages?: Array<{ role: string, content: string }>
-}
+type OldValueProps = Array<{ role: string, content: string }>;
 
-export const ChatInput = ({ title, oldValue = {}, onSubmit }: { title: string, oldValue?: OldValueProps, onSubmit: (value: Array<{ role: string, content: string }>) => void }): JSX.Element => {
-    const [messages, setMessages] = useState(oldValue.messages || [{ role: '', content: '' }]);
+export const ChatInput = ({ title, oldValue = [], onSubmit }: { title: string, oldValue?: OldValueProps, onSubmit: (value: Array<{ role: string, content: string }>) => void }): JSX.Element => {
+    const [messages, setMessages] = useState(oldValue || [{ role: '', content: '' }]);
     const [hiddenMessagesValue, setHiddenMessagesValue] = useState('');
 
     useEffect(() => {
-    setHiddenMessagesValue(JSON.stringify(messages));
+        setHiddenMessagesValue(JSON.stringify(messages));
     }, [messages]);
 
     const addMessage = () => {
         setMessages([...messages, { role: '', content: '' }]);
     };
-    
+
     const removeMessage = (index) => {
         setMessages(messages.filter((_, i) => i !== index));
     };
-    
+
     const updateMessage = (index, field, value) => {
         let newMessages = [...messages];
         newMessages[index][field] = value;
@@ -71,6 +69,7 @@ export const ChatInput = ({ title, oldValue = {}, onSubmit }: { title: string, o
                             minRows={4}
                             name="content"
                             style={{ width: '100%', fontSize: 12 }}
+                            value={message.content}
                             onChange={(e) => updateMessage(index, 'content', e.target.value)}
                             autoFocus />
                     </div>
