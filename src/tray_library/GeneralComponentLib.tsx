@@ -16,44 +16,6 @@ export function cancelDialog(dialogResult) {
     return false
 }
 
-function convertToOpenAI(inputObject) {
-    // Initialize the new format object
-    let newObject = {
-        "model": inputObject.model,
-        "messages": []
-    };
-
-    // Loop over the input object properties
-    for (let key in inputObject) {
-        if (inputObject.hasOwnProperty(key)) {
-            // If key starts with 'content' or 'role', add it to the 'messages' array
-            let matchContent = key.match(/^content(\d+)/);
-            let matchRole = key.match(/^role(\d+)/);
-            if (matchContent) {
-                let index = parseInt(matchContent[1]);
-                if (!newObject.messages[index]) {
-                    newObject.messages[index] = {};
-                }
-                newObject.messages[index].content = inputObject[key];
-            } else if (matchRole) {
-                let index = parseInt(matchRole[1]);
-                if (!newObject.messages[index]) {
-                    newObject.messages[index] = {};
-                }
-                newObject.messages[index].role = inputObject[key];
-            } else if (key !== 'model') { // Ignore 'model', add other properties directly
-                if (inputObject[key]) { // Ignore empty properties
-                    newObject[key] = inputObject[key];
-                }
-            }
-        }
-    }
-
-    // Convert to string and return
-    return JSON.stringify(newObject, null, 2);
-}
-
-
 export async function GeneralComponentLibrary(props: GeneralComponentLibraryProps){
     let node = null;
     const nodeData = props.model;
@@ -271,12 +233,19 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (cancelDialog(dialogResult)) return;
                 inputValue = dialogResult["value"];
+
+                while (!checkInput(inputValue, 'chat')){
+                    const dialogOptions = inputDialog({ title:'Chat', oldValue:inputValue, type:'Chat'});
+                    const dialogResult = await showFormDialog(dialogOptions);
+    
+                    if (cancelDialog(dialogResult)) return;
+                    inputValue = dialogResult["value"];
+                }
                 inputValue = JSON.stringify(inputValue)
             }
 
             node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance(inputValue, 'out-0');
-
         } 
     } 
 

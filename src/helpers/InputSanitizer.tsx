@@ -21,6 +21,7 @@ function checkInput(input: any, dataType: string): boolean {
             break;
         case "string":
         case "secret":
+        case "chat":
             processedInput = JSON.stringify(input);
             break;
         case "list":
@@ -28,7 +29,6 @@ function checkInput(input: any, dataType: string): boolean {
             processedInput = `[${input}]`;
             break;
         case "dict":
-        case "chat":
             processedInput = `{${input}}`;
             break;
         case "undefined_any":
