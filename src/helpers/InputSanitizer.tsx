@@ -31,6 +31,8 @@ function checkInput(input: any, dataType: string): boolean {
         case "dict":
             processedInput = `{${input}}`;
             break;
+        case "boolean":
+            return true;
         case "undefined_any":
             //handler if called from any inputDialogue
             alert(`Type is undefined or not provided. Please insert the first character as shown in example.`);

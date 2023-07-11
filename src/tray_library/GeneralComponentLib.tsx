@@ -112,7 +112,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
             let portLabel = nodeName.split(' ');
             portLabel = portLabel[portLabel.length - 1];
 
-            node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
+            node = new CustomNodeModel({ name: "Literal Boolean", color: nodeData.color, extras: { "type": nodeData.type } });
             node.addOutPortEnhance(portLabel, 'out-0');
 
         } else {

@@ -691,9 +691,6 @@ export function addNodeActionCommands(
                 case "Chat":
                     oldValue = JSON.parse(oldValue);
                     break;
-                case "True":
-                case "False":
-                    return;
                 default:
                     break;
             }
