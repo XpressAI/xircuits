@@ -23,7 +23,8 @@ import ComponentsPanel from '../context-menu/ComponentsPanel';
 import { cancelDialog, GeneralComponentLibrary } from '../tray_library/GeneralComponentLib';
 import { NodeActionsPanel } from '../context-menu/NodeActionsPanel';
 import { AdvancedComponentLibrary, fetchNodeByName } from '../tray_library/AdvanceComponentLib';
-import { inputDialog, getItsLiteralType } from '../dialog/LiteralInputDialog';
+import { inputDialog } from '../dialog/LiteralInputDialog';
+import { getItsLiteralType } from '../dialog/input-dialogues/VariableInput'
 import { lowPowerMode, setLowPowerMode } from './state/powerModeState';
 
 export interface BodyWidgetProps {
@@ -816,7 +817,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				break;
 			case 'boolean':
 				let boolTitle = 'Enter boolean value: ';
-				const dialogOptions = inputDialog(boolTitle, "", 'Boolean');
+				const dialogOptions = inputDialog({ title:boolTitle, oldValue:"", type:'Boolean'});
 				const dialogResult = await showFormDialog(dialogOptions);
 				if (cancelDialog(dialogResult)) return;
 				let boolValue = dialogResult["value"][boolTitle];

@@ -680,22 +680,16 @@ export function addNodeActionCommands(
 
             let node = null;
             const links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
-            const oldValue = selected_node.getPorts()["out-0"].getOptions()["label"];
+            var oldValue = selected_node.getPorts()["out-0"].getOptions()["label"];
             const literalType = selected_node["name"].split(" ")[1];
-            let isStoreDataType: boolean = false;
-            let isTextareaInput: string = "";
+            let inputType: string = "";
             
             switch(literalType){
                 case "String":
-                    isTextareaInput = 'textarea';
+                    inputType = 'textarea';
                     break;
-                case "List":
-                case "Tuple":
-                case "Dict":
-                    isStoreDataType = true;
-                    break;
-                case "Secret":
-                    isStoreDataType = false;
+                case "Chat":
+                    oldValue = JSON.parse(oldValue);
                     break;
                 case "True":
                 case "False":
@@ -704,22 +698,23 @@ export function addNodeActionCommands(
                     break;
             }
             const updateTitle = `Update ${literalType}`;
-            const dialogOptions = inputDialog(updateTitle, oldValue, literalType, isStoreDataType, isTextareaInput);
+            const dialogOptions = inputDialog({ title:updateTitle, oldValue:oldValue, type:literalType, inputType});
             const dialogResult = await showFormDialog(dialogOptions);
             if (dialogResult["button"]["label"] == 'Cancel') {
                 // When Cancel is clicked on the dialog, just return
                 return;
             }
 
-            var updatedContent = dialogResult["value"][updateTitle];
+            var updatedContent = dialogResult["value"][updateTitle] || dialogResult["value"];
 
             while (!checkInput(updatedContent, literalType)){
-                const dialogOptions = inputDialog(updateTitle, updatedContent, literalType, isStoreDataType, isTextareaInput);
+                const dialogOptions = inputDialog({ title:updateTitle, oldValue:updatedContent, type:literalType, inputType});
                 const dialogResult = await showFormDialog(dialogOptions);
                 if (dialogResult["button"]["label"] == 'Cancel') return;
-                updatedContent = dialogResult["value"][updateTitle];
+                updatedContent = dialogResult["value"][updateTitle] || dialogResult["value"];
             }
-            const strContent: string = updatedContent;
+
+            let strContent: string = (literalType == 'Chat') ? JSON.stringify(updatedContent) : updatedContent;
 
             node = new CustomNodeModel({ name: selected_node["name"], color: selected_node["color"], extras: { "type": selected_node["extras"]["type"] } });
             node.addOutPortEnhance(strContent, 'out-0');

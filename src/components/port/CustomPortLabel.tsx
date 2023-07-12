@@ -64,52 +64,31 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 		} else {
 			portType = portName.split("-")[1];
 		}
-		// if multiple types provided, show the symbol for the first provided type
 		if (portType.includes(',')) {
 			portType = 'union';
 		}
 
-		switch (portType) {
-			case "string":
-				symbolLabel = '" "';
-				break;
-			case "int":
-				symbolLabel = ' 1';
-				break;
-			case "float":
-				symbolLabel = '1.0';
-				break;
-			case "boolean":
-				symbolLabel = '⊤⊥';
-				break;
-			case "time.time":
-				symbolLabel = '𝘵';
-				break;
-			case "list":
-				symbolLabel = '[ ]';
-				break;
-			case "tuple":
-				symbolLabel = '( )';
-				break;
-			case "dict":
-				symbolLabel = '{ }';
-				break;
-			case "union":
-				symbolLabel = ' U';
-				break;
-			case "secret":
-				symbolLabel = '🗝️';
-				break;
-				case "any":
-				symbolLabel = '[_]';
-				break;
-			case "0":
-			case "flow":
-				symbolLabel = null;
-				break;
-			default:
-				symbolLabel = '◎';
-				break;
+		const symbolMap = {
+			"string": '" "',
+			"int": ' 1',
+			"float": '1.0',
+			"boolean": '⊤⊥',
+			"time.time": '𝘵',
+			"list": '[ ]',
+			"tuple": '( )',
+			"dict": '{ }',
+			"union": ' U',
+			"secret": '🗝️',
+			"chat": '🗨',
+			"any": '[_]',
+			"0": null,
+			"flow": null
+		};
+		
+		if (portType in symbolMap) {
+			symbolLabel = symbolMap[portType];
+		} else {
+			symbolLabel = '◎';
 		}
 
 		const port = (
