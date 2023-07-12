@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Switch from "react-switch";
 
 export const BooleanInput = ({ title, oldValue }): JSX.Element => {
-	const [checked, setChecked] = useState<boolean>(oldValue.toLowerCase() === 'true');
+	const [checked, setChecked] = useState<boolean>(oldValue[0].toLowerCase() === 'true');
 
 	const handleChecked = () => {
 		setChecked(!checked);

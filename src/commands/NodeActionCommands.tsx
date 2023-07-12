@@ -681,14 +681,14 @@ export function addNodeActionCommands(
             let node = null;
             const links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
             var oldValue = selected_node.getPorts()["out-0"].getOptions()["label"];
-            const literalType = selected_node["name"].split(" ")[1];
+            const literalType = selected_node["extras"]["type"];
             let inputType: string = "";
             
             switch(literalType){
-                case "String":
+                case "string":
                     inputType = 'textarea';
                     break;
-                case "Chat":
+                case "chat":
                     oldValue = JSON.parse(oldValue);
                     break;
                 default:
@@ -711,7 +711,7 @@ export function addNodeActionCommands(
                 updatedContent = dialogResult["value"][updateTitle] || dialogResult["value"];
             }
 
-            let strContent: string = (literalType == 'Chat') ? JSON.stringify(updatedContent) : updatedContent;
+            let strContent: string = (literalType == 'chat') ? JSON.stringify(updatedContent) : updatedContent;
 
             node = new CustomNodeModel({ name: selected_node["name"], color: selected_node["color"], extras: { "type": selected_node["extras"]["type"] } });
             node.addOutPortEnhance(strContent, 'out-0');
