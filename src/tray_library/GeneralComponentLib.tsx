@@ -38,7 +38,8 @@ export async function handleLiteralInput(nodeName, nodeData, inputValue = "", ty
     }
 
     if (SPECIAL_LITERALS.includes(type)) inputValue = JSON.stringify(inputValue);
-
+    if (nodeName === 'Literal True' || nodeName === 'Literal False') nodeName = 'Literal Boolean';
+    
     const node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
     node.addOutPortEnhance(inputValue, 'out-0');
     return node;
