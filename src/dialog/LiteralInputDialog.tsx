@@ -56,7 +56,7 @@ export const LiteralInputDialog = ({ title, oldValue, type, inputType }): JSX.El
 	};
 
 	const InputValueDialog = () => {
-		const InputComponent = inputComponents[inputType === 'textarea' ? inputType : type];
+		const InputComponent = inputComponents[inputType === 'textarea' ? inputType.toLowerCase() : type.toLowerCase()];
 		
 		// The `type` prop is now passed to all components
 		const extraProps = { type, inputType };

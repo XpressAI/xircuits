@@ -47,7 +47,7 @@ export async function getItsLiteralType(){
 		varValue = dialogResult["value"][varOfAnyTypeTitle];
 		varType = varValue.charAt(0);
 		varInput = varValue.slice(1);
-		 nodeType = varTypeChecker(varType, varInput, varValue);
+		nodeType = varTypeChecker(varType, varInput, varValue);
 
 	}
 

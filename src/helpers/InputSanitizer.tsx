@@ -31,6 +31,8 @@ function checkInput(input: any, dataType: string): boolean {
         case "dict":
             processedInput = `{${input}}`;
             break;
+        case "true":
+        case "false":
         case "boolean":
             return true;
         case "undefined_any":
