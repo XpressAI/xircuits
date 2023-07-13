@@ -18,11 +18,10 @@ export function cancelDialog(dialogResult) {
 
 const TYPE_LITERALS = ['string', 'int', 'float', 'boolean', 'list', 'tuple', 'dict', 'secret', 'chat'];
 const TYPE_ARGUMENTS = ['string', 'int', 'float', 'boolean'];
-const SPECIAL_LITERALS = ['chat']
+const SPECIAL_LITERALS = ['chat'];
 
-async function handleLiteralInput(nodeName, nodeData, variableValue, type) {
+export async function handleLiteralInput(nodeName, nodeData, variableValue, type, title = "New Literal Input") {
     let inputValue = variableValue;
-    let title = "New Literal Input"
     if (variableValue == '' || variableValue == undefined) {
         let dialogOptions = inputDialog({ title, oldValue: "", type });
         let dialogResult = await showFormDialog(dialogOptions);
@@ -47,7 +46,7 @@ async function handleLiteralInput(nodeName, nodeData, variableValue, type) {
 }
 
 async function handleArgumentInput(nodeData, argumentTitle) {
-    const dialogOptions = inputDialog({ title: argumentTitle, oldValue: "", type:'Argument', inputType: nodeData.type });
+    const dialogOptions = inputDialog({ title: argumentTitle, oldValue: "", type:'argument', inputType: nodeData.type });
     const dialogResult = await showFormDialog(dialogOptions);
     if (cancelDialog(dialogResult)) return;
     const inputValue = dialogResult["value"][argumentTitle];
