@@ -65,7 +65,7 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
     // handler for Boolean
     if (nodeData.type === 'boolean' && nodeName.startsWith("Literal")) {
-        const portLabel = nodeName.split(' ').slice(-1);
+        const portLabel = nodeData.task.split(' ').slice(-1)[0];
         node = new CustomNodeModel({ name: "Literal Boolean", color: nodeData.color, extras: { "type": nodeData.type } });
         node.addOutPortEnhance(portLabel, 'out-0');
         return node;

@@ -3,9 +3,8 @@ import Switch from "react-switch";
 
 export const BooleanInput = ({ title, oldValue }): JSX.Element => {
 	
-	// Initialize based on the oldValue (or its first element if an array).
 	// Explicitly compare to 'true' as JS treats non-empty strings as truthy.
-	const [checked, setChecked] = useState<boolean>((Array.isArray(oldValue) ? oldValue[0] : oldValue).toLowerCase() === 'true');
+	const [checked, setChecked] = useState<boolean>(oldValue.toLowerCase() === 'true');
 
 	const handleChecked = () => {
 		setChecked(!checked);
