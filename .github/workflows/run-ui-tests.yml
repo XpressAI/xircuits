@@ -69,5 +69,6 @@ jobs:
 
     - name: Test E2E
       run: |
-        ( ls && jupyter lab --NotebookApp.token='' ) & npm install -D @playwright/test && npx playwright test
+        ( ls && jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset
+) & npm install -D @playwright/test && npx playwright test
     
