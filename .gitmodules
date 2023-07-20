@@ -31,3 +31,6 @@
 [submodule "xai_components/xai_discord"]
 	path = xai_components/xai_discord
 	url = https://github.com/XpressAI/xai-discord
+[submodule "xai_components/xai_tests"]
+	path = xai_components/xai_tests
+	url = https://github.com/XpressAI/xai-tests
