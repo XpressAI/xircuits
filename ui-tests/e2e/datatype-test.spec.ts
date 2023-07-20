@@ -14,12 +14,18 @@ const connectNodes = async (page: Page, connection: NodeConnection) => {
   await page.locator(`div[data-default-node-name="${connection.targetNode}"] >> div[data-name="${connection.targetPort}"]`).hover();
   await page.mouse.up();
 };
-test('test', async ({ page }) => {
+test('test', async ({ page, browserName }) => {
   await page.goto('http://localhost:8888');
   await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=xai_components').dblclick();
   await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=xai_tests').dblclick();
-  await page.locator('text=DataTypes.xircuits').dblclick()
-
+  await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=DataTypes.xircuits').click();
+  await page.keyboard.press('Control+D', { delay: 100 }); // duplicate
+  await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=DataTypes-Copy').click();
+  await page.keyboard.press('F2', { delay: 100 }); // rename
+  await page.keyboard.type(browserName, { delay: 100 });
+  await page.keyboard.press('Enter', { delay: 100 });
+  await page.keyboard.press('Enter');
+  
   await connectNodes(page, { sourceNode: "Literal String", sourcePort: "out-0", targetNode: "AllLiteralTypes", targetPort: "parameter-string-string_port" });
   await connectNodes(page, { sourceNode: "Literal Integer", sourcePort: "out-0", targetNode: "AllLiteralTypes", targetPort: "parameter-int-int_port" });
   await connectNodes(page, { sourceNode: "Literal Float", sourcePort: "out-0", targetNode: "AllLiteralTypes", targetPort: "parameter-float-float_port" });
@@ -46,6 +52,5 @@ test('test', async ({ page }) => {
   const content = await page.locator('.jp-OutputArea-output').innerText();
 
   expect(content).toContain(datatype_test_1);
-
 
 });
