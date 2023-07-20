@@ -1,4 +1,5 @@
 import { Page, test, expect } from '@playwright/test';
+import { datatype_test_1 } from './expected_outputs/01_datatypes'
 
 interface NodeConnection {
   sourceNode: string;
@@ -42,8 +43,9 @@ test('test', async ({ page }) => {
   await page.locator('button:has-text("Start")').click();
   await page.locator('button:has-text("Select")').click();
 
-  // Check if the Xircuits execution completed successfully
-  const content = await page.locator("text=Finished Executing").innerHTML()
+  const content = await page.locator('.jp-OutputArea-output').innerText();
 
-  expect(content).toContain('Finished Executing')
+  expect(content).toContain(datatype_test_1);
+
+
 });
