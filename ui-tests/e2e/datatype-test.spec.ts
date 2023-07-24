@@ -7,12 +7,11 @@ test('test', async ({ page, browserName }) => {
   await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=xai_components').dblclick();
   await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=xai_tests').dblclick();
   await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=DataTypes.xircuits').click();
-  await page.keyboard.press('Control+D', { delay: 100 }); // duplicate
-  await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=DataTypes-Copy').click();
-  await page.keyboard.press('F2', { delay: 100 }); // rename
-  await page.keyboard.type(browserName, { delay: 100 });
-  await page.keyboard.press('Enter', { delay: 100 });
-  await page.keyboard.press('Enter');
+  await page.keyboard.press('Control+C'); // duplicate
+  await page.locator(`[aria-label="File\\ Browser\\ Section"] >> text=${browserName}`).dblclick();
+  await page.locator('.jp-DirListing-content').click({ button: 'right' });
+  await page.getByText("Ctrl+V").click();
+  await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=DataTypes.xircuits').dblclick();
   
   const nodeConnections: NodeConnection[] = [
     { sourceNode: "Literal String",   sourcePort: "out-0", targetNode: "AllLiteralTypes", targetPort: "parameter-string-string_port" },
@@ -60,7 +59,21 @@ test('test', async ({ page, browserName }) => {
   await page.locator('.react-switch-handle').click();
   await page.locator('.jp-Dialog-button.jp-mod-accept.jp-mod-styled').click();
   await expect(page.getByText('False')).toBeVisible();
-  
+
+  await page.getByText('Literal Chat').dblclick();
+  await page.locator('div').filter({ hasText: /^Select a rolesystemuserassistantfunctionRemovedef$/ }).getByRole('button').click();
+  await page.locator('select[name="role"]').selectOption('user');
+  await page.locator('select[name="role"]').click();
+  await page.getByText('abc', { exact: true }).fill('updated user message');
+  await page.getByRole('button', { name: 'Add Message' }).click();
+  await page.getByRole('combobox').nth(2).selectOption('assistant');
+  await page.getByRole('textbox').nth(2).click();
+  await page.getByRole('textbox').nth(2).fill('new assistant message');
+  await page.getByRole('button', { name: 'Submit' }).click();
+  await expect(page.getByText('False')).toBeVisible();
+
+  [{"role":"user","content":"updated user message"},{"role":"assistant","content":"new assistant message"}]
+
   await compileAndRunXircuits(page);
 
   const updated_content = await page.locator('.jp-OutputArea-output').innerText();

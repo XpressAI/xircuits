@@ -20,20 +20,20 @@ Chat inPort:
 
 export const datatype_test_2 = `Executing: AllLiteralTypes
 String inPort:
-def
+Updated String
 Integer inPort:
 456
 Float inPort:
 4.56
 Boolean inPort:
-FAlse
+False
 List inPort:
 ['d', 'e', 'f']
 Tuple inPort:
-('d', 'e', 'f')
+('g', 'h', 'i')
 Dict inPort:
-{"x": "xenon", "y": "yellow", "z": 2023}
+{'x': 'xenon', 'y': 'yellow', 'z': 2023}
 Secret inPort:
 def
 Chat inPort:
-[{'role': 'system', 'content': 'abc'}, {'role': 'user', 'content': 'def'}]`
+[{'role': 'user', 'content': 'updated user message'}, {'role': 'assistant', 'content': 'new assistant message'}]`
