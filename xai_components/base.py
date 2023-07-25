@@ -1,5 +1,5 @@
 from argparse import Namespace
-from typing import TypeVar, Generic, Tuple
+from typing import TypeVar, Generic, Tuple, NamedTuple, List
 
 T = TypeVar('T')
 
@@ -131,3 +131,11 @@ class secret:
 
     def get_value(self):
         return self.__value
+    
+    
+class message(NamedTuple):
+    role: str
+    content: str
+
+class chat(NamedTuple):
+    messages: List[message]

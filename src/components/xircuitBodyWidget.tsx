@@ -678,10 +678,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		context.ready.then(() => {
 			const setterByType = {
-				'String': setStringNodes,
-				'Int': setIntNodes,
-				'Float': setFloatNodes,
-				'Boolean': setBoolNodes
+				'string': setStringNodes,
+				'int': setIntNodes,
+				'float': setFloatNodes,
+				'boolean': setBoolNodes
 			}
 
 
@@ -817,7 +817,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				break;
 			case 'boolean':
 				let boolTitle = 'Enter boolean value: ';
-				const dialogOptions = inputDialog({ title:boolTitle, oldValue:"", type:'Boolean'});
+				const dialogOptions = inputDialog({ title:boolTitle, oldValue:"", type:'boolean'});
 				const dialogResult = await showFormDialog(dialogOptions);
 				if (cancelDialog(dialogResult)) return;
 				let boolValue = dialogResult["value"][boolTitle];
