@@ -1,8 +1,23 @@
-import { test, expect } from '@playwright/test';
-import { compileAndRunXircuits, NodeConnection, connectNodes, UpdateLiteralNode, updateLiteral } from '../xircuits_test_utils'
+import { test, type Page, expect } from '@playwright/test';
+import { navigateThroughJupyterDirectories, compileAndRunXircuits, NodeConnection, connectNodes, UpdateLiteralNode, updateLiteral } from '../xircuits_test_utils'
 import { datatype_test_1, datatype_test_2 } from './expected_outputs/01_datatypes'
 
-test('test', async ({ page, browserName }) => {
+
+test.describe.configure({ mode: 'serial' });
+
+let page: Page;
+
+test.beforeAll(async ({ browser }) => {
+  page = await browser.newPage();
+});
+
+test.afterAll(async () => {
+  await page.close();
+});
+
+
+test('Init data type test', async ({ page, browserName }) => {
+
   await page.goto('http://localhost:8888');
   await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=xai_components').dblclick();
   await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=xai_tests').dblclick();
@@ -11,8 +26,14 @@ test('test', async ({ page, browserName }) => {
   await page.locator(`[aria-label="File\\ Browser\\ Section"] >> text=${browserName}`).dblclick();
   await page.locator('.jp-DirListing-content').click({ button: 'right' });
   await page.getByText("Ctrl+V").click();
-  await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=DataTypes.xircuits').dblclick();
-  
+});
+
+
+test('Test connecting nodes', async ({ page, browserName }) => {
+
+  await page.goto(`http://localhost:8888/`);
+  await navigateThroughJupyterDirectories(page, `http://localhost:8888/lab/tree/xai_components/xai_tests/${browserName}/DataTypes.xircuits`);
+
   const nodeConnections: NodeConnection[] = [
     { sourceNode: "Literal String",   sourcePort: "out-0", targetNode: "AllLiteralTypes", targetPort: "parameter-string-string_port" },
     { sourceNode: "Literal Integer",  sourcePort: "out-0", targetNode: "AllLiteralTypes", targetPort: "parameter-int-int_port" },
@@ -36,7 +57,14 @@ test('test', async ({ page, browserName }) => {
   const content = await page.locator('.jp-OutputArea-output').innerText();
   expect(content).toContain(datatype_test_1);
   await page.locator('li[data-id="xircuit-output-panel"] >> svg[data-icon="ui-components:close"]').click();
-  
+});
+
+
+test('Test editing literal nodes', async ({ page, browserName }) => {
+
+  await page.goto(`http://localhost:8888/`);
+  await navigateThroughJupyterDirectories(page, `http://localhost:8888/lab/tree/xai_components/xai_tests/${browserName}/DataTypes.xircuits`);
+
   const updateParamsList = [
     { type: "Literal String",   updateValue: "Updated String" },
     { type: "Literal Integer",  updateValue: "456" },

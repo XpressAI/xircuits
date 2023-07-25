@@ -1,5 +1,24 @@
 import { Page } from '@playwright/test';
 
+
+export async function navigateThroughJupyterDirectories(page, url: string) {
+    const basePath = 'http://localhost:8888/lab/tree';
+    
+    // Check if the url starts with the basePath
+    if (!url.startsWith(basePath)) {
+      throw new Error(`The URL should start with "${basePath}"`);
+    }
+    
+    // Remove the basePath from the url and split the rest into directories
+    const directories = url.replace(basePath, '').split('/');
+    
+    for (const dir of directories) {
+      if (dir) { // Skip any empty strings resulting from splitting the url
+        await page.locator(`[aria-label="File\\ Browser\\ Section"] >> text=${dir}`).dblclick();
+      }
+    }
+  }
+  
 export async function compileAndRunXircuits(page: Page) {
     // Save and compile the Xircuits file, wait for the element to be visible before interacting
     await page.locator("xpath=//*[contains(@title, 'Save (Ctrl+S)')]").first().click();
