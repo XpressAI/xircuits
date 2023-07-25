@@ -25,15 +25,34 @@ export const connectNodes = async (page: Page, connection: NodeConnection) => {
     await page.mouse.up();
 };
 
+const literalTypeMapping = {
+    "Literal String": { titleName: "Update string", inputType: 'textarea' },
+    "Literal Integer": { titleName: "Update int", inputType: 'input' },
+    "Literal Float": { titleName: "Update float", inputType: 'input' },
+    "Literal List": { titleName: "Update list", inputType: 'input' },
+    "Literal Tuple": { titleName: "Update tuple", inputType: 'input' },
+    "Literal Dict": { titleName: "Update dict", inputType: 'input' },
+    "Literal Secret": { titleName: "Update secret", inputType: 'input' },
+    "Literal Boolean": { titleName: "Update boolean" },
+};
+
 export interface UpdateLiteralNode {
     type: string;
-    titleName: string;
-    updateValue: string;
-    inputType?: string;
+    updateValue: string | boolean;
 }
 
-export async function updateLiteral(page, {type, titleName, updateValue, inputType = 'input'}: UpdateLiteralNode) {
-    await page.locator(`div[data-default-node-name="${type}"]`).dblclick();
-    await page.locator(`${inputType}[name="${titleName}"]`).fill(updateValue);
-    await page.locator('.jp-Dialog-button.jp-mod-accept.jp-mod-styled').click();
+export async function updateLiteral(page, {type, updateValue}: UpdateLiteralNode) {
+    if (type === 'Literal Boolean') {
+        await page.locator(`div[data-default-node-name="${type}"]`).dblclick();
+        const isChecked = (await page.locator('input[role="switch"]').getAttribute('aria-checked')) === 'true';
+        if (isChecked !== updateValue) {
+            await page.locator('.react-switch-handle').click();
+        }
+        await page.locator('.jp-Dialog-button.jp-mod-accept.jp-mod-styled').click();
+    } else {
+        const { titleName, inputType } = literalTypeMapping[type];
+        await page.locator(`div[data-default-node-name="${type}"]`).dblclick();
+        await page.locator(`${inputType}[name="${titleName}"]`).fill(String(updateValue));
+        await page.locator('.jp-Dialog-button.jp-mod-accept.jp-mod-styled').click();
+    }
 }

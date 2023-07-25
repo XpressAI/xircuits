@@ -7,7 +7,7 @@ test('test', async ({ page, browserName }) => {
   await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=xai_components').dblclick();
   await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=xai_tests').dblclick();
   await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=DataTypes.xircuits').click();
-  await page.keyboard.press('Control+C'); // duplicate
+  await page.keyboard.press('Control+C');
   await page.locator(`[aria-label="File\\ Browser\\ Section"] >> text=${browserName}`).dblclick();
   await page.locator('.jp-DirListing-content').click({ button: 'right' });
   await page.getByText("Ctrl+V").click();
@@ -38,27 +38,22 @@ test('test', async ({ page, browserName }) => {
   await page.locator('li[data-id="xircuit-output-panel"] >> svg[data-icon="ui-components:close"]').click();
   
   const updateParamsList = [
-    { type: "Literal String",   titleName: "Update string", updateValue: "Updated String", inputType: 'textarea' },
-    { type: "Literal Integer",  titleName: "Update int",    updateValue: "456" },
-    { type: "Literal Float",    titleName: "Update float",  updateValue: "4.56" },
-    { type: "Literal List",     titleName: "Update list",   updateValue: '"d", "e", "f"' },
-    { type: "Literal Tuple",    titleName: "Update tuple",  updateValue: '"g", "h", "i"' },
-    { type: "Literal Dict",     titleName: "Update dict",   updateValue: '"x": "xenon", "y": "yellow", "z": 2023' },
-    { type: "Literal Secret",   titleName: "Update secret", updateValue: "def", expectedText: '*****' },
+    { type: "Literal String",   updateValue: "Updated String" },
+    { type: "Literal Integer",  updateValue: "456" },
+    { type: "Literal Float",    updateValue: "4.56" },
+    { type: "Literal Boolean",  updateValue: false },
+    { type: "Literal List",     updateValue: '"d", "e", "f"' },
+    { type: "Literal Tuple",    updateValue: '"g", "h", "i"' },
+    { type: "Literal Dict",     updateValue: '"x": "xenon", "y": "yellow", "z": 2023' },
+    { type: "Literal Secret",   updateValue: "def", expectedText: '*****' },
   ];
   
   for (const params of updateParamsList) {
-    const { type, titleName, updateValue, expectedText, inputType } = params;
-    await updateLiteral(page, { type, titleName, updateValue, inputType });
-    const visibleText = expectedText ? expectedText : updateValue;
+    const { type, updateValue, expectedText } = params;
+    await updateLiteral(page, { type, updateValue });
+    const visibleText = expectedText ? expectedText : (typeof updateValue === "boolean" ? (updateValue ? "True" : "False") : String(updateValue));
     await expect(page.getByText(visibleText)).toBeVisible();
-}
-  
-  // Handling Boolean separately
-  await page.locator(`div[data-default-node-name="Literal Boolean"]`).dblclick();
-  await page.locator('.react-switch-handle').click();
-  await page.locator('.jp-Dialog-button.jp-mod-accept.jp-mod-styled').click();
-  await expect(page.getByText('False')).toBeVisible();
+  }
 
   await page.getByText('Literal Chat').dblclick();
   await page.locator('div').filter({ hasText: /^Select a rolesystemuserassistantfunctionRemovedef$/ }).getByRole('button').click();
@@ -71,8 +66,6 @@ test('test', async ({ page, browserName }) => {
   await page.getByRole('textbox').nth(2).fill('new assistant message');
   await page.getByRole('button', { name: 'Submit' }).click();
   await expect(page.getByText('False')).toBeVisible();
-
-  [{"role":"user","content":"updated user message"},{"role":"assistant","content":"new assistant message"}]
 
   await compileAndRunXircuits(page);
 
