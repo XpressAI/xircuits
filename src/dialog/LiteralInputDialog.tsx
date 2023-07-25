@@ -41,21 +41,22 @@ export const LiteralInputDialog = ({ title, oldValue, type, inputType }): JSX.El
 
 	const inputComponents = {
 		textarea: TextAreaInput,
-		Integer: NumberInput,
-		Float: NumberInput,
-		Boolean: BooleanInput,
-		String: StringInput,
-		Dict: DictInput,
-		List: ListInput,
-		Tuple: TupleInput,
-		Variable: VariableInput,
-		Secret: SecretInput,
-		Chat: ChatInput,
-		Argument: ArgumentInput,
+		int: NumberInput,
+		integer: NumberInput,
+		float: NumberInput,
+		boolean: BooleanInput,
+		string: TextAreaInput,
+		dict: DictInput,
+		list: ListInput,
+		tuple: TupleInput,
+		variable: VariableInput,
+		secret: SecretInput,
+		chat: ChatInput,
+		argument: ArgumentInput,
 	};
 
 	const InputValueDialog = () => {
-		const InputComponent = inputComponents[inputType === 'textarea' ? inputType : type];
+		const InputComponent = inputComponents[inputType === 'textarea' ? inputType.toLowerCase() : type.toLowerCase()];
 		
 		// The `type` prop is now passed to all components
 		const extraProps = { type, inputType };

@@ -30,7 +30,7 @@ export const VariableInput = ({ title, oldValue }): JSX.Element => {
 export async function getItsLiteralType(){
 	// When inPort is 'any' type, get the correct literal type based on the first character inputed
 	let varOfAnyTypeTitle = 'Enter your variable value';
-	let dialogOptions = inputDialog({ title: varOfAnyTypeTitle, oldValue: "", type: 'Variable' });
+	let dialogOptions = inputDialog({ title: varOfAnyTypeTitle, oldValue: "", type: 'variable' });
 	const dialogResult = await showFormDialog(dialogOptions);
 	if (cancelDialog(dialogResult)) return;
 	let varValue = dialogResult["value"][varOfAnyTypeTitle];
@@ -47,7 +47,7 @@ export async function getItsLiteralType(){
 		varValue = dialogResult["value"][varOfAnyTypeTitle];
 		varType = varValue.charAt(0);
 		varInput = varValue.slice(1);
-		 nodeType = varTypeChecker(varType, varInput, varValue);
+		nodeType = varTypeChecker(varType, varInput, varValue);
 
 	}
 

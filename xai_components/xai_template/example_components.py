@@ -12,7 +12,6 @@ class HelloComponent(Component):
         creator_name = os.getlogin()
         print("Hello, " + creator_name)
 
-
 @xai_component
 class HelloHyperparameter(Component):
     """A component that changes the print message depending on the supplied parameter.
@@ -25,6 +24,7 @@ class HelloHyperparameter(Component):
     def execute(self, ctx) -> None:
         input_str = self.input_str.value
         print("Hello " + str(input_str))
+        
 @xai_component
 class CompulsoryHyperparameter(Component):
     """A component that uses Compulsory inPorts. 

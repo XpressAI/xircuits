@@ -22,6 +22,7 @@ import { CustomPortModel } from '../components/port/CustomPortModel';
 import { CustomLinkModel, ParameterLinkModel, TriangleLinkModel } from '../components/link/CustomLinkModel';
 import { PointModel } from '@projectstorm/react-diagrams';
 import { Point } from '@projectstorm/geometry';
+import { handleLiteralInput } from '../tray_library/GeneralComponentLib';
 
 /**
  * Add the commands for node actions.
@@ -680,45 +681,24 @@ export function addNodeActionCommands(
 
             let node = null;
             const links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
-            var oldValue = selected_node.getPorts()["out-0"].getOptions()["label"];
-            const literalType = selected_node["name"].split(" ")[1];
-            let inputType: string = "";
+            const literalType = selected_node["extras"]["type"];
+            let oldValue = selected_node.getPorts()["out-0"].getOptions()["label"];
             
-            switch(literalType){
-                case "String":
-                    inputType = 'textarea';
-                    break;
-                case "Chat":
-                    oldValue = JSON.parse(oldValue);
-                    break;
-                case "True":
-                case "False":
-                    return;
-                default:
-                    break;
+            if (literalType == "chat"){
+                oldValue = JSON.parse(oldValue);
             }
+            
             const updateTitle = `Update ${literalType}`;
-            const dialogOptions = inputDialog({ title:updateTitle, oldValue:oldValue, type:literalType, inputType});
-            const dialogResult = await showFormDialog(dialogOptions);
-            if (dialogResult["button"]["label"] == 'Cancel') {
-                // When Cancel is clicked on the dialog, just return
+            
+            let updatedContent = await handleLiteralInput(selected_node["name"], {color: selected_node["color"], type: selected_node["extras"]["type"]}, oldValue, literalType, updateTitle);
+            
+            if (!updatedContent) {
+                // handle case where Cancel was clicked or an error occurred
                 return;
             }
-
-            var updatedContent = dialogResult["value"][updateTitle] || dialogResult["value"];
-
-            while (!checkInput(updatedContent, literalType)){
-                const dialogOptions = inputDialog({ title:updateTitle, oldValue:updatedContent, type:literalType, inputType});
-                const dialogResult = await showFormDialog(dialogOptions);
-                if (dialogResult["button"]["label"] == 'Cancel') return;
-                updatedContent = dialogResult["value"][updateTitle] || dialogResult["value"];
-            }
-
-            let strContent: string = (literalType == 'Chat') ? JSON.stringify(updatedContent) : updatedContent;
-
-            node = new CustomNodeModel({ name: selected_node["name"], color: selected_node["color"], extras: { "type": selected_node["extras"]["type"] } });
-            node.addOutPortEnhance(strContent, 'out-0');
-
+            
+            node = updatedContent;
+            
             // Set new node to old node position
             let position = selected_node.getPosition();
             node.setPosition(position);
