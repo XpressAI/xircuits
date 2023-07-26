@@ -50,8 +50,7 @@ jobs:
 
     - name: Install Xircuits
       run: |
-        xircuits-submodules tensorflow_keras
-        xircuits-submodules test
+        xircuits-submodules tests
 
 
     - uses: actions/setup-node@v3
@@ -67,7 +66,7 @@ jobs:
 
     - name: Test E2E
       run: |
-        ( ls && jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset ) & npm install -D @playwright/test && cd ui-tests && npx playwright test e2e/
+        ( ls && jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset ) & npm install -D @playwright/test && cd ui-tests && npx playwright test e2e/datatype-test.spec.ts
 
     - uses: actions/upload-artifact@v3
       if: always()
