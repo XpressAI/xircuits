@@ -1,4 +1,4 @@
-name: Combined UI E2E Test and Playwright Tests
+name: Frontend Playwright Tests
 
 on:
   push:
@@ -48,16 +48,11 @@ jobs:
       run: |
         pip install -e .
 
-    - name: Build Wheel
-      run: |
-        python -m pip install --upgrade pip      
-        python -m pip install --upgrade build &&
-        python -m build
-
     - name: Install Xircuits
       run: |
-        whl_name=$(echo dist/*whl)[tensorflow_keras]
-        pip install $whl_name
+        xircuits-submodules tensorflow_keras
+        xircuits-submodules test
+
 
     - uses: actions/setup-node@v3
       with:
@@ -72,10 +67,7 @@ jobs:
 
     - name: Test E2E
       run: |
-        ( ls && jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset ) & npm install -D @playwright/test && npx playwright test
-
-    - name: Run Playwright tests
-      run: npx playwright test
+        ( ls && jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset ) & npm install -D @playwright/test && cd ui-tests && npx playwright test e2e/
 
     - uses: actions/upload-artifact@v3
       if: always()
