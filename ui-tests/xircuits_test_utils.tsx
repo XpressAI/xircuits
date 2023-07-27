@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Page, expect } from '@playwright/test';
 
 
 export async function navigateThroughJupyterDirectories(page, url: string) {
@@ -18,6 +18,27 @@ export async function navigateThroughJupyterDirectories(page, url: string) {
       }
     }
   }
+
+export async function cleanDirectory(page, url) {
+    
+    await page.goto('http://localhost:8888');
+    await navigateThroughJupyterDirectories(page, url);
+
+    const fileItems = await page.$$('.jp-DirListing-item');
+
+    for (let fileItem of fileItems) {
+        
+        try {
+            await fileItem.click();
+            await page.keyboard.press('Delete');
+            await page.locator('.jp-Dialog-button.jp-mod-accept.jp-mod-warn.jp-mod-styled').click();
+            await page.waitForTimeout(1000);
+        }
+        catch (error) {
+            console.error(error);
+        }
+  }
+}
   
 export async function compileAndRunXircuits(page: Page) {
     // Save and compile the Xircuits file, wait for the element to be visible before interacting
@@ -40,8 +61,10 @@ export interface NodeConnection {
 export const connectNodes = async (page: Page, connection: NodeConnection) => {
     await page.locator(`div[data-default-node-name="${connection.sourceNode}"] >> div[data-name="${connection.sourcePort}"]`).hover();
     await page.mouse.down();
+    await page.waitForTimeout(100);
     await page.locator(`div[data-default-node-name="${connection.targetNode}"] >> div[data-name="${connection.targetPort}"]`).hover();
     await page.mouse.up();
+    await page.waitForTimeout(100);
 };
 
 const literalTypeMapping = {
@@ -61,6 +84,7 @@ export interface UpdateLiteralNode {
 }
 
 export async function updateLiteral(page, {type, updateValue}: UpdateLiteralNode) {
+
     if (type === 'Literal Boolean') {
         await page.locator(`div[data-default-node-name="${type}"]`).dblclick();
         const isChecked = (await page.locator('input[role="switch"]').getAttribute('aria-checked')) === 'true';
