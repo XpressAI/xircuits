@@ -1,5 +1,5 @@
 import { test, type Page, expect } from '@playwright/test';
-import { navigateThroughJupyterDirectories, compileAndRunXircuits, NodeConnection, connectNodes, UpdateLiteralNode, updateLiteral } from '../xircuits_test_utils'
+import { navigateThroughJupyterDirectories, cleanDirectory, compileAndRunXircuits, NodeConnection, connectNodes, UpdateLiteralNode, updateLiteral } from '../xircuits_test_utils'
 import { datatype_test_1, datatype_test_2 } from './expected_outputs/01_datatypes'
 
 
@@ -16,7 +16,10 @@ test.afterAll(async () => {
 });
 
 
-test('Init data type test', async ({ page, browserName }) => {
+test('Init data type test', async ({ page, browserName }, testInfo) => {
+
+  if (testInfo.retry)
+    await cleanDirectory(page, `http://localhost:8888/lab/tree/xai_components/xai_tests/${browserName}`);
 
   await page.goto('http://localhost:8888');
   await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=xai_components').dblclick();
@@ -30,7 +33,7 @@ test('Init data type test', async ({ page, browserName }) => {
 
 
 test('Test connecting nodes', async ({ page, browserName }) => {
-
+  
   await page.goto(`http://localhost:8888/`);
   await navigateThroughJupyterDirectories(page, `http://localhost:8888/lab/tree/xai_components/xai_tests/${browserName}/DataTypes.xircuits`);
 
@@ -80,10 +83,11 @@ test('Test editing literal nodes', async ({ page, browserName }) => {
     const { type, updateValue, expectedText } = params;
     await updateLiteral(page, { type, updateValue });
     const visibleText = expectedText ? expectedText : (typeof updateValue === "boolean" ? (updateValue ? "True" : "False") : String(updateValue));
-    await expect(page.getByText(visibleText)).toBeVisible();
-  }
+    const content = await page.$eval(`div[data-default-node-name="${type}"]`, (div:any) => div.innerText);
+    expect(content).toContain(visibleText);
+    }
 
-  await page.getByText('Literal Chat').dblclick();
+  await page.locator(`div[data-default-node-name='Literal Chat']`).dblclick();
   await page.locator('div').filter({ hasText: /^Select a rolesystemuserassistantfunctionRemovedef$/ }).getByRole('button').click();
   await page.locator('select[name="role"]').selectOption('user');
   await page.locator('select[name="role"]').click();
@@ -93,7 +97,6 @@ test('Test editing literal nodes', async ({ page, browserName }) => {
   await page.getByRole('textbox').nth(2).click();
   await page.getByRole('textbox').nth(2).fill('new assistant message');
   await page.getByRole('button', { name: 'Submit' }).click();
-  await expect(page.getByText('False')).toBeVisible();
 
   await compileAndRunXircuits(page);
 

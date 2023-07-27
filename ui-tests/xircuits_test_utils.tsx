@@ -60,11 +60,12 @@ export interface NodeConnection {
   
 export const connectNodes = async (page: Page, connection: NodeConnection) => {
     await page.locator(`div[data-default-node-name="${connection.sourceNode}"] >> div[data-name="${connection.sourcePort}"]`).hover();
+    await page.waitForTimeout(100);
+
     await page.mouse.down();
-    await page.waitForTimeout(100);
     await page.locator(`div[data-default-node-name="${connection.targetNode}"] >> div[data-name="${connection.targetPort}"]`).hover();
-    await page.mouse.up();
     await page.waitForTimeout(100);
+    await page.mouse.up();
 };
 
 const literalTypeMapping = {
