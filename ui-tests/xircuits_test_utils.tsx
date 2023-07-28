@@ -27,17 +27,18 @@ export async function cleanDirectory(page, url) {
     const fileItems = await page.$$('.jp-DirListing-item');
 
     for (let fileItem of fileItems) {
-        
         try {
-            await fileItem.click();
-            await page.keyboard.press('Delete');
-            await page.locator('.jp-Dialog-button.jp-mod-accept.jp-mod-warn.jp-mod-styled').click();
-            await page.waitForTimeout(1000);
-        }
-        catch (error) {
+
+            if (await fileItem.isVisible()) {
+                await fileItem.click();
+                await page.keyboard.press('Delete');
+                await page.locator('.jp-Dialog-button.jp-mod-accept.jp-mod-warn.jp-mod-styled').click();
+                await page.waitForTimeout(1000);
+            }
+        } catch (error) {
             console.error(error);
         }
-  }
+    }
 }
   
 export async function compileAndRunXircuits(page: Page) {
