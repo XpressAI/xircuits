@@ -64,6 +64,10 @@ jobs:
       run: |
         npx playwright install --with-deps
 
+    - name: Install xvfb
+      run: |
+        sudo apt-get install xvfb
+
     - name: Test E2E
       uses: coactions/setup-xvfb@v1
       with:
