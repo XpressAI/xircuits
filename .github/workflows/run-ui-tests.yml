@@ -77,4 +77,4 @@ jobs:
       with:
         name: playwright-report
         path: ui-tests/playwright-report/
-        retention-days: 30
+        retention-days: 1
