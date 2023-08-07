@@ -65,8 +65,10 @@ jobs:
         npx playwright install --with-deps
 
     - name: Test E2E
-      run: |
-        ( ls && jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset ) & npm install -D @playwright/test && cd ui-tests && npx playwright test e2e/datatype-test.spec.ts
+      uses: coactions/setup-xvfb@v1
+      with:
+        run: |
+          ( ls && jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset ) & npm install -D @playwright/test && cd ui-tests && xvfb-run npx playwright test e2e/datatype-test.spec.ts
 
     - uses: actions/upload-artifact@v3
       if: always()
