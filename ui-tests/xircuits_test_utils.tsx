@@ -24,9 +24,12 @@ export async function cleanDirectory(page, url) {
     await page.goto('http://localhost:8888');
     await navigateThroughJupyterDirectories(page, url);
 
-    const fileItems = await page.$$('.jp-DirListing-item');
+    let fileItems = await page.$$('.jp-DirListing-item');
 
-    for (let fileItem of fileItems) {
+    while (fileItems.length > 0) {
+
+        let fileItem = fileItems[0];
+
         try {
 
             if (await fileItem.isVisible()) {
@@ -35,12 +38,16 @@ export async function cleanDirectory(page, url) {
                 await page.locator('.jp-Dialog-button.jp-mod-accept.jp-mod-warn.jp-mod-styled').click();
                 await page.waitForTimeout(1000);
             }
+
         } catch (error) {
             console.error(error);
         }
+
+        // Refresh the list after an item has been processed
+        fileItems = await page.$$('.jp-DirListing-item');
     }
 }
-  
+
 export async function compileAndRunXircuits(page: Page) {
     // Save and compile the Xircuits file, wait for the element to be visible before interacting
     await page.locator("xpath=//*[contains(@title, 'Save (Ctrl+S)')]").first().click();
