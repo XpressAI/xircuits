@@ -84,8 +84,8 @@ jobs:
         ( ls && jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset ) & npm install -D @playwright/test && cd ui-tests && xvfb-run npx playwright test e2e/datatype-test.spec.ts
 
     - uses: actions/upload-artifact@v3
-      if: always()
+      if: failure()
       with:
-        name: playwright-report
+        name: playwright-report-${{ matrix.python-version }}
         path: ui-tests/playwright-report/
         retention-days: 1
