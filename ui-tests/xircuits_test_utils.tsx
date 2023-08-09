@@ -17,7 +17,6 @@ export async function startTerminalSession(page) {
     }
 
     const terminalButton = await page.locator("xpath=//*[contains(@title, 'Start a new terminal session')]").first();
-    await terminalButton.scrollIntoViewIfNeeded();
     await terminalButton.click();
 }
 
