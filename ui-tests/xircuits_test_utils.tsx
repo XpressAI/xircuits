@@ -16,7 +16,9 @@ export async function startTerminalSession(page) {
         await page.keyboard.press('Control+Shift+L');
     }
 
-    await page.locator("xpath=//*[contains(@title, 'Start a new terminal session')]").first().click();
+    const terminalButton = await page.locator("xpath=//*[contains(@title, 'Start a new terminal session')]").first();
+    await terminalButton.scrollIntoViewIfNeeded();
+    await terminalButton.click();
 }
 
 
