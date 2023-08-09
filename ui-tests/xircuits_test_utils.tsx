@@ -32,7 +32,7 @@ export async function cleanDirectory(page, url) {
     
     await page.goto('http://localhost:8888');
     await navigateThroughJupyterDirectories(page, url);
-    await startTerminalSession(page);
+    await page.locator("xpath=//*[contains(@title, 'Start a new terminal session')]").first().click();
     await inputTerminalCommand(page, "rm -rf *");
 
 }
