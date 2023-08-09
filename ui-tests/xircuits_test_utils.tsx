@@ -1,9 +1,24 @@
-import { Page, expect } from '@playwright/test';
+import { Page } from '@playwright/test';
 
 export async function startTerminalSession(page) {
-    await page.keyboard.press('Control+Shift+L');
+
+    const launcherElement = await page.$('.jp-Launcher-body');
+
+    if (launcherElement) {
+        const isVisible = await launcherElement.isVisible();
+
+        // If not visible, click on the tab
+        if (!isVisible) {
+            await page.locator(".lm-TabBar-tabLabel.p-TabBar-tabLabel").withText("Launcher").click();
+        }
+    } else {
+        // If the element doesn't exist, press the key combination
+        await page.keyboard.press('Control+Shift+L');
+    }
+
     await page.locator("xpath=//*[contains(@title, 'Start a new terminal session')]").first().click();
 }
+
 
 export async function inputTerminalCommand(page, cmd) {
     await page.locator(`.xterm-helper-textarea`).fill(String(cmd));
