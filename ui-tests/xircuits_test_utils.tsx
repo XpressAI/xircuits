@@ -1,5 +1,14 @@
 import { Page, expect } from '@playwright/test';
 
+export async function startTerminalSession(page) {
+    await page.keyboard.press('Control+Shift+L');
+    await page.locator("xpath=//*[contains(@title, 'Start a new terminal session')]").first().click();
+}
+
+export async function inputTerminalCommand(page, cmd) {
+    await page.locator(`.xterm-helper-textarea`).fill(String(cmd));
+    await page.keyboard.press('Enter');
+}
 
 export async function navigateThroughJupyterDirectories(page, url: string) {
     const basePath = 'http://localhost:8888/lab/tree';
@@ -23,29 +32,23 @@ export async function cleanDirectory(page, url) {
     
     await page.goto('http://localhost:8888');
     await navigateThroughJupyterDirectories(page, url);
+    await startTerminalSession(page);
+    await inputTerminalCommand(page, "rm -rf *");
 
-    let fileItems = await page.$$('.jp-DirListing-item');
+}
 
-    while (fileItems.length > 0) {
+export async function copyFile(page, fileName, newFileName) {
+    
+    await startTerminalSession(page);
+    await inputTerminalCommand(page, `cp ${fileName} ${newFileName}`);
+    
+}
 
-        let fileItem = fileItems[0];
-
-        try {
-
-            if (await fileItem.isVisible()) {
-                await fileItem.click();
-                await page.keyboard.press('Delete');
-                await page.locator('.jp-Dialog-button.jp-mod-accept.jp-mod-warn.jp-mod-styled').click();
-                await page.waitForTimeout(1000);
-            }
-
-        } catch (error) {
-            console.error(error);
-        }
-
-        // Refresh the list after an item has been processed
-        fileItems = await page.$$('.jp-DirListing-item');
-    }
+export async function deleteFile(page, fileName) {
+    
+    await startTerminalSession(page);
+    await inputTerminalCommand(page, `rm ${fileName}`);
+    
 }
 
 export async function compileAndRunXircuits(page: Page) {

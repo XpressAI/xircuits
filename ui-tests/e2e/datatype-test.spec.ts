@@ -1,5 +1,5 @@
 import { test, type Page, expect } from '@playwright/test';
-import { navigateThroughJupyterDirectories, cleanDirectory, compileAndRunXircuits, NodeConnection, connectNodes, UpdateLiteralNode, updateLiteral } from '../xircuits_test_utils'
+import { cleanDirectory, copyFile, deleteFile, compileAndRunXircuits, NodeConnection, connectNodes, updateLiteral } from '../xircuits_test_utils'
 import { datatype_test_1, datatype_test_2 } from './expected_outputs/01_datatypes'
 
 
@@ -33,9 +33,16 @@ test('Init data type test', async ({ page, browserName }, testInfo) => {
 
 
 test('Test connecting nodes', async ({ page, browserName }) => {
-  
+
+  let testFileName = "DataTypes-TestNodeConnect.xircuits"
+
   await page.goto(`http://localhost:8888/`);
-  await navigateThroughJupyterDirectories(page, `http://localhost:8888/lab/tree/xai_components/xai_tests/${browserName}/DataTypes.xircuits`);
+
+  await copyFile(page, 
+        `xai_components/xai_tests/${browserName}/DataTypes.xircuits`, 
+        `xai_components/xai_tests/${browserName}/${testFileName}`);
+
+  await page.goto(`http://localhost:8888/lab/tree/xai_components/xai_tests/${browserName}/${testFileName}`);
 
   const nodeConnections: NodeConnection[] = [
     { sourceNode: "Literal String",   sourcePort: "out-0", targetNode: "AllLiteralTypes", targetPort: "parameter-string-string_port" },
@@ -63,10 +70,20 @@ test('Test connecting nodes', async ({ page, browserName }) => {
 });
 
 
-test('Test editing literal nodes', async ({ page, browserName }) => {
+test('Test editing literal nodes', async ({ page, browserName }, testInfo) => {
+
+  let testFileName = "DataTypes-TestNodeEdit.xircuits"
+
+  if (testInfo.retry)
+    await deleteFile(page, `xai_components/xai_tests/${browserName}/${testFileName}`);
 
   await page.goto(`http://localhost:8888/`);
-  await navigateThroughJupyterDirectories(page, `http://localhost:8888/lab/tree/xai_components/xai_tests/${browserName}/DataTypes.xircuits`);
+
+  await copyFile(page, 
+        `xai_components/xai_tests/${browserName}/DataTypes-TestNodeConnect.xircuits`, 
+        `xai_components/xai_tests/${browserName}/${testFileName}`);
+
+    await page.goto(`http://localhost:8888/lab/tree/xai_components/xai_tests/${browserName}/${testFileName}`);
 
   const updateParamsList = [
     { type: "Literal String",   updateValue: "Updated String" },
