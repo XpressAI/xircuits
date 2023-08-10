@@ -41,11 +41,13 @@ export class CustomNodeModel extends DefaultNodeModel {
         this.extras=event.data.extras;
     }
 
-    addOutPortEnhance(label: string, name: string, after: boolean = true, id?: string): CustomPortModel {
-        
+    addOutPortEnhance({ label, name, after = true, id, dataType}: 
+        { label: string, name: string, after?: boolean, id?: string, dataType?: string}): CustomPortModel {
+
+                
         //check if portID is passed, if not SR will generate a new port ID
-        const p = (id) ? new CustomPortModel({in: false, name: name, label: label, id:id}) : 
-                         new CustomPortModel({in: false, name: name, label: label});
+        const p = (id) ? new CustomPortModel({in: false, name: name, label: label, id:id, dataType: dataType}) : 
+                         new CustomPortModel({in: false, name: name, label: label, dataType: dataType});
         
         if (!after) {
             this.portsOut.splice(0, 0, p);
@@ -54,11 +56,12 @@ export class CustomNodeModel extends DefaultNodeModel {
         return this.addPort(p);
     }
 
-    addInPortEnhance(label: string, name: string, after: boolean = true, id?: string): CustomPortModel {
-        
-        //check if portID is passed, if not SR will generate a new port ID
-        const p = (id) ? new CustomPortModel({in: true, name: name, label: label, id:id}) : 
-                         new CustomPortModel({in: true, name: name, label: label});
+    addInPortEnhance({ label, name, after = true, id, dataType}: 
+        { label: string, name: string, after?: boolean, id?: string, dataType?: string}): CustomPortModel {
+                
+        // Check if portID is passed, if not SR will generate a new port ID
+        const p = (id) ? new CustomPortModel({in: true, name: name, label: label, id: id, dataType: dataType}) 
+                       : new CustomPortModel({in: true, name: name, label: label, dataType: dataType});
 
         if (!after) {
                 this.portsOut.splice(0, 0, p);

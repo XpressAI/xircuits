@@ -28,11 +28,11 @@ export class XircuitsApplication {
                 this.diagramEngine.getStateMachine().pushState(new CustomDiagramState());
 
                 let startNode = new CustomNodeModel({ name: 'Start', color: 'rgb(255,102,102)', extras: { "type": "Start" } });
-                startNode.addOutPortEnhance('▶', 'out-0');
+                startNode.addOutPortEnhance({label: '▶', name: 'out-0'});
                 startNode.setPosition(100, 100);
 
                 let finishedNode = new CustomNodeModel({ name: 'Finish', color: 'rgb(255,102,102)', extras: { "type": "Finish" } });
-                finishedNode.addInPortEnhance('▶', 'in-0');
+                finishedNode.addInPortEnhance({label: '▶', name: 'in-0'});
                 finishedNode.setPosition(700, 100);
 
                 this.activeModel.addAll(startNode, finishedNode);
@@ -72,11 +72,9 @@ export class XircuitsApplication {
                         newNode.setSelected(node.selected);
 
                         for (let portID in node.ports) {
-
                                 let port = node.ports[portID];
-                                if (port.alignment == "right") newNode.addOutPortEnhance(port.label, port.name, true, port.id);
-                                if (port.alignment == "left") newNode.addInPortEnhance(port.label, port.name, true, port.id);
-
+                                if (port.alignment == "right") newNode.addOutPortEnhance({label: port.label, name: port.name, after: true, id: port.id});
+                                if (port.alignment == "left") newNode.addInPortEnhance({label: port.label, name: port.name, after: true, id: port.id, dataType: port.dataType});
                         }
                         tempModel.addNode(newNode);
                 }

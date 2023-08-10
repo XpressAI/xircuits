@@ -1,4 +1,5 @@
-import { DefaultPortModel } from "@projectstorm/react-diagrams";
+import { DefaultPortModel, DefaultPortModelOptions } from "@projectstorm/react-diagrams";
+import { DeserializeEvent} from '@projectstorm/react-canvas-core';
 import {PortModel} from "@projectstorm/react-diagrams-core";
 
 /**
@@ -12,8 +13,38 @@ const PARAMETER_NODE_TYPES = [
     'dict', 'secret', 'chat'
 ];
 
-export  class CustomPortModel extends DefaultPortModel  {
+export interface CustomPortModelOptions extends DefaultPortModelOptions {
+    name: string;
+    dataType?: string;
+    extras?: object;
+}
 
+export  class CustomPortModel extends DefaultPortModel  {
+    dataType: string;
+    extras: object;
+
+    constructor(options: CustomPortModelOptions) {
+        super({
+            ...options,
+        });
+
+        this.dataType = options.dataType || "";
+        this.extras = options.extras || {};
+    }
+
+    serialize() {
+        return {
+            ...super.serialize(),
+            dataType: this.dataType,
+            extras: this.extras
+        };
+    }
+
+    deserialize(event: DeserializeEvent<this>): void {
+        super.deserialize(event);
+        this.dataType = event.data.dataType;
+        this.extras=event.data.extras;
+    }
 
     canLinkToPort(port: PortModel): boolean {
         if (port instanceof DefaultPortModel) {
