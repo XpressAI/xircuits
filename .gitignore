@@ -143,3 +143,8 @@ tsconfig.tsbuildinfo
 
 # .py files compiled by Xircuits
 examples/*.py
+
+# playwright files
+/test-results/
+/playwright-report/
+/playwright/.cache/

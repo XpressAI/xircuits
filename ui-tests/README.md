@@ -104,7 +104,7 @@ docker-compose -f ../end-to-end-tests/docker-compose.yml --env-file ./ui-tests/.
 **Using local installation**
 
 ```
-jupyter lab --ServerApp.token= --ServerApp.password=
+jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset
 ```
 
 3. Launch the debug tool:
@@ -115,3 +115,7 @@ jlpm install
 npx playwright install
 PWDEBUG=1 npx playwright test
 ```
+Alternatively, if you would like to debug in the browser console:
+```
+PWDEBUG=console npx playwright test testname.spec.ts
+``
