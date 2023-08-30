@@ -1,6 +1,7 @@
 import { DefaultNodeModel } from '@projectstorm/react-diagrams';
 import { BaseModelOptions, DeserializeEvent} from '@projectstorm/react-canvas-core';
-import {CustomPortModel} from "./port/CustomPortModel";
+import { CustomPortModel } from "./port/CustomPortModel";
+import { CustomDynaPortModel, DYNAMIC_PARAMETER_NODE_TYPES } from "./port/CustomDynaPortModel";
 
 
 export interface CustomNodeModelOptions extends BaseModelOptions {
@@ -59,9 +60,18 @@ export class CustomNodeModel extends DefaultNodeModel {
     addInPortEnhance({ label, name, after = true, id, dataType}: 
         { label: string, name: string, after?: boolean, id?: string, dataType?: string}): CustomPortModel {
                 
-        // Check if portID is passed, if not SR will generate a new port ID
-        const p = (id) ? new CustomPortModel({in: true, name: name, label: label, id: id, dataType: dataType}) 
-                       : new CustomPortModel({in: true, name: name, label: label, dataType: dataType});
+        // // Check if portID is passed, if not SR will generate a new port ID
+        let p: CustomPortModel;
+
+        if (DYNAMIC_PARAMETER_NODE_TYPES.includes(dataType || '')) {
+            p = (id)
+                ? new CustomDynaPortModel({in: true, name: name, label: label, id: id, dataType: dataType, dynaPortOrder: 0})
+                : new CustomDynaPortModel({in: true, name: name, label: label, dataType: dataType, dynaPortOrder: 0});
+        } else {
+            p = (id)
+                ? new CustomPortModel({in: true, name: name, label: label, id: id, dataType: dataType})
+                : new CustomPortModel({in: true, name: name, label: label, dataType: dataType});
+        }
 
         if (!after) {
                 this.portsOut.splice(0, 0, p);

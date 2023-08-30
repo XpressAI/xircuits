@@ -595,8 +595,7 @@ export function addNodeActionCommands(
             modelInstance.setSelected(true);
         });
     }
-    
-    
+
     function recreateLinks(engine: SRD.DiagramEngine, model: SRD.DiagramModel, clipboardLinks, idMap, mousePosition: { x: number; y: number }, centerX: number, centerY: number): void {
         clipboardLinks.forEach(serializedLink => {
             const newSourceID = idMap[serializedLink.sourcePort];
@@ -770,4 +769,20 @@ export function addNodeActionCommands(
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         }
     }
+
+    commands.addCommand(commandIDs.handleDynamicPorts, {
+        execute: (args) => {
+
+            const widget = tracker.currentWidget?.content as XPipePanel;
+            if (!widget) return;
+
+            const engine = widget.xircuitsApp.getDiagramEngine();
+            const model = engine.getModel();
+
+            let dynamicPort = args['dynamicPort'] as any;
+            dynamicPort.handleDynamicLink()
+            
+        },
+        label: trans.__('handle dynamic ports')
+    });
 }

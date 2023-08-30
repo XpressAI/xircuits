@@ -8,7 +8,7 @@ import {PortModel} from "@projectstorm/react-diagrams-core";
  * before it can link to another
  */
 
-const PARAMETER_NODE_TYPES = [
+export const PARAMETER_NODE_TYPES = [
     'boolean', 'int', 'float', 'string', 'list', 'tuple', 
     'dict', 'secret', 'chat'
 ];
@@ -115,8 +115,6 @@ export  class CustomPortModel extends DefaultPortModel  {
 
         if (this.isParameterNode(thisNodeModelType) == true){
             // if the port you are trying to link ready has other links
-            console.log("port name: ", thisName);
-            console.log("parameter port: ", port.getNode().getInPorts());
             if (Object.keys(port.getLinks()).length > 0){
 		        port.getNode().getOptions().extras["borderColor"]="red";
                 // if port supports multiple types

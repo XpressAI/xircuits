@@ -1,31 +1,35 @@
 import React, { FC, useState, useCallback, useEffect, useRef } from 'react';
+
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
-import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
 import { LinkModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
+
 import { Dialog, showDialog, showErrorMessage } from '@jupyterlab/apputils';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
-import { Signal } from '@lumino/signaling';
-import {
-	DocumentRegistry
-} from '@jupyterlab/docregistry';
-import styled from '@emotion/styled';
-import { XPipePanel } from '../xircuitWidget';
-import { Log } from '../log/LogPlugin';
+import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { ServiceManager } from '@jupyterlab/services';
-import { formDialogWidget } from '../dialog/formDialogwidget';
-import { showFormDialog } from '../dialog/FormDialog';
-import { RunDialog } from '../dialog/RunDialog';
-import 'rc-dialog/assets/bootstrap.css';
-import { requestAPI } from '../server/handler';
-import { XircuitsApplication } from './XircuitsApp';
-import ComponentsPanel from '../context-menu/ComponentsPanel';
-import { cancelDialog, GeneralComponentLibrary } from '../tray_library/GeneralComponentLib';
-import { NodeActionsPanel } from '../context-menu/NodeActionsPanel';
-import { AdvancedComponentLibrary, fetchNodeByName } from '../tray_library/AdvanceComponentLib';
-import { inputDialog } from '../dialog/LiteralInputDialog';
-import { getItsLiteralType } from '../dialog/input-dialogues/VariableInput'
+import { Signal } from '@lumino/signaling';
+
+import { XPipePanel } 			from '../xircuitWidget';
+import { XircuitsApplication } 	from './XircuitsApp';
+import { DemoCanvasWidget } 	from '../helpers/DemoCanvasWidget';
+import { Log } 					from '../log/LogPlugin';
+import { formDialogWidget } 	from '../dialog/formDialogwidget';
+import { showFormDialog } 		from '../dialog/FormDialog';
+import { inputDialog } 			from '../dialog/LiteralInputDialog';
+import { getItsLiteralType } 	from '../dialog/input-dialogues/VariableInput';
+import { RunDialog } 			from '../dialog/RunDialog';
+import { requestAPI } 			from '../server/handler';
+import ComponentsPanel 			from '../context-menu/ComponentsPanel';
+import { NodeActionsPanel } 	from '../context-menu/NodeActionsPanel';
+import { DYNAMIC_PARAMETER_NODE_TYPES } from '../components/port/CustomDynaPortModel';
+import { cancelDialog, GeneralComponentLibrary } 		from '../tray_library/GeneralComponentLib';
+import { AdvancedComponentLibrary, fetchNodeByName } 	from '../tray_library/AdvanceComponentLib';
 import { lowPowerMode, setLowPowerMode } from './state/powerModeState';
+
+import styled from '@emotion/styled';
+import 'rc-dialog/assets/bootstrap.css';
+
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -87,6 +91,7 @@ export const commandIDs = {
 	addNodeGivenPosition: 'Xircuit-editor:add-node', 
 	connectNodeByLink: 'Xircuit-editor:connect-node',
 	connectLinkToObviousPorts: 'Xircuit-editor:connect-obvious-link',
+	handleDynamicPorts: 'Xircuit-editor:handle-dynamic-ports',
 	addCommentNode: 'Xircuit-editor:add-comment-node',
 	compileFile: 'Xircuit-editor:compile-file',
 	nextNode: 'Xircuit-editor:next-node',
@@ -187,7 +192,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								targetPortChanged: e => {
 									const sourceLink = e.entity as any;
 									app.commands.execute(commandIDs.connectLinkToObviousPorts, { draggedLink: sourceLink });
-									onChange();
+																		
+									const targetPort = e.port as any;
+									try{
+
+										if(DYNAMIC_PARAMETER_NODE_TYPES.includes(targetPort.dataType)){
+											app.commands.execute(commandIDs.handleDynamicPorts, { dynamicPort: targetPort });
+										}
+										onChange();
+									}
+									catch(error){
+										console.log(error)
+									}
 								},
 								/**
 								 * entityRemoved
