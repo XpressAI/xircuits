@@ -15,11 +15,14 @@ export const PARAMETER_NODE_TYPES = [
 
 export interface CustomPortModelOptions extends DefaultPortModelOptions {
     name: string;
+    varName?: string;
     dataType?: string;
     extras?: object;
 }
 
 export  class CustomPortModel extends DefaultPortModel  {
+    name: string;
+    varName: string;
     dataType: string;
     extras: object;
 
@@ -28,6 +31,7 @@ export  class CustomPortModel extends DefaultPortModel  {
             ...options,
         });
 
+        this.varName = options.varName || options.label;
         this.dataType = options.dataType || "";
         this.extras = options.extras || {};
     }
@@ -35,6 +39,7 @@ export  class CustomPortModel extends DefaultPortModel  {
     serialize() {
         return {
             ...super.serialize(),
+            varName: this.varName,
             dataType: this.dataType,
             extras: this.extras
         };
@@ -42,6 +47,7 @@ export  class CustomPortModel extends DefaultPortModel  {
 
     deserialize(event: DeserializeEvent<this>): void {
         super.deserialize(event);
+        this.varName = event.data.varName;
         this.dataType = event.data.dataType;
         this.extras=event.data.extras;
     }

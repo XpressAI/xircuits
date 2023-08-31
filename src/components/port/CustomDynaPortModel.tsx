@@ -38,8 +38,8 @@ export  class CustomDynaPortModel extends CustomPortModel {
         this.dynaPortOrder = event.data.dynaPortOrder;
     }
 
-    handleDynamicLink(){
-        console.log("Handling dynamic link...")
+    handleNewDynamicLink(){
+        console.log("Handling new dynamic link...")
     }
 
 }

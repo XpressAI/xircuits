@@ -57,20 +57,20 @@ export class CustomNodeModel extends DefaultNodeModel {
         return this.addPort(p);
     }
 
-    addInPortEnhance({ label, name, after = true, id, dataType}: 
-        { label: string, name: string, after?: boolean, id?: string, dataType?: string}): CustomPortModel {
+    addInPortEnhance({ label, name, varName = label, after = true, id, dataType, dynaPortOrder = 0 }: 
+        { label: string, name: string, varName?: string, after?: boolean, id?: string, dataType?: string, dynaPortOrder?: number}): CustomPortModel {
                 
         // // Check if portID is passed, if not SR will generate a new port ID
         let p: CustomPortModel;
 
         if (DYNAMIC_PARAMETER_NODE_TYPES.includes(dataType || '')) {
             p = (id)
-                ? new CustomDynaPortModel({in: true, name: name, label: label, id: id, dataType: dataType, dynaPortOrder: 0})
-                : new CustomDynaPortModel({in: true, name: name, label: label, dataType: dataType, dynaPortOrder: 0});
+                ? new CustomDynaPortModel({in: true, name: name, varName: varName, label: label, id: id, dataType: dataType, dynaPortOrder })
+                : new CustomDynaPortModel({in: true, name: name, varName: varName, label: label, dataType: dataType, dynaPortOrder });
         } else {
             p = (id)
-                ? new CustomPortModel({in: true, name: name, label: label, id: id, dataType: dataType})
-                : new CustomPortModel({in: true, name: name, label: label, dataType: dataType});
+                ? new CustomPortModel({in: true, name: name, varName: varName, label: label, id: id, dataType: dataType})
+                : new CustomPortModel({in: true, name: name, varName: varName, label: label, dataType: dataType});
         }
 
         if (!after) {
@@ -79,5 +79,13 @@ export class CustomNodeModel extends DefaultNodeModel {
     
         return this.addPort(p);
         
+    }
+
+    handleNewDynamicLink(port){
+        // get all ports
+        // get the dynamic port
+
+        // 
+        console.log("")
     }
 }

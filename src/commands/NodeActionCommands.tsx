@@ -776,12 +776,17 @@ export function addNodeActionCommands(
             const widget = tracker.currentWidget?.content as XPipePanel;
             if (!widget) return;
 
-            const engine = widget.xircuitsApp.getDiagramEngine();
-            const model = engine.getModel();
-
             let dynamicPort = args['dynamicPort'] as any;
-            dynamicPort.handleDynamicLink()
-            
+            let newDynamicPortOrder = dynamicPort.dynaPortOrder + 1
+            let newDynamicPortLabel = `${dynamicPort.options.varName}[${newDynamicPortOrder}]`;
+            dynamicPort.handleNewDynamicLink();
+            let node = dynamicPort.parent as CustomNodeModel;
+            node.addInPortEnhance({ label: newDynamicPortLabel, 
+                                    name: dynamicPort.options.name + "-" + newDynamicPortOrder, 
+                                    varName: dynamicPort.options.varName, 
+                                    dataType: dynamicPort.options.dataType, 
+                                    dynaPortOrder: newDynamicPortOrder})
+            node.handleNewDynamicLink(dynamicPort);
         },
         label: trans.__('handle dynamic ports')
     });

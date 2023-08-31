@@ -74,7 +74,7 @@ export class XircuitsApplication {
                         for (let portID in node.ports) {
                                 let port = node.ports[portID];
                                 if (port.alignment == "right") newNode.addOutPortEnhance({label: port.label, name: port.name, after: true, id: port.id});
-                                if (port.alignment == "left") newNode.addInPortEnhance({label: port.label, name: port.name, after: true, id: port.id, dataType: port.dataType});
+                                if (port.alignment == "left") newNode.addInPortEnhance({label: port.label, name: port.name, varName: port.varName, after: true, id: port.id, dataType: port.dataType, dynaPortOrder: port.dynaPortOrder});
                         }
                         tempModel.addNode(newNode);
                 }
