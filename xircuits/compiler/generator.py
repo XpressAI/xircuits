@@ -3,6 +3,7 @@ import itertools
 import re
 import json
 import sys
+from .port import DYNAMIC_PORTS
 
 if sys.version_info >= (3, 9):
     from ast import unparse
@@ -103,6 +104,7 @@ def main(args):
             for port in (p for p in node.ports if
                          p.direction == 'in' and p.type == 'triangle-link' and p.source.name.startswith('Argument ')):
                 # Unfortunately, we don't have the information anywhere else and updating the file format isn't an option at the moment
+
                 pattern = re.compile(r'^Argument \(.+?\): (.+)$')
                 arg_name = pattern.match(port.source.name).group(1)
 
@@ -115,7 +117,7 @@ def main(args):
                 code.append(tpl)
 
             # Handle regular connections
-            for port in (p for p in node.ports if p.direction == 'in' and p.type != 'triangle-link'):
+            for port in (p for p in node.ports if p.direction == 'in' and p.type != 'triangle-link' and p.dataType not in DYNAMIC_PORTS):
                 assignment_target = "%s.%s" % (
                     named_nodes[port.target.id],
                     port.targetLabel
@@ -126,17 +128,17 @@ def main(args):
                     # Literal
                     assignment_target += ".value"
                     tpl = ast.parse("%s = 1" % (assignment_target))
-                    if port.source.name == "Literal String":
+                    if port.source.type == "string":
                         value = port.sourceLabel
-                    elif port.source.name == "Literal List":
+                    elif port.source.type == "list":
                         value = json.loads("[" + port.sourceLabel + "]")
-                    elif port.source.name == "Literal Dict":
+                    elif port.source.type == "dict":
                         value = json.loads("{" + port.sourceLabel + "}")
-                    elif port.source.name == "Literal Secret":
+                    elif port.source.type == "secret":
                         value = port.sourceLabel
-                    elif port.source.name == "Literal Chat":
+                    elif port.source.type == "chat":
                         value = json.loads(port.sourceLabel)
-                    elif port.source.name == "Literal Tuple":
+                    elif port.source.type == "tuple":
                         value = eval(port.sourceLabel)
                         if not isinstance(value, tuple):
                             # handler for single entry tuple
@@ -150,6 +152,45 @@ def main(args):
                         port.sourceLabel
                     )
                     tpl = ast.parse("%s = %s" % (assignment_target, assignment_source))
+                code.append(tpl)
+
+            # Handle dynamic connections
+            dynaports = [p for p in node.ports if p.direction == 'in' and p.type != 'triangle-link' and p.dataType in DYNAMIC_PORTS]
+
+            ports_by_varName = {}  
+
+            # Group ports by varName
+            for port in dynaports:
+                if port.varName not in ports_by_varName:  
+                    ports_by_varName[port.varName] = []
+                ports_by_varName[port.varName].append(port)
+
+            # Iterate through grouped ports and append values
+            for varName, ports in ports_by_varName.items():
+                appended_values = []
+                
+                for port in ports:
+                    if port.source.id not in named_nodes:
+                        if port.source.type == "string":
+                            value = port.sourceLabel
+                        elif port.source.type == "list":
+                            value = json.loads("[" + port.sourceLabel + "]")
+                        elif port.source.type == "dict":
+                            value = json.loads("{" + port.sourceLabel + "}")
+                        elif port.source.type == "tuple":
+                            value = list(eval(port.sourceLabel))
+                        else:
+                            value = eval(port.sourceLabel)
+                        
+                    else:
+                        value = "%s.%s" % (named_nodes[port.source.id], port.sourceLabel)
+                    
+                    appended_values.append(value)
+                    
+                # Create a single AST node for each unique varName and append to code
+                assignment_target = "%s.%s.value" % (named_nodes[ports[0].target.id], ports[0].targetLabel)
+                assignment_value = repr(appended_values)
+                tpl = ast.parse("%s = %s" % (assignment_target, assignment_value))
                 code.append(tpl)
 
         # Set up control flow
