@@ -143,3 +143,11 @@ class chat(NamedTuple):
 class dynalist:
     def __init__(self, value):
         self.value = value
+
+class dynatuple:
+    def __init__(self, value):
+        self.value = value
+
+class dynadict:
+    def __init__(self, value):
+        self.value = value

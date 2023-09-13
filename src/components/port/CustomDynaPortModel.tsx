@@ -42,4 +42,18 @@ export  class CustomDynaPortModel extends CustomPortModel {
         console.log("Handling new dynamic link...")
     }
 
+    isTypeCompatible(thisNodeModelType, thisLinkedPortType) {
+        // if thisLinkedPortType is dynalist or dynatuple, treat it as any
+        if (['dynalist', 'dynatuple'].includes(thisLinkedPortType)) {
+            return true;  // Accepts anything
+        }
+
+        // if thisLinkedPortType is dynadict, accept only dict
+        if (thisLinkedPortType === 'dynadict' && thisNodeModelType !== 'dict') {
+            return false;
+        }
+
+        // default check
+        return super.isTypeCompatible(thisNodeModelType, thisLinkedPortType);
+    }
 }

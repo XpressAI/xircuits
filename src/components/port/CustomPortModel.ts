@@ -152,24 +152,14 @@ export  class CustomPortModel extends DefaultPortModel  {
             let result = thisLinkedName.match(regEx);
             let thisLinkedPortType = result[1];
 
-            if(thisNodeModelType != thisLinkedPortType){
-                // Skip 'any' type check
-                if(thisLinkedPortType == 'any'){
-                    return;
-                }
-                // if multiple types are accepted by target node port, check if source port type is among them
-                if(thisLinkedPortType.includes(thisNodeModelType)) {
-                    return;
-                }
-		        port.getNode().getOptions().extras["borderColor"]="red";
-
+            if(!port.isTypeCompatible(thisNodeModelType, thisLinkedPortType)) {
                 // if a list of types is provided for the port, parse it a bit to display it nicer
                 if (thisLinkedPortType.includes(',')) {
-                    thisLinkedPortType = this.parsePortType(thisLinkedPortType)
+                    thisLinkedPortType = this.parsePortType(thisLinkedPortType);
                 }
-		        port.getNode().getOptions().extras["tip"]= `Incorrect data type. Port ${thisLabel} is of type ` + "*`" + thisLinkedPortType + "`*.";
+                port.getNode().getOptions().extras["borderColor"] = "red";
+                port.getNode().getOptions().extras["tip"] = `Incorrect data type. Port ${thisLabel} is of type ` + "*`" + thisLinkedPortType + "`*.";
                 port.getNode().setSelected(true);
-                //tested - add stuff
                 return false;
             }
 
@@ -188,6 +178,21 @@ export  class CustomPortModel extends DefaultPortModel  {
 
     isParameterNode = (nodeModelType: string) => {
         return PARAMETER_NODE_TYPES.includes(nodeModelType);
+    }
+
+    isTypeCompatible(thisNodeModelType, thisLinkedPortType) {
+        if(thisNodeModelType !== thisLinkedPortType){
+            // Skip 'any' type check
+            if(thisLinkedPortType === 'any'){
+                return true;
+            }
+            // if multiple types are accepted by target node port, check if source port type is among them
+            if(thisLinkedPortType.includes(thisNodeModelType)) {
+                return true;
+            }
+            return false;  // types are incompatible
+        }
+        return true;
     }
 
     canTriangleLinkToTriangle = (thisPort, port) => {

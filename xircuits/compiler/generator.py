@@ -167,8 +167,10 @@ def main(args):
 
             # Iterate through grouped ports and append values
             for varName, ports in ports_by_varName.items():
-                appended_values = []
-                
+                appended_list = []
+                merged_dict = {}
+                convert_to_tuple = False 
+
                 for port in ports:
                     if port.source.id not in named_nodes:
                         if port.source.type == "string":
@@ -184,12 +186,28 @@ def main(args):
                         
                     else:
                         value = "%s.%s" % (named_nodes[port.source.id], port.sourceLabel)
+
+                    if port.dataType == 'dynadict':
+                        merged_dict.update(value)
+                    else:
+                        appended_list.append(value)
                     
-                    appended_values.append(value)
-                    
+                    if port.dataType == 'dynatuple':
+                        convert_to_tuple = True
+
                 # Create a single AST node for each unique varName and append to code
                 assignment_target = "%s.%s.value" % (named_nodes[ports[0].target.id], ports[0].varName)
-                assignment_value = repr(appended_values)
+                
+                assignment_value = ''
+
+                if merged_dict:
+                    assignment_value = repr(merged_dict)
+                elif appended_list:
+                    if convert_to_tuple:
+                        assignment_value = repr(tuple(appended_list))
+                    else:
+                        assignment_value = repr(appended_list)
+                
                 tpl = ast.parse("%s = %s" % (assignment_target, assignment_value))
                 code.append(tpl)
 
