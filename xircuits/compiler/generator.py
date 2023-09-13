@@ -188,7 +188,7 @@ def main(args):
                     appended_values.append(value)
                     
                 # Create a single AST node for each unique varName and append to code
-                assignment_target = "%s.%s.value" % (named_nodes[ports[0].target.id], ports[0].targetLabel)
+                assignment_target = "%s.%s.value" % (named_nodes[ports[0].target.id], ports[0].varName)
                 assignment_value = repr(appended_values)
                 tpl = ast.parse("%s = %s" % (assignment_target, assignment_value))
                 code.append(tpl)
