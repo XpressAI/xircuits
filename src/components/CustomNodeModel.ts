@@ -42,23 +42,23 @@ export class CustomNodeModel extends DefaultNodeModel {
         this.extras=event.data.extras;
     }
 
-    addOutPortEnhance({ label, name, after = true, id, dataType}: 
-        { label: string, name: string, after?: boolean, id?: string, dataType?: string}): CustomPortModel {
+    addOutPortEnhance({ label, name, order = null, id, dataType}: 
+        { label: string, name: string, order?: number, id?: string, dataType?: string}): CustomPortModel {
 
                 
         //check if portID is passed, if not SR will generate a new port ID
         const p = (id) ? new CustomPortModel({in: false, name: name, label: label, id:id, dataType: dataType}) : 
                          new CustomPortModel({in: false, name: name, label: label, dataType: dataType});
         
-        if (!after) {
-            this.portsOut.splice(0, 0, p);
+        if (order !== null) {
+            this.portsOut.splice(order, 0, p);
         }
 
         return this.addPort(p);
     }
 
-    addInPortEnhance({ label, name, varName = label, after = true, id, dataType, dynaPortOrder = 0 }: 
-        { label: string, name: string, varName?: string, after?: boolean, id?: string, dataType?: string, dynaPortOrder?: number}): CustomPortModel {
+    addInPortEnhance({ label, name, varName = label, order = null, id, dataType, dynaPortOrder = 0 }: 
+        { label: string, name: string, varName?: string, order?: number, id?: string, dataType?: string, dynaPortOrder?: number}): CustomPortModel {
                 
         // // Check if portID is passed, if not SR will generate a new port ID
         let p: CustomPortModel;
@@ -73,8 +73,8 @@ export class CustomNodeModel extends DefaultNodeModel {
                 : new CustomPortModel({in: true, name: name, varName: varName, label: label, dataType: dataType});
         }
 
-        if (!after) {
-                this.portsOut.splice(0, 0, p);
+        if (order !== null) {
+                this.portsIn.splice(order, 0, p);
         }
     
         return this.addPort(p);

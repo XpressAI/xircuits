@@ -777,16 +777,20 @@ export function addNodeActionCommands(
             if (!widget) return;
 
             let dynamicPort = args['dynamicPort'] as any;
+            let absolutePortOrder = dynamicPort.getPortOrder() + 1
             let newDynamicPortOrder = dynamicPort.dynaPortOrder + 1
-            let newDynamicPortLabel = `${dynamicPort.options.varName}[${newDynamicPortOrder}]`;
+            let newDynamicPortLabel = `${dynamicPort.varName}[${newDynamicPortOrder}]`;
             dynamicPort.handleNewDynamicLink();
             let node = dynamicPort.parent as CustomNodeModel;
             node.addInPortEnhance({ label: newDynamicPortLabel, 
                                     name: dynamicPort.options.name + "-" + newDynamicPortOrder, 
                                     varName: dynamicPort.options.varName, 
-                                    dataType: dynamicPort.options.dataType, 
+                                    dataType: dynamicPort.options.dataType,
+                                    order: absolutePortOrder,
                                     dynaPortOrder: newDynamicPortOrder})
             node.handleNewDynamicLink(dynamicPort);
+            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+
         },
         label: trans.__('handle dynamic ports')
     });

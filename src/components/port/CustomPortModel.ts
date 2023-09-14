@@ -350,4 +350,12 @@ export  class CustomPortModel extends DefaultPortModel  {
         return portType;
     }
 
+    getPortOrder = () => {
+
+        let port: any = this; // CustomPortModel
+        const inPorts = port.parent.getInPorts();
+        const portId = this.getID();
+        return inPorts.findIndex(p => p.options.id === portId);
+
+    }
 }
