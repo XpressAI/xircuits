@@ -780,10 +780,11 @@ export function addNodeActionCommands(
             let absolutePortOrder = dynamicPort.getPortOrder() + 1
             let newDynamicPortOrder = dynamicPort.dynaPortOrder + 1
             let newDynamicPortLabel = `${dynamicPort.varName}[${newDynamicPortOrder}]`;
+            let newDynamicPortName = "parameter-" + dynamicPort.options.dataType + "-" + dynamicPort.options.varName + "-" + newDynamicPortOrder;
             dynamicPort.handleNewDynamicLink();
             let node = dynamicPort.parent as CustomNodeModel;
             node.addInPortEnhance({ label: newDynamicPortLabel, 
-                                    name: dynamicPort.options.name + "-" + newDynamicPortOrder, 
+                                    name: newDynamicPortName,
                                     varName: dynamicPort.options.varName, 
                                     dataType: dynamicPort.options.dataType,
                                     order: absolutePortOrder,
