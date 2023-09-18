@@ -176,7 +176,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							}, 10)
 							return () => clearTimeout(timeout)
 						},
-						linksUpdated: function (event) {
+						linksUpdated: (event) => {
+
+							//Detect changes when link is deleted
+							if(!event.isCreated){
+								onChange()
+							}
+
 							event.link.registerListener({
 								/**
 								 * sourcePortChanged
@@ -216,6 +222,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						}
 					})
 					xircuitsApp.getDiagramEngine().setModel(deserializedModel);
+					
 					initialRender.current = false;
 				} else {
 					// Clear undo history when first time rendering
