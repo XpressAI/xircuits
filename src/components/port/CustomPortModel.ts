@@ -16,6 +16,7 @@ export const PARAMETER_NODE_TYPES = [
 export interface CustomPortModelOptions extends DefaultPortModelOptions {
     name: string;
     varName?: string;
+    portType?: string;
     dataType?: string;
     extras?: object;
 }
@@ -23,6 +24,7 @@ export interface CustomPortModelOptions extends DefaultPortModelOptions {
 export  class CustomPortModel extends DefaultPortModel  {
     name: string;
     varName: string;
+    portType: string;
     dataType: string;
     extras: object;
 
@@ -32,6 +34,7 @@ export  class CustomPortModel extends DefaultPortModel  {
         });
 
         this.varName = options.varName || options.label;
+        this.portType = options.portType || "";
         this.dataType = options.dataType || "";
         this.extras = options.extras || {};
     }
@@ -40,6 +43,7 @@ export  class CustomPortModel extends DefaultPortModel  {
         return {
             ...super.serialize(),
             varName: this.varName,
+            portType: this.portType,
             dataType: this.dataType,
             extras: this.extras
         };
@@ -48,6 +52,7 @@ export  class CustomPortModel extends DefaultPortModel  {
     deserialize(event: DeserializeEvent<this>): void {
         super.deserialize(event);
         this.varName = event.data.varName;
+        this.portType = event.data.portType;
         this.dataType = event.data.dataType;
         this.extras=event.data.extras;
     }
@@ -62,6 +67,11 @@ export  class CustomPortModel extends DefaultPortModel  {
                 // tested
                 return false;
             }
+        }
+
+        // Multiple link check
+        if (!this.canLinkToLinkedPort(port)) {
+            return false;
         }
 
         let canParameterLinkToPort = this.canParameterLinkToPort(this, port);
@@ -108,71 +118,36 @@ export  class CustomPortModel extends DefaultPortModel  {
      * @param thisPort
      * @param port
      */
-    canParameterLinkToPort = (thisPort, port) => {
+    canParameterLinkToPort = (thisPort, targetPort) => {
 
         const thisNode = this.getNode();
         const thisNodeModelType = thisNode.getOptions()["extras"]["type"];
-        const thisName: string = port.getName();
-        const thisLabel: string = "**" + port.getOptions()["label"] + "**";
-        const sourcePortName: string = thisPort.getName();
-        const thisPortType: string = thisName.split('-')[1];
-        const sourcePortType: string = sourcePortName.split('-')[2];
-        let thisPortTypeText: string = "*`" + thisPortType + "`*";
+        const thisName: string = targetPort.getName();
+        const thisLabel: string = "**" + targetPort.getOptions()["label"] + "**";
 
         if (this.isParameterNode(thisNodeModelType) == true){
-            // if the port you are trying to link ready has other links
-            if (Object.keys(port.getLinks()).length > 0){
-		        port.getNode().getOptions().extras["borderColor"]="red";
-                // if port supports multiple types
-                if (thisPortTypeText.includes(',')) {
-                    thisPortTypeText = this.parsePortType(thisPortTypeText);
-                }
-		        port.getNode().getOptions().extras["tip"]=`Port ${thisLabel} doesn't allow multi-links of ${thisPortTypeText} type.`;
-                port.getNode().setSelected(true);
-                return false;
-            }
 
             if (!thisName.startsWith("parameter")){
-		        port.getNode().getOptions().extras["borderColor"]="red";
-		        port.getNode().getOptions().extras["tip"]= `Port ${thisLabel} linked is not a parameter, please link a non parameter node to it.`;
-                port.getNode().setSelected(true);
+		        targetPort.getNode().getOptions().extras["borderColor"]="red";
+		        targetPort.getNode().getOptions().extras["tip"]= `Port ${thisLabel} linked is not a parameter, please link a non parameter node to it.`;
+                targetPort.getNode().setSelected(true);
                 return false;
             }
 
-            for (let i = 0; i < port.getNode().getInPorts().length; i++){
+            let dataType = targetPort.dataType;
 
-                let thisLinkedID = port.getNode().getInPorts()[i].getOptions()["id"];
-                if (port.getID() == thisLinkedID)
-                    var index = i;
-
-            }
-
-            let thisLinkedName = port.getNode().getInPorts()[index].getOptions()["name"];
-            let regEx = /\-([^-]+)\-/;
-            let result = thisLinkedName.match(regEx);
-            let thisLinkedPortType = result[1];
-
-            if(!port.isTypeCompatible(thisNodeModelType, thisLinkedPortType)) {
+            if(!targetPort.isTypeCompatible(thisNodeModelType, dataType)) {
                 // if a list of types is provided for the port, parse it a bit to display it nicer
-                if (thisLinkedPortType.includes(',')) {
-                    thisLinkedPortType = this.parsePortType(thisLinkedPortType);
+                if (dataType.includes(',')) {
+                    dataType = this.parsePortType(dataType);
                 }
-                port.getNode().getOptions().extras["borderColor"] = "red";
-                port.getNode().getOptions().extras["tip"] = `Incorrect data type. Port ${thisLabel} is of type ` + "*`" + thisLinkedPortType + "`*.";
-                port.getNode().setSelected(true);
+                targetPort.getNode().getOptions().extras["borderColor"] = "red";
+                targetPort.getNode().getOptions().extras["tip"] = `Incorrect data type. Port ${thisLabel} is of type ` + "*`" + dataType + "`*.";
+                targetPort.getNode().setSelected(true);
                 return false;
             }
-
-        }else{
-            if(Object.keys(port.getLinks()).length > 0){
-		        port.getNode().getOptions().extras["borderColor"]="red";
-		        port.getNode().getOptions().extras["tip"]= `Xircuits only allows 1 link per InPort! Please delete the current link to proceed.`;
-                port.getNode().setSelected(true);
-                return false;
-            }
-            //return(!(thisName.startsWith("parameter")) && !(Object.keys(port.getLinks()).length > 0));
         }
-        this.removeErrorTooltip(this, port);
+        this.removeErrorTooltip(this, targetPort);
         return true;
     }
 
@@ -180,14 +155,14 @@ export  class CustomPortModel extends DefaultPortModel  {
         return PARAMETER_NODE_TYPES.includes(nodeModelType);
     }
 
-    isTypeCompatible(thisNodeModelType, thisLinkedPortType) {
-        if(thisNodeModelType !== thisLinkedPortType){
+    isTypeCompatible(thisNodeModelType, dataType) {
+        if(thisNodeModelType !== dataType){
             // Skip 'any' type check
-            if(thisLinkedPortType === 'any'){
+            if(dataType === 'any'){
                 return true;
             }
             // if multiple types are accepted by target node port, check if source port type is among them
-            if(thisLinkedPortType.includes(thisNodeModelType)) {
+            if(dataType.includes(thisNodeModelType)) {
                 return true;
             }
             return false;  // types are incompatible
@@ -217,6 +192,16 @@ export  class CustomPortModel extends DefaultPortModel  {
         }else{
             return (portLabel === '▶' && thisPortLabel.endsWith('▶') && !(Object.keys(thisPort.getLinks()).length > 1));
         }
+    }
+
+    canLinkToLinkedPort(port: PortModel): boolean {
+        if (Object.keys(port.getLinks()).length > 0) {
+            port.getNode().getOptions().extras["borderColor"] = "red";
+            port.getNode().getOptions().extras["tip"] = "Xircuits only allows 1 link per InPort! Please delete the current link to proceed.";
+            port.getNode().setSelected(true);
+            return false;
+        }
+        return true;
     }
 
     removeErrorTooltip = (thisPort, port) => {
