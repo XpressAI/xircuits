@@ -182,7 +182,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							if(!event.isCreated){
 
 								const targetPort = event.link.getTargetPort() as any;
-								if(DYNAMIC_PARAMETER_NODE_TYPES.includes(targetPort.dataType)){
+								if(DYNAMIC_PARAMETER_NODE_TYPES.includes(targetPort?.dataType)){
 									app.commands.execute(commandIDs.handleDynamicPorts, { actionType: "delete", dynamicPort: targetPort });
 								}
 								onChange()
@@ -207,7 +207,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 									const targetPort = e.port as any;
 									try{
 
-										if(DYNAMIC_PARAMETER_NODE_TYPES.includes(targetPort.dataType)){
+										if(DYNAMIC_PARAMETER_NODE_TYPES.includes(targetPort?.dataType)){
 											app.commands.execute(commandIDs.handleDynamicPorts, { actionType: "add", dynamicPort: targetPort });
 										}
 										onChange();
