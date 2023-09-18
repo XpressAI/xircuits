@@ -1,7 +1,7 @@
 import { DefaultNodeModel } from '@projectstorm/react-diagrams';
 import { BaseModelOptions, DeserializeEvent} from '@projectstorm/react-canvas-core';
 import { CustomPortModel } from "./port/CustomPortModel";
-import { CustomDynaPortModel, DYNAMIC_PARAMETER_NODE_TYPES } from "./port/CustomDynaPortModel";
+import { CustomDynaPortModel, DYNAMIC_PARAMETER_NODE_TYPES, DynaPortRef } from "./port/CustomDynaPortModel";
 
 
 export interface CustomNodeModelOptions extends BaseModelOptions {
@@ -57,16 +57,16 @@ export class CustomNodeModel extends DefaultNodeModel {
         return this.addPort(p);
     }
 
-    addInPortEnhance({ label, name, varName = label, order = null, id, dataType, dynaPortOrder = 0 }: 
-        { label: string, name: string, varName?: string, order?: number, id?: string, dataType?: string, dynaPortOrder?: number}): CustomPortModel {
+    addInPortEnhance({ label, name, varName = label, order = null, id, dataType, dynaPortOrder = 0, dynaPortRef = { previous: null, next: null } }: 
+        { label: string, name: string, varName?: string, order?: number, id?: string, dataType?: string, dynaPortOrder?: number, dynaPortRef?: DynaPortRef}): CustomPortModel {
                 
         // // Check if portID is passed, if not SR will generate a new port ID
         let p: CustomPortModel;
 
         if (DYNAMIC_PARAMETER_NODE_TYPES.includes(dataType || '')) {
             p = (id)
-                ? new CustomDynaPortModel({in: true, name: name, varName: varName, label: label, id: id, dataType: dataType, dynaPortOrder })
-                : new CustomDynaPortModel({in: true, name: name, varName: varName, label: label, dataType: dataType, dynaPortOrder });
+                ? new CustomDynaPortModel({in: true, name: name, varName: varName, label: label, id: id, dataType: dataType, dynaPortOrder, dynaPortRef })
+                : new CustomDynaPortModel({in: true, name: name, varName: varName, label: label, dataType: dataType, dynaPortOrder, dynaPortRef });
         } else {
             p = (id)
                 ? new CustomPortModel({in: true, name: name, varName: varName, label: label, id: id, dataType: dataType})

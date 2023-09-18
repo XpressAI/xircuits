@@ -23,6 +23,7 @@ import { CustomLinkModel, ParameterLinkModel, TriangleLinkModel } from '../compo
 import { PointModel } from '@projectstorm/react-diagrams';
 import { Point } from '@projectstorm/geometry';
 import { handleLiteralInput } from '../tray_library/GeneralComponentLib';
+import { CustomDynaPortModel } from '../components/port/CustomDynaPortModel';
 
 /**
  * Add the commands for node actions.
@@ -777,19 +778,47 @@ export function addNodeActionCommands(
             if (!widget) return;
 
             let dynamicPort = args['dynamicPort'] as any;
-            let absolutePortOrder = dynamicPort.getPortOrder() + 1
-            let newDynamicPortOrder = dynamicPort.dynaPortOrder + 1
-            let newDynamicPortLabel = `${dynamicPort.varName}[${newDynamicPortOrder}]`;
-            let newDynamicPortName = "parameter-" + dynamicPort.options.dataType + "-" + dynamicPort.options.varName + "-" + newDynamicPortOrder;
-            dynamicPort.handleNewDynamicLink();
             let node = dynamicPort.parent as CustomNodeModel;
-            node.addInPortEnhance({ label: newDynamicPortLabel, 
-                                    name: newDynamicPortName,
-                                    varName: dynamicPort.options.varName, 
-                                    dataType: dynamicPort.options.dataType,
-                                    order: absolutePortOrder,
-                                    dynaPortOrder: newDynamicPortOrder})
-            node.handleNewDynamicLink(dynamicPort);
+
+            let model = widget.xircuitsApp.getDiagramEngine().getModel()
+            
+            let actionType = args['actionType']
+
+            if(actionType=="add"){
+                let absolutePortOrder = dynamicPort.getPortOrder() + 1
+                let newDynamicPortOrder = dynamicPort.dynaPortOrder + 1
+                let newDynamicPortLabel = `${dynamicPort.varName}[${newDynamicPortOrder}]`;
+                let newDynamicPortName = "parameter-" + dynamicPort.options.dataType + "-" + dynamicPort.options.varName + "-" + newDynamicPortOrder;
+                dynamicPort.handleNewDynamicLink();
+                let newPort = node.addInPortEnhance({ label: newDynamicPortLabel, 
+                                        name: newDynamicPortName,
+                                        varName: dynamicPort.options.varName, 
+                                        dataType: dynamicPort.options.dataType,
+                                        order: absolutePortOrder,
+                                        dynaPortOrder: newDynamicPortOrder}) as CustomDynaPortModel;
+                
+                // link new ports
+                newPort.previous = dynamicPort.getID()
+                dynamicPort.next = newPort.getID()
+            }
+            else if(actionType=="delete"){
+
+                let nextPort = node.getPortFromID(dynamicPort.next) as CustomDynaPortModel
+
+                // link previous port to next port
+                let previousPort = node.getPortFromID(dynamicPort.previous) as CustomDynaPortModel
+                if(previousPort){
+                    previousPort.next = node.getPortFromID(dynamicPort.next).getID()
+                }
+
+                while (nextPort){
+                    nextPort.adjustOrder(nextPort.dynaPortOrder-1)
+                    nextPort = node.getPortFromID(nextPort.next) as CustomDynaPortModel;
+                }
+
+                node.removePort(dynamicPort);
+            }
+            
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();
 
         },

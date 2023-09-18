@@ -73,7 +73,7 @@ export class XircuitsApplication {
 
                         for (let portID of node.portsInOrder) {
                                 const port = node.ports.find(p => p.id === portID);
-                                newNode.addInPortEnhance({label: port.label, name: port.name, varName: port.varName, id: port.id, dataType: port.dataType, dynaPortOrder: port.dynaPortOrder});
+                                newNode.addInPortEnhance({label: port.label, name: port.name, varName: port.varName, id: port.id, dataType: port.dataType, dynaPortOrder: port.dynaPortOrder, dynaPortRef: port.dynaPortRef});
                         }
                         for (let portID of node.portsOutOrder) {
                                 const port = node.ports.find(p => p.id === portID);
