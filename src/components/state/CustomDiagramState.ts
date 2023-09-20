@@ -7,7 +7,7 @@ import {
 	ActionEvent,
 	DragCanvasState
 } from '@projectstorm/react-canvas-core';
-import { DragNewLinkState } from '../DragNewLinkState';
+import { DragNewLinkState } from './DragNewLinkState';
 import { DiagramEngine } from '@projectstorm/react-diagrams';
 import { CustomPortModel } from '../port/CustomPortModel';
 import { DragDiagramItemsState } from './DragDiagramItemsState';
