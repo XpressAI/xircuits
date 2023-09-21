@@ -203,18 +203,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								targetPortChanged: e => {
 									const sourceLink = e.entity as any;
 									app.commands.execute(commandIDs.connectLinkToObviousPorts, { draggedLink: sourceLink });
-																		
-									const targetPort = e.port as any;
-									try{
+									onChange();
 
-										if(DYNAMIC_PARAMETER_NODE_TYPES.includes(targetPort?.dataType)){
-											app.commands.execute(commandIDs.handleDynamicPorts, { actionType: "add", dynamicPort: targetPort });
-										}
-										onChange();
-									}
-									catch(error){
-										console.log(error)
-									}
 								},
 								/**
 								 * entityRemoved

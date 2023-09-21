@@ -1,11 +1,6 @@
 import { DeserializeEvent} from '@projectstorm/react-canvas-core';
 import { CustomPortModel, CustomPortModelOptions } from './CustomPortModel';
-
-/**
- * @author wenfeng xu
- * custom port model enable it can execute some rule
- * before it can link to another
- */
+import { CustomNodeModel } from '../CustomNodeModel';
 
 export const DYNAMIC_PARAMETER_NODE_TYPES = [
     'dynalist', 'dynadict', 'dynatuple'
@@ -49,9 +44,6 @@ export  class CustomDynaPortModel extends CustomPortModel {
         this.dynaPortRef = event.data.dynaPortRef;
     }
 
-    handleNewDynamicLink(){
-        console.log("Handling new dynamic link...")
-    }
 
     isTypeCompatible(thisNodeModelType, thisLinkedPortType) {
         // if thisLinkedPortType is dynalist or dynatuple, treat it as any
@@ -68,18 +60,76 @@ export  class CustomDynaPortModel extends CustomPortModel {
         return super.isTypeCompatible(thisNodeModelType, thisLinkedPortType);
     }
 
-    adjustOrder(order: number){
+    canLinkToLinkedPort(): boolean {
+        return true
+    }
 
-        this.dynaPortOrder = order
+    spawnDynamicPort(offset: number = 1, port: CustomDynaPortModel = this): CustomDynaPortModel {
+
+        let node = port.parent as CustomNodeModel;
+
+        let absolutePortOrder = port.getPortOrder() + offset;
+        let newDynamicPortOrder = port.dynaPortOrder + offset;
+        let newDynamicPortName: string;
+        let newDynamicPortLabel: string;
+    
+        if (newDynamicPortOrder == 0) {
+            newDynamicPortName = `parameter-${port.dataType}-${port.varName}`;
+            newDynamicPortLabel = `${port.varName}`;
+        } else {
+            newDynamicPortName = `parameter-${port.dataType}-${port.varName}-${newDynamicPortOrder}`;
+            newDynamicPortLabel = `${port.varName}[${newDynamicPortOrder}]`;
+        }
+    
+        let newPort = node.addInPortEnhance({
+            label: newDynamicPortLabel,
+            name: newDynamicPortName,
+            varName: port.varName,
+            dataType: port.dataType,
+            order: absolutePortOrder,
+            dynaPortOrder: newDynamicPortOrder
+        }) as CustomDynaPortModel;
+
+        return newPort
+    }
+
+    adjustOrder(order: number, port: CustomDynaPortModel = this){
+
+        port.dynaPortOrder = order
         
         if(order==0){
-            this.options.name = "parameter-" + this.dataType + "-" + this.varName;
-            this.options.label = `${this.varName}`;
+            port.options.name = "parameter-" + port.dataType + "-" + port.varName;
+            port.options.label = `${port.varName}`;
         }else{
-            this.options.name = "parameter-" + this.dataType + "-" + this.varName + "-" + order;
-            this.options.label = `${this.varName}[${order}]`;
+            port.options.name = "parameter-" + port.dataType + "-" + port.varName + "-" + order;
+            port.options.label = `${port.varName}[${order}]`;
         }
     }
+
+    shiftPorts() {
+
+        let currentPort = this as CustomDynaPortModel;
+        let node = this.parent;
+        let lastPort: CustomDynaPortModel | null = null;
+    
+        while (currentPort) {
+
+            currentPort.adjustOrder(currentPort.dynaPortOrder + 1);
+            lastPort = currentPort;
+    
+            // If the current port has a next port, fetch it, otherwise, break the loop
+            if (currentPort.next) {
+                currentPort = node.getPortFromID(currentPort.next) as CustomDynaPortModel;
+            } else {
+                break;
+            }
+        }
+
+        // spawn +1 dynamic port at the end
+        this.spawnDynamicPort(1, lastPort);
+
+    }
+    
 
     get previous() {
         return this.dynaPortRef.previous;
@@ -96,4 +146,5 @@ export  class CustomDynaPortModel extends CustomPortModel {
     set next(value: string | null) {
         this.dynaPortRef.next = value;
     }
+
 }

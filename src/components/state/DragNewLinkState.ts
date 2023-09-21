@@ -8,6 +8,7 @@ import {
 import { DiagramEngine, LinkModel } from '@projectstorm/react-diagrams';
 import { MouseEvent } from 'react';
 import { CustomPortModel } from '../port/CustomPortModel';
+import { CustomDynaPortModel } from '../port/CustomDynaPortModel';
 
 export interface DragNewLinkStateOptions {
 	/**
@@ -63,12 +64,48 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 			new Action({
 				type: InputType.MOUSE_UP,
 				fire: (event: ActionEvent<MouseEvent>) => {
-					const model = this.engine.getMouseElement(event.event);
+					let model = this.engine.getMouseElement(event.event);
 					// check to see if we connected to a new port
 					if (model instanceof CustomPortModel) {
 						if (this.port.canLinkToPort(model)) {
-							this.link.setTargetPort(model);
-							model.reportPosition();
+
+							if (model instanceof CustomDynaPortModel){
+
+								// if the port already has a link
+								if (Object.keys(model.links).length > 0) { 
+									
+									// spawn new port at current port order
+									let newPort = model.spawnDynamicPort(0)
+
+									// relink new port
+									newPort.next = model.getID()
+									model.previous = newPort.getID()
+
+									let previousPort = model.getParent().getPortFromID(model.previous) as CustomDynaPortModel
+									previousPort.next = newPort.getID()
+									newPort.previous = previousPort.getID()
+
+									// shift all ports after by 1
+									model.shiftPorts()
+									this.link.setTargetPort(newPort);
+								}
+								else{
+
+									// spawn new port at after current port
+									let newPort = model.spawnDynamicPort(1)
+									newPort.previous = model.getID()
+									model.next = newPort.getID()
+
+									this.link.setTargetPort(model);
+									model.reportPosition();
+								}
+							}
+
+							else {
+								this.link.setTargetPort(model);
+								model.reportPosition();
+							}
+
 							this.engine.repaintCanvas();
 							return;
 						} else {

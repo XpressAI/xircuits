@@ -781,27 +781,9 @@ export function addNodeActionCommands(
             let node = dynamicPort.parent as CustomNodeModel;
 
             let model = widget.xircuitsApp.getDiagramEngine().getModel()
-            
             let actionType = args['actionType']
 
-            if(actionType=="add"){
-                let absolutePortOrder = dynamicPort.getPortOrder() + 1
-                let newDynamicPortOrder = dynamicPort.dynaPortOrder + 1
-                let newDynamicPortLabel = `${dynamicPort.varName}[${newDynamicPortOrder}]`;
-                let newDynamicPortName = "parameter-" + dynamicPort.options.dataType + "-" + dynamicPort.options.varName + "-" + newDynamicPortOrder;
-                dynamicPort.handleNewDynamicLink();
-                let newPort = node.addInPortEnhance({ label: newDynamicPortLabel, 
-                                        name: newDynamicPortName,
-                                        varName: dynamicPort.options.varName, 
-                                        dataType: dynamicPort.options.dataType,
-                                        order: absolutePortOrder,
-                                        dynaPortOrder: newDynamicPortOrder}) as CustomDynaPortModel;
-                
-                // link new ports
-                newPort.previous = dynamicPort.getID()
-                dynamicPort.next = newPort.getID()
-            }
-            else if(actionType=="delete"){
+            if(actionType=="delete"){
 
                 let nextPort = node.getPortFromID(dynamicPort.next) as CustomDynaPortModel
 
@@ -816,7 +798,10 @@ export function addNodeActionCommands(
                     nextPort = node.getPortFromID(nextPort.next) as CustomDynaPortModel;
                 }
 
-                node.removePort(dynamicPort);
+                // Don't remove port if there's no subsequent port
+                if (!nextPort) {
+                    node.removePort(dynamicPort);
+                }
             }
             
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();

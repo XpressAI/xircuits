@@ -57,20 +57,19 @@ export  class CustomPortModel extends DefaultPortModel  {
         this.extras=event.data.extras;
     }
 
-    canLinkToPort(port: PortModel): boolean {
+    canLinkToPort(port: CustomPortModel): boolean {
         if (port instanceof DefaultPortModel) {
             if(this.options.in === port.getOptions().in){
                 port.getNode().getOptions().extras["borderColor"]="red";
                 port.getNode().getOptions().extras["tip"]="in not connected to in";
                 port.getNode().setSelected(true);
                 console.log("in not connected to in");
-                // tested
                 return false;
             }
         }
 
         // Multiple link check
-        if (!this.canLinkToLinkedPort(port)) {
+        if (!port.canLinkToLinkedPort()) {
             return false;
         }
 
@@ -194,7 +193,8 @@ export  class CustomPortModel extends DefaultPortModel  {
         }
     }
 
-    canLinkToLinkedPort(port: PortModel): boolean {
+    canLinkToLinkedPort(): boolean {
+        let port = this as CustomPortModel
         if (Object.keys(port.getLinks()).length > 0) {
             port.getNode().getOptions().extras["borderColor"] = "red";
             port.getNode().getOptions().extras["tip"] = "Xircuits only allows 1 link per InPort! Please delete the current link to proceed.";
