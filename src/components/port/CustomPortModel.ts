@@ -343,4 +343,12 @@ export  class CustomPortModel extends DefaultPortModel  {
         return inPorts.findIndex(p => p.options.id === portId);
 
     }
+
+    getCustomProps() {
+        const { name, varName, portType, dataType } = this;
+        const id = this.getID();
+        const label = this.getOptions()['label']
+        const props = { name, varName, label, id, dataType, portType };
+        return props;
+    }
 }

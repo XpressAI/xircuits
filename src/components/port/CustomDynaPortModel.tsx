@@ -16,6 +16,14 @@ export interface CustomDynaPortModelOptions extends CustomPortModelOptions {
     dynaPortRef: DynaPortRef;
 }
 
+export interface SpawnDynamicPortOptions {
+    offset?: number;
+    node?: CustomNodeModel;
+    port?: CustomDynaPortModel;
+    absolutePortOrder?: number;
+    newDynamicPortOrder?: number;
+}
+
 export  class CustomDynaPortModel extends CustomPortModel {
     dynaPortOrder: number;
     dynaPortRef: DynaPortRef;
@@ -64,12 +72,20 @@ export  class CustomDynaPortModel extends CustomPortModel {
         return true
     }
 
-    spawnDynamicPort(offset: number = 1, port: CustomDynaPortModel = this): CustomDynaPortModel {
+    spawnDynamicPort(options: SpawnDynamicPortOptions): CustomDynaPortModel {
+        let {
+            offset = 1,
+            node = null,
+            port = this,
+            absolutePortOrder = null,
+            newDynamicPortOrder = null
+        } = options;
+    
+        node = node !== null ? node : port.parent as CustomNodeModel;
 
-        let node = port.parent as CustomNodeModel;
-
-        let absolutePortOrder = port.getPortOrder() + offset;
-        let newDynamicPortOrder = port.dynaPortOrder + offset;
+        absolutePortOrder = absolutePortOrder !== null ? absolutePortOrder : port.getPortOrder() + offset;
+        newDynamicPortOrder = newDynamicPortOrder !== null ? newDynamicPortOrder : port.dynaPortOrder + offset;
+        
         let newDynamicPortName: string;
         let newDynamicPortLabel: string;
     
@@ -89,8 +105,8 @@ export  class CustomDynaPortModel extends CustomPortModel {
             order: absolutePortOrder,
             dynaPortOrder: newDynamicPortOrder
         }) as CustomDynaPortModel;
-
-        return newPort
+    
+        return newPort;
     }
 
     adjustOrder(order: number, port: CustomDynaPortModel = this){
@@ -108,8 +124,13 @@ export  class CustomDynaPortModel extends CustomPortModel {
 
     shiftPorts() {
         let currentPort = this as CustomDynaPortModel;
-        let node = this.parent;
-        let previousPort = node.getPortFromID(currentPort.previous) as CustomDynaPortModel
+        let node = this.parent as CustomNodeModel;
+        let previousPort = node.getPortFromID(currentPort.previous) as CustomDynaPortModel;
+        
+        let currentPortProps
+        if(!previousPort){
+            currentPortProps = currentPort.getCustomProps()
+        }
 
         // Store all the subsequent ports and their links in an array.
         let portsAndLinks = [];
@@ -134,14 +155,25 @@ export  class CustomDynaPortModel extends CustomPortModel {
         });
     
         // Spawn a new port at the current position and set linking properties.
-        let newPort = previousPort.spawnDynamicPort(1, previousPort) as CustomDynaPortModel;
-        newPort.previous = previousPort.getID();
-        previousPort.next = newPort.getID();
+        let newPort;
+
+        if(previousPort){
+            newPort = previousPort.spawnDynamicPort({ offset: 1, port: previousPort }) as CustomDynaPortModel;
+            newPort.previous = previousPort.getID();
+            previousPort.next = newPort.getID();
+        }   else
+        {
+            newPort = this.spawnDynamicPort({   node: node,
+                                                newDynamicPortOrder: 0,
+                                                absolutePortOrder: currentPortProps.absolutePortOrder 
+                                            }) as CustomDynaPortModel;
+        }
+
     
         // Recreate each port in the array with adjusted position and reconnect the links
         previousPort = newPort;
         portsAndLinks.forEach(({ link }, index) => {
-            let recreatedPort = previousPort.spawnDynamicPort(1, previousPort);
+            let recreatedPort = previousPort.spawnDynamicPort({ offset: 1, port: previousPort });
     
             if (previousPort) {
                 recreatedPort.previous = previousPort.getID();
@@ -149,7 +181,7 @@ export  class CustomDynaPortModel extends CustomPortModel {
             }
     
             if (link) {
-                link.setTargetPort(recreatedPort);
+                link.setTargetPort(recreatedPort); // Reconnect links with newly created port as the target.
             }
     
             previousPort = recreatedPort;
@@ -173,6 +205,18 @@ export  class CustomDynaPortModel extends CustomPortModel {
 
     set next(value: string | null) {
         this.dynaPortRef.next = value;
+    }
+
+    getCustomProps() {
+        const baseProps = super.getCustomProps();
+        const { dynaPortOrder, dynaPortRef } = this;
+        const absolutePortOrder = this.getPortOrder()
+        return {
+            ...baseProps,
+            dynaPortOrder,
+            dynaPortRef,
+            absolutePortOrder
+        };
     }
 
 }

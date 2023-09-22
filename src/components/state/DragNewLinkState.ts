@@ -80,7 +80,7 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 								else{
 
 									// spawn new port at after current port
-									let newPort = model.spawnDynamicPort(1)
+									let newPort = model.spawnDynamicPort({ offset: 1 })
 									newPort.previous = model.getID()
 									model.next = newPort.getID()
 
