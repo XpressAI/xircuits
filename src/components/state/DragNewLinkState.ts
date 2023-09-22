@@ -74,19 +74,7 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 								// if the port already has a link
 								if (Object.keys(model.links).length > 0) { 
 									
-									// spawn new port at current port order
-									let newPort = model.spawnDynamicPort(0)
-
-									// relink new port
-									newPort.next = model.getID()
-									model.previous = newPort.getID()
-
-									let previousPort = model.getParent().getPortFromID(model.previous) as CustomDynaPortModel
-									previousPort.next = newPort.getID()
-									newPort.previous = previousPort.getID()
-
-									// shift all ports after by 1
-									model.shiftPorts()
+									let newPort = model.shiftPorts()
 									this.link.setTargetPort(newPort);
 								}
 								else{
@@ -97,15 +85,14 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 									model.next = newPort.getID()
 
 									this.link.setTargetPort(model);
-									model.reportPosition();
 								}
 							}
 
 							else {
 								this.link.setTargetPort(model);
-								model.reportPosition();
 							}
 
+							model.reportPosition();
 							this.engine.repaintCanvas();
 							return;
 						} else {

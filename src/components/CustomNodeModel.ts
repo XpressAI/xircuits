@@ -81,11 +81,4 @@ export class CustomNodeModel extends DefaultNodeModel {
         
     }
 
-    handleNewDynamicLink(port){
-        // get all ports
-        // get the dynamic port
-
-        // 
-        console.log("")
-    }
 }

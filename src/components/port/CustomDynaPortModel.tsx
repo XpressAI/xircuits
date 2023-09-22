@@ -107,30 +107,58 @@ export  class CustomDynaPortModel extends CustomPortModel {
     }
 
     shiftPorts() {
-
         let currentPort = this as CustomDynaPortModel;
         let node = this.parent;
-        let lastPort: CustomDynaPortModel | null = null;
-    
-        while (currentPort) {
+        let previousPort = node.getPortFromID(currentPort.previous) as CustomDynaPortModel
 
-            currentPort.adjustOrder(currentPort.dynaPortOrder + 1);
-            lastPort = currentPort;
-    
-            // If the current port has a next port, fetch it, otherwise, break the loop
+        // Store all the subsequent ports and their links in an array.
+        let portsAndLinks = [];
+        while (currentPort) {
+            let links = currentPort.getLinks();
+            let link = Object.keys(links).length ? links[Object.keys(links)[0]] : null; 
+            portsAndLinks.push({ port: currentPort, link });
+            
             if (currentPort.next) {
                 currentPort = node.getPortFromID(currentPort.next) as CustomDynaPortModel;
             } else {
                 break;
             }
         }
+    
+        // Set targetPort of links as null and remove the ports.
+        portsAndLinks.forEach(({ port, link }) => {
+            if (link) {
+                link.setTargetPort(null);
+            }
+            node.removePort(port);
+        });
+    
+        // Spawn a new port at the current position and set linking properties.
+        let newPort = previousPort.spawnDynamicPort(1, previousPort) as CustomDynaPortModel;
+        newPort.previous = previousPort.getID();
+        previousPort.next = newPort.getID();
+    
+        // Recreate each port in the array with adjusted position and reconnect the links
+        previousPort = newPort;
+        portsAndLinks.forEach(({ link }, index) => {
+            let recreatedPort = previousPort.spawnDynamicPort(1, previousPort);
+    
+            if (previousPort) {
+                recreatedPort.previous = previousPort.getID();
+                previousPort.next = recreatedPort.getID();
+            }
+    
+            if (link) {
+                link.setTargetPort(recreatedPort);
+            }
+    
+            previousPort = recreatedPort;
+        });
 
-        // spawn +1 dynamic port at the end
-        this.spawnDynamicPort(1, lastPort);
-
+        return newPort;
     }
     
-
+    
     get previous() {
         return this.dynaPortRef.previous;
     }
