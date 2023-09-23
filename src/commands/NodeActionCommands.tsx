@@ -785,24 +785,24 @@ export function addNodeActionCommands(
 
             if(actionType=="delete"){
 
-                let nextPort = node.getPortFromID(dynamicPort.next) as CustomDynaPortModel
-
+                let nextPort = node.getPortFromID(dynamicPort.next) as CustomDynaPortModel;
+            
                 // link previous port to next port
-                let previousPort = node.getPortFromID(dynamicPort.previous) as CustomDynaPortModel
+                let previousPort = node.getPortFromID(dynamicPort.previous) as CustomDynaPortModel;
                 if(previousPort){
-                    previousPort.next = node.getPortFromID(dynamicPort.next).getID()
+                    previousPort.next = dynamicPort.next; 
                 }
-
+                if(nextPort){
+                    nextPort.previous = dynamicPort.previous;
+                }
+            
                 while (nextPort){
                     nextPort.adjustOrder(nextPort.dynaPortOrder-1)
                     nextPort = node.getPortFromID(nextPort.next) as CustomDynaPortModel;
                 }
-
-                // Don't remove port if there's no subsequent port
-                if (!nextPort) {
-                    node.removePort(dynamicPort);
-                }
-            }
+            
+                node.removePort(dynamicPort);
+            }            
             
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();
 
