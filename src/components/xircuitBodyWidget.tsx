@@ -22,7 +22,6 @@ import { RunDialog } 			from '../dialog/RunDialog';
 import { requestAPI } 			from '../server/handler';
 import ComponentsPanel 			from '../context-menu/ComponentsPanel';
 import { NodeActionsPanel } 	from '../context-menu/NodeActionsPanel';
-import { DYNAMIC_PARAMETER_NODE_TYPES } from '../components/port/CustomDynaPortModel';
 import { cancelDialog, GeneralComponentLibrary } 		from '../tray_library/GeneralComponentLib';
 import { AdvancedComponentLibrary, fetchNodeByName } 	from '../tray_library/AdvanceComponentLib';
 import { lowPowerMode, setLowPowerMode } from './state/powerModeState';
@@ -87,11 +86,10 @@ export const commandIDs = {
 	reloadAllNodes: 'Xircuit-editor:reload-all-nodes',
 	toggleAllLinkAnimation: 'Xircuit-editor:toggle-all-link-animation',
 	editNode: 'Xircuit-editor:edit-node',
-	deleteNode: 'Xircuit-editor:delete-node',
+	deleteEntity: 'Xircuit-editor:delete-entities',
 	addNodeGivenPosition: 'Xircuit-editor:add-node', 
 	connectNodeByLink: 'Xircuit-editor:connect-node',
 	connectLinkToObviousPorts: 'Xircuit-editor:connect-obvious-link',
-	handleDynamicPorts: 'Xircuit-editor:handle-dynamic-ports',
 	addCommentNode: 'Xircuit-editor:add-comment-node',
 	compileFile: 'Xircuit-editor:compile-file',
 	nextNode: 'Xircuit-editor:next-node',
@@ -178,42 +176,37 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						},
 						linksUpdated: (event) => {
 
-							//Detect changes when link is deleted
-							if(!event.isCreated){
+							const timeout = setTimeout(() => {
 
-								const targetPort = event.link.getTargetPort() as any;
-								if(DYNAMIC_PARAMETER_NODE_TYPES.includes(targetPort?.dataType)){
-									app.commands.execute(commandIDs.handleDynamicPorts, { actionType: "delete", dynamicPort: targetPort });
-								}
-								onChange()
-							}
+								event.link.registerListener({
+									/**
+									 * sourcePortChanged
+									 * Detect changes when link is connected
+									 */
+									sourcePortChanged: e => {
+										onChange();
+									},
+									/**
+									 * targetPortChanged
+									 * Detect changes when link is connected
+									 */
+									targetPortChanged: e => {
+										const sourceLink = e.entity as any;
+										app.commands.execute(commandIDs.connectLinkToObviousPorts, { draggedLink: sourceLink });
+										onChange();
 
-							event.link.registerListener({
-								/**
-								 * sourcePortChanged
-								 * Detect changes when link is connected
-								 */
-								sourcePortChanged: e => {
-									onChange();
-								},
-								/**
-								 * targetPortChanged
-								 * Detect changes when link is connected
-								 */
-								targetPortChanged: e => {
-									const sourceLink = e.entity as any;
-									app.commands.execute(commandIDs.connectLinkToObviousPorts, { draggedLink: sourceLink });
-									onChange();
-
-								},
-								/**
-								 * entityRemoved
-								 * Detect changes when new link is removed
-								 */
-								entityRemoved: e => {
-									onChange();
-								}
-							});
+									},
+									/**
+									 * entityRemoved
+									 * Detect changes when new link is removed
+									 */
+									entityRemoved: e => {
+										onChange();
+									}
+								});
+							}, 100); // You can adjust the delay as needed
+							// Don’t forget to clear the timeout when unmounting or when the component is destroyed.
+							return () => clearTimeout(timeout);
 						}
 					})
 					xircuitsApp.getDiagramEngine().setModel(deserializedModel);

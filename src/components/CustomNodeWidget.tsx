@@ -174,10 +174,6 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         this.handleOnChangeCanvas();
     }
 
-    async handleDynamicPort(){
-        
-    }
-
     /**
      * Show/Hide Component's Description Tooltip
      */
@@ -231,7 +227,6 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                     data-default-node-name={this.props.node.getOptions().name}
                     selected={this.props.node.isSelected()}
                     background={this.props.node.getOptions().color}
-                    onLinkDynamicPort={this.handleDynamicPort.bind(this)}
                     onDoubleClick={this.handleEditLiteral.bind(this)}>
                     <S.Title>
                         <S.TitleName>{this.props.node.getOptions().name}</S.TitleName>

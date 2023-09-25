@@ -6,6 +6,7 @@ import { IXircuitsDocTracker } from '../index';
 import * as _ from 'lodash';
 import { NodeModel } from '@projectstorm/react-diagrams';
 import { CustomNodeModel } from '../components/CustomNodeModel';
+import { LinkModel } from '@projectstorm/react-diagrams';
 import { XPipePanel } from '../xircuitWidget';
 import { Dialog, showDialog } from '@jupyterlab/apputils';
 import { DefaultLinkModel } from '@projectstorm/react-diagrams';
@@ -187,9 +188,9 @@ export function addNodeActionCommands(
         }
     });
 
-    //Add command to delete node
-    commands.addCommand(commandIDs.deleteNode, {
-        execute: deleteNode,
+    //Add command to delete entities
+    commands.addCommand(commandIDs.deleteEntity, {
+        execute: deleteEntity,
         label: "Delete",
         isEnabled: () => {
             const widget = tracker.currentWidget?.content as XPipePanel;
@@ -733,80 +734,85 @@ export function addNodeActionCommands(
         }
     }
 
-    function deleteNode(): void {
+    function deleteEntity(): void {
         const widget = tracker.currentWidget?.content as XPipePanel;
-
+        
         if (widget) {
-            const node = getLastSelectedNode();
-            if (!node) {
-                // When no node selected, just return
-                return;
-            }
             const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
-            selectedEntities.forEach((node) => {
-                if (node.getOptions()["name"] !== "undefined") {
-                    let modelName = node.getOptions()["name"];
-                    const errorMsg = `${modelName} node cannot be deleted!`
-                    if (modelName !== 'Start' && modelName !== 'Finish') {
-                        if (!node.isLocked()) {
-                            node.remove()
-                        } else {
-                            showDialog({
-                                title: 'Locked Node',
-                                body: errorMsg,
-                                buttons: [Dialog.warnButton({ label: 'OK' })]
-                            });
-                        }
-                    }
-                    else {
+            
+        // Separate collections for nodes and links
+        let nodes = [];
+        let links = [];
+
+        // Separating nodes and links
+        selectedEntities.forEach((entity) => {
+            if (entity instanceof CustomNodeModel) {
+                nodes.push(entity);
+            } else if (entity instanceof LinkModel) {
+                links.push(entity);
+            }
+        });
+
+        // Processing Links
+        links.forEach((link) => {
+            const port = link.getTargetPort();
+            if (port instanceof CustomDynaPortModel) {
+                deleteDynamicPort(port, widget);
+            }
+            link.remove();
+        });
+
+        // Processing Nodes
+        nodes.forEach((node) => {
+            if (node.getOptions()["name"] !== "undefined") {
+                let modelName = node.getOptions()["name"];
+                const errorMsg = `${modelName} node cannot be deleted!`;
+
+                if (modelName !== 'Start' && modelName !== 'Finish') {
+                    if (!node.isLocked()) {
+                        node.remove();
+                    } else {
                         showDialog({
-                            title: 'Undeletable Node',
+                            title: 'Locked Node',
                             body: errorMsg,
                             buttons: [Dialog.warnButton({ label: 'OK' })]
                         });
                     }
+                } else {
+                    showDialog({
+                        title: 'Undeletable Node',
+                        body: errorMsg,
+                        buttons: [Dialog.warnButton({ label: 'OK' })]
+                    });
                 }
-            })
-            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
-        }
+            }
+        });
+
+        widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+        
+    }
     }
 
-    commands.addCommand(commandIDs.handleDynamicPorts, {
-        execute: (args) => {
+    function deleteDynamicPort(dynamicPort, widget) {
 
-            const widget = tracker.currentWidget?.content as XPipePanel;
-            if (!widget) return;
-
-            let dynamicPort = args['dynamicPort'] as any;
-            let node = dynamicPort.parent as CustomNodeModel;
-
-            let model = widget.xircuitsApp.getDiagramEngine().getModel()
-            let actionType = args['actionType']
-
-            if(actionType=="delete"){
-
-                let nextPort = node.getPortFromID(dynamicPort.next) as CustomDynaPortModel;
-            
-                // link previous port to next port
-                let previousPort = node.getPortFromID(dynamicPort.previous) as CustomDynaPortModel;
-                if(previousPort){
-                    previousPort.next = dynamicPort.next; 
-                }
-                if(nextPort){
-                    nextPort.previous = dynamicPort.previous;
-                }
-            
-                while (nextPort){
-                    nextPort.adjustOrder(nextPort.dynaPortOrder-1)
-                    nextPort = node.getPortFromID(nextPort.next) as CustomDynaPortModel;
-                }
-            
-                node.removePort(dynamicPort);
-            }            
-            
-            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
-
-        },
-        label: trans.__('handle dynamic ports')
-    });
+        const node = dynamicPort.parent 
+        let nextPort = node.getPortFromID(dynamicPort.next) as CustomDynaPortModel;
+    
+        // link previous port to next port
+        let previousPort = node.getPortFromID(dynamicPort.previous) as CustomDynaPortModel;
+        if(previousPort) {
+            previousPort.next = dynamicPort.next; 
+        }
+        if(nextPort) {
+            nextPort.previous = dynamicPort.previous;
+        }
+        
+        while (nextPort) {
+            nextPort.adjustOrder(nextPort.dynaPortOrder-1)
+            nextPort = node.getPortFromID(nextPort.next) as CustomDynaPortModel;
+        }
+        
+        node.removePort(dynamicPort);
+        widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+    }
 }
