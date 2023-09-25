@@ -739,7 +739,7 @@ export function addNodeActionCommands(
         
         if (widget) {
             const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
-            
+            const model = widget.xircuitsApp.getDiagramEngine().getModel()
         // Separate collections for nodes and links
         let nodes = [];
         let links = [];
@@ -764,6 +764,18 @@ export function addNodeActionCommands(
 
         // Processing Nodes
         nodes.forEach((node) => {
+            // Before deleting the node, Check each outPort's links and their targetPorts
+            node.getOutPorts().forEach((outPort) => {
+                const outPortLinks = outPort.getLinks();
+                for (let linkId in outPortLinks) {
+                    const link = model.getLink(linkId);
+                    const targetPort = link.getTargetPort();
+                    if (targetPort instanceof CustomDynaPortModel) {
+                        deleteDynamicPort(targetPort, widget);
+                    }
+                }
+            });
+
             if (node.getOptions()["name"] !== "undefined") {
                 let modelName = node.getOptions()["name"];
                 const errorMsg = `${modelName} node cannot be deleted!`;
@@ -790,7 +802,7 @@ export function addNodeActionCommands(
 
         widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         
-    }
+        }
     }
 
     function deleteDynamicPort(dynamicPort, widget) {
