@@ -207,10 +207,12 @@ export function addNodeActionCommands(
     commands.addCommand(commandIDs.reloadNode, {
         execute: async () => {
             const widget = tracker.currentWidget?.content as XPipePanel;
-            const selected_entities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
+            const engine = widget.xircuitsApp.getDiagramEngine()
+            const selected_entities = engine.getModel().getSelectedEntities();
             const selected_nodes = selected_entities.filter(entity => entity instanceof NodeModel) as CustomNodeModel[];
             const nodesToRemove = [];
             const linksToRemove = [];
+            const dynaPortsToSpawn = [];
             const nodesToHighlight = [];
 
             for (let selected_node of selected_nodes) {
@@ -245,7 +247,7 @@ export function addNodeActionCommands(
                 
                 // Add node at given position
                 node.setPosition(nodePositionX, nodePositionY);
-                widget.xircuitsApp.getDiagramEngine().getModel().addNode(node);
+                engine.getModel().addNode(node);
                 try {
                     let ports = selected_node.getPorts();
                     for (let portName in ports) {
@@ -266,7 +268,16 @@ export function addNodeActionCommands(
                                 }
                 
                             } else if (link.getTargetPort() === port) {
-                                let targetPortName = link.getTargetPort().getName();
+                                
+                                let targetPort = link.getTargetPort();
+                                
+                                if (targetPort instanceof CustomDynaPortModel){
+                                    dynaPortsToSpawn.push({node, link, targetPort})
+                                    link.setTargetPort(null)
+                                    continue
+                                }
+
+                                let targetPortName = targetPort.getName();
                                 let newTargetPort = node.getPorts()[targetPortName];
                                 if (newTargetPort) {
                                     link.setTargetPort(newTargetPort);
@@ -275,9 +286,10 @@ export function addNodeActionCommands(
                                     linksToRemove.push(link)
                                     continue
                                 }
+                                
                             }
                 
-                            widget.xircuitsApp.getDiagramEngine().getModel().addLink(link);
+                            engine.getModel().addLink(link);
                         }
                     }
                 }
@@ -294,17 +306,28 @@ export function addNodeActionCommands(
 
             // Remove old nodes and links
             for (const nodeToRemove of nodesToRemove) {
-                widget.xircuitsApp.getDiagramEngine().getModel().removeNode(nodeToRemove);
+                engine.getModel().removeNode(nodeToRemove);
             }
 
             for (const linkToRemove of linksToRemove) {
-                widget.xircuitsApp.getDiagramEngine().getModel().removeLink(linkToRemove);
+                engine.getModel().removeLink(linkToRemove);
+            }
+
+            for (const dynaPort of dynaPortsToSpawn) {
+                let { node, link, targetPort } = dynaPort
+                
+                let targetPortName = targetPort.getName();
+                let newTargetPort = node.getPorts()[targetPortName];
+                const newPort = newTargetPort.spawnDynamicPort({ offset: 1 });
+                newPort.previous = targetPort.getID();
+                newTargetPort.next = newPort.getID();
+                link.setTargetPort(newTargetPort);
             }
 
             // Repaint canvas
             selected_nodes.forEach(node => node.setSelected(false));
             nodesToHighlight.forEach(node => node.setSelected(true));
-            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+            engine.repaintCanvas();
 
         },
         label: trans.__('Reload node')
