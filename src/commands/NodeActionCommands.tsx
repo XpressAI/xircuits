@@ -766,6 +766,7 @@ export function addNodeActionCommands(
         // Separate collections for nodes and links
         let nodes = [];
         let links = [];
+        let points = [];
 
         // Separating nodes and links
         selectedEntities.forEach((entity) => {
@@ -773,6 +774,8 @@ export function addNodeActionCommands(
                 nodes.push(entity);
             } else if (entity instanceof LinkModel) {
                 links.push(entity);
+            } else if (entity instanceof PointModel) {
+                points.push(entity);
             }
         });
 
@@ -783,6 +786,11 @@ export function addNodeActionCommands(
                 port.shiftPorts( { shouldShiftBack: true }) // delete
             }
             link.remove();
+        });
+
+        // Processing Points
+        points.forEach((point) => {
+            point.remove();
         });
 
         // Processing Nodes
