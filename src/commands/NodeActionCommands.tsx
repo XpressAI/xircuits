@@ -780,7 +780,7 @@ export function addNodeActionCommands(
         links.forEach((link) => {
             const port = link.getTargetPort();
             if (port instanceof CustomDynaPortModel) {
-                deleteDynamicPort(port, widget);
+                port.shiftPorts( { shouldShiftBack: true }) // delete
             }
             link.remove();
         });
@@ -794,7 +794,7 @@ export function addNodeActionCommands(
                     const link = model.getLink(linkId);
                     const targetPort = link.getTargetPort();
                     if (targetPort instanceof CustomDynaPortModel) {
-                        deleteDynamicPort(targetPort, widget);
+                        targetPort.shiftPorts( { shouldShiftBack: true }) // delete
                     }
                 }
             });
@@ -826,28 +826,5 @@ export function addNodeActionCommands(
         widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         
         }
-    }
-
-    function deleteDynamicPort(dynamicPort, widget) {
-
-        const node = dynamicPort.parent 
-        let nextPort = node.getPortFromID(dynamicPort.next) as CustomDynaPortModel;
-    
-        // link previous port to next port
-        let previousPort = node.getPortFromID(dynamicPort.previous) as CustomDynaPortModel;
-        if(previousPort) {
-            previousPort.next = dynamicPort.next; 
-        }
-        if(nextPort) {
-            nextPort.previous = dynamicPort.previous;
-        }
-        
-        while (nextPort) {
-            nextPort.adjustOrder(nextPort.dynaPortOrder-1)
-            nextPort = node.getPortFromID(nextPort.next) as CustomDynaPortModel;
-        }
-        
-        node.removePort(dynamicPort);
-        widget.xircuitsApp.getDiagramEngine().repaintCanvas();
     }
 }

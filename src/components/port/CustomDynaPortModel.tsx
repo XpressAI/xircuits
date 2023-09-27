@@ -109,36 +109,17 @@ export  class CustomDynaPortModel extends CustomPortModel {
         return newPort;
     }
 
-    adjustOrder(order: number, port: CustomDynaPortModel = this){
-
-        port.dynaPortOrder = order
-        
-        if(order==0){
-            port.options.name = "parameter-" + port.dataType + "-" + port.varName;
-            port.options.label = `${port.varName}`;
-        }else{
-            port.options.name = "parameter-" + port.dataType + "-" + port.varName + "-" + order;
-            port.options.label = `${port.varName}[${order}]`;
-        }
-    }
-
-    shiftPorts() {
-
+    shiftPorts({ shouldShiftBack = false } = {}) {
         let node = this.parent as CustomNodeModel;
         let currentPort = this as CustomDynaPortModel;
         let previousPort = node.getPortFromID(currentPort.previous) as CustomDynaPortModel;
-        
-        // If there is no previous port, get the custom properties of the current port
-        const currentPortProps = !previousPort && currentPort.getCustomProps();
+        const currentPortProps = currentPort.getCustomProps();
         
         // Store each subsequent port and its link in the array
         let portsAndLinks = [];
         while (currentPort) {
-
             let link = Object.values(currentPort.getLinks())[0] || null;
             portsAndLinks.push({ port: currentPort, link });
-            
-            // Move to the next port if available, else break the loop
             currentPort = currentPort.next ? node.getPortFromID(currentPort.next) as CustomDynaPortModel : null;
         }
         
@@ -147,17 +128,19 @@ export  class CustomDynaPortModel extends CustomPortModel {
             if (link) link.setTargetPort(null);
             node.removePort(port);
         });
-        
-        // Spawn a new port and set its previous and next properties if a previous port is available
-        // else create a new port using the properties of the current port
+    
+        // If shouldShiftBack flag is true, remove the first element from portsAndLinks array
+        if (shouldShiftBack) portsAndLinks.shift();
+    
+        // Spawn a new port using properties from either the previous port or the current port
         let newPort = previousPort ? previousPort.spawnDynamicPort({ offset: 1, port: previousPort }) 
-                                   : this.spawnDynamicPort({ node, newDynamicPortOrder: 0, absolutePortOrder: currentPortProps.absolutePortOrder });
-        
+                                   : this.spawnDynamicPort({ node, newDynamicPortOrder: currentPortProps.dynaPortOrder, absolutePortOrder: currentPortProps.absolutePortOrder });
+    
         if (previousPort) {
             newPort.previous = previousPort.getID();
             previousPort.next = newPort.getID();
         }
-        
+    
         // Initialize a variable to keep track of the last created port
         let lastCreatedPort = newPort;
         
@@ -168,16 +151,21 @@ export  class CustomDynaPortModel extends CustomPortModel {
             recreatedPort.previous = lastCreatedPort.getID();
             lastCreatedPort.next = recreatedPort.getID();
             
-            if (link) link.setTargetPort(recreatedPort);
+            // If a link exists, connect it to lastCreatedPort when shifting backwards and deleting, 
+            // to maintain the connection with the existing port.
+            // Otherwise, connect to the recreatedPort to link with the newly spawned port.
+            if (link) link.setTargetPort(shouldShiftBack ? lastCreatedPort : recreatedPort);
             
             // Update the lastCreatedPort to point to the newly recreated port
             lastCreatedPort = recreatedPort;
         });
     
+        // If shouldShiftBack flag is true, remove the last created port
+        if (shouldShiftBack) node.removePort(lastCreatedPort);
+        
         return newPort;
-    }    
-    
-    
+    }
+
     get previous() {
         return this.dynaPortRef.previous;
     }
