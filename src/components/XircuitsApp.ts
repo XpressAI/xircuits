@@ -92,11 +92,24 @@ export class XircuitsApplication {
                                 const newTriangleLink = new TriangleLinkModel({ id: link.id });
                                 const sourceNode = tempModel.getNode(link.source);
                                 const targetNode = tempModel.getNode(link.target);
+
+                                if(!sourceNode || !targetNode) {
+                                        const missingNodeId = !sourceNode ? link.source : link.target;
+                                        const missingNodeType = !sourceNode ? 'Source' : 'Target';
+                                        console.error(`${missingNodeType} node with id ${missingNodeId} not found!`);
+                                        continue; // Skip to the next iteration of the loop.
+                                }
+
                                 const linkPoints = link.points;
 
                                 const sourcePort = sourceNode.getPortFromID(link.sourcePort);
                                 const sourcePortName = sourcePort.getOptions()['name'];
-                                const sourcePortLabel = sourceNode.getPorts()[sourcePortName].getOptions()['label'];
+                                const sourcePortOptions = sourceNode.getPorts()[sourcePortName]?.getOptions()
+                                if(!sourcePortOptions){
+                                        console.error(`${sourcePortName} port not found!`);
+                                        continue
+                                }
+                                const sourcePortLabel = sourcePortOptions['label'];
                                 if (sourcePortLabel == '▶' || sourcePortName.includes('out-flow')) {
                                         // When source port is '▶', use triangle animation link
                                         // Also, use triangle animation link when the source port is a flowport
@@ -105,7 +118,12 @@ export class XircuitsApplication {
 
                                 const targetPort = targetNode.getPortFromID(link.targetPort);
                                 const targetPortName = targetPort.getOptions()['name'];
-                                const targetPortLabel = targetNode.getPorts()[targetPortName].getOptions()['label'];
+                                const targetPortOptions = targetNode.getPorts()[targetPortName]?.getOptions();
+                                if(!targetPortOptions){
+                                        console.error(`${targetPortName} port not found!`);
+                                        continue
+                                }
+                                const targetPortLabel = targetPortOptions['label'];
                                 if (targetPortLabel == '▶'){
                                         // When target port is '▶', use triangle animation link
                                         newLink = newTriangleLink;

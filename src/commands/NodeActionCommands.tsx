@@ -208,11 +208,11 @@ export function addNodeActionCommands(
         execute: async () => {
             const widget = tracker.currentWidget?.content as XPipePanel;
             const engine = widget.xircuitsApp.getDiagramEngine()
-            const selected_entities = engine.getModel().getSelectedEntities();
+            const model = engine.getModel()
+            const selected_entities = model.getSelectedEntities();
             const selected_nodes = selected_entities.filter(entity => entity instanceof NodeModel) as CustomNodeModel[];
             const nodesToRemove = [];
             const linksToRemove = [];
-            const dynaPortsToSpawn = [];
             const nodesToHighlight = [];
 
             for (let selected_node of selected_nodes) {
@@ -249,6 +249,8 @@ export function addNodeActionCommands(
                 node.setPosition(nodePositionX, nodePositionY);
                 engine.getModel().addNode(node);
                 try {
+
+                    // get the old ports
                     let ports = selected_node.getPorts();
                     for (let portName in ports) {
                         let port = ports[portName];
@@ -270,25 +272,25 @@ export function addNodeActionCommands(
                             } else if (link.getTargetPort() === port) {
                                 
                                 let targetPort = link.getTargetPort();
-                                
-                                if (targetPort instanceof CustomDynaPortModel){
-                                    dynaPortsToSpawn.push({node, link, targetPort})
-                                    link.setTargetPort(null)
-                                    continue
-                                }
-
                                 let targetPortName = targetPort.getName();
                                 let newTargetPort = node.getPorts()[targetPortName];
-                                if (newTargetPort) {
-                                    link.setTargetPort(newTargetPort);
-                                } else {
+                                
+                                if (!newTargetPort){
                                     console.log(`Target port '${targetPortName}' not found in reloaded node '${node.name}'.`);
                                     linksToRemove.push(link)
                                     continue
                                 }
+
+                                if (targetPort instanceof CustomDynaPortModel){
+                                    const newPort = newTargetPort.spawnDynamicPort({ offset: 1 });
+                                    newPort.previous = newTargetPort.getID();
+                                    newTargetPort.next = newPort.getID();
+                                    }
+
+                                link.setTargetPort(newTargetPort);
+
+                                }
                                 
-                            }
-                
                             engine.getModel().addLink(link);
                         }
                     }
@@ -313,26 +315,29 @@ export function addNodeActionCommands(
                 engine.getModel().removeLink(linkToRemove);
             }
 
-            for (const dynaPort of dynaPortsToSpawn) {
-                let { node, link, targetPort } = dynaPort
-                
-                let targetPortName = targetPort.getName();
-                let newTargetPort = node.getPorts()[targetPortName];
-                const newPort = newTargetPort.spawnDynamicPort({ offset: 1 });
-                newPort.previous = targetPort.getID();
-                newTargetPort.next = newPort.getID();
-                link.setTargetPort(newTargetPort);
-            }
 
             // Repaint canvas
             selected_nodes.forEach(node => node.setSelected(false));
             nodesToHighlight.forEach(node => node.setSelected(true));
+            
+            pruneLooseLinks(model);
             engine.repaintCanvas();
 
         },
         label: trans.__('Reload node')
     });
 
+    function pruneLooseLinks(model: SRD.DiagramModel): void {
+ 
+        const links = model.getLinks()
+
+        // Iterate over all links and prune those that do not have either a source or a target port
+        Object.values(links).forEach(link => {
+        if (!link.getSourcePort() || !link.getTargetPort()) {
+            model.removeLink(link);
+            }
+        });
+    }
 
     //Add command to add node given position
     commands.addCommand(commandIDs.addNodeGivenPosition, {
