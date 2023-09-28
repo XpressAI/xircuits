@@ -22,6 +22,8 @@ import {
   IOutputLog,
 } from '@jupyterlab/logconsole';
 import { commandIDs } from '../components/xircuitBodyWidget';
+import { requestAPI } from '../server/handler';
+import { DockLayout } from '@lumino/widgets';
 
 /**
  * The command IDs used by the log plugin.
@@ -89,7 +91,7 @@ export const logPlugin: JupyterFrontEndPlugin<void> = {
       label: (args) => `Set Log Level to ${args.level as string}`,
     });
 
-    const createLogConsoleWidget = (): void => {
+    const createLogConsoleWidget = async (): Promise<void> => {
       logConsolePanel = new LogConsolePanel(
         new LoggerRegistry({
           defaultRendermime: rendermime,
@@ -132,7 +134,17 @@ export const logPlugin: JupyterFrontEndPlugin<void> = {
         app.commands.notifyCommandChanged();
       });
 
-      app.shell.add(logConsoleWidget, 'main', { mode: 'split-right' });
+      let splitMode: DockLayout.InsertMode = 'split-bottom' as DockLayout.InsertMode; // default value
+        
+      try {
+        const data = await requestAPI<any>('config/split_mode');
+        splitMode = data.splitMode as DockLayout.InsertMode;
+      } catch (err) {
+        console.error('Error fetching split mode from server:', err);
+      }
+    
+      app.shell.add(logConsoleWidget, 'main', { mode: splitMode });
+
       loggertracker.add(logConsoleWidget);
 
       logConsoleWidget.update();
