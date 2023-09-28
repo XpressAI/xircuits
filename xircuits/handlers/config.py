@@ -54,3 +54,14 @@ class RunConfigRouteHandler(APIHandler):
             "err_msg": err_msg
             }
         self.finish(json.dumps(data))
+
+
+class SplitModeConfigHandler(APIHandler):
+    @tornado.web.authenticated
+    def get(self):
+        cfg = get_config()
+        try:
+            split_mode = cfg.get('UI', 'splitMode', fallback='split-bottom')
+            self.finish(json.dumps({"splitMode": split_mode}))
+        except Exception as e:
+            self.finish(json.dumps({"error": str(e)}))
