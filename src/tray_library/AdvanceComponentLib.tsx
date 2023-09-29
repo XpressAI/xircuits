@@ -37,8 +37,8 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
             "options": nodeData.options
         }
     });
-    node.addInPortEnhance('▶', 'in-0');
-    node.addOutPortEnhance('▶', 'out-0');
+    node.addInPortEnhance({label: '▶', name: 'in-0'});
+    node.addOutPortEnhance({label: '▶', name: 'out-0'});
 
     // TODO: Get rid of the remapping by using compatible type names everywhere
     let type_name_remappings = {
@@ -62,16 +62,16 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
 
         switch (variable["kind"]) {
             case "InCompArg":
-                node.addInPortEnhance(`★${name}`, `parameter-${type}-${name}`);
+                node.addInPortEnhance({ label: `★${name}`, name: `parameter-${type}-${name}`, dataType: `${type}`});
                 break;
             case "InArg":
-                node.addInPortEnhance(name, `parameter-${type}-${name}`);
+                node.addInPortEnhance({ label: name, name: `parameter-${type}-${name}`, dataType: `${type}`});
                 break;
             case "OutArg":
-                node.addOutPortEnhance(name, `parameter-out-${type}-${name}`);
+                node.addOutPortEnhance({ label: name, name: `parameter-out-${type}-${name}`, dataType: `${type}`});
                 break;
             case "BaseComponent":
-                node.addOutPortEnhance(`${name} ▶`, `out-flow-${name}`);
+                node.addOutPortEnhance({ label: `${name} ▶`, name: `out-flow-${name}`});
                 break;
             default:
                 console.warn("Unknown variable kind for variable", variable)

@@ -139,3 +139,15 @@ class message(NamedTuple):
 
 class chat(NamedTuple):
     messages: List[message]
+    
+class dynalist:
+    def __init__(self, value):
+        self.value = value
+
+class dynatuple:
+    def __init__(self, value):
+        self.value = value
+
+class dynadict:
+    def __init__(self, value):
+        self.value = value

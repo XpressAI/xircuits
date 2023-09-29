@@ -8,16 +8,10 @@ import {
 import { DiagramEngine, LinkModel } from '@projectstorm/react-diagrams';
 import { MouseEvent } from 'react';
 import { CustomPortModel } from '../port/CustomPortModel';
+import { CustomDynaPortModel } from '../port/CustomDynaPortModel';
 
 export interface DragNewLinkStateOptions {
-	/**
-	 * If enabled, the links will stay on the canvas if they dont connect to a port
-	 * when dragging finishes
-	 */
 	allowLooseLinks?: boolean;
-	/**
-	 * If enabled, then a link can still be drawn from the port even if it is locked
-	 */
 	allowLinksFromLockedPorts?: boolean;
 }
 
@@ -64,34 +58,61 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 				type: InputType.MOUSE_UP,
 				fire: (event: ActionEvent<MouseEvent>) => {
 					const model = this.engine.getMouseElement(event.event);
-					// check to see if we connected to a new port
-					if (model instanceof CustomPortModel) {
-						if (this.port.canLinkToPort(model)) {
-							this.link.setTargetPort(model);
-							model.reportPosition();
-							this.engine.repaintCanvas();
-							return;
-						} else {
-							this.link.remove();
-							this.engine.repaintCanvas();
-							return;
-						}
+
+					if (!(model instanceof CustomPortModel)) {
+						this.handleLooseLink(event);
+						return;
 					}
 
-					if (!this.config.allowLooseLinks) {
-						const linkEvent = event.event;
-						this.fireEvent(linkEvent);
+					if (!this.port.canLinkToPort(model)) {
 						this.link.remove();
 						this.engine.repaintCanvas();
+						return;
 					}
+
+					this.handleConnectedPort(model);
+					this.engine.repaintCanvas();
 				}
 			})
 		);
 	}
 
-	fireEvent = (linkEvent) => {
+	private handleConnectedPort(model: CustomPortModel) {
+		if (model instanceof CustomDynaPortModel) {
+			this.handleDynamicPort(model);
+		} else {
+			this.link.setTargetPort(model);
+		}
+		model.reportPosition();
+	}
+
+	private handleDynamicPort(model: CustomDynaPortModel) {
+		// if the dynamic port has  an existing link, shift
+		if (Object.keys(model.links).length > 0) {
+			const newPort = model.shiftPorts();
+			this.link.setTargetPort(newPort);
+		} else {
+			// otherwise spawn a new one at the end
+			const newPort = model.spawnDynamicPort({ offset: 1 });
+			newPort.previous = model.getID();
+			model.next = newPort.getID();
+			this.link.setTargetPort(model);
+		}
+	}
+
+	private handleLooseLink(event: ActionEvent<MouseEvent>) {
+		if (!this.config.allowLooseLinks) {
+			// Weird behaviour where sourcePort's data is missing
+			// For now just pass the port's data itself
+			this.fireEvent(event.event, this.port);
+			this.link.remove();
+			this.engine.repaintCanvas();
+		}
+	}
+
+	fireEvent = (linkEvent, sourcePort) => {
 		//@ts-ignore
-		this.engine.fireEvent({ link: this.link, linkEvent }, 'droppedLink');
+		this.engine.fireEvent({ link: this.link, linkEvent, sourcePort }, 'droppedLink');
 	};
 
 	/**

@@ -6,6 +6,7 @@ import { IXircuitsDocTracker } from '../index';
 import * as _ from 'lodash';
 import { NodeModel } from '@projectstorm/react-diagrams';
 import { CustomNodeModel } from '../components/CustomNodeModel';
+import { LinkModel } from '@projectstorm/react-diagrams';
 import { XPipePanel } from '../xircuitWidget';
 import { Dialog, showDialog } from '@jupyterlab/apputils';
 import { DefaultLinkModel } from '@projectstorm/react-diagrams';
@@ -23,6 +24,7 @@ import { CustomLinkModel, ParameterLinkModel, TriangleLinkModel } from '../compo
 import { PointModel } from '@projectstorm/react-diagrams';
 import { Point } from '@projectstorm/geometry';
 import { handleLiteralInput } from '../tray_library/GeneralComponentLib';
+import { CustomDynaPortModel } from '../components/port/CustomDynaPortModel';
 
 /**
  * Add the commands for node actions.
@@ -186,9 +188,9 @@ export function addNodeActionCommands(
         }
     });
 
-    //Add command to delete node
-    commands.addCommand(commandIDs.deleteNode, {
-        execute: deleteNode,
+    //Add command to delete entities
+    commands.addCommand(commandIDs.deleteEntity, {
+        execute: deleteEntity,
         label: "Delete",
         isEnabled: () => {
             const widget = tracker.currentWidget?.content as XPipePanel;
@@ -205,7 +207,9 @@ export function addNodeActionCommands(
     commands.addCommand(commandIDs.reloadNode, {
         execute: async () => {
             const widget = tracker.currentWidget?.content as XPipePanel;
-            const selected_entities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
+            const engine = widget.xircuitsApp.getDiagramEngine()
+            const model = engine.getModel()
+            const selected_entities = model.getSelectedEntities();
             const selected_nodes = selected_entities.filter(entity => entity instanceof NodeModel) as CustomNodeModel[];
             const nodesToRemove = [];
             const linksToRemove = [];
@@ -243,8 +247,10 @@ export function addNodeActionCommands(
                 
                 // Add node at given position
                 node.setPosition(nodePositionX, nodePositionY);
-                widget.xircuitsApp.getDiagramEngine().getModel().addNode(node);
+                engine.getModel().addNode(node);
                 try {
+
+                    // get the old ports
                     let ports = selected_node.getPorts();
                     for (let portName in ports) {
                         let port = ports[portName];
@@ -264,18 +270,28 @@ export function addNodeActionCommands(
                                 }
                 
                             } else if (link.getTargetPort() === port) {
-                                let targetPortName = link.getTargetPort().getName();
+                                
+                                let targetPort = link.getTargetPort();
+                                let targetPortName = targetPort.getName();
                                 let newTargetPort = node.getPorts()[targetPortName];
-                                if (newTargetPort) {
-                                    link.setTargetPort(newTargetPort);
-                                } else {
+                                
+                                if (!newTargetPort){
                                     console.log(`Target port '${targetPortName}' not found in reloaded node '${node.name}'.`);
                                     linksToRemove.push(link)
                                     continue
                                 }
-                            }
-                
-                            widget.xircuitsApp.getDiagramEngine().getModel().addLink(link);
+
+                                if (targetPort instanceof CustomDynaPortModel){
+                                    const newPort = newTargetPort.spawnDynamicPort({ offset: 1 });
+                                    newPort.previous = newTargetPort.getID();
+                                    newTargetPort.next = newPort.getID();
+                                    }
+
+                                link.setTargetPort(newTargetPort);
+
+                                }
+                                
+                            engine.getModel().addLink(link);
                         }
                     }
                 }
@@ -292,22 +308,36 @@ export function addNodeActionCommands(
 
             // Remove old nodes and links
             for (const nodeToRemove of nodesToRemove) {
-                widget.xircuitsApp.getDiagramEngine().getModel().removeNode(nodeToRemove);
+                engine.getModel().removeNode(nodeToRemove);
             }
 
             for (const linkToRemove of linksToRemove) {
-                widget.xircuitsApp.getDiagramEngine().getModel().removeLink(linkToRemove);
+                engine.getModel().removeLink(linkToRemove);
             }
+
 
             // Repaint canvas
             selected_nodes.forEach(node => node.setSelected(false));
             nodesToHighlight.forEach(node => node.setSelected(true));
-            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+            
+            pruneLooseLinks(model);
+            engine.repaintCanvas();
 
         },
         label: trans.__('Reload node')
     });
 
+    function pruneLooseLinks(model: SRD.DiagramModel): void {
+ 
+        const links = model.getLinks()
+
+        // Iterate over all links and prune those that do not have either a source or a target port
+        Object.values(links).forEach(link => {
+        if (!link.getSourcePort() || !link.getTargetPort()) {
+            model.removeLink(link);
+            }
+        });
+    }
 
     //Add command to add node given position
     commands.addCommand(commandIDs.addNodeGivenPosition, {
@@ -595,8 +625,7 @@ export function addNodeActionCommands(
             modelInstance.setSelected(true);
         });
     }
-    
-    
+
     function recreateLinks(engine: SRD.DiagramEngine, model: SRD.DiagramModel, clipboardLinks, idMap, mousePosition: { x: number; y: number }, centerX: number, centerY: number): void {
         clipboardLinks.forEach(serializedLink => {
             const newSourceID = idMap[serializedLink.sourcePort];
@@ -733,41 +762,82 @@ export function addNodeActionCommands(
         }
     }
 
-    function deleteNode(): void {
+    function deleteEntity(): void {
         const widget = tracker.currentWidget?.content as XPipePanel;
-
+        
         if (widget) {
-            const node = getLastSelectedNode();
-            if (!node) {
-                // When no node selected, just return
-                return;
-            }
             const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
-            selectedEntities.forEach((node) => {
-                if (node.getOptions()["name"] !== "undefined") {
-                    let modelName = node.getOptions()["name"];
-                    const errorMsg = `${modelName} node cannot be deleted!`
-                    if (modelName !== 'Start' && modelName !== 'Finish') {
-                        if (!node.isLocked()) {
-                            node.remove()
-                        } else {
-                            showDialog({
-                                title: 'Locked Node',
-                                body: errorMsg,
-                                buttons: [Dialog.warnButton({ label: 'OK' })]
-                            });
-                        }
+            const model = widget.xircuitsApp.getDiagramEngine().getModel()
+        // Separate collections for nodes and links
+        let nodes = [];
+        let links = [];
+        let points = [];
+
+        // Separating nodes and links
+        selectedEntities.forEach((entity) => {
+            if (entity instanceof CustomNodeModel) {
+                nodes.push(entity);
+            } else if (entity instanceof LinkModel) {
+                links.push(entity);
+            } else if (entity instanceof PointModel) {
+                points.push(entity);
+            }
+        });
+
+        // Processing Links
+        links.forEach((link) => {
+            const port = link.getTargetPort();
+            if (port instanceof CustomDynaPortModel) {
+                port.shiftPorts( { shouldShiftBack: true }) // delete
+            }
+            link.remove();
+        });
+
+        // Processing Points
+        points.forEach((point) => {
+            point.remove();
+        });
+
+        // Processing Nodes
+        nodes.forEach((node) => {
+            // Before deleting the node, Check each outPort's links and their targetPorts
+            node.getOutPorts().forEach((outPort) => {
+                const outPortLinks = outPort.getLinks();
+                for (let linkId in outPortLinks) {
+                    const link = model.getLink(linkId);
+                    const targetPort = link.getTargetPort();
+                    if (targetPort instanceof CustomDynaPortModel) {
+                        targetPort.shiftPorts( { shouldShiftBack: true }) // delete
                     }
-                    else {
+                }
+            });
+
+            if (node.getOptions()["name"] !== "undefined") {
+                let modelName = node.getOptions()["name"];
+                const errorMsg = `${modelName} node cannot be deleted!`;
+
+                if (modelName !== 'Start' && modelName !== 'Finish') {
+                    if (!node.isLocked()) {
+                        node.remove();
+                    } else {
                         showDialog({
-                            title: 'Undeletable Node',
+                            title: 'Locked Node',
                             body: errorMsg,
                             buttons: [Dialog.warnButton({ label: 'OK' })]
                         });
                     }
+                } else {
+                    showDialog({
+                        title: 'Undeletable Node',
+                        body: errorMsg,
+                        buttons: [Dialog.warnButton({ label: 'OK' })]
+                    });
                 }
-            })
-            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+            }
+        });
+
+        widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+        
         }
     }
 }

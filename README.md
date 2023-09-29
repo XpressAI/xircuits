@@ -53,6 +53,9 @@ Xircuits is a Jupyterlab-based extension that enables visual, low-code, training
   
   <p align="center">Component Tooltips<br>
   <img src=https://user-images.githubusercontent.com/84708008/163518580-186d4298-3344-4280-a87a-67be90eec13f.gif width="600"></p>
+
+  <p align="center">Dynamic Ports<br>
+  <img src=https://user-images.githubusercontent.com/68586800/270856813-47c39215-6874-430c-b4c1-cad6c848818e.gif width="600"></p>
 </details>
 
 <details>

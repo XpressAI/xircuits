@@ -41,7 +41,7 @@ export async function handleLiteralInput(nodeName, nodeData, inputValue = "", ty
     if (nodeName === 'Literal True' || nodeName === 'Literal False') nodeName = 'Literal Boolean';
     
     const node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-    node.addOutPortEnhance(inputValue, 'out-0');
+    node.addOutPortEnhance({label: inputValue, name: 'out-0', dataType: nodeData.type});
     return node;
 }
 
@@ -52,7 +52,7 @@ async function handleArgumentInput(nodeData, argumentTitle) {
     const inputValue = dialogResult["value"][argumentTitle];
 
     const node = new CustomNodeModel({ name: `Argument (${nodeData.type}): ${inputValue}`, color: nodeData.color, extras: { "type": nodeData.type } });
-    node.addOutPortEnhance('▶', 'parameter-out-0');
+    node.addOutPortEnhance({label:'▶', name:'parameter-out-0', dataType: nodeData.type});
     return node;
 }
 
@@ -67,14 +67,14 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
     if (nodeData.type === 'boolean' && nodeName.startsWith("Literal")) {
         const portLabel = nodeData.task.split(' ').slice(-1)[0];
         node = new CustomNodeModel({ name: "Literal Boolean", color: nodeData.color, extras: { "type": nodeData.type } });
-        node.addOutPortEnhance(portLabel, 'out-0');
+        node.addOutPortEnhance({ label: portLabel, name: 'out-0', dataType: nodeData.type });
         return node;
     }
     
     // handler for Any
     if (variableValue) {
         const node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
-        node.addOutPortEnhance(variableValue, 'out-0');
+        node.addOutPortEnhance({ label: variableValue, name: 'out-0', dataType: nodeData.type });
         return node;
     }
 

@@ -57,6 +57,8 @@ class XircuitsFileParser:
                 p = Port(
                     name=port['name'],
                     type=link['type'],
+                    varName=port['varName'],
+                    dataType=port['dataType'],
                     target=self.traverse_node(target_node),
                     source=self.traverse_node(source_node),
                     targetLabel=targetLabel,

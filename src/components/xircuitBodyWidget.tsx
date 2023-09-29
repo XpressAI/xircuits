@@ -1,31 +1,34 @@
 import React, { FC, useState, useCallback, useEffect, useRef } from 'react';
+
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
-import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
 import { LinkModel } from '@projectstorm/react-diagrams';
 import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
+
 import { Dialog, showDialog, showErrorMessage } from '@jupyterlab/apputils';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
-import { Signal } from '@lumino/signaling';
-import {
-	DocumentRegistry
-} from '@jupyterlab/docregistry';
-import styled from '@emotion/styled';
-import { XPipePanel } from '../xircuitWidget';
-import { Log } from '../log/LogPlugin';
+import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { ServiceManager } from '@jupyterlab/services';
-import { formDialogWidget } from '../dialog/formDialogwidget';
-import { showFormDialog } from '../dialog/FormDialog';
-import { RunDialog } from '../dialog/RunDialog';
-import 'rc-dialog/assets/bootstrap.css';
-import { requestAPI } from '../server/handler';
-import { XircuitsApplication } from './XircuitsApp';
-import ComponentsPanel from '../context-menu/ComponentsPanel';
-import { cancelDialog, GeneralComponentLibrary } from '../tray_library/GeneralComponentLib';
-import { NodeActionsPanel } from '../context-menu/NodeActionsPanel';
-import { AdvancedComponentLibrary, fetchNodeByName } from '../tray_library/AdvanceComponentLib';
-import { inputDialog } from '../dialog/LiteralInputDialog';
-import { getItsLiteralType } from '../dialog/input-dialogues/VariableInput'
+import { Signal } from '@lumino/signaling';
+
+import { XPipePanel } 			from '../xircuitWidget';
+import { XircuitsApplication } 	from './XircuitsApp';
+import { DemoCanvasWidget } 	from '../helpers/DemoCanvasWidget';
+import { Log } 					from '../log/LogPlugin';
+import { formDialogWidget } 	from '../dialog/formDialogwidget';
+import { showFormDialog } 		from '../dialog/FormDialog';
+import { inputDialog } 			from '../dialog/LiteralInputDialog';
+import { getItsLiteralType } 	from '../dialog/input-dialogues/VariableInput';
+import { RunDialog } 			from '../dialog/RunDialog';
+import { requestAPI } 			from '../server/handler';
+import ComponentsPanel 			from '../context-menu/ComponentsPanel';
+import { NodeActionsPanel } 	from '../context-menu/NodeActionsPanel';
+import { cancelDialog, GeneralComponentLibrary } 		from '../tray_library/GeneralComponentLib';
+import { AdvancedComponentLibrary, fetchNodeByName } 	from '../tray_library/AdvanceComponentLib';
 import { lowPowerMode, setLowPowerMode } from './state/powerModeState';
+
+import styled from '@emotion/styled';
+import 'rc-dialog/assets/bootstrap.css';
+
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -83,7 +86,7 @@ export const commandIDs = {
 	reloadAllNodes: 'Xircuit-editor:reload-all-nodes',
 	toggleAllLinkAnimation: 'Xircuit-editor:toggle-all-link-animation',
 	editNode: 'Xircuit-editor:edit-node',
-	deleteNode: 'Xircuit-editor:delete-node',
+	deleteEntity: 'Xircuit-editor:delete-entities',
 	addNodeGivenPosition: 'Xircuit-editor:add-node', 
 	connectNodeByLink: 'Xircuit-editor:connect-node',
 	connectLinkToObviousPorts: 'Xircuit-editor:connect-obvious-link',
@@ -171,35 +174,43 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							}, 10)
 							return () => clearTimeout(timeout)
 						},
-						linksUpdated: function (event) {
-							event.link.registerListener({
-								/**
-								 * sourcePortChanged
-								 * Detect changes when link is connected
-								 */
-								sourcePortChanged: e => {
-									onChange();
-								},
-								/**
-								 * targetPortChanged
-								 * Detect changes when link is connected
-								 */
-								targetPortChanged: e => {
-									const sourceLink = e.entity as any;
-									app.commands.execute(commandIDs.connectLinkToObviousPorts, { draggedLink: sourceLink });
-									onChange();
-								},
-								/**
-								 * entityRemoved
-								 * Detect changes when new link is removed
-								 */
-								entityRemoved: e => {
-									onChange();
-								}
-							});
+						linksUpdated: (event) => {
+
+							const timeout = setTimeout(() => {
+
+								event.link.registerListener({
+									/**
+									 * sourcePortChanged
+									 * Detect changes when link is connected
+									 */
+									sourcePortChanged: e => {
+										onChange();
+									},
+									/**
+									 * targetPortChanged
+									 * Detect changes when link is connected
+									 */
+									targetPortChanged: e => {
+										const sourceLink = e.entity as any;
+										app.commands.execute(commandIDs.connectLinkToObviousPorts, { draggedLink: sourceLink });
+										onChange();
+
+									},
+									/**
+									 * entityRemoved
+									 * Detect changes when new link is removed
+									 */
+									entityRemoved: e => {
+										onChange();
+									}
+								});
+							}, 100); // You can adjust the delay as needed
+							// Don’t forget to clear the timeout when unmounting or when the component is destroyed.
+							return () => clearTimeout(timeout);
 						}
 					})
 					xircuitsApp.getDiagramEngine().setModel(deserializedModel);
+					
 					initialRender.current = false;
 				} else {
 					// Clear undo history when first time rendering

@@ -32,7 +32,7 @@ export class CustomActionEvent extends Action {
                     executeIf(ctrlKey && keyCode === 'x', commandIDs.cutNode);
                     executeIf(ctrlKey && keyCode === 'c', commandIDs.copyNode);
                     executeIf(ctrlKey && keyCode === 'v', commandIDs.pasteNode);
-                    executeIf(keyCode == 'Delete' || keyCode == 'Backspace', commandIDs.deleteNode);
+                    executeIf(keyCode == 'Delete' || keyCode == 'Backspace', commandIDs.deleteEntity);
                 }
             }
 
