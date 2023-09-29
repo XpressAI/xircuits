@@ -24,6 +24,7 @@ import { DocumentWidget } from '@jupyterlab/docregistry';
 import { runIcon, saveIcon } from '@jupyterlab/ui-components';
 import { addNodeActionCommands } from './commands/NodeActionCommands';
 import { Token } from '@lumino/coreutils';
+import { DockLayout } from '@lumino/widgets';
 import { xircuitsIcon, debuggerIcon, componentLibIcon, changeFavicon, xircuitsFaviconLink } from './ui-components/icons';
 import { startRunOutputStr } from './kernel/RunOutput';
 
@@ -231,10 +232,17 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       * @returns The panel
       */
     async function createPanel(): Promise<OutputPanel> {
+      let splitMode: DockLayout.InsertMode = 'split-bottom' as DockLayout.InsertMode; // default value
+        
+      try {
+        const data = await requestAPI<any>('config/split_mode');
+          splitMode = data.splitMode as DockLayout.InsertMode;
+      } catch (err) {
+        console.error('Error fetching split mode from server:', err);
+      }
+        
       outputPanel = new OutputPanel(app.serviceManager, rendermime, widgetFactory, translator);
-      app.shell.add(outputPanel, 'main', {
-        mode: 'split-right'
-      });
+      app.shell.add(outputPanel, 'main', { mode: splitMode });
       return outputPanel;
     }
 

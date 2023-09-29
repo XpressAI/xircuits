@@ -2,7 +2,7 @@ from jupyter_server.utils import url_path_join
 
 from .compile_xircuits import CompileXircuitsFileRouteHandler
 from .components import ComponentsRouteHandler
-from .config import RunConfigRouteHandler
+from .config import RunConfigRouteHandler, SplitModeConfigHandler
 from .debugger import DebuggerRouteHandler
 from .spark_submit import SparkSubmitRouteHandler
 
@@ -20,6 +20,10 @@ def setup_handlers(web_app, url_path):
         (
             url_path_join(base_url, url_path, "config/run"),
             RunConfigRouteHandler
+        ),
+        (
+        url_path_join(base_url, url_path, "config/split_mode"),
+        SplitModeConfigHandler
         ),
         (
             url_path_join(base_url, url_path, "components/"),
