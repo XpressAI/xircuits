@@ -37,3 +37,6 @@
 [submodule "xai_components/xai_anthropic"]
 	path = xai_components/xai_anthropic
 	url = https://github.com/XpressAI/xai-anthropic
+[submodule "xai_components/xai_hfagent"]
+	path = xai_components/xai_hfagent
+	url = https://github.com/XpressAI/xai-hfagent
