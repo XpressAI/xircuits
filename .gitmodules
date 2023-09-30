@@ -34,3 +34,6 @@
 [submodule "xai_components/xai_tests"]
 	path = xai_components/xai_tests
 	url = https://github.com/XpressAI/xai-tests
+[submodule "xai_components/xai_anthropic"]
+	path = xai_components/xai_anthropic
+	url = https://github.com/XpressAI/xai-anthropic
