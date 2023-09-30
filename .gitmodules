@@ -46,3 +46,6 @@
 [submodule "xai_components/xai_actors"]
 	path = xai_components/xai_actors
 	url = https://github.com/XpressAI/xai-actors
+[submodule "xai_components/xai_sqlite"]
+	path = xai_components/xai_sqlite
+	url = https://github.com/XpressAI/xai-sqlite
