@@ -1,36 +1,36 @@
 {
     "id": "ed72f16f-f4b7-4c67-92c2-33c0090b9c56",
-    "offsetX": -704.9272017196099,
-    "offsetY": 139.92124214150655,
-    "zoom": 97.50000000000003,
+    "offsetX": 22.120601709344882,
+    "offsetY": 162.96761784088608,
+    "zoom": 50.00000000000003,
     "gridSize": 0,
     "layers": [
         {
-            "id": "4945d612-e701-48cf-b2a0-0e53b3245c5e",
+            "id": "94ec863c-7cf2-4cfc-bee4-a36dea6f9529",
             "type": "diagram-links",
             "isSvg": true,
             "transformed": true,
             "models": {
                 "5315243a-5649-4661-b756-b60c60747c9d": {
                     "id": "5315243a-5649-4661-b756-b60c60747c9d",
-                    "type": "triangle",
+                    "type": "triangle-link",
                     "selected": false,
-                    "source": "fe69d8ed-851e-4076-b8df-cb9ad6e7e323",
-                    "sourcePort": "9e7cea0c-00e7-4a7c-83a7-d2e343a6de7d",
+                    "source": "9facb92f-4b7d-4a60-ab6e-aab3f1a006b1",
+                    "sourcePort": "379be4cc-6445-49c4-8743-7d2d02195f34",
                     "target": "51a2fbc2-fc54-483b-b614-5441bdf2737f",
                     "targetPort": "a92e8932-f808-4f23-b31d-d6c9c1224a81",
                     "points": [
                         {
                             "id": "d5144807-0960-47ae-b339-45e66e12e7d7",
                             "type": "point",
-                            "x": 1674.125,
-                            "y": 102.313
+                            "x": 1674.531,
+                            "y": 102.708
                         },
                         {
                             "id": "26c461e0-963c-4098-b59e-34bb46b7a463",
                             "type": "point",
-                            "x": 1766.025,
-                            "y": 178.45
+                            "x": 1766.427,
+                            "y": 178.844
                         }
                     ],
                     "labels": [],
@@ -41,24 +41,24 @@
                 },
                 "d82fa6f5-d6c9-4529-89f5-c6587ee63d4b": {
                     "id": "d82fa6f5-d6c9-4529-89f5-c6587ee63d4b",
-                    "type": "custom",
+                    "type": "parameter-link",
                     "selected": false,
                     "source": "6386d197-25cb-4a6f-8628-e411802a404c",
                     "sourcePort": "1394a01e-4771-45a3-9f26-4e47fc2d173d",
-                    "target": "933963e9-a821-47e0-8f38-87264c133969",
-                    "targetPort": "8aedeb47-3544-479d-9ddc-77e21262c50f",
+                    "target": "af9a4fe3-836b-4f36-a497-9712885f8f55",
+                    "targetPort": "e169631d-3ad0-48f2-943a-3dd973f5863c",
                     "points": [
                         {
                             "id": "d4dce963-b743-40b7-9cc9-7fd80d87acb5",
                             "type": "point",
-                            "x": 879.063,
-                            "y": 231.775
+                            "x": 888.156,
+                            "y": 216.521
                         },
                         {
                             "id": "c3ff2e18-7128-439f-b79f-aee320a645ce",
                             "type": "point",
-                            "x": 988.375,
-                            "y": 177.225
+                            "x": 988.771,
+                            "y": 177.625
                         }
                     ],
                     "labels": [],
@@ -69,18 +69,18 @@
                 },
                 "83752b8d-3dcc-4600-8242-b91e65e20f36": {
                     "id": "83752b8d-3dcc-4600-8242-b91e65e20f36",
-                    "type": "custom",
+                    "type": "parameter-link",
                     "selected": false,
-                    "source": "7491e49b-819a-40df-8632-734bae2f7b22",
-                    "sourcePort": "b175600c-13b2-43ea-ab62-48e2b8a4b936",
-                    "target": "933963e9-a821-47e0-8f38-87264c133969",
-                    "targetPort": "dd9d2db7-7b97-4b44-ae96-e772126fd44f",
+                    "source": "3bf526be-4976-490b-b9ce-b8a0d1a55dbc",
+                    "sourcePort": "e2627921-2c70-433c-b272-1ba6f18f9e20",
+                    "target": "af9a4fe3-836b-4f36-a497-9712885f8f55",
+                    "targetPort": "922ce494-d820-4bf1-9daf-f9484dbd0f69",
                     "points": [
                         {
                             "id": "fed368f0-cd77-4b50-80e8-c2685a8461c2",
                             "type": "point",
-                            "x": 659.1,
-                            "y": 126.675
+                            "x": 659.5,
+                            "y": 127.073
                         },
                         {
                             "id": "b21eec99-e4a5-41f2-9542-1ef2edf56793",
@@ -109,8 +109,8 @@
                         {
                             "id": "6c4e84bf-17a3-44fd-b532-1c8c7255d590",
                             "type": "point",
-                            "x": 988.375,
-                            "y": 113.225
+                            "x": 988.771,
+                            "y": 113.625
                         }
                     ],
                     "labels": [],
@@ -121,24 +121,24 @@
                 },
                 "dee0e98b-07cc-47ab-9d86-24d533e4d41c": {
                     "id": "dee0e98b-07cc-47ab-9d86-24d533e4d41c",
-                    "type": "triangle",
+                    "type": "triangle-link",
                     "selected": false,
                     "source": "8280f38d-de54-4b9e-ab0d-b38b5d06f4ea",
                     "sourcePort": "eed7eb52-3ae5-4137-9925-dbcbdef7fd0f",
-                    "target": "12b18d86-91d0-443f-a90a-8569b18720ad",
-                    "targetPort": "cb79d5d0-23a9-4202-aa24-707fd1dad353",
+                    "target": "fc0f3319-fd97-4c60-ab5d-39af0631ac3d",
+                    "targetPort": "88b2797a-70ed-40d4-a138-4de0220876b7",
                     "points": [
                         {
                             "id": "d6dda5d3-bf64-41e7-a1d7-4479c563d154",
                             "type": "point",
-                            "x": 90.913,
-                            "y": 146.675
+                            "x": 91.042,
+                            "y": 147.073
                         },
                         {
                             "id": "b1166ac4-9eb7-41bd-977f-5baf9fd86839",
                             "type": "point",
-                            "x": 172.125,
-                            "y": 80.438
+                            "x": 172.531,
+                            "y": 80.844
                         }
                     ],
                     "labels": [],
@@ -149,24 +149,24 @@
                 },
                 "87f22880-a280-48bd-b8b6-fb8c6623bc74": {
                     "id": "87f22880-a280-48bd-b8b6-fb8c6623bc74",
-                    "type": "custom",
+                    "type": "parameter-link",
                     "selected": false,
                     "source": "3ddb236a-fa4f-4343-9118-9321675f5b4d",
                     "sourcePort": "0f7fd679-27ae-44d5-8d23-043d6d036e82",
-                    "target": "12b18d86-91d0-443f-a90a-8569b18720ad",
-                    "targetPort": "ce26eb79-4799-4a70-9002-43f4ab71d845",
+                    "target": "fc0f3319-fd97-4c60-ab5d-39af0631ac3d",
+                    "targetPort": "3ac85f7c-cb0a-44db-8496-b94e4320e83c",
                     "points": [
                         {
                             "id": "02678bd4-ac16-419b-8eb2-47acbd9b1572",
                             "type": "point",
-                            "x": 81.837,
-                            "y": 219.288
+                            "x": 82.229,
+                            "y": 219.677
                         },
                         {
                             "id": "fe90fdca-d351-4c37-ac05-45ab46528edc",
                             "type": "point",
-                            "x": 172.125,
-                            "y": 96.438
+                            "x": 172.531,
+                            "y": 96.844
                         }
                     ],
                     "labels": [],
@@ -177,24 +177,24 @@
                 },
                 "3e7d385e-3c9b-4227-b5e2-c95745445221": {
                     "id": "3e7d385e-3c9b-4227-b5e2-c95745445221",
-                    "type": "triangle",
+                    "type": "triangle-link",
                     "selected": false,
-                    "source": "12b18d86-91d0-443f-a90a-8569b18720ad",
-                    "sourcePort": "d30cf92a-5faf-4273-a19b-959d467e24f5",
-                    "target": "7491e49b-819a-40df-8632-734bae2f7b22",
-                    "targetPort": "5ae61efe-5541-4689-a11b-aa210cd0f26f",
+                    "source": "fc0f3319-fd97-4c60-ab5d-39af0631ac3d",
+                    "sourcePort": "4bbcdd6f-c992-4bb1-a01a-5ad3298fd5ec",
+                    "target": "3bf526be-4976-490b-b9ce-b8a0d1a55dbc",
+                    "targetPort": "7f71ab36-4e47-4056-9f3c-d59fe9dd15c9",
                     "points": [
                         {
                             "id": "b26f2a85-7b97-4b7a-b69b-3c723df416fc",
                             "type": "point",
-                            "x": 393.625,
-                            "y": 80.438
+                            "x": 394.031,
+                            "y": 80.844
                         },
                         {
                             "id": "32c35899-2a9f-4782-9811-49bd7b5068bb",
                             "type": "point",
-                            "x": 427.813,
-                            "y": 110.675
+                            "x": 428.219,
+                            "y": 111.073
                         }
                     ],
                     "labels": [],
@@ -205,24 +205,24 @@
                 },
                 "5bfb5a89-54f9-40ec-b6d2-77959517e384": {
                     "id": "5bfb5a89-54f9-40ec-b6d2-77959517e384",
-                    "type": "custom",
+                    "type": "parameter-link",
                     "selected": false,
-                    "source": "12b18d86-91d0-443f-a90a-8569b18720ad",
-                    "sourcePort": "f9230cb3-537f-48a7-bc5e-a85849ee02c4",
-                    "target": "7491e49b-819a-40df-8632-734bae2f7b22",
-                    "targetPort": "0dc6c6c2-d268-48fb-a3f2-09e565e29eeb",
+                    "source": "fc0f3319-fd97-4c60-ab5d-39af0631ac3d",
+                    "sourcePort": "8b75b6af-4183-456a-b865-fa0d9ba58a0e",
+                    "target": "3bf526be-4976-490b-b9ce-b8a0d1a55dbc",
+                    "targetPort": "a6d4c4a8-c503-46d6-8d65-cdf9a1d00de4",
                     "points": [
                         {
                             "id": "2ec651d7-f0b2-4fd0-a452-304a9252a678",
                             "type": "point",
-                            "x": 393.625,
-                            "y": 96.438
+                            "x": 394.031,
+                            "y": 96.844
                         },
                         {
                             "id": "0605649f-fe9a-464a-8812-ca3f3a0dea7f",
                             "type": "point",
-                            "x": 427.813,
-                            "y": 126.675
+                            "x": 428.219,
+                            "y": 127.073
                         }
                     ],
                     "labels": [],
@@ -233,24 +233,24 @@
                 },
                 "94d8f427-14c6-451f-9a22-91ceb0153ed9": {
                     "id": "94d8f427-14c6-451f-9a22-91ceb0153ed9",
-                    "type": "custom",
+                    "type": "parameter-link",
                     "selected": false,
-                    "source": "12b18d86-91d0-443f-a90a-8569b18720ad",
-                    "sourcePort": "e590dfad-bdb9-41a2-8eb9-31f9541c94cd",
-                    "target": "7491e49b-819a-40df-8632-734bae2f7b22",
-                    "targetPort": "c6dfd421-ee13-42e1-90ca-6c3c077d699a",
+                    "source": "fc0f3319-fd97-4c60-ab5d-39af0631ac3d",
+                    "sourcePort": "12f61940-106c-4b52-98b6-67427bb27589",
+                    "target": "3bf526be-4976-490b-b9ce-b8a0d1a55dbc",
+                    "targetPort": "2c994c5f-8989-4729-9ad5-a25913a6c75b",
                     "points": [
                         {
                             "id": "91439964-c1e0-4f75-b5cf-7ca202da8470",
                             "type": "point",
-                            "x": 393.625,
-                            "y": 112.438
+                            "x": 394.031,
+                            "y": 112.844
                         },
                         {
                             "id": "21fa822c-e87f-4f9c-96cd-0f8d479054ad",
                             "type": "point",
-                            "x": 427.813,
-                            "y": 142.675
+                            "x": 428.219,
+                            "y": 143.073
                         }
                     ],
                     "labels": [],
@@ -261,24 +261,24 @@
                 },
                 "64534766-c617-4b15-b0fc-25ddb1411ba2": {
                     "id": "64534766-c617-4b15-b0fc-25ddb1411ba2",
-                    "type": "triangle",
+                    "type": "triangle-link",
                     "selected": false,
-                    "source": "36268f9a-ab1c-4132-a722-8b87b3204540",
-                    "sourcePort": "12385813-bc9e-40da-a355-3f7ba8e5c954",
-                    "target": "fe69d8ed-851e-4076-b8df-cb9ad6e7e323",
-                    "targetPort": "047c3493-d934-43ed-9f7f-a00b1dd3b277",
+                    "source": "ae700668-df3f-4d81-998c-52cc7ea87097",
+                    "sourcePort": "a5fb3b92-4f19-485e-9580-d675e58e1360",
+                    "target": "9facb92f-4b7d-4a60-ab6e-aab3f1a006b1",
+                    "targetPort": "ae5a8fce-5825-4fc1-9de1-2c5c6502ab8b",
                     "points": [
                         {
                             "id": "09c61688-acae-4329-a3d8-dcc5f3d121fd",
                             "type": "point",
-                            "x": 1451.75,
-                            "y": 99.65
+                            "x": 1451.875,
+                            "y": 100.042
                         },
                         {
                             "id": "49ac28cd-8a9c-414d-92e8-9ece38d1ae62",
                             "type": "point",
-                            "x": 1537.488,
-                            "y": 102.313
+                            "x": 1537.896,
+                            "y": 102.708
                         }
                     ],
                     "labels": [],
@@ -289,18 +289,18 @@
                 },
                 "66f58ee3-9376-4a02-9fa1-cedf343482cc": {
                     "id": "66f58ee3-9376-4a02-9fa1-cedf343482cc",
-                    "type": "custom",
+                    "type": "parameter-link",
                     "selected": false,
-                    "source": "7491e49b-819a-40df-8632-734bae2f7b22",
-                    "sourcePort": "01821302-a982-43a9-b579-4cd54b05a399",
-                    "target": "36268f9a-ab1c-4132-a722-8b87b3204540",
-                    "targetPort": "37d1cf3a-bab0-4b15-bc55-9eeb747b072b",
+                    "source": "3bf526be-4976-490b-b9ce-b8a0d1a55dbc",
+                    "sourcePort": "5ec2d0fa-42c8-4efb-86d9-883989e77712",
+                    "target": "ae700668-df3f-4d81-998c-52cc7ea87097",
+                    "targetPort": "fea21573-be7e-49cd-a91a-29b6c8205f10",
                     "points": [
                         {
                             "id": "e921009a-86dc-4e94-805b-54465c1eb4d7",
                             "type": "point",
-                            "x": 659.1,
-                            "y": 142.675
+                            "x": 659.5,
+                            "y": 143.073
                         },
                         {
                             "id": "3eb6af74-a079-418c-849e-2e0705db96c8",
@@ -329,8 +329,8 @@
                         {
                             "id": "64f7190d-5e6f-4875-8c73-ff8f6099192c",
                             "type": "point",
-                            "x": 1295.15,
-                            "y": 131.65
+                            "x": 1295.542,
+                            "y": 132.042
                         }
                     ],
                     "labels": [],
@@ -341,24 +341,24 @@
                 },
                 "947d042f-b3e4-4c99-907f-3f312ee8747e": {
                     "id": "947d042f-b3e4-4c99-907f-3f312ee8747e",
-                    "type": "triangle",
+                    "type": "triangle-link",
                     "selected": false,
-                    "source": "933963e9-a821-47e0-8f38-87264c133969",
-                    "sourcePort": "08200118-55d3-45f9-8371-0a2d8dd1cb4a",
-                    "target": "36268f9a-ab1c-4132-a722-8b87b3204540",
-                    "targetPort": "39835042-3b23-47d3-aa31-778dddf207f1",
+                    "source": "af9a4fe3-836b-4f36-a497-9712885f8f55",
+                    "sourcePort": "13da9968-6414-4d87-a191-9e9ec292ce3e",
+                    "target": "ae700668-df3f-4d81-998c-52cc7ea87097",
+                    "targetPort": "c65864ed-fb36-45d6-babb-391c0bd47f1a",
                     "points": [
                         {
                             "id": "11005ea9-d868-4bfc-bb25-bd0027df2d70",
                             "type": "point",
-                            "x": 1225.762,
-                            "y": 97.225
+                            "x": 1226.156,
+                            "y": 97.625
                         },
                         {
                             "id": "901f4da5-1f0b-416e-b90e-f9f6990e6be1",
                             "type": "point",
-                            "x": 1295.15,
-                            "y": 99.65
+                            "x": 1295.542,
+                            "y": 100.042
                         }
                     ],
                     "labels": [],
@@ -369,24 +369,24 @@
                 },
                 "8e0a72e0-c9ff-48ae-a50d-5ccbbba0f807": {
                     "id": "8e0a72e0-c9ff-48ae-a50d-5ccbbba0f807",
-                    "type": "custom",
+                    "type": "parameter-link",
                     "selected": false,
-                    "source": "933963e9-a821-47e0-8f38-87264c133969",
-                    "sourcePort": "6e75c0bc-cc1f-4fea-9a7d-d8fb40e7844c",
-                    "target": "36268f9a-ab1c-4132-a722-8b87b3204540",
-                    "targetPort": "8544e710-8093-4e94-ad84-a976697b7ee4",
+                    "source": "af9a4fe3-836b-4f36-a497-9712885f8f55",
+                    "sourcePort": "4769fa8a-089c-41f4-a4e7-ba9921251694",
+                    "target": "ae700668-df3f-4d81-998c-52cc7ea87097",
+                    "targetPort": "ee18f0d6-6916-4cae-babe-bf6b0ee867e4",
                     "points": [
                         {
                             "id": "4f2c1033-f109-4d65-90a1-2af96609a1c9",
                             "type": "point",
-                            "x": 1225.762,
-                            "y": 113.225
+                            "x": 1226.156,
+                            "y": 113.625
                         },
                         {
                             "id": "ad6107b4-6029-4590-9f63-95f6bc014ce4",
                             "type": "point",
-                            "x": 1295.15,
-                            "y": 115.65
+                            "x": 1295.542,
+                            "y": 116.042
                         }
                     ],
                     "labels": [],
@@ -397,18 +397,18 @@
                 },
                 "a48213bb-95a9-4c9b-8b6e-1d2697da5048": {
                     "id": "a48213bb-95a9-4c9b-8b6e-1d2697da5048",
-                    "type": "custom",
+                    "type": "parameter-link",
                     "selected": false,
-                    "source": "933963e9-a821-47e0-8f38-87264c133969",
-                    "sourcePort": "6e75c0bc-cc1f-4fea-9a7d-d8fb40e7844c",
-                    "target": "fe69d8ed-851e-4076-b8df-cb9ad6e7e323",
-                    "targetPort": "97dde49b-9f24-4c14-b652-b4904837b3e3",
+                    "source": "af9a4fe3-836b-4f36-a497-9712885f8f55",
+                    "sourcePort": "4769fa8a-089c-41f4-a4e7-ba9921251694",
+                    "target": "9facb92f-4b7d-4a60-ab6e-aab3f1a006b1",
+                    "targetPort": "445b2403-75c0-4a15-85d2-1a9918478248",
                     "points": [
                         {
                             "id": "9b5ae92c-965e-4f5c-92b0-8011b7f3169c",
                             "type": "point",
-                            "x": 1225.762,
-                            "y": 113.225
+                            "x": 1226.156,
+                            "y": 113.625
                         },
                         {
                             "id": "bb90eea1-9621-4b46-8611-cb684cadfa5b",
@@ -437,8 +437,8 @@
                         {
                             "id": "069ab611-9c5b-41c0-b632-a127d08e5f3b",
                             "type": "point",
-                            "x": 1537.488,
-                            "y": 118.313
+                            "x": 1537.896,
+                            "y": 118.708
                         }
                     ],
                     "labels": [],
@@ -449,24 +449,24 @@
                 },
                 "814dd321-d8e9-4a64-890e-a521b91bc9ed": {
                     "id": "814dd321-d8e9-4a64-890e-a521b91bc9ed",
-                    "type": "triangle",
+                    "type": "triangle-link",
                     "selected": false,
-                    "source": "fc56be2b-7a01-4d83-80c8-352fccc75d3e",
-                    "sourcePort": "1af44c80-cddb-41d7-95d7-94917aeca8fe",
-                    "target": "933963e9-a821-47e0-8f38-87264c133969",
-                    "targetPort": "1f9f290d-f0ce-4a23-b7a4-9b2ef3d0b66c",
+                    "source": "ba2df422-5de1-4f5c-b9bb-c607a801ab66",
+                    "sourcePort": "2abe004e-d985-4511-a888-a8515781aa41",
+                    "target": "af9a4fe3-836b-4f36-a497-9712885f8f55",
+                    "targetPort": "bd1bce46-6087-4f85-b906-0acb776ebd30",
                     "points": [
                         {
                             "id": "c4871e0f-0f48-4e4a-a4c8-dd74fa525bb5",
                             "type": "point",
-                            "x": 887.475,
-                            "y": -50.5
+                            "x": 887.875,
+                            "y": -50.104
                         },
                         {
                             "id": "4889bd35-51ea-496d-9f43-921588d56558",
                             "type": "point",
-                            "x": 988.375,
-                            "y": 97.225
+                            "x": 988.771,
+                            "y": 97.625
                         }
                     ],
                     "labels": [],
@@ -477,24 +477,24 @@
                 },
                 "f212f466-2924-41d4-8296-9de1a21d5e90": {
                     "id": "f212f466-2924-41d4-8296-9de1a21d5e90",
-                    "type": "custom",
+                    "type": "parameter-link",
                     "selected": false,
-                    "source": "fc56be2b-7a01-4d83-80c8-352fccc75d3e",
-                    "sourcePort": "ee4bd872-59f1-428b-a163-800cdabcef0e",
-                    "target": "933963e9-a821-47e0-8f38-87264c133969",
-                    "targetPort": "2ebb3d8e-6b2f-4d3e-9a75-5dcd451a6418",
+                    "source": "ba2df422-5de1-4f5c-b9bb-c607a801ab66",
+                    "sourcePort": "d92aeb95-039d-4739-81b6-663edcdf1479",
+                    "target": "af9a4fe3-836b-4f36-a497-9712885f8f55",
+                    "targetPort": "d13851c6-0a32-4208-b7d8-4a39871de5cf",
                     "points": [
                         {
                             "id": "89c473f0-463a-44e9-bfd9-e31acb425049",
                             "type": "point",
-                            "x": 887.475,
-                            "y": -34.5
+                            "x": 887.875,
+                            "y": -34.104
                         },
                         {
                             "id": "ec0219b0-ad68-412a-9280-2dae6c35bc56",
                             "type": "point",
-                            "x": 988.375,
-                            "y": 129.225
+                            "x": 988.771,
+                            "y": 129.625
                         }
                     ],
                     "labels": [],
@@ -505,24 +505,24 @@
                 },
                 "9a7c4dca-f94f-46df-9251-c035bfd9d8cc": {
                     "id": "9a7c4dca-f94f-46df-9251-c035bfd9d8cc",
-                    "type": "custom",
+                    "type": "parameter-link",
                     "selected": false,
-                    "source": "fc56be2b-7a01-4d83-80c8-352fccc75d3e",
-                    "sourcePort": "955966cd-c5df-406f-8e31-adfcf52f22d8",
-                    "target": "933963e9-a821-47e0-8f38-87264c133969",
-                    "targetPort": "c62782fb-c01f-4ab4-a03f-b3bab8a7fd25",
+                    "source": "ba2df422-5de1-4f5c-b9bb-c607a801ab66",
+                    "sourcePort": "21639b60-8784-4d1a-89bd-20b387d15b17",
+                    "target": "af9a4fe3-836b-4f36-a497-9712885f8f55",
+                    "targetPort": "734186be-9505-49e0-aebd-5a85947974b7",
                     "points": [
                         {
                             "id": "52680bf4-ed24-4f2e-9b75-e8893e814d7b",
                             "type": "point",
-                            "x": 887.475,
-                            "y": -18.5
+                            "x": 887.875,
+                            "y": -18.104
                         },
                         {
                             "id": "7165094e-ff6b-4711-aa5b-92802f809db9",
                             "type": "point",
-                            "x": 988.375,
-                            "y": 145.225
+                            "x": 988.771,
+                            "y": 145.625
                         }
                     ],
                     "labels": [],
@@ -533,24 +533,24 @@
                 },
                 "83920a2c-21b2-418c-a89f-55fcd24728bb": {
                     "id": "83920a2c-21b2-418c-a89f-55fcd24728bb",
-                    "type": "custom",
+                    "type": "parameter-link",
                     "selected": false,
-                    "source": "fc56be2b-7a01-4d83-80c8-352fccc75d3e",
-                    "sourcePort": "f7b4a5d7-e34d-40b9-ac64-b42b0cb29fec",
-                    "target": "933963e9-a821-47e0-8f38-87264c133969",
-                    "targetPort": "ae0e6c48-c78a-4a2a-b41f-a948c1d3998b",
+                    "source": "ba2df422-5de1-4f5c-b9bb-c607a801ab66",
+                    "sourcePort": "8770f02b-4589-4eb8-88d2-ac7da2f04282",
+                    "target": "af9a4fe3-836b-4f36-a497-9712885f8f55",
+                    "targetPort": "1c3b5aed-17d6-4e9f-99b0-1815228c4a39",
                     "points": [
                         {
                             "id": "bff36103-ed8f-4f90-8359-b5b520bbf9b5",
                             "type": "point",
-                            "x": 887.475,
-                            "y": -2.5
+                            "x": 887.875,
+                            "y": -2.104
                         },
                         {
                             "id": "8b724053-c7b1-40bc-a9fb-8d285bff26a9",
                             "type": "point",
-                            "x": 988.375,
-                            "y": 161.225
+                            "x": 988.771,
+                            "y": 161.625
                         }
                     ],
                     "labels": [],
@@ -561,24 +561,24 @@
                 },
                 "355249aa-187c-4597-a9bb-9d4b95698167": {
                     "id": "355249aa-187c-4597-a9bb-9d4b95698167",
-                    "type": "triangle",
+                    "type": "triangle-link",
                     "selected": false,
-                    "source": "7491e49b-819a-40df-8632-734bae2f7b22",
-                    "sourcePort": "d73c292e-b0f7-483b-8b7f-49ead723da1f",
-                    "target": "fc56be2b-7a01-4d83-80c8-352fccc75d3e",
-                    "targetPort": "2cca3302-85c0-4d32-b92f-617dbafa3f22",
+                    "source": "3bf526be-4976-490b-b9ce-b8a0d1a55dbc",
+                    "sourcePort": "d10addb8-f513-4866-af60-f2649b4e2c04",
+                    "target": "ba2df422-5de1-4f5c-b9bb-c607a801ab66",
+                    "targetPort": "43aacb1b-eaa8-406e-b945-60017da3533c",
                     "points": [
                         {
                             "id": "14c1dca1-95ae-4950-96a6-e2ba7096ef9d",
                             "type": "point",
-                            "x": 659.1,
-                            "y": 110.675
+                            "x": 659.5,
+                            "y": 111.073
                         },
                         {
                             "id": "551151bc-816e-4ce1-aca8-15f4b6da1e75",
                             "type": "point",
-                            "x": 727.013,
-                            "y": -50.5
+                            "x": 727.417,
+                            "y": -50.104
                         }
                     ],
                     "labels": [],
@@ -589,24 +589,24 @@
                 },
                 "467a6a18-f82b-4e0f-a853-e688e4fa9efc": {
                     "id": "467a6a18-f82b-4e0f-a853-e688e4fa9efc",
-                    "type": "custom",
+                    "type": "parameter-link",
                     "selected": false,
-                    "source": "fc56be2b-7a01-4d83-80c8-352fccc75d3e",
-                    "sourcePort": "955966cd-c5df-406f-8e31-adfcf52f22d8",
-                    "target": "36268f9a-ab1c-4132-a722-8b87b3204540",
-                    "targetPort": "5548ef49-fb63-4ecc-a878-fc936c7050e7",
+                    "source": "ba2df422-5de1-4f5c-b9bb-c607a801ab66",
+                    "sourcePort": "21639b60-8784-4d1a-89bd-20b387d15b17",
+                    "target": "ae700668-df3f-4d81-998c-52cc7ea87097",
+                    "targetPort": "6bd04165-fc53-4803-bca5-e582563e6e10",
                     "points": [
                         {
                             "id": "eeee9f60-c47a-4d61-a124-a3be44480103",
                             "type": "point",
-                            "x": 887.475,
-                            "y": -18.5
+                            "x": 887.875,
+                            "y": -18.104
                         },
                         {
                             "id": "92e19bc1-1e5c-4f2a-afe6-1d2d8f962168",
                             "type": "point",
-                            "x": 1295.15,
-                            "y": 147.65
+                            "x": 1295.542,
+                            "y": 148.042
                         }
                     ],
                     "labels": [],
@@ -618,7 +618,7 @@
             }
         },
         {
-            "id": "4224f0d4-2610-435a-a444-09efdc9df00c",
+            "id": "abd1e4c4-bfc9-4bd5-ac93-5c1164b1eb0a",
             "type": "diagram-nodes",
             "isSvg": false,
             "transformed": true,
@@ -626,7 +626,7 @@
                 "8280f38d-de54-4b9e-ab0d-b38b5d06f4ea": {
                     "id": "8280f38d-de54-4b9e-ab0d-b38b5d06f4ea",
                     "type": "custom-node",
-                    "selected": false,
+                    "selected": true,
                     "extras": {
                         "type": "Start",
                         "borderColor": "rgb(0,192,255)"
@@ -637,8 +637,9 @@
                         {
                             "id": "eed7eb52-3ae5-4137-9925-dbcbdef7fd0f",
                             "type": "default",
-                            "x": 83.413,
-                            "y": 139.175,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "8280f38d-de54-4b9e-ab0d-b38b5d06f4ea",
@@ -646,7 +647,10 @@
                                 "dee0e98b-07cc-47ab-9d86-24d533e4d41c"
                             ],
                             "in": false,
-                            "label": "▶"
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
                         }
                     ],
                     "name": "Start",
@@ -659,7 +663,7 @@
                 "51a2fbc2-fc54-483b-b614-5441bdf2737f": {
                     "id": "51a2fbc2-fc54-483b-b614-5441bdf2737f",
                     "type": "custom-node",
-                    "selected": false,
+                    "selected": true,
                     "extras": {
                         "type": "Finish",
                         "borderColor": "rgb(0,192,255)"
@@ -670,8 +674,9 @@
                         {
                             "id": "a92e8932-f808-4f23-b31d-d6c9c1224a81",
                             "type": "default",
-                            "x": 1758.525,
-                            "y": 170.95,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "in-0",
                             "alignment": "left",
                             "parentNode": "51a2fbc2-fc54-483b-b614-5441bdf2737f",
@@ -679,7 +684,10 @@
                                 "5315243a-5649-4661-b756-b60c60747c9d"
                             ],
                             "in": true,
-                            "label": "▶"
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
                         }
                     ],
                     "name": "Finish",
@@ -692,7 +700,7 @@
                 "3ddb236a-fa4f-4343-9118-9321675f5b4d": {
                     "id": "3ddb236a-fa4f-4343-9118-9321675f5b4d",
                     "type": "custom-node",
-                    "selected": false,
+                    "selected": true,
                     "extras": {
                         "type": "string",
                         "borderColor": "rgb(0,192,255)"
@@ -703,8 +711,9 @@
                         {
                             "id": "0f7fd679-27ae-44d5-8d23-043d6d036e82",
                             "type": "default",
-                            "x": 74.337,
-                            "y": 211.788,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "3ddb236a-fa4f-4343-9118-9321675f5b4d",
@@ -712,7 +721,10 @@
                                 "87f22880-a280-48bd-b8b6-fb8c6623bc74"
                             ],
                             "in": false,
-                            "label": "FashionMNIST"
+                            "label": "FashionMNIST",
+                            "varName": "FashionMNIST",
+                            "portType": "",
+                            "dataType": ""
                         }
                     ],
                     "name": "Literal String",
@@ -722,106 +734,22 @@
                         "0f7fd679-27ae-44d5-8d23-043d6d036e82"
                     ]
                 },
-                "fe69d8ed-851e-4076-b8df-cb9ad6e7e323": {
-                    "id": "fe69d8ed-851e-4076-b8df-cb9ad6e7e323",
-                    "type": "custom-node",
-                    "selected": false,
-                    "extras": {
-                        "type": "debug",
-                        "path": "xai_components/xai_pytorch/quickstart.py",
-                        "description": null,
-                        "lineNo": [
-                            {
-                                "lineno": 243,
-                                "end_lineno": 259
-                            }
-                        ],
-                        "borderColor": "rgb(0,192,255)"
-                    },
-                    "x": 1528.398,
-                    "y": 68.083,
-                    "ports": [
-                        {
-                            "id": "047c3493-d934-43ed-9f7f-a00b1dd3b277",
-                            "type": "default",
-                            "x": 1529.988,
-                            "y": 94.813,
-                            "name": "in-0",
-                            "alignment": "left",
-                            "parentNode": "fe69d8ed-851e-4076-b8df-cb9ad6e7e323",
-                            "links": [
-                                "64534766-c617-4b15-b0fc-25ddb1411ba2"
-                            ],
-                            "in": true,
-                            "label": "▶"
-                        },
-                        {
-                            "id": "9e7cea0c-00e7-4a7c-83a7-d2e343a6de7d",
-                            "type": "default",
-                            "x": 1666.625,
-                            "y": 94.813,
-                            "name": "out-0",
-                            "alignment": "right",
-                            "parentNode": "fe69d8ed-851e-4076-b8df-cb9ad6e7e323",
-                            "links": [
-                                "5315243a-5649-4661-b756-b60c60747c9d"
-                            ],
-                            "in": false,
-                            "label": "▶"
-                        },
-                        {
-                            "id": "97dde49b-9f24-4c14-b652-b4904837b3e3",
-                            "type": "default",
-                            "x": 1529.988,
-                            "y": 110.813,
-                            "name": "parameter-nn.Module-model",
-                            "alignment": "left",
-                            "parentNode": "fe69d8ed-851e-4076-b8df-cb9ad6e7e323",
-                            "links": [
-                                "a48213bb-95a9-4c9b-8b6e-1d2697da5048"
-                            ],
-                            "in": true,
-                            "label": "★model"
-                        },
-                        {
-                            "id": "45af14ae-9386-4388-b5a4-3d14f1a85c58",
-                            "type": "default",
-                            "x": 1529.988,
-                            "y": 126.813,
-                            "name": "parameter-string-model_path",
-                            "alignment": "left",
-                            "parentNode": "fe69d8ed-851e-4076-b8df-cb9ad6e7e323",
-                            "links": [],
-                            "in": true,
-                            "label": "model_path"
-                        }
-                    ],
-                    "name": "SaveTorchModelState",
-                    "color": "rgb(192,255,0)",
-                    "portsInOrder": [
-                        "047c3493-d934-43ed-9f7f-a00b1dd3b277",
-                        "97dde49b-9f24-4c14-b652-b4904837b3e3",
-                        "45af14ae-9386-4388-b5a4-3d14f1a85c58"
-                    ],
-                    "portsOutOrder": [
-                        "9e7cea0c-00e7-4a7c-83a7-d2e343a6de7d"
-                    ]
-                },
                 "6386d197-25cb-4a6f-8628-e411802a404c": {
                     "id": "6386d197-25cb-4a6f-8628-e411802a404c",
                     "type": "custom-node",
-                    "selected": false,
+                    "selected": true,
                     "extras": {
                         "type": "int"
                     },
-                    "x": 807.692,
-                    "y": 197.544,
+                    "x": 816.388,
+                    "y": 181.892,
                     "ports": [
                         {
                             "id": "1394a01e-4771-45a3-9f26-4e47fc2d173d",
                             "type": "default",
-                            "x": 871.563,
-                            "y": 224.275,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "6386d197-25cb-4a6f-8628-e411802a404c",
@@ -829,7 +757,10 @@
                                 "d82fa6f5-d6c9-4529-89f5-c6587ee63d4b"
                             ],
                             "in": false,
-                            "label": "3"
+                            "label": "3",
+                            "varName": "3",
+                            "portType": "",
+                            "dataType": ""
                         }
                     ],
                     "name": "Literal Integer",
@@ -839,288 +770,446 @@
                         "1394a01e-4771-45a3-9f26-4e47fc2d173d"
                     ]
                 },
-                "7491e49b-819a-40df-8632-734bae2f7b22": {
-                    "id": "7491e49b-819a-40df-8632-734bae2f7b22",
+                "9facb92f-4b7d-4a60-ab6e-aab3f1a006b1": {
+                    "id": "9facb92f-4b7d-4a60-ab6e-aab3f1a006b1",
                     "type": "custom-node",
-                    "selected": false,
+                    "selected": true,
+                    "extras": {
+                        "type": "debug",
+                        "path": "xai_components/xai_pytorch/quickstart.py",
+                        "description": "Saves a Torch model's trained state.\n\n##### inPorts:\n- model: trained torch.nn instance. \n- model_path: the path/filename to be saved as. `.pth` will be appended.\n    Default: .xircuits filename + .pth.",
+                        "lineNo": [
+                            {
+                                "lineno": 246,
+                                "end_lineno": 262
+                            }
+                        ]
+                    },
+                    "x": 1528.398,
+                    "y": 68.083,
+                    "ports": [
+                        {
+                            "id": "ae5a8fce-5825-4fc1-9de1-2c5c6502ab8b",
+                            "type": "default",
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
+                            "name": "in-0",
+                            "alignment": "left",
+                            "parentNode": "9facb92f-4b7d-4a60-ab6e-aab3f1a006b1",
+                            "links": [
+                                "64534766-c617-4b15-b0fc-25ddb1411ba2"
+                            ],
+                            "in": true,
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
+                        },
+                        {
+                            "id": "445b2403-75c0-4a15-85d2-1a9918478248",
+                            "type": "default",
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
+                            "name": "parameter-nn.Module-model",
+                            "alignment": "left",
+                            "parentNode": "9facb92f-4b7d-4a60-ab6e-aab3f1a006b1",
+                            "links": [
+                                "a48213bb-95a9-4c9b-8b6e-1d2697da5048"
+                            ],
+                            "in": true,
+                            "label": "★model",
+                            "varName": "★model",
+                            "portType": "",
+                            "dataType": "nn.Module"
+                        },
+                        {
+                            "id": "cb85a230-e216-4fae-97ba-709e78de61b2",
+                            "type": "default",
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
+                            "name": "parameter-string-model_path",
+                            "alignment": "left",
+                            "parentNode": "9facb92f-4b7d-4a60-ab6e-aab3f1a006b1",
+                            "links": [],
+                            "in": true,
+                            "label": "model_path",
+                            "varName": "model_path",
+                            "portType": "",
+                            "dataType": "string"
+                        },
+                        {
+                            "id": "379be4cc-6445-49c4-8743-7d2d02195f34",
+                            "type": "default",
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
+                            "name": "out-0",
+                            "alignment": "right",
+                            "parentNode": "9facb92f-4b7d-4a60-ab6e-aab3f1a006b1",
+                            "links": [
+                                "5315243a-5649-4661-b756-b60c60747c9d"
+                            ],
+                            "in": false,
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
+                        }
+                    ],
+                    "name": "SaveTorchModelState",
+                    "color": "rgb(204,204,204)",
+                    "portsInOrder": [
+                        "ae5a8fce-5825-4fc1-9de1-2c5c6502ab8b",
+                        "445b2403-75c0-4a15-85d2-1a9918478248",
+                        "cb85a230-e216-4fae-97ba-709e78de61b2"
+                    ],
+                    "portsOutOrder": [
+                        "379be4cc-6445-49c4-8743-7d2d02195f34"
+                    ]
+                },
+                "3bf526be-4976-490b-b9ce-b8a0d1a55dbc": {
+                    "id": "3bf526be-4976-490b-b9ce-b8a0d1a55dbc",
+                    "type": "custom-node",
+                    "selected": true,
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pytorch/quickstart.py",
                         "description": "Creates data iterators from torch datasets. \nTo be used with `LoadTorchVisionDataset` component.\n\n##### inPorts:\n- training_data: Torch Dataset of training data.\n- test_data: Torch Dataset of test data.\n- batch_size: batch size to iterate though.\n    Default: 64\n\n##### outPorts:\n- train_dataloader: Dataloader instance for training data.\n- test_dataloader: Dataloader instance for test data.",
                         "lineNo": [
                             {
-                                "lineno": 71,
-                                "end_lineno": 119
+                                "lineno": 62,
+                                "end_lineno": 100
                             }
-                        ],
-                        "borderColor": "rgb(0,192,255)"
+                        ]
                     },
                     "x": 418.723,
                     "y": 76.441,
                     "ports": [
                         {
-                            "id": "5ae61efe-5541-4689-a11b-aa210cd0f26f",
+                            "id": "7f71ab36-4e47-4056-9f3c-d59fe9dd15c9",
                             "type": "default",
-                            "x": 420.313,
-                            "y": 103.175,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "in-0",
                             "alignment": "left",
-                            "parentNode": "7491e49b-819a-40df-8632-734bae2f7b22",
+                            "parentNode": "3bf526be-4976-490b-b9ce-b8a0d1a55dbc",
                             "links": [
                                 "3e7d385e-3c9b-4227-b5e2-c95745445221"
                             ],
                             "in": true,
-                            "label": "▶"
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
                         },
                         {
-                            "id": "d73c292e-b0f7-483b-8b7f-49ead723da1f",
+                            "id": "a6d4c4a8-c503-46d6-8d65-cdf9a1d00de4",
                             "type": "default",
-                            "x": 651.6,
-                            "y": 103.175,
-                            "name": "out-0",
-                            "alignment": "right",
-                            "parentNode": "7491e49b-819a-40df-8632-734bae2f7b22",
-                            "links": [
-                                "355249aa-187c-4597-a9bb-9d4b95698167"
-                            ],
-                            "in": false,
-                            "label": "▶"
-                        },
-                        {
-                            "id": "0dc6c6c2-d268-48fb-a3f2-09e565e29eeb",
-                            "type": "default",
-                            "x": 420.313,
-                            "y": 119.175,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-torch.utils.data.Dataset-training_data",
                             "alignment": "left",
-                            "parentNode": "7491e49b-819a-40df-8632-734bae2f7b22",
+                            "parentNode": "3bf526be-4976-490b-b9ce-b8a0d1a55dbc",
                             "links": [
                                 "5bfb5a89-54f9-40ec-b6d2-77959517e384"
                             ],
                             "in": true,
-                            "label": "★training_data"
+                            "label": "★training_data",
+                            "varName": "★training_data",
+                            "portType": "",
+                            "dataType": "torch.utils.data.Dataset"
                         },
                         {
-                            "id": "c6dfd421-ee13-42e1-90ca-6c3c077d699a",
+                            "id": "2c994c5f-8989-4729-9ad5-a25913a6c75b",
                             "type": "default",
-                            "x": 420.313,
-                            "y": 135.175,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-torch.utils.data.Dataset-test_data",
                             "alignment": "left",
-                            "parentNode": "7491e49b-819a-40df-8632-734bae2f7b22",
+                            "parentNode": "3bf526be-4976-490b-b9ce-b8a0d1a55dbc",
                             "links": [
                                 "94d8f427-14c6-451f-9a22-91ceb0153ed9"
                             ],
                             "in": true,
-                            "label": "★test_data"
+                            "label": "★test_data",
+                            "varName": "★test_data",
+                            "portType": "",
+                            "dataType": "torch.utils.data.Dataset"
                         },
                         {
-                            "id": "d0b8e54c-f8af-424f-88d8-65ee521d668a",
+                            "id": "d1060e38-f056-42a1-ae2d-94e23b83fa5e",
                             "type": "default",
-                            "x": 420.313,
-                            "y": 151.175,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-int-batch_size",
                             "alignment": "left",
-                            "parentNode": "7491e49b-819a-40df-8632-734bae2f7b22",
+                            "parentNode": "3bf526be-4976-490b-b9ce-b8a0d1a55dbc",
                             "links": [],
                             "in": true,
-                            "label": "batch_size"
+                            "label": "batch_size",
+                            "varName": "batch_size",
+                            "portType": "",
+                            "dataType": "int"
                         },
                         {
-                            "id": "b175600c-13b2-43ea-ab62-48e2b8a4b936",
+                            "id": "d10addb8-f513-4866-af60-f2649b4e2c04",
                             "type": "default",
-                            "x": 651.6,
-                            "y": 119.175,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
+                            "name": "out-0",
+                            "alignment": "right",
+                            "parentNode": "3bf526be-4976-490b-b9ce-b8a0d1a55dbc",
+                            "links": [
+                                "355249aa-187c-4597-a9bb-9d4b95698167"
+                            ],
+                            "in": false,
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
+                        },
+                        {
+                            "id": "e2627921-2c70-433c-b272-1ba6f18f9e20",
+                            "type": "default",
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-out-torch.utils.data.DataLoader-train_dataloader",
                             "alignment": "right",
-                            "parentNode": "7491e49b-819a-40df-8632-734bae2f7b22",
+                            "parentNode": "3bf526be-4976-490b-b9ce-b8a0d1a55dbc",
                             "links": [
                                 "83752b8d-3dcc-4600-8242-b91e65e20f36"
                             ],
                             "in": false,
-                            "label": "train_dataloader"
+                            "label": "train_dataloader",
+                            "varName": "train_dataloader",
+                            "portType": "",
+                            "dataType": ""
                         },
                         {
-                            "id": "01821302-a982-43a9-b579-4cd54b05a399",
+                            "id": "5ec2d0fa-42c8-4efb-86d9-883989e77712",
                             "type": "default",
-                            "x": 651.6,
-                            "y": 135.175,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-out-torch.utils.data.DataLoader-test_dataloader",
                             "alignment": "right",
-                            "parentNode": "7491e49b-819a-40df-8632-734bae2f7b22",
+                            "parentNode": "3bf526be-4976-490b-b9ce-b8a0d1a55dbc",
                             "links": [
                                 "66f58ee3-9376-4a02-9fa1-cedf343482cc"
                             ],
                             "in": false,
-                            "label": "test_dataloader"
+                            "label": "test_dataloader",
+                            "varName": "test_dataloader",
+                            "portType": "",
+                            "dataType": ""
                         }
                     ],
                     "name": "TorchDataLoader",
-                    "color": "rgb(153,51,204)",
+                    "color": "rgb(255,204,204)",
                     "portsInOrder": [
-                        "5ae61efe-5541-4689-a11b-aa210cd0f26f",
-                        "0dc6c6c2-d268-48fb-a3f2-09e565e29eeb",
-                        "c6dfd421-ee13-42e1-90ca-6c3c077d699a",
-                        "d0b8e54c-f8af-424f-88d8-65ee521d668a"
+                        "7f71ab36-4e47-4056-9f3c-d59fe9dd15c9",
+                        "a6d4c4a8-c503-46d6-8d65-cdf9a1d00de4",
+                        "2c994c5f-8989-4729-9ad5-a25913a6c75b",
+                        "d1060e38-f056-42a1-ae2d-94e23b83fa5e"
                     ],
                     "portsOutOrder": [
-                        "d73c292e-b0f7-483b-8b7f-49ead723da1f",
-                        "b175600c-13b2-43ea-ab62-48e2b8a4b936",
-                        "01821302-a982-43a9-b579-4cd54b05a399"
+                        "d10addb8-f513-4866-af60-f2649b4e2c04",
+                        "e2627921-2c70-433c-b272-1ba6f18f9e20",
+                        "5ec2d0fa-42c8-4efb-86d9-883989e77712"
                     ]
                 },
-                "933963e9-a821-47e0-8f38-87264c133969": {
-                    "id": "933963e9-a821-47e0-8f38-87264c133969",
+                "af9a4fe3-836b-4f36-a497-9712885f8f55": {
+                    "id": "af9a4fe3-836b-4f36-a497-9712885f8f55",
                     "type": "custom-node",
-                    "selected": false,
+                    "selected": true,
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pytorch/quickstart.py",
-                        "description": "Trains a Torch model instance from a dataloader. \n\n##### inPorts:\n- train_dataloader: torch dataloader util instance. Ideally from `TorchDataLoader`.\n- model: torch nn instance.\n- loss_fn: torch nn loss function.\n- optimizer: torch model optimizer.\n- epochs: training epochs. \n    Default: `5`.\n\n##### outPorts:\n- trained_model: trained torch nn instance. ",
+                        "description": "Trains a Torch model instance from a dataloader. \n\n##### inPorts:\n- train_dataloader: torch dataloader util instance. Ideally from `TorchDataLoader`.\n- model: torch.nn instance.\n- loss_fn: torch.nn loss function.\n- optimizer: torch model optimizer.\n- epochs: training epochs. \n    Default: `5`.\n\n##### outPorts:\n- trained_model: trained torch.nn instance. ",
                         "lineNo": [
                             {
-                                "lineno": 178,
-                                "end_lineno": 243
+                                "lineno": 151,
+                                "end_lineno": 205
                             }
-                        ],
-                        "borderColor": "rgb(0,192,255)"
+                        ]
                     },
                     "x": 979.279,
                     "y": 62.992,
                     "ports": [
                         {
-                            "id": "1f9f290d-f0ce-4a23-b7a4-9b2ef3d0b66c",
+                            "id": "bd1bce46-6087-4f85-b906-0acb776ebd30",
                             "type": "default",
-                            "x": 980.875,
-                            "y": 89.725,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "in-0",
                             "alignment": "left",
-                            "parentNode": "933963e9-a821-47e0-8f38-87264c133969",
+                            "parentNode": "af9a4fe3-836b-4f36-a497-9712885f8f55",
                             "links": [
                                 "814dd321-d8e9-4a64-890e-a521b91bc9ed"
                             ],
                             "in": true,
-                            "label": "▶"
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
                         },
                         {
-                            "id": "08200118-55d3-45f9-8371-0a2d8dd1cb4a",
+                            "id": "922ce494-d820-4bf1-9daf-f9484dbd0f69",
                             "type": "default",
-                            "x": 1218.262,
-                            "y": 89.725,
-                            "name": "out-0",
-                            "alignment": "right",
-                            "parentNode": "933963e9-a821-47e0-8f38-87264c133969",
-                            "links": [
-                                "947d042f-b3e4-4c99-907f-3f312ee8747e"
-                            ],
-                            "in": false,
-                            "label": "▶"
-                        },
-                        {
-                            "id": "dd9d2db7-7b97-4b44-ae96-e772126fd44f",
-                            "type": "default",
-                            "x": 980.875,
-                            "y": 105.725,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-torch.utils.data.DataLoader-train_dataloader",
                             "alignment": "left",
-                            "parentNode": "933963e9-a821-47e0-8f38-87264c133969",
+                            "parentNode": "af9a4fe3-836b-4f36-a497-9712885f8f55",
                             "links": [
                                 "83752b8d-3dcc-4600-8242-b91e65e20f36"
                             ],
                             "in": true,
-                            "label": "★train_dataloader"
+                            "label": "★train_dataloader",
+                            "varName": "★train_dataloader",
+                            "portType": "",
+                            "dataType": "torch.utils.data.DataLoader"
                         },
                         {
-                            "id": "2ebb3d8e-6b2f-4d3e-9a75-5dcd451a6418",
+                            "id": "d13851c6-0a32-4208-b7d8-4a39871de5cf",
                             "type": "default",
-                            "x": 980.875,
-                            "y": 121.725,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-nn.Module-model_config",
                             "alignment": "left",
-                            "parentNode": "933963e9-a821-47e0-8f38-87264c133969",
+                            "parentNode": "af9a4fe3-836b-4f36-a497-9712885f8f55",
                             "links": [
                                 "f212f466-2924-41d4-8296-9de1a21d5e90"
                             ],
                             "in": true,
-                            "label": "★model_config"
+                            "label": "★model_config",
+                            "varName": "★model_config",
+                            "portType": "",
+                            "dataType": "nn.Module"
                         },
                         {
-                            "id": "c62782fb-c01f-4ab4-a03f-b3bab8a7fd25",
+                            "id": "734186be-9505-49e0-aebd-5a85947974b7",
                             "type": "default",
-                            "x": 980.875,
-                            "y": 137.725,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-any-loss_fn",
                             "alignment": "left",
-                            "parentNode": "933963e9-a821-47e0-8f38-87264c133969",
+                            "parentNode": "af9a4fe3-836b-4f36-a497-9712885f8f55",
                             "links": [
                                 "9a7c4dca-f94f-46df-9251-c035bfd9d8cc"
                             ],
                             "in": true,
-                            "label": "★loss_fn"
+                            "label": "★loss_fn",
+                            "varName": "★loss_fn",
+                            "portType": "",
+                            "dataType": "any"
                         },
                         {
-                            "id": "ae0e6c48-c78a-4a2a-b41f-a948c1d3998b",
+                            "id": "1c3b5aed-17d6-4e9f-99b0-1815228c4a39",
                             "type": "default",
-                            "x": 980.875,
-                            "y": 153.725,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-any-optimizer",
                             "alignment": "left",
-                            "parentNode": "933963e9-a821-47e0-8f38-87264c133969",
+                            "parentNode": "af9a4fe3-836b-4f36-a497-9712885f8f55",
                             "links": [
                                 "83920a2c-21b2-418c-a89f-55fcd24728bb"
                             ],
                             "in": true,
-                            "label": "★optimizer"
+                            "label": "★optimizer",
+                            "varName": "★optimizer",
+                            "portType": "",
+                            "dataType": "any"
                         },
                         {
-                            "id": "8aedeb47-3544-479d-9ddc-77e21262c50f",
+                            "id": "e169631d-3ad0-48f2-943a-3dd973f5863c",
                             "type": "default",
-                            "x": 980.875,
-                            "y": 169.725,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-int-epochs",
                             "alignment": "left",
-                            "parentNode": "933963e9-a821-47e0-8f38-87264c133969",
+                            "parentNode": "af9a4fe3-836b-4f36-a497-9712885f8f55",
                             "links": [
                                 "d82fa6f5-d6c9-4529-89f5-c6587ee63d4b"
                             ],
                             "in": true,
-                            "label": "epochs"
+                            "label": "epochs",
+                            "varName": "epochs",
+                            "portType": "",
+                            "dataType": "int"
                         },
                         {
-                            "id": "6e75c0bc-cc1f-4fea-9a7d-d8fb40e7844c",
+                            "id": "13da9968-6414-4d87-a191-9e9ec292ce3e",
                             "type": "default",
-                            "x": 1218.262,
-                            "y": 105.725,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
+                            "name": "out-0",
+                            "alignment": "right",
+                            "parentNode": "af9a4fe3-836b-4f36-a497-9712885f8f55",
+                            "links": [
+                                "947d042f-b3e4-4c99-907f-3f312ee8747e"
+                            ],
+                            "in": false,
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
+                        },
+                        {
+                            "id": "4769fa8a-089c-41f4-a4e7-ba9921251694",
+                            "type": "default",
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-out-nn.Module-trained_model",
                             "alignment": "right",
-                            "parentNode": "933963e9-a821-47e0-8f38-87264c133969",
+                            "parentNode": "af9a4fe3-836b-4f36-a497-9712885f8f55",
                             "links": [
                                 "8e0a72e0-c9ff-48ae-a50d-5ccbbba0f807",
                                 "a48213bb-95a9-4c9b-8b6e-1d2697da5048"
                             ],
                             "in": false,
-                            "label": "trained_model"
+                            "label": "trained_model",
+                            "varName": "trained_model",
+                            "portType": "",
+                            "dataType": ""
                         }
                     ],
                     "name": "TrainTorchModel",
-                    "color": "rgb(255,102,0)",
+                    "color": "rgb(255,153,0)",
                     "portsInOrder": [
-                        "1f9f290d-f0ce-4a23-b7a4-9b2ef3d0b66c",
-                        "dd9d2db7-7b97-4b44-ae96-e772126fd44f",
-                        "2ebb3d8e-6b2f-4d3e-9a75-5dcd451a6418",
-                        "c62782fb-c01f-4ab4-a03f-b3bab8a7fd25",
-                        "ae0e6c48-c78a-4a2a-b41f-a948c1d3998b",
-                        "8aedeb47-3544-479d-9ddc-77e21262c50f"
+                        "bd1bce46-6087-4f85-b906-0acb776ebd30",
+                        "922ce494-d820-4bf1-9daf-f9484dbd0f69",
+                        "d13851c6-0a32-4208-b7d8-4a39871de5cf",
+                        "734186be-9505-49e0-aebd-5a85947974b7",
+                        "1c3b5aed-17d6-4e9f-99b0-1815228c4a39",
+                        "e169631d-3ad0-48f2-943a-3dd973f5863c"
                     ],
                     "portsOutOrder": [
-                        "08200118-55d3-45f9-8371-0a2d8dd1cb4a",
-                        "6e75c0bc-cc1f-4fea-9a7d-d8fb40e7844c"
+                        "13da9968-6414-4d87-a191-9e9ec292ce3e",
+                        "4769fa8a-089c-41f4-a4e7-ba9921251694"
                     ]
                 },
-                "12b18d86-91d0-443f-a90a-8569b18720ad": {
-                    "id": "12b18d86-91d0-443f-a90a-8569b18720ad",
+                "fc0f3319-fd97-4c60-ab5d-39af0631ac3d": {
+                    "id": "fc0f3319-fd97-4c60-ab5d-39af0631ac3d",
                     "type": "custom-node",
-                    "selected": false,
+                    "selected": true,
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pytorch/quickstart.py",
@@ -1128,313 +1217,374 @@
                         "lineNo": [
                             {
                                 "lineno": 10,
-                                "end_lineno": 68
+                                "end_lineno": 59
                             }
-                        ],
-                        "borderColor": "rgb(0,192,255)"
+                        ]
                     },
                     "x": 163.033,
                     "y": 46.212,
                     "ports": [
                         {
-                            "id": "cb79d5d0-23a9-4202-aa24-707fd1dad353",
+                            "id": "88b2797a-70ed-40d4-a138-4de0220876b7",
                             "type": "default",
-                            "x": 164.625,
-                            "y": 72.938,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "in-0",
                             "alignment": "left",
-                            "parentNode": "12b18d86-91d0-443f-a90a-8569b18720ad",
+                            "parentNode": "fc0f3319-fd97-4c60-ab5d-39af0631ac3d",
                             "links": [
                                 "dee0e98b-07cc-47ab-9d86-24d533e4d41c"
                             ],
                             "in": true,
-                            "label": "▶"
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
                         },
                         {
-                            "id": "d30cf92a-5faf-4273-a19b-959d467e24f5",
+                            "id": "3ac85f7c-cb0a-44db-8496-b94e4320e83c",
                             "type": "default",
-                            "x": 386.125,
-                            "y": 72.938,
-                            "name": "out-0",
-                            "alignment": "right",
-                            "parentNode": "12b18d86-91d0-443f-a90a-8569b18720ad",
-                            "links": [
-                                "3e7d385e-3c9b-4227-b5e2-c95745445221"
-                            ],
-                            "in": false,
-                            "label": "▶"
-                        },
-                        {
-                            "id": "ce26eb79-4799-4a70-9002-43f4ab71d845",
-                            "type": "default",
-                            "x": 164.625,
-                            "y": 88.938,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-string-dataset_name",
                             "alignment": "left",
-                            "parentNode": "12b18d86-91d0-443f-a90a-8569b18720ad",
+                            "parentNode": "fc0f3319-fd97-4c60-ab5d-39af0631ac3d",
                             "links": [
                                 "87f22880-a280-48bd-b8b6-fb8c6623bc74"
                             ],
                             "in": true,
-                            "label": "★dataset_name"
+                            "label": "★dataset_name",
+                            "varName": "★dataset_name",
+                            "portType": "",
+                            "dataType": "string"
                         },
                         {
-                            "id": "0e29f419-b5f8-4134-a4cd-438790bc2dda",
+                            "id": "7f733463-5ada-44ab-8a08-dd3f132d5c85",
                             "type": "default",
-                            "x": 164.625,
-                            "y": 104.938,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-string-dataset_dir",
                             "alignment": "left",
-                            "parentNode": "12b18d86-91d0-443f-a90a-8569b18720ad",
+                            "parentNode": "fc0f3319-fd97-4c60-ab5d-39af0631ac3d",
                             "links": [],
                             "in": true,
-                            "label": "dataset_dir"
+                            "label": "dataset_dir",
+                            "varName": "dataset_dir",
+                            "portType": "",
+                            "dataType": "string"
                         },
                         {
-                            "id": "f9230cb3-537f-48a7-bc5e-a85849ee02c4",
+                            "id": "4bbcdd6f-c992-4bb1-a01a-5ad3298fd5ec",
                             "type": "default",
-                            "x": 386.125,
-                            "y": 88.938,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
+                            "name": "out-0",
+                            "alignment": "right",
+                            "parentNode": "fc0f3319-fd97-4c60-ab5d-39af0631ac3d",
+                            "links": [
+                                "3e7d385e-3c9b-4227-b5e2-c95745445221"
+                            ],
+                            "in": false,
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
+                        },
+                        {
+                            "id": "8b75b6af-4183-456a-b865-fa0d9ba58a0e",
+                            "type": "default",
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-out-torch.utils.data.Dataset-training_data",
                             "alignment": "right",
-                            "parentNode": "12b18d86-91d0-443f-a90a-8569b18720ad",
+                            "parentNode": "fc0f3319-fd97-4c60-ab5d-39af0631ac3d",
                             "links": [
                                 "5bfb5a89-54f9-40ec-b6d2-77959517e384"
                             ],
                             "in": false,
-                            "label": "training_data"
+                            "label": "training_data",
+                            "varName": "training_data",
+                            "portType": "",
+                            "dataType": ""
                         },
                         {
-                            "id": "e590dfad-bdb9-41a2-8eb9-31f9541c94cd",
+                            "id": "12f61940-106c-4b52-98b6-67427bb27589",
                             "type": "default",
-                            "x": 386.125,
-                            "y": 104.938,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-out-torch.utils.data.Dataset-test_data",
                             "alignment": "right",
-                            "parentNode": "12b18d86-91d0-443f-a90a-8569b18720ad",
+                            "parentNode": "fc0f3319-fd97-4c60-ab5d-39af0631ac3d",
                             "links": [
                                 "94d8f427-14c6-451f-9a22-91ceb0153ed9"
                             ],
                             "in": false,
-                            "label": "test_data"
+                            "label": "test_data",
+                            "varName": "test_data",
+                            "portType": "",
+                            "dataType": ""
                         }
                     ],
                     "name": "LoadTorchVisionDataset",
-                    "color": "rgb(102,51,102)",
+                    "color": "rgb(15,255,255)",
                     "portsInOrder": [
-                        "cb79d5d0-23a9-4202-aa24-707fd1dad353",
-                        "ce26eb79-4799-4a70-9002-43f4ab71d845",
-                        "0e29f419-b5f8-4134-a4cd-438790bc2dda"
+                        "88b2797a-70ed-40d4-a138-4de0220876b7",
+                        "3ac85f7c-cb0a-44db-8496-b94e4320e83c",
+                        "7f733463-5ada-44ab-8a08-dd3f132d5c85"
                     ],
                     "portsOutOrder": [
-                        "d30cf92a-5faf-4273-a19b-959d467e24f5",
-                        "f9230cb3-537f-48a7-bc5e-a85849ee02c4",
-                        "e590dfad-bdb9-41a2-8eb9-31f9541c94cd"
+                        "4bbcdd6f-c992-4bb1-a01a-5ad3298fd5ec",
+                        "8b75b6af-4183-456a-b865-fa0d9ba58a0e",
+                        "12f61940-106c-4b52-98b6-67427bb27589"
                     ]
                 },
-                "36268f9a-ab1c-4132-a722-8b87b3204540": {
-                    "id": "36268f9a-ab1c-4132-a722-8b87b3204540",
+                "ae700668-df3f-4d81-998c-52cc7ea87097": {
+                    "id": "ae700668-df3f-4d81-998c-52cc7ea87097",
                     "type": "custom-node",
-                    "selected": false,
+                    "selected": true,
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pytorch/quickstart.py",
-                        "description": "Tests a Torch model instance from a dataloader. \n\n##### inPorts:\n- test_dataloader: torch dataloader util instance. Ideally from `TorchDataLoader`.\n- model: torch nn instance. Ideally trained.\n- loss_fn: torch nn loss function.",
+                        "description": "Tests a Torch model instance from a dataloader. \n\n##### inPorts:\n- test_dataloader: torch dataloader util instance. Ideally from `TorchDataLoader`.\n- model: torch.nn instance. Ideally trained.\n- loss_fn: torch.nn loss function.",
                         "lineNo": [
                             {
-                                "lineno": 245,
-                                "end_lineno": 287
+                                "lineno": 207,
+                                "end_lineno": 243
                             }
-                        ],
-                        "borderColor": "rgb(0,192,255)"
+                        ]
                     },
                     "x": 1286.05,
                     "y": 65.415,
                     "ports": [
                         {
-                            "id": "39835042-3b23-47d3-aa31-778dddf207f1",
+                            "id": "c65864ed-fb36-45d6-babb-391c0bd47f1a",
                             "type": "default",
-                            "x": 1287.65,
-                            "y": 92.15,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "in-0",
                             "alignment": "left",
-                            "parentNode": "36268f9a-ab1c-4132-a722-8b87b3204540",
+                            "parentNode": "ae700668-df3f-4d81-998c-52cc7ea87097",
                             "links": [
                                 "947d042f-b3e4-4c99-907f-3f312ee8747e"
                             ],
                             "in": true,
-                            "label": "▶"
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
                         },
                         {
-                            "id": "12385813-bc9e-40da-a355-3f7ba8e5c954",
+                            "id": "ee18f0d6-6916-4cae-babe-bf6b0ee867e4",
                             "type": "default",
-                            "x": 1444.25,
-                            "y": 92.15,
-                            "name": "out-0",
-                            "alignment": "right",
-                            "parentNode": "36268f9a-ab1c-4132-a722-8b87b3204540",
-                            "links": [
-                                "64534766-c617-4b15-b0fc-25ddb1411ba2"
-                            ],
-                            "in": false,
-                            "label": "▶"
-                        },
-                        {
-                            "id": "8544e710-8093-4e94-ad84-a976697b7ee4",
-                            "type": "default",
-                            "x": 1287.65,
-                            "y": 108.15,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-nn.Module-model",
                             "alignment": "left",
-                            "parentNode": "36268f9a-ab1c-4132-a722-8b87b3204540",
+                            "parentNode": "ae700668-df3f-4d81-998c-52cc7ea87097",
                             "links": [
                                 "8e0a72e0-c9ff-48ae-a50d-5ccbbba0f807"
                             ],
                             "in": true,
-                            "label": "★model"
+                            "label": "★model",
+                            "varName": "★model",
+                            "portType": "",
+                            "dataType": "nn.Module"
                         },
                         {
-                            "id": "37d1cf3a-bab0-4b15-bc55-9eeb747b072b",
+                            "id": "fea21573-be7e-49cd-a91a-29b6c8205f10",
                             "type": "default",
-                            "x": 1287.65,
-                            "y": 124.15,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-torch.utils.data.DataLoader-test_dataloader",
                             "alignment": "left",
-                            "parentNode": "36268f9a-ab1c-4132-a722-8b87b3204540",
+                            "parentNode": "ae700668-df3f-4d81-998c-52cc7ea87097",
                             "links": [
                                 "66f58ee3-9376-4a02-9fa1-cedf343482cc"
                             ],
                             "in": true,
-                            "label": "★test_dataloader"
+                            "label": "★test_dataloader",
+                            "varName": "★test_dataloader",
+                            "portType": "",
+                            "dataType": "torch.utils.data.DataLoader"
                         },
                         {
-                            "id": "5548ef49-fb63-4ecc-a878-fc936c7050e7",
+                            "id": "6bd04165-fc53-4803-bca5-e582563e6e10",
                             "type": "default",
-                            "x": 1287.65,
-                            "y": 140.15,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-any-loss_fn",
                             "alignment": "left",
-                            "parentNode": "36268f9a-ab1c-4132-a722-8b87b3204540",
+                            "parentNode": "ae700668-df3f-4d81-998c-52cc7ea87097",
                             "links": [
                                 "467a6a18-f82b-4e0f-a853-e688e4fa9efc"
                             ],
                             "in": true,
-                            "label": "★loss_fn"
+                            "label": "★loss_fn",
+                            "varName": "★loss_fn",
+                            "portType": "",
+                            "dataType": "any"
+                        },
+                        {
+                            "id": "a5fb3b92-4f19-485e-9580-d675e58e1360",
+                            "type": "default",
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
+                            "name": "out-0",
+                            "alignment": "right",
+                            "parentNode": "ae700668-df3f-4d81-998c-52cc7ea87097",
+                            "links": [
+                                "64534766-c617-4b15-b0fc-25ddb1411ba2"
+                            ],
+                            "in": false,
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
                         }
                     ],
                     "name": "TestTorchModel",
-                    "color": "rgb(51,51,51)",
+                    "color": "rgb(255,204,0)",
                     "portsInOrder": [
-                        "39835042-3b23-47d3-aa31-778dddf207f1",
-                        "8544e710-8093-4e94-ad84-a976697b7ee4",
-                        "37d1cf3a-bab0-4b15-bc55-9eeb747b072b",
-                        "5548ef49-fb63-4ecc-a878-fc936c7050e7"
+                        "c65864ed-fb36-45d6-babb-391c0bd47f1a",
+                        "ee18f0d6-6916-4cae-babe-bf6b0ee867e4",
+                        "fea21573-be7e-49cd-a91a-29b6c8205f10",
+                        "6bd04165-fc53-4803-bca5-e582563e6e10"
                     ],
                     "portsOutOrder": [
-                        "12385813-bc9e-40da-a355-3f7ba8e5c954"
+                        "a5fb3b92-4f19-485e-9580-d675e58e1360"
                     ]
                 },
-                "fc56be2b-7a01-4d83-80c8-352fccc75d3e": {
-                    "id": "fc56be2b-7a01-4d83-80c8-352fccc75d3e",
+                "ba2df422-5de1-4f5c-b9bb-c607a801ab66": {
+                    "id": "ba2df422-5de1-4f5c-b9bb-c607a801ab66",
                     "type": "custom-node",
-                    "selected": false,
+                    "selected": true,
                     "extras": {
                         "type": "debug",
                         "path": "xai_components/xai_pytorch/quickstart.py",
                         "description": "Creates example Torch Model config.\n##### outPorts:\n- model: torch.nn instance that expects a 28*28 input.\n- loss_fn: nn.CrossEntropyLoss()\n- optimizer: torch.optim.SGD(model.parameters(), lr=1e-3)",
                         "lineNo": [
                             {
-                                "lineno": 124,
-                                "end_lineno": 174
+                                "lineno": 105,
+                                "end_lineno": 148
                             }
-                        ],
-                        "borderColor": "rgb(0,192,255)"
+                        ]
                     },
                     "x": 717.923,
                     "y": -84.745,
                     "ports": [
                         {
-                            "id": "2cca3302-85c0-4d32-b92f-617dbafa3f22",
+                            "id": "43aacb1b-eaa8-406e-b945-60017da3533c",
                             "type": "default",
-                            "x": 719.513,
-                            "y": -58,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "in-0",
                             "alignment": "left",
-                            "parentNode": "fc56be2b-7a01-4d83-80c8-352fccc75d3e",
+                            "parentNode": "ba2df422-5de1-4f5c-b9bb-c607a801ab66",
                             "links": [
                                 "355249aa-187c-4597-a9bb-9d4b95698167"
                             ],
                             "in": true,
-                            "label": "▶"
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
                         },
                         {
-                            "id": "1af44c80-cddb-41d7-95d7-94917aeca8fe",
+                            "id": "2abe004e-d985-4511-a888-a8515781aa41",
                             "type": "default",
-                            "x": 879.975,
-                            "y": -58,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "out-0",
                             "alignment": "right",
-                            "parentNode": "fc56be2b-7a01-4d83-80c8-352fccc75d3e",
+                            "parentNode": "ba2df422-5de1-4f5c-b9bb-c607a801ab66",
                             "links": [
                                 "814dd321-d8e9-4a64-890e-a521b91bc9ed"
                             ],
                             "in": false,
-                            "label": "▶"
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
                         },
                         {
-                            "id": "ee4bd872-59f1-428b-a163-800cdabcef0e",
+                            "id": "d92aeb95-039d-4739-81b6-663edcdf1479",
                             "type": "default",
-                            "x": 879.975,
-                            "y": -42,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-out-nn.Module-model_config",
                             "alignment": "right",
-                            "parentNode": "fc56be2b-7a01-4d83-80c8-352fccc75d3e",
+                            "parentNode": "ba2df422-5de1-4f5c-b9bb-c607a801ab66",
                             "links": [
                                 "f212f466-2924-41d4-8296-9de1a21d5e90"
                             ],
                             "in": false,
-                            "label": "model_config"
+                            "label": "model_config",
+                            "varName": "model_config",
+                            "portType": "",
+                            "dataType": ""
                         },
                         {
-                            "id": "955966cd-c5df-406f-8e31-adfcf52f22d8",
+                            "id": "21639b60-8784-4d1a-89bd-20b387d15b17",
                             "type": "default",
-                            "x": 879.975,
-                            "y": -26,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-out-any-loss_fn",
                             "alignment": "right",
-                            "parentNode": "fc56be2b-7a01-4d83-80c8-352fccc75d3e",
+                            "parentNode": "ba2df422-5de1-4f5c-b9bb-c607a801ab66",
                             "links": [
                                 "9a7c4dca-f94f-46df-9251-c035bfd9d8cc",
                                 "467a6a18-f82b-4e0f-a853-e688e4fa9efc"
                             ],
                             "in": false,
-                            "label": "loss_fn"
+                            "label": "loss_fn",
+                            "varName": "loss_fn",
+                            "portType": "",
+                            "dataType": ""
                         },
                         {
-                            "id": "f7b4a5d7-e34d-40b9-ac64-b42b0cb29fec",
+                            "id": "8770f02b-4589-4eb8-88d2-ac7da2f04282",
                             "type": "default",
-                            "x": 879.975,
-                            "y": -10,
+                            "extras": {},
+                            "x": 0,
+                            "y": 0,
                             "name": "parameter-out-any-optimizer",
                             "alignment": "right",
-                            "parentNode": "fc56be2b-7a01-4d83-80c8-352fccc75d3e",
+                            "parentNode": "ba2df422-5de1-4f5c-b9bb-c607a801ab66",
                             "links": [
                                 "83920a2c-21b2-418c-a89f-55fcd24728bb"
                             ],
                             "in": false,
-                            "label": "optimizer"
+                            "label": "optimizer",
+                            "varName": "optimizer",
+                            "portType": "",
+                            "dataType": ""
                         }
                     ],
                     "name": "ExampleTorchModelConfig",
-                    "color": "rgb(255,204,0)",
+                    "color": "rgb(153,204,51)",
                     "portsInOrder": [
-                        "2cca3302-85c0-4d32-b92f-617dbafa3f22"
+                        "43aacb1b-eaa8-406e-b945-60017da3533c"
                     ],
                     "portsOutOrder": [
-                        "1af44c80-cddb-41d7-95d7-94917aeca8fe",
-                        "ee4bd872-59f1-428b-a163-800cdabcef0e",
-                        "955966cd-c5df-406f-8e31-adfcf52f22d8",
-                        "f7b4a5d7-e34d-40b9-ac64-b42b0cb29fec"
+                        "2abe004e-d985-4511-a888-a8515781aa41",
+                        "d92aeb95-039d-4739-81b6-663edcdf1479",
+                        "21639b60-8784-4d1a-89bd-20b387d15b17",
+                        "8770f02b-4589-4eb8-88d2-ac7da2f04282"
                     ]
                 }
             }
