@@ -34,3 +34,24 @@
 [submodule "xai_components/xai_tests"]
 	path = xai_components/xai_tests
 	url = https://github.com/XpressAI/xai-tests
+[submodule "xai_components/xai_anthropic"]
+	path = xai_components/xai_anthropic
+	url = https://github.com/XpressAI/xai-anthropic
+[submodule "xai_components/xai_hfagent"]
+	path = xai_components/xai_hfagent
+	url = https://github.com/XpressAI/xai-hfagent
+[submodule "xai_components/xai_flask"]
+	path = xai_components/xai_flask
+	url = https://github.com/XpressAI/xai-flask
+[submodule "xai_components/xai_actors"]
+	path = xai_components/xai_actors
+	url = https://github.com/XpressAI/xai-actors
+[submodule "xai_components/xai_sqlite"]
+	path = xai_components/xai_sqlite
+	url = https://github.com/XpressAI/xai-sqlite
+[submodule "xai_components/xai_gdrive"]
+	path = xai_components/xai_gdrive
+	url = https://github.com/XpressAI/xai-gdrive
+[submodule "xai_components/xai_gspread"]
+	path = xai_components/xai_gspread
+	url = https://github.com/XpressAI/xai-gspread
