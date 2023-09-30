@@ -43,3 +43,6 @@
 [submodule "xai_components/xai_flask"]
 	path = xai_components/xai_flask
 	url = https://github.com/XpressAI/xai-flask
+[submodule "xai_components/xai_actors"]
+	path = xai_components/xai_actors
+	url = https://github.com/XpressAI/xai-actors
