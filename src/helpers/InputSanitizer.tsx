@@ -15,10 +15,20 @@ function checkInput(input: any, dataType: string): boolean {
     switch (normalizedDataType) {
         case "int":
         case "integer":
+            // Regex: Matches possibly negative integers
+            if(!/^\-?\d+$/.test(input)){
+                errorDetails = "Input is not an integer.";
+                exampleInput = "e.g. 3";
+                alert(formatError(errorDetails, exampleInput));
+                return false;
+            }
+            processedInput = `${input}`;
+            break;
         case "float":
-            if (isNaN(Number(input))) {
-                errorDetails = "Input is not a number.";
-                exampleInput = normalizedDataType === "float" ? "e.g. 3.14" : "e.g. 3";
+            // Regex: Matches possibly negative floats
+            if(!/^\-?\d*\.\d+$/.test(input)){
+                errorDetails = "Input is not a float.";
+                exampleInput = "e.g. 3.14";
                 alert(formatError(errorDetails, exampleInput));
                 return false;
             }

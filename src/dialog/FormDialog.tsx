@@ -119,10 +119,12 @@ const preventDefaultDialogHandler = (
 // Returns true if given element is valid
 const isFieldValid = (element: any): boolean => {
   if (element.type === 'number') {
-    return element.value === '' || Number(element.value.trim()) > 0
+    // Allow any number or an empty string for number inputs
+    return element.value === '' || !isNaN(Number(element.value.trim()))
       ? true
       : false;
   }
+  // For other input types, continue to check whether the input is not an empty string
   return element.value.trim() ? true : false;
 };
 
