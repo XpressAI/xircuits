@@ -26,8 +26,12 @@ export async function handleLiteralInput(nodeName, nodeData, inputValue = "", ty
         let dialogResult = await showFormDialog(dialogOptions);
         if (cancelDialog(dialogResult)) return;
 
-        // lit chat value accessed through dialogResult["value"]
-        inputValue = dialogResult["value"][title] || dialogResult["value"] || "";
+        if (SPECIAL_LITERALS.includes(type)) {
+            // lit chat values accessed through dialogResult["value"]
+            inputValue = dialogResult["value"];
+        } else {
+            inputValue = dialogResult["value"][title];
+        }
 
     } while (!checkInput(inputValue, type))
 
