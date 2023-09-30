@@ -1,5 +1,10 @@
 function checkInput(input: any, dataType: string): boolean {
 
+    if(input === ""){
+        alert("Input cannot be empty.");
+        return false;
+    }
+
     const normalizedDataType = dataType.toLowerCase();
     let processedInput = "";
     let errorDetails = "";

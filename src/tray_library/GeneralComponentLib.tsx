@@ -21,21 +21,15 @@ const TYPE_ARGUMENTS = ['string', 'int', 'float', 'boolean'];
 const SPECIAL_LITERALS = ['chat'];
 
 export async function handleLiteralInput(nodeName, nodeData, inputValue = "", type, title = "New Literal Input") {
-    
-    let dialogOptions = inputDialog({ title, oldValue:inputValue, type });
-    let dialogResult = await showFormDialog(dialogOptions);
-    if (cancelDialog(dialogResult)) return;
-
-    inputValue = dialogResult["value"][title] || dialogResult["value"];;
-
-    while (!checkInput(inputValue, type)){
-        dialogOptions = inputDialog({ title: type, oldValue: inputValue, type });
-        dialogResult = await showFormDialog(dialogOptions);
-
+    do {
+        let dialogOptions = inputDialog({ title, oldValue: inputValue, type });
+        let dialogResult = await showFormDialog(dialogOptions);
         if (cancelDialog(dialogResult)) return;
-        inputValue = dialogResult["value"][title] || dialogResult["value"];
-        
-    }
+
+        // lit chat value accessed through dialogResult["value"]
+        inputValue = dialogResult["value"][title] || dialogResult["value"] || "";
+
+    } while (!checkInput(inputValue, type))
 
     if (SPECIAL_LITERALS.includes(type)) inputValue = JSON.stringify(inputValue);
     if (nodeName === 'Literal True' || nodeName === 'Literal False') nodeName = 'Literal Boolean';
