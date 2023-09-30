@@ -49,3 +49,6 @@
 [submodule "xai_components/xai_sqlite"]
 	path = xai_components/xai_sqlite
 	url = https://github.com/XpressAI/xai-sqlite
+[submodule "xai_components/xai_gdrive"]
+	path = xai_components/xai_gdrive
+	url = https://github.com/XpressAI/xai-gdrive
