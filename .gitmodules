@@ -40,3 +40,6 @@
 [submodule "xai_components/xai_hfagent"]
 	path = xai_components/xai_hfagent
 	url = https://github.com/XpressAI/xai-hfagent
+[submodule "xai_components/xai_flask"]
+	path = xai_components/xai_flask
+	url = https://github.com/XpressAI/xai-flask
