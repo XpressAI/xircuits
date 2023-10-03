@@ -20,7 +20,7 @@ def get_submodule_config(user_query):
         return
         
     if len(submodule_keys) > 1:
-        print("Multiple '" + user_query + "' found. Returning first instance.")
+        raise ValueError(f"Multiple instances of '{user_query}' found.")
 
     submodule_key = submodule_keys.pop(0)
     
