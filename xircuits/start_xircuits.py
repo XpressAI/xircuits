@@ -3,18 +3,19 @@ from pathlib import Path
 import os
 import pkg_resources
 import shutil
-from .handlers.request_folder import request_folder
-from .handlers.request_submodule import get_submodule_config, request_submodule_library
+from .handlers.request_folder import request_folder, clone_from_github_url
+from .handlers.request_submodule import request_submodule_library
 from .compiler import compile
 import subprocess
 import sys
 import json
+import urllib.parse
 
 def init_xircuits():
     package_name = 'xircuits'
     copy_from_installed_wheel(package_name, resource='.xircuits', dest_path='.xircuits')
 
-def build_component_library_path(component_library_query):
+def build_component_library_path(component_library_query: str) -> str:
     # ensure syntax is as xai_components/xai_library_name
 
     if "xai" not in component_library_query:
@@ -28,6 +29,13 @@ def build_component_library_path(component_library_query):
 def is_empty(directory):
     return not os.listdir(directory)
 
+def is_valid_url(url):
+    try:
+        result = urllib.parse.urlparse(url)
+        return all([result.scheme, result.netloc])
+    except ValueError:
+        return False
+    
 def copy_from_installed_wheel(package_name, resource="", dest_path=None):
     if dest_path is None:
         dest_path = package_name
@@ -62,20 +70,34 @@ def cmd_download_examples(args, extra_args=[]):
         request_folder("datasets", branch=args.branch)
 
 def cmd_fetch_library(args, extra_args=[]):
-    component_library_path = build_component_library_path(args.library_name)
+    print(f"Fetching {args.library_name}...")
+
+    if is_valid_url(args.library_name):
+        component_library_path = clone_from_github_url(args.library_name)
+        return
+    
+    else:
+        component_library_path = build_component_library_path(args.library_name)
+        
     if not Path(component_library_path).is_dir() or is_empty(Path(component_library_path)):
         request_submodule_library(component_library_path)
     else:
         print(f"{args.library_name} library already exists in {component_library_path}.")
 
+
 def cmd_install_library(args, extra_args=[]):
     print(f"Installing {args.library_name}...")
-    component_library_path = build_component_library_path(args.library_name)
+    
+    if is_valid_url(args.library_name):
+        component_library_path = clone_from_github_url(args.library_name)
+
+    else:
+        component_library_path = build_component_library_path(args.library_name)
+    
     if not Path(component_library_path).is_dir() or is_empty(Path(component_library_path)):
         request_submodule_library(component_library_path)
 
-    submodule_path, _ = get_submodule_config(args.library_name)
-    requirements_file = Path(submodule_path) / "requirements.txt"
+    requirements_file = Path(component_library_path) / "requirements.txt"
 
     if requirements_file.exists():
         print(f"Installing requirements for {args.library_name}...")
