@@ -31,13 +31,6 @@ def get_submodule_config(user_query):
 
 
 def request_submodule_library(component_library_query):
-
-    # ensure syntax is as xai_components/xai_library_name
-    if "xai" not in component_library_query:
-        component_library_query = "xai_" + component_library_query
-
-    if "xai_components" not in component_library_query:
-        component_library_query = "xai_components/" + component_library_query
     
     submodule_path, submodule_url = get_submodule_config(component_library_query)
     

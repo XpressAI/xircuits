@@ -14,6 +14,20 @@ def init_xircuits():
     package_name = 'xircuits'
     copy_from_installed_wheel(package_name, resource='.xircuits', dest_path='.xircuits')
 
+def build_component_library_path(component_library_query):
+    # ensure syntax is as xai_components/xai_library_name
+
+    if "xai" not in component_library_query:
+        component_library_query = "xai_" + component_library_query
+
+    if "xai_components" not in component_library_query:
+        component_library_query = "xai_components/" + component_library_query
+
+    return component_library_query
+
+def is_empty(directory):
+    return not os.listdir(directory)
+
 def copy_from_installed_wheel(package_name, resource="", dest_path=None):
     if dest_path is None:
         dest_path = package_name
@@ -41,15 +55,25 @@ def cmd_start_xircuits(args, extra_args=[]):
         os.system("jupyter lab")
 
 def cmd_download_examples(args, extra_args=[]):
-    request_folder("examples", branch=args.branch)
-    request_folder("datasets", branch=args.branch)
+    if not os.path.exists("examples") or is_empty("examples"):
+        request_folder("examples", branch=args.branch)
+
+    if not os.path.exists("datasets") or is_empty("datasets"):
+        request_folder("datasets", branch=args.branch)
 
 def cmd_fetch_library(args, extra_args=[]):
-        request_submodule_library(args.library_name)
+    component_library_path = build_component_library_path(args.library_name)
+    if not Path(component_library_path).is_dir() or is_empty(Path(component_library_path)):
+        request_submodule_library(component_library_path)
+    else:
+        print(f"{args.library_name} library already exists in {component_library_path}.")
 
 def cmd_install_library(args, extra_args=[]):
     print(f"Installing {args.library_name}...")
-    request_submodule_library(args.library_name)
+    component_library_path = build_component_library_path(args.library_name)
+    if not Path(component_library_path).is_dir() or is_empty(Path(component_library_path)):
+        request_submodule_library(component_library_path)
+
     submodule_path, _ = get_submodule_config(args.library_name)
     requirements_file = Path(submodule_path) / "requirements.txt"
 
@@ -70,29 +94,29 @@ def main():
     subparsers = parser.add_subparsers(dest="command")
 
 # Adding parser for 'start' command
-    start_parser = subparsers.add_parser('start', help='Start xircuits (jupyterlab).')
+    start_parser = subparsers.add_parser('start', help='Start Xircuits.')
     # Add an arbitrary list of arguments. The nargs="*" means 0 or more arguments.
     # This will collect all additional arguments into a list.
-    start_parser.add_argument('extra_args', nargs='*', help='Additional arguments for xircuits launch command')
+    start_parser.add_argument('extra_args', nargs='*', help='Additional arguments for Xircuits launch command')
     start_parser.set_defaults(func=cmd_start_xircuits)
 
     # Adding parser for 'install' command
-    install_parser = subparsers.add_parser('install', help='Install a library for xircuits.')
+    install_parser = subparsers.add_parser('install', help='Install a library for Xircuits.')
     install_parser.add_argument('library_name', type=str, help='Name of the library to install')
     install_parser.set_defaults(func=cmd_install_library)
 
     # Adding parser for 'fetch' command
-    fetch_parser = subparsers.add_parser('fetch', help='fetch a library for xircuits. Does not install.')
+    fetch_parser = subparsers.add_parser('fetch', help='Fetch a library for Xircuits. Does not install.')
     fetch_parser.add_argument('library_name', type=str, help='Name of the library to fetch')
     fetch_parser.set_defaults(func=cmd_fetch_library)
 
     # Adding parser for 'examples' command
-    examples_parser = subparsers.add_parser('examples', help='Download examples for xircuits.')
+    examples_parser = subparsers.add_parser('examples', help='Download examples for Xircuits.')
     examples_parser.add_argument('--branch', nargs='?', default="master", help='pull files from a xircuits branch')
     examples_parser.set_defaults(func=cmd_download_examples)
 
     # Adding parser for 'compile' command
-    compile_parser = subparsers.add_parser('compile', help='Compile a Xircuits source file.')
+    compile_parser = subparsers.add_parser('compile', help='Compile a Xircuits workflow file.')
     compile_parser.add_argument('source_file', type=argparse.FileType('r', encoding='utf-8'))
     compile_parser.add_argument('out_file', type=argparse.FileType('w', encoding='utf-8'))
     compile_parser.add_argument("python_paths_file", nargs='?', default=None, type=argparse.FileType('r'),
@@ -105,8 +129,11 @@ def main():
     if hasattr(args, 'func'):
         args.func(args, unknown_args)
     else:
-        # Default behavior: if no sub-command is provided, start xircuits.
-        cmd_start_xircuits(args, unknown_args)
+        if "--help" in unknown_args or "-h" in unknown_args:
+            parser.print_help()
+        else:
+            # Default behavior: if no sub-command is provided, start xircuits.
+            cmd_start_xircuits(args, unknown_args)
 
     return 0
 
