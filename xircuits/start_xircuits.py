@@ -111,6 +111,41 @@ def cmd_compile(args, extra_args=[]):
         component_paths = json.load(args.python_paths_file)
     compile(args.source_file, args.out_file, component_python_paths=component_paths)
 
+
+def cmd_list_libraries(args, extra_args=[]):
+    # Fetch libraries from .gitmodules
+    gitmodules_path = Path(".gitmodules")
+    submodule_paths = []
+    
+    if gitmodules_path.exists():
+        with gitmodules_path.open() as f:
+            lines = f.readlines()
+            for line in lines:
+                if "path = " in line:
+                    submodule_paths.append(line.split("=")[-1].strip().split('/')[-1])
+                    
+    # Fetch libraries from xai_components/
+    component_library_path = Path("xai_components")
+    directories = [d.name for d in component_library_path.iterdir() if d.is_dir() and d.name.startswith("xai_")]
+    non_empty_directories = [dir_name for dir_name in directories if not is_empty(component_library_path / dir_name)]
+
+    # Crosscheck and categorize
+    installed = set(non_empty_directories)
+    installed_submodules = [lib for lib in submodule_paths if lib in non_empty_directories]
+    installed = installed.union(installed_submodules)
+
+    available = [lib for lib in submodule_paths if lib not in installed]
+    
+    # Display
+    print("Installed component libraries:")
+    for lib in sorted(installed):
+        print(f" - {lib}")
+    
+    print("\nAvailable component libraries:")
+    for lib in sorted(available):
+        print(f" - {lib}")
+
+
 def main():
     parser = argparse.ArgumentParser(description='Xircuits Command Line Interface', add_help=False)
     subparsers = parser.add_subparsers(dest="command")
@@ -145,6 +180,11 @@ def main():
                                 help="JSON file with a mapping of component name to required python path. "
                                      "e.g. {'MyComponent': '/some/path'}")
     compile_parser.set_defaults(func=cmd_compile)
+
+    # Adding parser for 'list' command
+    list_parser = subparsers.add_parser('list', help='List available component libraries for Xircuits.')
+    list_parser.set_defaults(func=cmd_list_libraries)
+
 
     args, unknown_args = parser.parse_known_args()
 
