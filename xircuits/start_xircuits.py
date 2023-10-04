@@ -49,9 +49,7 @@ def cmd_start_xircuits(args, extra_args=[]):
     # fetch xai_components
     component_library_path = Path(os.getcwd()) / "xai_components"
     if not component_library_path.exists():
-        val = input("Xircuits Component Library is not found. Would you like to load it in the current path (Y/N)? ")
-        if val.lower() in ("y", "yes"):
-            copy_from_installed_wheel('xai_components', '', 'xai_components')
+        copy_from_installed_wheel('xai_components', '', 'xai_components')
 
     # handler for extra jupyterlab launch options
     if extra_args:
@@ -127,6 +125,11 @@ def check_requirements_installed(requirements_path):
     return required_packages.issubset(installed_packages)
 
 def cmd_list_libraries(args, extra_args=[]):
+    
+    component_library_path = Path(os.getcwd()) / "xai_components"
+    if not component_library_path.exists():
+        copy_from_installed_wheel('xai_components', '', 'xai_components')
+
     print("Checking installed packages... This might take a moment.")
     # Fetch libraries from .gitmodules
     gitmodules_path = Path(".gitmodules") if Path(".gitmodules").exists() else Path(".xircuits/.gitmodules")
