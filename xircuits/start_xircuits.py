@@ -28,7 +28,8 @@ def build_component_library_path(component_library_query: str) -> str:
     return component_library_query
 
 def is_empty(directory):
-    return not os.listdir(directory)
+    # will return true for uninitialized submodules
+    return not os.path.exists(directory) or not os.listdir(directory)
 
 def is_valid_url(url):
     try:
