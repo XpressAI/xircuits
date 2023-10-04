@@ -10,6 +10,7 @@ import subprocess
 import sys
 import json
 import urllib.parse
+from tqdm import tqdm
 
 def init_xircuits():
     package_name = 'xircuits'
@@ -111,10 +112,23 @@ def cmd_compile(args, extra_args=[]):
         component_paths = json.load(args.python_paths_file)
     compile(args.source_file, args.out_file, component_python_paths=component_paths)
 
+def get_installed_packages():
+    """Return a list of installed packages."""
+    result = subprocess.check_output([sys.executable, "-m", "pip", "freeze"])
+    packages = {package.split('==')[0] for package in result.decode().splitlines()}
+    return packages
+
+def check_requirements_installed(requirements_path):
+    """Check if all packages in a requirements file are installed."""
+    with open(requirements_path, 'r') as file:
+        required_packages = {line.strip().split('==')[0] for line in file.readlines()}
+    installed_packages = get_installed_packages()
+    return required_packages.issubset(installed_packages)
 
 def cmd_list_libraries(args, extra_args=[]):
+    print("Checking installed packages... This might take a moment.")
     # Fetch libraries from .gitmodules
-    gitmodules_path = Path(".gitmodules")
+    gitmodules_path = Path(".gitmodules") if Path(".gitmodules").exists() else Path(".xircuits/.gitmodules")
     submodule_paths = []
     
     if gitmodules_path.exists():
@@ -129,20 +143,29 @@ def cmd_list_libraries(args, extra_args=[]):
     directories = [d.name for d in component_library_path.iterdir() if d.is_dir() and d.name.startswith("xai_")]
     non_empty_directories = [dir_name for dir_name in directories if not is_empty(component_library_path / dir_name)]
 
-    # Crosscheck and categorize
-    installed = set(non_empty_directories)
-    installed_submodules = [lib for lib in submodule_paths if lib in non_empty_directories]
-    installed = installed.union(installed_submodules)
+    installed_packages_dirs = []
+    print("Iterating through component libraries to check requirements...")
+    for dir_name in tqdm(directories, desc="Checking", ncols=100):
+        requirements_path = component_library_path / dir_name / "requirements.txt"
+        if requirements_path.exists() and check_requirements_installed(requirements_path):
+            installed_packages_dirs.append(dir_name)
 
-    available = [lib for lib in submodule_paths if lib not in installed]
+    # Crosscheck and categorize based on installed packages
+    fully_installed = set(installed_packages_dirs)
+    available = set(non_empty_directories) - fully_installed
+    remote = [lib for lib in submodule_paths if lib not in fully_installed and lib not in available and is_empty(component_library_path / lib)]
     
     # Display
-    print("Installed component libraries:")
-    for lib in sorted(installed):
+    print(f"\nFully installed component libraries({len(fully_installed)}):")
+    for lib in sorted(fully_installed):
         print(f" - {lib}")
-    
-    print("\nAvailable component libraries:")
+
+    print(f"\nAvailable component libraries({len(available)}):")
     for lib in sorted(available):
+        print(f" - {lib}")
+
+    print(f"\nRemote component libraries({len(remote)}):")
+    for lib in sorted(remote):
         print(f" - {lib}")
 
 
