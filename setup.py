@@ -102,14 +102,10 @@ setup_args = dict(
         "Framework :: Jupyter :: JupyterLab :: Extensions",
         "Framework :: Jupyter :: JupyterLab :: Extensions :: Prebuilt",
     ],
-    entry_points ={
+    entry_points = {
         'console_scripts': [
             'xircuits = xircuits.start_xircuits:main',
-            'xircuits-examples = xircuits.start_xircuits:download_examples',
-            'xircuits-components = xircuits.start_xircuits:fetch_component_library',
-            'xircuits-submodules = xircuits.start_xircuits:download_submodule_library',
-            'xircuits-compile = xircuits.compiler.compiler:main'
-            ]}
+        ]}
 )
 
 try:

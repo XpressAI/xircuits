@@ -61,7 +61,7 @@ jobs:
 
     - name: Install Xircuits Test Component Library
       run: |
-        xircuits-submodules tests
+        xircuits install tests
 
 
     - uses: actions/setup-node@v3
