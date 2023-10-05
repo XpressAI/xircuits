@@ -185,12 +185,12 @@ def main():
     start_parser.set_defaults(func=cmd_start_xircuits)
 
     # Adding parser for 'install' command
-    install_parser = subparsers.add_parser('install', help='Install a library for Xircuits.')
+    install_parser = subparsers.add_parser('install', help='Fetch and installs a library for Xircuits.')
     install_parser.add_argument('library_name', type=str, help='Name of the library to install')
     install_parser.set_defaults(func=cmd_install_library)
 
     # Adding parser for 'fetch' command
-    fetch_parser = subparsers.add_parser('fetch', help='Fetch a library for Xircuits. Does not install.')
+    fetch_parser = subparsers.add_parser('fetch-only', help='Fetch a library for Xircuits. Does not install.')
     fetch_parser.add_argument('library_name', type=str, help='Name of the library to fetch')
     fetch_parser.set_defaults(func=cmd_fetch_library)
 
@@ -218,7 +218,8 @@ def main():
     if hasattr(args, 'func'):
         args.func(args, unknown_args)
     else:
-        if "--help" in unknown_args or "-h" in unknown_args:
+        valid_help_args = {"-h", "--h" "-help", "--help"}
+        if any(arg in unknown_args for arg in valid_help_args):
             parser.print_help()
         else:
             # Default behavior: if no sub-command is provided, start xircuits.
