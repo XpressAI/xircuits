@@ -10,7 +10,6 @@ import subprocess
 import sys
 import json
 import urllib.parse
-from tqdm import tqdm
 
 def init_xircuits():
     package_name = 'xircuits'
@@ -117,11 +116,10 @@ def get_installed_packages():
     packages = {package.split('==')[0] for package in result.decode().splitlines()}
     return packages
 
-def check_requirements_installed(requirements_path):
-    """Check if all packages in a requirements file are installed."""
+def check_requirements_installed(installed_packages, requirements_path):
+    """Check if all packages in a requirements file are installed using a given list of installed packages."""
     with open(requirements_path, 'r') as file:
         required_packages = {line.strip().split('==')[0] for line in file.readlines()}
-    installed_packages = get_installed_packages()
     return required_packages.issubset(installed_packages)
 
 def cmd_list_libraries(args, extra_args=[]):
@@ -131,6 +129,8 @@ def cmd_list_libraries(args, extra_args=[]):
         copy_from_installed_wheel('xai_components', '', 'xai_components')
 
     print("Checking installed packages... This might take a moment.")
+    installed_packages = get_installed_packages()
+
     # Fetch libraries from .gitmodules
     gitmodules_path = Path(".gitmodules") if Path(".gitmodules").exists() else Path(".xircuits/.gitmodules")
     submodule_paths = []
@@ -148,10 +148,10 @@ def cmd_list_libraries(args, extra_args=[]):
     non_empty_directories = [dir_name for dir_name in directories if not is_empty(component_library_path / dir_name)]
 
     installed_packages_dirs = []
-    print("Iterating through component libraries to check requirements...")
-    for dir_name in tqdm(directories, desc="Checking", ncols=100):
+
+    for dir_name in directories:
         requirements_path = component_library_path / dir_name / "requirements.txt"
-        if requirements_path.exists() and check_requirements_installed(requirements_path):
+        if requirements_path.exists() and check_requirements_installed(installed_packages, requirements_path):
             installed_packages_dirs.append(dir_name)
 
     # Crosscheck and categorize based on installed packages
