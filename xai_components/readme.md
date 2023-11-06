@@ -26,7 +26,7 @@ These components will always be included in the Xircuits installation.
 Recognized additional component libraries that you can download and install using:
 
 ```
-$ xircuits-submodules xai_componentLibName
+$ xircuits install <component library name>
 ```
 
 <div align="center">
@@ -41,7 +41,7 @@ $ xircuits-submodules xai_componentLibName
 | [Anthropic](https://github.com/XpressAI/xai-anthropic) | Advanced components for anthropic principles. | - |
 | [HF Agent](https://github.com/XpressAI/xai-hfagent) | Advanced components for hugging face agents. | - |
 | [Actors](https://github.com/XpressAI/xai-actors) | Components for creating actor models. | - |
-
+| [VertexAI](https://github.com/XpressAI/xai-google-vertexai) | Components that interfaces with Google Vertex AI! | - |
 
 ### 📊 Data Science and Machine Learning
 | Name | Description | Version |
@@ -49,7 +49,6 @@ $ xircuits-submodules xai_componentLibName
 | [Pycaret](https://github.com/XpressAI/xai-pycaret) | A component library built using Pycaret's API! Complete with examples for NLP, anomaly detection, classification, clustering, as well as regression. | 0.1.0 |
 | [RPA](https://github.com/yuenherny/xai-rpa) | Robotic process automation library to automate routine and repetitive tasks! | 0.2.1 |
 | [Streamlit](https://github.com/XpressAI/xai-streamlit) | Turn Xircuits workflows into shareable web apps in minutes. | 0.1.0 |
-
 
 ### 💬 Communication
 | Name | Description | Version |
