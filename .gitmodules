@@ -55,3 +55,6 @@
 [submodule "xai_components/xai_gspread"]
 	path = xai_components/xai_gspread
 	url = https://github.com/XpressAI/xai-gspread
+[submodule "xai_components/xai_vertexai"]
+	path = xai_components/xai_vertexai
+	url = https://github.com/XpressAI/xai-google-vertexai
