@@ -104,14 +104,14 @@ You will need python 3.8+ to install Xircuits. We recommend installing in a virt
 You will also need to install the component library before using them. For example, if you would like to use the Pytorch components, install them by:
 
   ```
-  $ pip install xircuits[pytorch]
+  $ xircuits install pytorch
   ```
 
-For the list of available libraries, you can check [here]( https://github.com/XpressAI/xircuits/tree/master/xai_components#internal-library). 
+For the list of available libraries, you can check [here]( https://github.com/XpressAI/xircuits/tree/master/xai_components). 
 
 ## Download Examples
 ```
-$ xircuits-examples
+$ xircuits examples
 ```
 ## Launch
 ```
