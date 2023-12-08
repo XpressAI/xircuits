@@ -26,10 +26,6 @@ jobs:
         nvm use 14.15.3
         npm install --global yarn
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-
     - name: Build Extension in Dev Mode
       run: |
         pip install -e .
