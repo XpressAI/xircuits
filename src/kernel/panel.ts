@@ -1,7 +1,7 @@
 import {
     ISessionContext,
     SessionContext,
-    sessionContextDialogs,
+    SessionContextDialogs,
 } from '@jupyterlab/apputils';
 import { OutputAreaModel, SimplifiedOutputArea } from '@jupyterlab/outputarea';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
@@ -65,13 +65,15 @@ export class OutputPanel extends StackedPanel {
             rendermime: rendermime,
         });
 
+        this._sessionContextDialogs = new SessionContextDialogs();
+
         this.addWidget(this._outputarea);
 
         void this._sessionContext
             .initialize()
             .then(async (value) => {
                 if (value) {
-                    await sessionContextDialogs.selectKernel(this._sessionContext);
+                    await this._sessionContextDialogs.selectKernel(this._sessionContext);
                     // Dispose panel when no kernel selected
                     if (this._sessionContext.hasNoKernel) {
                         super.dispose();
@@ -142,6 +144,7 @@ export class OutputPanel extends StackedPanel {
     private _sessionContext: SessionContext;
     private _outputarea: CustomOutputArea;
     private _outputareamodel: OutputAreaModel;
+    private _sessionContextDialogs: SessionContextDialogs;
     private _xircuitFactory: XircuitFactory;
 
     private _translator: ITranslator;

@@ -148,3 +148,5 @@ examples/*.py
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+.yarn/

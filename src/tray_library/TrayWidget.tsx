@@ -12,7 +12,11 @@ export const Tray = styled.div`
 	overflow-y: auto;
 `;
 
-export class TrayWidget extends React.Component {
+interface TrayWidgetProps {
+    children?: React.ReactNode;
+}
+
+export class TrayWidget extends React.Component<TrayWidgetProps> {
 	render() {
 		return <Tray>{this.props.children}</Tray>;
 	}

@@ -30,7 +30,7 @@ export class XPipePanel extends ReactWidget {
   mousePosition = { x: 0, y: 0 };
 
   constructor(options: any) {
-    super(options);
+    super();
     this.app = options.app;
     this.shell = options.shell;
     this.commands = options.commands;

@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 
 export interface DemoWorkspaceWidgetProps {
 	buttons?: any;
+	children?: any;
 }
 
 namespace S {

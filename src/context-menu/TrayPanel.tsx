@@ -12,7 +12,11 @@ export const Tray = styled.div`
 	max-height: auto;
 `;
 
-export class TrayPanel extends React.Component {
+interface TrayPanelProps {
+	children?: React.ReactNode;
+}
+
+export class TrayPanel extends React.Component<TrayPanelProps> {
 	render() {
 		return <Tray>{this.props.children}</Tray>;
 	}

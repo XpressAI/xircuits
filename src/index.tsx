@@ -120,20 +120,22 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     
     // Find the MainLogo widget in the shell and replace it with the Xircuits Logo
     const widgets = app.shell.widgets('top');
-    let widget = widgets.next();
-
-    while (widget !== undefined) {
+    let widgetIterator = widgets.next();
+    
+    while (!widgetIterator.done) {
+      const widget = widgetIterator.value;
+    
       if (widget.id === 'jp-MainLogo') {
         xircuitsIcon.element({
           container: widget.node,
-          justify: 'center',
+          elementPosition: 'center',
           height: 'auto',
           width: '25px'
         });
         break;
       }
-
-      widget = widgets.next();
+    
+      widgetIterator = widgets.next();
     }
 
     // Change the favicon
@@ -157,9 +159,17 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       icon: xircuitsIcon,
       caption: 'Create a new xircuits file',
       execute: () => {
+
+        const currentBrowser = browserFactory.tracker.currentWidget 
+
+        if (!currentBrowser) {
+          console.error('No active file browser found.');
+          return;
+        }
+
         app.commands
           .execute(commandIDs.newDocManager, {
-            path: browserFactory.defaultBrowser.model.path,
+            path: currentBrowser.model.path,
             type: 'file',
             ext: '.xircuits'
           })
