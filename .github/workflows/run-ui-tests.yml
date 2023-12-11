@@ -69,11 +69,11 @@ jobs:
         node-version: 18
 
     - name: Install dependencies
-      run: npm ci
+      run: jlpm install
 
     - name: Setup Playwright
       run: |
-        npx playwright install --with-deps
+        jlpm playwright install --with-deps
 
     - name: Install xvfb
       run: |
@@ -81,7 +81,7 @@ jobs:
 
     - name: Test E2E
       run: |
-        ( ls && jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset ) & npm install -D @playwright/test && cd ui-tests && xvfb-run npx playwright test e2e/datatype-test.spec.ts
+        ( ls && jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset ) & jlpm install -D @playwright/test && cd ui-tests && xvfb-run jlpm playwright test e2e/datatype-test.spec.ts
 
     - uses: actions/upload-artifact@v3
       if: failure()
