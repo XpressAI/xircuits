@@ -48,8 +48,12 @@ source = "nodejs"
 fields = ["description", "authors", "urls"]
 
 [tool.hatch.build.targets.sdist]
+include-only = [
+    "xai_components/",
+    "xircuits/",
+]
 artifacts = ["xircuits/labextension"]
-exclude = [".github", "binder"]
+exclude = [".github", "binder", "node_modules", "lib", ".yarn"]
 
 [tool.hatch.build.targets.wheel.shared-data]
 "xircuits/labextension" = "share/jupyter/labextensions/xircuits"
@@ -95,9 +99,6 @@ ignore = ["W002"]
 [project.scripts]
 xircuits = "xircuits.start_xircuits:main"
 
-[tool.hatch.build]
-ignore-vcs = true
-
 [tool.hatch.build.hooks.custom]
 path = "xircuits/hatch_build_hook.py"
 
@@ -106,3 +107,4 @@ include = [
     "xai_components/",
     "xircuits/",
 ]
+artifacts = ["xircuits/labextension"]
