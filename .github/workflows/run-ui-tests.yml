@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8","3.9","3.10", "3.11"]
+        python-version: ["3.8","3.9","3.10","3.11"]
 
     steps:
     - uses: actions/checkout@v3
@@ -69,7 +69,7 @@ jobs:
 
     - name: Test E2E
       run: |
-        ( ls && jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset ) & jlpm install -D @playwright/test && cd ui-tests && xvfb-run jlpm playwright test e2e/datatype-test.spec.ts
+        ( ls && jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset ) & cd ui-tests && jlpm install && jlpm playwright install && xvfb-run jlpm playwright test e2e/datatype-test.spec.ts
 
     - uses: actions/upload-artifact@v3
       if: failure()

@@ -44,27 +44,40 @@ export async function navigateThroughJupyterDirectories(page, url: string) {
     }
   }
 
-export async function cleanDirectory(page, url) {
+export async function cleanDirectoryFromUrl(page, url) {
     
     await page.goto('http://localhost:8888');
     await navigateThroughJupyterDirectories(page, url);
     await page.locator("xpath=//*[contains(@title, 'Start a new terminal session')]").first().click();
     await inputTerminalCommand(page, "rm -rf *");
+    await closeTab(page);
+}
 
+export async function cleanDirectoryFromRelativePath(page, path) {
+    
+    await page.goto('http://localhost:8888');
+    await startTerminalSession(page);
+    await inputTerminalCommand(page, `cd ${path}`)
+    await inputTerminalCommand(page, "rm -rf *");
+    await closeTab(page);
 }
 
 export async function copyFile(page, fileName, newFileName) {
     
     await startTerminalSession(page);
     await inputTerminalCommand(page, `cp ${fileName} ${newFileName}`);
-    
+    await closeTab(page);
 }
 
 export async function deleteFile(page, fileName) {
     
     await startTerminalSession(page);
     await inputTerminalCommand(page, `rm ${fileName}`);
-    
+    await closeTab(page);
+}
+
+export async function closeTab(page) {
+    await page.keyboard.press('Alt+W');
 }
 
 export async function compileAndRunXircuits(page: Page) {

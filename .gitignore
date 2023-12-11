@@ -145,8 +145,8 @@ tsconfig.tsbuildinfo
 examples/*.py
 
 # playwright files
-/test-results/
-/playwright-report/
+*/test-results/
+*/playwright-report/
 /playwright/.cache/
 
 .yarn/
