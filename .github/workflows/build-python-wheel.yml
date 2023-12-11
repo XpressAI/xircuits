@@ -16,10 +16,10 @@ jobs:
 
     steps:
     
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -37,14 +37,16 @@ jobs:
     - name: Check Hash
       run: echo "$env.git_hash"
 
-    - name: Setup Build Env
-      run: |
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-        . ~/.nvm/nvm.sh
-        nvm install 14.15.3
-        nvm use 14.15.3
-        npm install --global yarn
-        python -m pip install --upgrade pip
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Install Yarn
+      run: npm install --global yarn
+
+    - name: Upgrade pip
+      run: python -m pip install --upgrade pip
 
     - name: Build Extension in Dev Mode
       run: |

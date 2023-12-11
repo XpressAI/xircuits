@@ -2,7 +2,7 @@ name: Frontend Playwright Tests
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ master ]
   pull_request:
     branches: "*"
 
@@ -36,13 +36,13 @@ jobs:
     - name: Check Hash
       run: echo "$env.git_hash"
 
-    - name: Setup Build Env
-      run: |
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-        . ~/.nvm/nvm.sh
-        nvm install 14.15.3
-        nvm use 14.15.3
-        npm install --global yarn
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Install Yarn
+      run: npm install --global yarn
 
     - name: Build Extension in Dev Mode
       run: |
@@ -62,17 +62,6 @@ jobs:
     - name: Install Xircuits Test Component Library
       run: |
         xircuits install tests
-
-
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
-
-    - name: Setup Playwright
-      run: |
-        cd ui-tests
-        jlpm install
-        jlpm playwright install --with-deps
 
     - name: Install xvfb
       run: |
