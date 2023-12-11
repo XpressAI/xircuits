@@ -68,11 +68,10 @@ jobs:
       with:
         node-version: 18
 
-    - name: Install dependencies
-      run: jlpm install
-
     - name: Setup Playwright
       run: |
+        cd ui-tests
+        jlpm install
         jlpm playwright install --with-deps
 
     - name: Install xvfb
