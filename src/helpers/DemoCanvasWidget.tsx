@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 export interface DemoCanvasWidgetProps {
 	color?: string;
 	background?: string;
+	children?: any;
 }
 
 //namespace S {

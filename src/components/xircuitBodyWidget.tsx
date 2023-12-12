@@ -2,7 +2,7 @@ import React, { FC, useState, useCallback, useEffect, useRef } from 'react';
 
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import { LinkModel } from '@projectstorm/react-diagrams';
-import { NodeModel } from "@projectstorm/react-diagrams-core/src/entities/node/NodeModel";
+import { NodeModel } from "@projectstorm/react-diagrams";
 
 import { Dialog, showDialog, showErrorMessage } from '@jupyterlab/apputils';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
@@ -27,8 +27,6 @@ import { AdvancedComponentLibrary, fetchNodeByName } 	from '../tray_library/Adva
 import { lowPowerMode, setLowPowerMode } from './state/powerModeState';
 
 import styled from '@emotion/styled';
-import 'rc-dialog/assets/bootstrap.css';
-
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -224,7 +222,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					})
 				}
 			} catch (e) {
-				showErrorMessage('Error', <pre>{e}</pre>)
+				showErrorMessage('Error', `An error occurred: ${e.message}`);
 			}
 		};
 
@@ -885,8 +883,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			x: 105,
 			y: 290
 		}
-		const fileBrowserWidth = document.getElementsByClassName("p-SplitPanel-child")[1].clientWidth;
+		let fileBrowserWidth = document.getElementsByClassName("jp-SidePanel")[0].parentElement.clientWidth;
 		const tabWidth = document.getElementsByClassName("lm-TabBar")[0].clientWidth;
+		
 		const yOffset = 84
 		if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
 			// Bottom right

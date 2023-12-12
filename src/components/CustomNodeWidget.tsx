@@ -11,7 +11,7 @@ import { Dialog } from '@jupyterlab/apputils';
 import { formDialogWidget } from '../dialog/formDialogwidget';
 import { showFormDialog } from '../dialog/FormDialog';
 import { CommentDialog } from '../dialog/CommentDialog';
-import ReactTooltip from 'react-tooltip';
+import ReactTooltip from "react-tooltip"
 import { marked } from 'marked';
 
 var S;
