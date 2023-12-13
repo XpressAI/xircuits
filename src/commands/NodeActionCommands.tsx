@@ -77,22 +77,15 @@ export function addNodeActionCommands(
             }
 
             // Open node's file name
-            const newWidget = await app.commands.execute(
-                commandIDs.openDocManager,
-                {
-                    path: nodePath
-                }
-            );
-            newWidget.context.ready.then(() => {
-                // Go to end of node's line first before go to its class
-                app.commands.execute('fileeditor:go-to-line', {
-                    line: nodeLineNo[0].end_lineno
-                }).then(() => {
-                    app.commands.execute('fileeditor:go-to-line', {
-                        line: nodeLineNo[0].lineno
-                    })
-                })
-            });
+            const newWidget = await app.commands.execute(commandIDs.openDocManager, { path: nodePath });
+            await newWidget.context.ready;
+
+            // Go to end of node's line first before go to its class
+            await app.commands.execute('fileeditor:go-to-line', { line: nodeLineNo[0].end_lineno });
+
+            await new Promise(resolve => setTimeout(resolve, 10));
+            // Then go to the specific line
+            await app.commands.execute('fileeditor:go-to-line', { line: nodeLineNo[0].lineno });
         }
     });
 
