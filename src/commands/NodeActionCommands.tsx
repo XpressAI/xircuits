@@ -17,8 +17,6 @@ import { formDialogWidget } from '../dialog/formDialogwidget';
 import { CommentDialog } from '../dialog/CommentDialog';
 import React from 'react';
 import { showFormDialog } from '../dialog/FormDialog';
-import { inputDialog } from '../dialog/LiteralInputDialog';
-import { checkInput } from '../helpers/InputSanitizer';
 import { CustomPortModel } from '../components/port/CustomPortModel';
 import { CustomLinkModel, ParameterLinkModel, TriangleLinkModel } from '../components/link/CustomLinkModel';
 import { PointModel } from '@projectstorm/react-diagrams';
@@ -58,11 +56,18 @@ export function addNodeActionCommands(
     //Add command to open node's script at specific line
     commands.addCommand(commandIDs.openScript, {
         execute: async (args) => {
-            const node = getLastSelectedNode();
-            const nodePath = args['nodePath'] as string ?? node.extras.path;
-            const nodeName = args['nodeName'] as string ?? node.name;
-            const nodeLineNo = args['nodeLineNo'] as number ?? node.extras.lineNo;
+            let node, nodePath, nodeName, nodeLineNo;
 
+            // call getLastSelectedNode() if opened from Xircuits canvas
+            if (args['nodePath'] === undefined && args['nodeName'] === undefined && args['nodeLineNo'] === undefined) {
+                node = getLastSelectedNode();
+            }
+    
+            // Assign values based on whether args were provided or derived from getLastSelectedNode()
+            nodePath = args['nodePath'] ?? node?.extras.path;
+            nodeName = args['nodeName'] ?? node?.name;
+            nodeLineNo = args['nodeLineNo'] ?? node?.extras.lineNo;
+    
             if (nodeName.startsWith('Literal') || nodeName.startsWith('Argument')) {
                 showDialog({
                     title: `${node.name} don't have its own script`,
