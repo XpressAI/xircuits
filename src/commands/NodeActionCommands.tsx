@@ -17,8 +17,6 @@ import { formDialogWidget } from '../dialog/formDialogwidget';
 import { CommentDialog } from '../dialog/CommentDialog';
 import React from 'react';
 import { showFormDialog } from '../dialog/FormDialog';
-import { inputDialog } from '../dialog/LiteralInputDialog';
-import { checkInput } from '../helpers/InputSanitizer';
 import { CustomPortModel } from '../components/port/CustomPortModel';
 import { CustomLinkModel, ParameterLinkModel, TriangleLinkModel } from '../components/link/CustomLinkModel';
 import { PointModel } from '@projectstorm/react-diagrams';
@@ -58,11 +56,18 @@ export function addNodeActionCommands(
     //Add command to open node's script at specific line
     commands.addCommand(commandIDs.openScript, {
         execute: async (args) => {
-            const node = getLastSelectedNode();
-            const nodePath = args['nodePath'] as string ?? node.extras.path;
-            const nodeName = args['nodeName'] as string ?? node.name;
-            const nodeLineNo = args['nodeLineNo'] as number ?? node.extras.lineNo;
+            let node, nodePath, nodeName, nodeLineNo;
 
+            // call getLastSelectedNode() if opened from Xircuits canvas
+            if (args['nodePath'] === undefined && args['nodeName'] === undefined && args['nodeLineNo'] === undefined) {
+                node = getLastSelectedNode();
+            }
+    
+            // Assign values based on whether args were provided or derived from getLastSelectedNode()
+            nodePath = args['nodePath'] ?? node?.extras.path;
+            nodeName = args['nodeName'] ?? node?.name;
+            nodeLineNo = args['nodeLineNo'] ?? node?.extras.lineNo;
+    
             if (nodeName.startsWith('Literal') || nodeName.startsWith('Argument')) {
                 showDialog({
                     title: `${node.name} don't have its own script`,
@@ -72,22 +77,15 @@ export function addNodeActionCommands(
             }
 
             // Open node's file name
-            const newWidget = await app.commands.execute(
-                commandIDs.openDocManager,
-                {
-                    path: nodePath
-                }
-            );
-            newWidget.context.ready.then(() => {
-                // Go to end of node's line first before go to its class
-                app.commands.execute('codemirror:go-to-line', {
-                    line: nodeLineNo[0].end_lineno
-                }).then(() => {
-                    app.commands.execute('codemirror:go-to-line', {
-                        line: nodeLineNo[0].lineno
-                    })
-                })
-            });
+            const newWidget = await app.commands.execute(commandIDs.openDocManager, { path: nodePath });
+            await newWidget.context.ready;
+
+            // Go to end of node's line first before go to its class
+            await app.commands.execute('fileeditor:go-to-line', { line: nodeLineNo[0].end_lineno });
+
+            await new Promise(resolve => setTimeout(resolve, 10));
+            // Then go to the specific line
+            await app.commands.execute('fileeditor:go-to-line', { line: nodeLineNo[0].lineno });
         }
     });
 
