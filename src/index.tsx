@@ -27,7 +27,7 @@ import { Token } from '@lumino/coreutils';
 import { DockLayout } from '@lumino/widgets';
 import { xircuitsIcon, debuggerIcon, componentLibIcon, changeFavicon, xircuitsFaviconLink } from './ui-components/icons';
 import { startRunOutputStr } from './kernel/RunOutput';
-
+import { startTour } from './sheperd/tour';
 
 const FACTORY = 'Xircuits editor';
 
@@ -188,6 +188,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
             });
           });
       }
+
+      
     });
 
     async function requestToGenerateCompileFile(path: string, python_paths: any) {
@@ -384,6 +386,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         category: 'Other'
       });
     }
+    console.log("Starting tour!")
+    startTour();
   },
 };
 
