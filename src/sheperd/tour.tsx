@@ -1,7 +1,7 @@
 import Shepherd from 'shepherd.js';
 import 'shepherd.js/dist/css/shepherd.css';
 import { offset } from '@floating-ui/dom';
-import { findElementByText } from './utils';
+import { findElementByText, waitForElement, waitForNextElement } from './utils';
 
 export function startTour() {
   const tour = new Shepherd.Tour({
@@ -314,8 +314,9 @@ export function startTour() {
       {
         id: 'component-library-7',
         title: 'Adding Parameters',
-        text: ["Finally, connect the `Literal String` component to `Print` `msg` inPort. The final step should look like this. <img src='https://github.com/XpressAI/xircuits/assets/68586800/80c77edf-7ea8-40a7-9ebf-0812d5a41d11' style='width: auto; height: auto;'>"],
-        attachTo: {
+        text: [
+          `Finally, connect the <code>Literal String</code> component to <code>Print</code> <code>msg</code> inPort. The final step should look like this. </br> <img src='https://github.com/XpressAI/xircuits/assets/68586800/80c77edf-7ea8-40a7-9ebf-0812d5a41d11' style='max-width: 100%; max-height: 100%; width: auto; height: auto; display: block; margin: 0 auto;'>`
+        ],        attachTo: {
           element: ".lm-Widget.lm-Panel.lm-SplitPanel.lm-BoxPanel-child",
           on: 'bottom'
         },
@@ -344,6 +345,21 @@ export function startTour() {
         },
         buttons: [
           {
+            action: () => waitForNextElement(tour, '.lm-Widget.jp-RenderedText.jp-OutputArea-output'),
+            text: 'Next'
+          }
+        ],
+      },
+      {
+        id: 'running-xircuits-2',
+        title: 'Running a Xircuits Workflow',
+        text: ["This is the output panel. The results of the workflow should be displayed here."],
+        attachTo: {
+          element: '.lm-Widget.jp-RenderedText.jp-OutputArea-output',
+          on: 'top'
+        },
+        buttons: [
+          {
             action: tour.next,
             text: 'Next'
           }
@@ -351,7 +367,8 @@ export function startTour() {
       },
       {
         id: 'followup',
-        text: 'Star Xicuits on Github so you remember it for your next project!',
+        title: 'Tutorial Completed',
+        text: `You've finished the tutorial. You can check the <a href="https://www.xircuits.io" target="_blank">Xircuits website</a> for the next step! Don't forget to star Xicuits on Github!`,
         scrollTo: true,
         buttons: [
           {
