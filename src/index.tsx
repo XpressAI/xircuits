@@ -78,7 +78,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       app: app,
       shell: app.shell,
       commands: app.commands,
-      serviceManager: app.serviceManager
+      serviceManager: app.serviceManager,
+      documentManager: docmanager,
     });
 
     // register the filetype

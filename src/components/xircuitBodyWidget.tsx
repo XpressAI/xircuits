@@ -8,6 +8,7 @@ import { Dialog, showDialog, showErrorMessage } from '@jupyterlab/apputils';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { ServiceManager } from '@jupyterlab/services';
+import { DocumentManager } from '@jupyterlab/docmanager';
 import { Signal } from '@lumino/signaling';
 
 import { XPipePanel } 			from '../xircuitWidget';
@@ -36,6 +37,7 @@ export interface BodyWidgetProps {
 	commands: any;
 	widgetId?: string;
 	serviceManager: ServiceManager;
+	documentManager: DocumentManager;
 	fetchComponentsSignal: Signal<XPipePanel, any>;
 	saveXircuitSignal: Signal<XPipePanel, any>;
 	compileXircuitSignal: Signal<XPipePanel, any>;
@@ -102,6 +104,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	app,
 	shell,
 	commands,
+	documentManager,
 	widgetId,
 	fetchComponentsSignal,
 	saveXircuitSignal,
@@ -981,7 +984,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		if (current_node != undefined) {
 			if (current_node.header == "GENERAL") {
-				node = await GeneralComponentLibrary({ model: current_node });
+				node = await GeneralComponentLibrary({ model: current_node, documentManager: documentManager });
 			} else if (current_node.header == "ADVANCED") {
 				node = AdvancedComponentLibrary({ model: current_node });
 			}

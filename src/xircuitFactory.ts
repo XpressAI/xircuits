@@ -27,6 +27,7 @@ import { ToolbarButton } from '@jupyterlab/apputils';
 import { commandIDs } from './components/xircuitBodyWidget';
 import { LoggerCommandIDs } from './log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
+import { DocumentManager } from '@jupyterlab/docmanager';
 import { RunSwitcher } from './components/RunSwitcher';
 import { lockIcon, reloadAllIcon, xircuitsIcon, toggleAnimationIcon } from './ui-components/icons';
 const XPIPE_CLASS = 'xircuits-editor';
@@ -37,6 +38,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
   shell: ILabShell;
   commands: any;
   serviceManager: ServiceManager;
+  documentManager: DocumentManager;
   fetchComponentsSignal: Signal<this, any>;
   saveXircuitSignal: Signal<this, any>;
   compileXircuitSignal: Signal<this, any>;
@@ -53,6 +55,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
     this.shell = options.shell;
     this.commands = options.commands;
     this.serviceManager = options.serviceManager;
+    this.documentManager = options.documentManager;
     this.fetchComponentsSignal = new Signal<this, any>(this);
     this.saveXircuitSignal = new Signal<this, any>(this);
     this.compileXircuitSignal = new Signal<this, any>(this);
@@ -71,6 +74,7 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
       commands: this.commands,
       context: context,
       serviceManager: this.serviceManager,
+      documentManager: this.documentManager,
       fetchComponentsSignal: this.fetchComponentsSignal,
       saveXircuitSignal: this.saveXircuitSignal,
       compileXircuitSignal: this.compileXircuitSignal,

@@ -5,6 +5,7 @@ import { Context } from '@jupyterlab/docregistry';
 import { BodyWidget } from './components/xircuitBodyWidget';
 import React from 'react';
 import { ServiceManager } from '@jupyterlab/services';
+import { DocumentManager } from '@jupyterlab/docmanager';
 import { XircuitsApplication } from './components/XircuitsApp';
 
 /**
@@ -17,6 +18,7 @@ export class XPipePanel extends ReactWidget {
   context: Context;
   xircuitsApp: XircuitsApplication;
   serviceManager: ServiceManager;
+  documentManager: DocumentManager;
   fetchComponentsSignal: Signal<this,any>;
   saveXircuitSignal: Signal<this, any>;
   compileXircuitSignal: Signal<this, any>;
@@ -36,6 +38,7 @@ export class XPipePanel extends ReactWidget {
     this.commands = options.commands;
     this.context = options.context;
     this.serviceManager = options.serviceManager;
+    this.documentManager = options.documentManager;
     this.fetchComponentsSignal = options.fetchComponentsSignal;
     this.saveXircuitSignal = options.saveXircuitSignal;
     this.compileXircuitSignal = options.compileXircuitSignal;
@@ -86,6 +89,7 @@ export class XPipePanel extends ReactWidget {
         commands={this.commands}
         widgetId={this.parent?.id}
         serviceManager={this.serviceManager}
+        documentManager={this.documentManager}
         fetchComponentsSignal={this.fetchComponentsSignal}
         saveXircuitSignal={this.saveXircuitSignal}
         compileXircuitSignal={this.compileXircuitSignal}

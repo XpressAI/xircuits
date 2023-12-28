@@ -2,10 +2,12 @@ import { CustomNodeModel } from "../components/CustomNodeModel";
 import { inputDialog } from "../dialog/LiteralInputDialog";
 import { showFormDialog } from "../dialog/FormDialog";
 import { checkInput } from "../helpers/InputSanitizer";
+import { FileDialog } from "@jupyterlab/filebrowser";
 
 interface GeneralComponentLibraryProps{
     model : any;
     variableValue?: any;
+    documentManager?: any;
 }
 
 export function cancelDialog(dialogResult) {
@@ -54,12 +56,33 @@ async function handleArgumentInput(nodeData, argumentTitle) {
     return node;
 }
 
+async function handleNotebookComponent(nodeData, docmanager) {
+    
+    const manager = docmanager;
+    const dialog = FileDialog.getOpenFiles({
+        manager,
+        filter: model => {
+            if (model.type === 'notebook') {
+                return { score: 1, indices: null }; 
+            }
+            return null;
+        }
+    });
+    const result = await dialog;
+
+    if(!result.button.accept) return
+
+    let files = result.value;
+    
+}
+
 export async function GeneralComponentLibrary(props: GeneralComponentLibraryProps){
     
     let node = null;
     const nodeData = props.model;
     const variableValue = props.variableValue || '';
     const nodeName = nodeData.task;
+    const documentManager = props.documentManager;
 
     // handler for Boolean
     if (nodeData.type === 'boolean' && nodeName.startsWith("Literal")) {
@@ -82,6 +105,10 @@ export async function GeneralComponentLibrary(props: GeneralComponentLibraryProp
 
     if (TYPE_ARGUMENTS.includes(nodeData.type)) {
         return handleArgumentInput(nodeData, 'Please define parameter');
+    }
+
+    if (nodeData.type === 'notebook'){
+        return handleNotebookComponent(nodeData, documentManager);
     }
 
     return null;
