@@ -5,6 +5,7 @@ from .components import ComponentsRouteHandler
 from .config import RunConfigRouteHandler, SplitModeConfigHandler
 from .debugger import DebuggerRouteHandler
 from .spark_submit import SparkSubmitRouteHandler
+from .convert_notebook import ConvertNotebookHandler
 
 
 def setup_handlers(web_app, url_path):
@@ -22,8 +23,8 @@ def setup_handlers(web_app, url_path):
             RunConfigRouteHandler
         ),
         (
-        url_path_join(base_url, url_path, "config/split_mode"),
-        SplitModeConfigHandler
+            url_path_join(base_url, url_path, "config/split_mode"),
+            SplitModeConfigHandler
         ),
         (
             url_path_join(base_url, url_path, "components/"),
@@ -36,6 +37,9 @@ def setup_handlers(web_app, url_path):
         (
             url_path_join(base_url, url_path, "file/compile"),
             CompileXircuitsFileRouteHandler
+        ),
+        (
+            url_path_join(base_url, url_path, "notebook/convert"),
+            ConvertNotebookHandler
         )
-
     ])

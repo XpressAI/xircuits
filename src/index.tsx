@@ -236,6 +236,45 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     });
 
+    async function requestToConvertNotebook(path: string) {
+      const data = {
+        "outPath": path.split(".ipynb")[0] + ".py",
+        "filePath": path,
+      };
+
+      try {
+        return await requestAPI<any>('notebook/convert', {
+          body: JSON.stringify(data),
+          method: 'POST',
+        });
+
+      } catch (reason) {
+        console.error(
+          'Error on POST /xircuits/notebook/convert', data, reason
+        );
+      }
+    }
+
+    app.commands.addCommand(commandIDs.convertNotebook, {
+      execute: async args => {
+        const path = tracker.currentWidget.context.path;
+        const showOutput = typeof args['showOutput'] === undefined ? false : (args['showOutput'] as boolean);
+
+        const request = await requestToConvertNotebook(path);
+
+        if (request["message"] == "completed") {
+          const notebook_path = path.split(".ipynb")[0] + ".py";
+          docmanager.closeFile(notebook_path);
+          if (showOutput) {
+            alert(`${notebook_path} successfully converted!`);
+          }
+        } else {
+          console.log(request["message"])
+          alert("Failed to convert notebook. Please check console logs for more details.");
+        }
+      }
+    });
+
     let outputPanel: OutputPanel;
     /**
       * Creates a output panel.

@@ -26,6 +26,7 @@ import { NodeActionsPanel } 	from '../context-menu/NodeActionsPanel';
 import { cancelDialog, GeneralComponentLibrary } 		from '../tray_library/GeneralComponentLib';
 import { AdvancedComponentLibrary, fetchNodeByName } 	from '../tray_library/AdvanceComponentLib';
 import { lowPowerMode, setLowPowerMode } from './state/powerModeState';
+import { handleNotebookComponent } from './notebook/NotebookHandler';
 
 import styled from '@emotion/styled';
 
@@ -92,6 +93,7 @@ export const commandIDs = {
 	connectLinkToObviousPorts: 'Xircuit-editor:connect-obvious-link',
 	addCommentNode: 'Xircuit-editor:add-comment-node',
 	compileFile: 'Xircuit-editor:compile-file',
+	convertNotebook: 'Xircuit-editor:convert-notebook',
 	nextNode: 'Xircuit-editor:next-node',
 	outputMsg: 'Xircuit-log:logOutputMessage',
 	executeToOutputPanel: 'Xircuit-output-panel:execute'
@@ -984,7 +986,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		if (current_node != undefined) {
 			if (current_node.header == "GENERAL") {
-				node = await GeneralComponentLibrary({ model: current_node, documentManager: documentManager });
+				if (current_node.type == "notebook"){
+					node = await handleNotebookComponent(current_node, app, documentManager)
+				} else
+				{
+					node = await GeneralComponentLibrary({ model: current_node });
+				}
 			} else if (current_node.header == "ADVANCED") {
 				node = AdvancedComponentLibrary({ model: current_node });
 			}

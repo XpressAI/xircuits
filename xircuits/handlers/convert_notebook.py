@@ -1,6 +1,8 @@
 import json
 import os
 import argparse
+import tornado
+from jupyter_server.base.handlers import APIHandler
 from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component, dynalist, dynatuple, dynadict
 
 def parse_args(cell):
@@ -12,7 +14,7 @@ def parse_args(cell):
             args.append(arg_line)
 
             # Identify InArg and OutArg names
-            if "InArg" or "InCompArg" in arg_line:
+            if "InArg" in arg_line or "InCompArg" in arg_line:
                 in_args.append(arg_line.split(':')[0].strip())
             elif "OutArg" in arg_line:
                 out_args.append(arg_line.split(':')[0].strip())
@@ -68,6 +70,27 @@ def save_component_script(notebook_path):
     with open(output_path, 'w', encoding='utf-8') as file:
         file.write(component_code)
     print(f"Component script saved as {output_path}")
+    return output_path
+
+# routes added for jupyter server
+class ConvertNotebookHandler(APIHandler):
+    @tornado.web.authenticated
+    def get(self):
+        self.finish(json.dumps({"data": "This is notebook/convert endpoint!"}))
+
+    @tornado.web.authenticated
+    def post(self):
+        input_data = self.get_json_body()
+        notebook_path = input_data["filePath"]
+
+        try:
+            output_path = save_component_script(notebook_path)
+            msg = f"{output_path}"
+        except Exception as e:
+            msg = f"Error: {str(e)}"
+        
+        self.finish(json.dumps({"message": msg}))
+
 
 def main():
     parser = argparse.ArgumentParser(description="Convert a Jupyter Notebook to a Xircuits component")
