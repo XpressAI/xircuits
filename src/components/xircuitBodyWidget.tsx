@@ -21,7 +21,7 @@ import { getItsLiteralType } 	from '../dialog/input-dialogues/VariableInput';
 import { RunDialog } 			from '../dialog/RunDialog';
 import { requestAPI } 			from '../server/handler';
 import ComponentsPanel 			from '../context-menu/ComponentsPanel';
-import { NodeActionsPanel } 	from '../context-menu/NodeActionsPanel';
+import { NodeActionsPanel, countVisibleMenuOptions, getMenuOptionsVisibility } 	from '../context-menu/NodeActionsPanel';
 import { cancelDialog, GeneralComponentLibrary } 		from '../tray_library/GeneralComponentLib';
 import { AdvancedComponentLibrary, fetchNodeByName } 	from '../tray_library/AdvanceComponentLib';
 import { lowPowerMode, setLowPowerMode } from './state/powerModeState';
@@ -878,10 +878,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			x: canvas.innerWidth / 2,
 			y: canvas.innerHeight / 2,
 		}
-		console.log(newCenterPosition.x,newPanelPosition.x,newCenterPosition.y,newPanelPosition.y)
+		// console.log(newCenterPosition.x,newPanelPosition.x,newCenterPosition.y,newPanelPosition.y)
+		
+		const menuOptionHeight = 30;
+		let visibleOptions = getMenuOptionsVisibility(xircuitsApp.getDiagramEngine().getModel().getSelectedEntities())
+		let numVisibleOptions = countVisibleMenuOptions(visibleOptions);
 		const menuDimension = {
 			x: 105,
-			y: 290
+			y: menuOptionHeight*numVisibleOptions,
 		}
 		let fileBrowserWidth = document.getElementsByClassName("jp-SidePanel")[0].parentElement.clientWidth;
 		const tabWidth = document.getElementsByClassName("lm-TabBar")[0].clientWidth;

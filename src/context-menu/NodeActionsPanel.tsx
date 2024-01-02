@@ -24,32 +24,9 @@ export class NodeActionsPanel extends React.Component<NodeActionsPanelProps> {
 		this.props.engine.fireEvent({}, 'hidePanel');
 	};
 	
-    isParameterNode(node) {
-        return node.getOptions()["name"].startsWith("Literal");
-    }
-
-    getMenuOptionsVisibility(models) {
-        let isNodeSelected = models.some(model => model instanceof NodeModel);
-        let isLinkSelected = models.some(model => model instanceof LinkModel);
-        let parameterNodes = models.filter(model => this.isParameterNode(model));
-        let isSingleParameterNodeSelected = parameterNodes.length === 1;
-        let multipleNodesSelected = models.filter(model => model instanceof NodeModel).length > 1;
-        let multipleLinksSelected = models.filter(model => model instanceof LinkModel).length > 1;
-
-        return {
-            showCutCopyPaste: !models.length || isNodeSelected || isLinkSelected,
-            showReloadNode: isNodeSelected && !multipleLinksSelected,
-            showEdit: isSingleParameterNodeSelected,
-            showOpenScript: isNodeSelected && !multipleNodesSelected,
-            showDelete: isNodeSelected || isLinkSelected || parameterNodes.length > 0,
-            showUndoRedo: !models.length,
-            showAddComment: !models.length
-        };
-    }
-
     render() {
         let models = this.props.engine.getModel().getSelectedEntities();
-        let visibility = this.getMenuOptionsVisibility(models);
+        let visibility = getMenuOptionsVisibility(models);
 
         return (
             <ActionPanel onClick={this.hideNodeActionPanel.bind(this)}>
@@ -84,4 +61,44 @@ export class NodeActionsPanel extends React.Component<NodeActionsPanelProps> {
             </ActionPanel>
         );
     }
+}
+
+export function getMenuOptionsVisibility(models) {
+
+	function isParameterNode(node) {
+		return node.getOptions()["name"].startsWith("Literal");
+	}
+	
+	let isNodeSelected = models.some(model => model instanceof NodeModel);
+	let isLinkSelected = models.some(model => model instanceof LinkModel);
+	let parameterNodes = models.filter(model => isParameterNode(model));
+	let isSingleParameterNodeSelected = parameterNodes.length === 1;
+	let multipleNodesSelected = models.filter(model => model instanceof NodeModel).length > 1;
+	let multipleLinksSelected = models.filter(model => model instanceof LinkModel).length > 1;
+
+	return {
+		showCutCopyPaste: !models.length || isNodeSelected || isLinkSelected,
+		showReloadNode: isNodeSelected && !multipleLinksSelected,
+		showEdit: isSingleParameterNodeSelected,
+		showOpenScript: isNodeSelected && !multipleNodesSelected,
+		showDelete: isNodeSelected || isLinkSelected || parameterNodes.length > 0,
+		showUndoRedo: !models.length,
+		showAddComment: !models.length
+	};
+}
+
+export function countVisibleMenuOptions(visibility) {
+    let count = Object.values(visibility).filter(isVisible => isVisible).length;
+
+    // Adjusting the count for grouped options
+    if (visibility.showCutCopyPaste) {
+        // Cut, Copy, and Paste are grouped
+        count += 2; // Adding for Copy and Paste
+    }
+    if (visibility.showUndoRedo) {
+        // Undo and Redo are grouped
+        count += 1; // Adding for Redo
+    }
+
+    return count;
 }
