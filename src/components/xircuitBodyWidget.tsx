@@ -1057,7 +1057,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								className="node-action-context-menu">
 								<NodeActionsPanel
 									app={app}
-									eng={xircuitsApp.getDiagramEngine()}
+									engine={xircuitsApp.getDiagramEngine()}
 									nodePosition={nodePosition}
 								></NodeActionsPanel>
 							</div>
