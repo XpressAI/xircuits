@@ -1,6 +1,6 @@
 import * as SRD from '@projectstorm/react-diagrams';
-import { CustomNodeFactory } from "./CustomNodeFactory";
-import { CustomNodeModel } from './CustomNodeModel';
+import { CustomNodeFactory } from "./node/CustomNodeFactory";
+import { CustomNodeModel } from './node/CustomNodeModel';
 import { ZoomCanvasAction } from '@projectstorm/react-canvas-core';
 import { CustomActionEvent } from '../commands/CustomActionEvent';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';

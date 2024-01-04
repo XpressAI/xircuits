@@ -8,7 +8,7 @@ import {
   JupyterFrontEnd
 } from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
-import { XPipePanel } from './xircuitWidget';
+import { XircuitsPanel } from './XircuitsWidget';
 import {
   bugIcon,
   checkIcon,
@@ -24,14 +24,14 @@ import {
   undoIcon
 } from '@jupyterlab/ui-components';
 import { ToolbarButton } from '@jupyterlab/apputils';
-import { commandIDs } from './components/xircuitBodyWidget';
+import { commandIDs } from './components/XircuitsBodyWidget';
 import { LoggerCommandIDs } from './log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
 import { RunSwitcher } from './components/RunSwitcher';
 import { lockIcon, reloadAllIcon, xircuitsIcon, toggleAnimationIcon } from './ui-components/icons';
-const XPIPE_CLASS = 'xircuits-editor';
+const XIRCUITS_CLASS = 'xircuits-editor';
 
-export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
+export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
 
   app: JupyterFrontEnd;
   shell: ILabShell;
@@ -83,10 +83,10 @@ export class XircuitFactory extends ABCWidgetFactory<DocumentWidget> {
 
     };
 
-    const content = new XPipePanel(props);
+    const content = new XircuitsPanel(props);
 
     const widget = new DocumentWidget({ content, context });
-    widget.addClass(XPIPE_CLASS);
+    widget.addClass(XIRCUITS_CLASS);
     widget.title.icon = xircuitsIcon;
 
     /**

@@ -21,7 +21,7 @@ import {
   ITextLog,
   IOutputLog,
 } from '@jupyterlab/logconsole';
-import { commandIDs } from '../components/xircuitBodyWidget';
+import { commandIDs } from '../components/XircuitsBodyWidget';
 import { requestAPI } from '../server/handler';
 import { DockLayout } from '@lumino/widgets';
 

@@ -1,7 +1,7 @@
 import { ReactWidget, UseSignal } from '@jupyterlab/apputils';
 import { HTMLSelect } from '@jupyterlab/ui-components';
 import React from 'react';
-import { XircuitFactory } from '../xircuitFactory';
+import { XircuitsFactory } from '../XircuitsFactory';
 
 /**
  * A toolbar widget that switches output types.
@@ -10,7 +10,7 @@ export class RunSwitcher extends ReactWidget {
     /**
      * Construct a new output type switcher.
      */
-    constructor(widget: XircuitFactory) {
+    constructor(widget: XircuitsFactory) {
         super();
         this._output = widget;
     }
@@ -62,5 +62,5 @@ export class RunSwitcher extends ReactWidget {
             </UseSignal>
         );
     }
-    private _output: XircuitFactory;
+    private _output: XircuitsFactory;
 }

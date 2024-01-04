@@ -19,7 +19,7 @@ import {
 } from "react-accessible-accordion";
 
 import { requestAPI } from '../server/handler';
-import { XircuitFactory } from '../xircuitFactory';
+import { XircuitsFactory } from '../XircuitsFactory';
 
 export const Body = styled.div`
   flex-grow: 1;
@@ -73,8 +73,36 @@ const colorList_general = [
 
 export interface SidebarProps {
     lab: JupyterFrontEnd;
-    factory: XircuitFactory;
+    factory: XircuitsFactory;
 }
+
+async function requestToInstallLibrary(libraryName: string) {
+    const data = {
+      "libraryName": libraryName,
+    };
+  
+    try {
+      return await requestAPI<any>('library/install', {
+        body: JSON.stringify(data),
+        method: 'POST',
+      });
+    } catch (reason) {
+      console.error('Error on POST /library/install', data, reason);
+    }
+}
+
+const handleRightClick = async (e, val) => {
+    e.preventDefault();
+    console.log(val);
+  
+    try {
+      const response = await requestToInstallLibrary(val);
+      console.log('Installation Response:', response);
+    } catch (error) {
+      console.error('Installation Failed:', error);
+    }
+};
+  
 
 async function fetchComponent(componentList: string[]) {
     let component_root = componentList.map(x => x["category"]);
@@ -203,7 +231,7 @@ export default function Sidebar(props: SidebarProps) {
                                     return (
                                         <AccordionItem key={`index-1-${val["task"].toString()}`}>
                                             <AccordionItemHeading>
-                                                <AccordionItemButton>{val["task"]}</AccordionItemButton>
+                                                <AccordionItemButton onContextMenu={(e) => handleRightClick(e, val["task"])}>{val["task"]}</AccordionItemButton>
                                             </AccordionItemHeading>
                                             <AccordionItemPanel>
                                                 {

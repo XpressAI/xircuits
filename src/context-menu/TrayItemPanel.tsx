@@ -4,9 +4,9 @@ import styled from '@emotion/styled';
 
 import { JupyterFrontEnd } from '@jupyterlab/application';
 import { DefaultLinkModel, DiagramEngine } from '@projectstorm/react-diagrams';
-import { CustomNodeModel } from '../components/CustomNodeModel';
+import { CustomNodeModel } from '../components/node/CustomNodeModel';
 import { GeneralComponentLibrary } from '../tray_library/GeneralComponentLib';
-import { commandIDs } from '../components/xircuitBodyWidget';
+import { commandIDs } from '../components/XircuitsBodyWidget';
 import { AdvancedComponentLibrary } from '../tray_library/AdvanceComponentLib';
 
 export interface TrayItemWidgetProps {

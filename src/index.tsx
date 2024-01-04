@@ -5,14 +5,14 @@ import {
   ILayoutRestorer
 } from '@jupyterlab/application';
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
-import { commandIDs } from './components/xircuitBodyWidget';
+import { commandIDs } from './components/XircuitsBodyWidget';
 import {
   WidgetTracker,
   ReactWidget,
   IWidgetTracker
 } from '@jupyterlab/apputils';
 import { ILauncher } from '@jupyterlab/launcher';
-import { XircuitFactory } from './xircuitFactory';
+import { XircuitsFactory } from './XircuitsFactory';
 import Sidebar from './tray_library/Sidebar';
 import { IDocumentManager } from '@jupyterlab/docmanager';
 import { ITranslator } from '@jupyterlab/translation';
@@ -71,7 +71,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     // Creating the widget factory to register it so the document manager knows about
     // our new DocumentWidget
-    const widgetFactory = new XircuitFactory({
+    const widgetFactory = new XircuitsFactory({
       name: FACTORY,
       fileTypes: ['xircuits'],
       defaultFor: ['xircuits'],

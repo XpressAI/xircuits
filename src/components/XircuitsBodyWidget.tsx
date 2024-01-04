@@ -10,9 +10,9 @@ import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { ServiceManager } from '@jupyterlab/services';
 import { Signal } from '@lumino/signaling';
 
-import { XPipePanel } 			from '../xircuitWidget';
+import { XircuitsPanel } 			from '../XircuitsWidget';
 import { XircuitsApplication } 	from './XircuitsApp';
-import { DemoCanvasWidget } 	from '../helpers/DemoCanvasWidget';
+import { XircuitsCanvasWidget } 	from '../helpers/XircuitsCanvasWidget';
 import { Log } 					from '../log/LogPlugin';
 import { formDialogWidget } 	from '../dialog/formDialogwidget';
 import { showFormDialog } 		from '../dialog/FormDialog';
@@ -21,7 +21,7 @@ import { getItsLiteralType } 	from '../dialog/input-dialogues/VariableInput';
 import { RunDialog } 			from '../dialog/RunDialog';
 import { requestAPI } 			from '../server/handler';
 import ComponentsPanel 			from '../context-menu/ComponentsPanel';
-import { NodeActionsPanel, countVisibleMenuOptions, getMenuOptionsVisibility } 	from '../context-menu/NodeActionsPanel';
+import { CanvasContextMenu, countVisibleMenuOptions, getMenuOptionsVisibility } 	from '../context-menu/CanvasContextMenu';
 import { cancelDialog, GeneralComponentLibrary } 		from '../tray_library/GeneralComponentLib';
 import { AdvancedComponentLibrary, fetchNodeByName } 	from '../tray_library/AdvanceComponentLib';
 import { lowPowerMode, setLowPowerMode } from './state/powerModeState';
@@ -36,14 +36,14 @@ export interface BodyWidgetProps {
 	commands: any;
 	widgetId?: string;
 	serviceManager: ServiceManager;
-	fetchComponentsSignal: Signal<XPipePanel, any>;
-	saveXircuitSignal: Signal<XPipePanel, any>;
-	compileXircuitSignal: Signal<XPipePanel, any>;
-	runXircuitSignal: Signal<XPipePanel, any>;
-	runTypeXircuitSignal: Signal<XPipePanel, any>;
-	lockNodeSignal: Signal<XPipePanel, any>;
-	reloadAllNodesSignal: Signal<XPipePanel, any>;
-	toggleAllLinkAnimationSignal: Signal<XPipePanel, any>;
+	fetchComponentsSignal: Signal<XircuitsPanel, any>;
+	saveXircuitSignal: Signal<XircuitsPanel, any>;
+	compileXircuitSignal: Signal<XircuitsPanel, any>;
+	runXircuitSignal: Signal<XircuitsPanel, any>;
+	runTypeXircuitSignal: Signal<XircuitsPanel, any>;
+	lockNodeSignal: Signal<XircuitsPanel, any>;
+	reloadAllNodesSignal: Signal<XircuitsPanel, any>;
+	toggleAllLinkAnimationSignal: Signal<XircuitsPanel, any>;
 }
 
 export const Body = styled.div`
@@ -859,10 +859,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	/**Component Panel & Node Action Panel Context Menu */
 	const [isComponentPanelShown, setIsComponentPanelShown] = useState(false);
-	const [actionPanelShown, setActionPanelShown] = useState(false);
+	const [contextMenuShown, setContextMenuShown] = useState(false);
 	const [dontHidePanel, setDontHidePanel] = useState(false);
 	const [componentPanelPosition, setComponentPanelPosition] = useState({ x: 0, y: 0 });
-	const [actionPanelPosition, setActionPanelPosition] = useState({ x: 0, y: 0 });
+	const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
 	const [nodePosition, setNodePosition] = useState<any>();
 	const [looseLinkData, setLooseLinkData] = useState<any>({});
 	const [isParameterLink, setIsParameterLink] = useState<boolean>(false);
@@ -909,12 +909,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			newPanelPosition.y = newPanelPosition.y - yOffset;
 		}
 		setComponentPanelPosition(newPanelPosition);
-		setActionPanelPosition(newPanelPosition);
+		setContextMenuPosition(newPanelPosition);
 	}
 
 	// Show the component panel context menu
 	const showComponentPanel = (event: React.MouseEvent<HTMLDivElement>) => {
-		setActionPanelShown(false);
+		setContextMenuShown(false);
 		setIsComponentPanelShown(false);
 
 		const node_position = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
@@ -925,7 +925,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 	// Show the component panel from dropped link
 	const showComponentPanelFromLink = async (event) => {
-		setActionPanelShown(false);
+		setContextMenuShown(false);
 		setIsComponentPanelShown(false);
 		const linkName:string = event.link.sourcePort.options.name;
 
@@ -948,23 +948,23 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	// Hide component and node action panel
 	const hidePanel = () => {
 		setIsComponentPanelShown(false);
-		setActionPanelShown(false);
+		setContextMenuShown(false);
 		setLooseLinkData(null);
 		setIsParameterLink(false);
 	};
 
-	// Show the nodeActionPanel context menu
-	const showNodeActionPanel = (event: React.MouseEvent<HTMLDivElement>) => {
+	// Show the canvasContextMenu context menu
+	const showCanvasContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
 		// Disable the default context menu
 		event.preventDefault();
 
-		setActionPanelShown(false);
+		setContextMenuShown(false);
 		setIsComponentPanelShown(false);
 
 		const node_position = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
 		setNodePosition(node_position);
 		panelPosition(event)
-		setActionPanelShown(true);
+		setContextMenuShown(true);
 	};
 
 	const preventDefault = (event) => {
@@ -1025,9 +1025,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					onMouseOver={preventDefault}
 					onMouseUp={preventDefault}
 					onMouseDown={preventDefault}
-					onContextMenu={showNodeActionPanel}
+					onContextMenu={showCanvasContextMenu}
 					onClick={handleClick}>
-					<DemoCanvasWidget>
+					<XircuitsCanvasWidget>
 						<CanvasWidget engine={xircuitsApp.getDiagramEngine()} />
 						{/**Add Component Panel(ctrl + left-click, dropped link)*/}
 						{isComponentPanelShown && (
@@ -1051,22 +1051,22 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							</div>
 						)}
 						{/**Node Action Panel(left-click)*/}
-						{actionPanelShown && (
+						{contextMenuShown && (
 							<div
 								id='context-menu'
 								style={{
-									top: actionPanelPosition.y,
-									left: actionPanelPosition.x
+									top: contextMenuPosition.y,
+									left: contextMenuPosition.x
 								}}
-								className="node-action-context-menu">
-								<NodeActionsPanel
+								className="canvas-context-menu">
+								<CanvasContextMenu
 									app={app}
 									engine={xircuitsApp.getDiagramEngine()}
 									nodePosition={nodePosition}
-								></NodeActionsPanel>
+								></CanvasContextMenu>
 							</div>
 						)}
-					</DemoCanvasWidget>
+					</XircuitsCanvasWidget>
 				</Layer>
 			</Content>
 		</Body>

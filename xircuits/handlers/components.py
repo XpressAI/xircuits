@@ -16,7 +16,7 @@ DEFAULT_COMPONENTS_PATHS = [
     os.path.join(os.path.dirname(__file__), "..", "..", "xai_components"),
     "xai_components",
     os.path.expanduser("~/xai_components"),
-    os.environ.get("XPIPES_COMPONENTS_DIR")
+    os.environ.get("XIRCUITS_COMPONENTS_DIR")
 ]
 
 # Get the default components from here for now
