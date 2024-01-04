@@ -868,29 +868,47 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [isParameterLink, setIsParameterLink] = useState<boolean>(false);
 
 	// Component & Action panel position
-	const panelPosition = (event) => {
+	const getPanelPosition = (event, caller) => {
+		
+		let menuDimension;
+
+		if (caller === "ContextMenu") {
+			// For context menu, calculate dimension based on visible options
+			const menuOptionHeight = 30;
+			let visibleOptions = getMenuOptionsVisibility(xircuitsApp.getDiagramEngine().getModel().getSelectedEntities());
+			let numVisibleOptions = countVisibleMenuOptions(visibleOptions);
+			menuDimension = {
+				x: 105,
+				y: menuOptionHeight * numVisibleOptions,
+			};
+		} else {
+			// For other callers, set a fixed dimension
+			menuDimension = {
+				x: 105,
+				y: 290,
+			};
+		}
+	
+		let newPanelPosition = calculatePanelSpawn(event, menuDimension);
+	
+		return newPanelPosition;
+	}
+
+	const calculatePanelSpawn = (event, menuDimension) => {
 		let newPanelPosition = {
 			x: event.pageX,
 			y: event.pageY,
 		};
-		const canvas = event.view as any;
+		const canvas = event.view;
 		const newCenterPosition = {
 			x: canvas.innerWidth / 2,
 			y: canvas.innerHeight / 2,
-		}
-		// console.log(newCenterPosition.x,newPanelPosition.x,newCenterPosition.y,newPanelPosition.y)
-		
-		const menuOptionHeight = 30;
-		let visibleOptions = getMenuOptionsVisibility(xircuitsApp.getDiagramEngine().getModel().getSelectedEntities())
-		let numVisibleOptions = countVisibleMenuOptions(visibleOptions);
-		const menuDimension = {
-			x: 105,
-			y: menuOptionHeight*numVisibleOptions,
-		}
+		};
+	
 		let fileBrowserWidth = document.getElementsByClassName("jp-SidePanel")[0].parentElement.clientWidth;
 		const tabWidth = document.getElementsByClassName("lm-TabBar")[0].clientWidth;
-		
-		const yOffset = 84
+		const yOffset = 84;
+	
 		if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
 			// Bottom right
 			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth - menuDimension.x;
@@ -908,9 +926,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth;
 			newPanelPosition.y = newPanelPosition.y - yOffset;
 		}
-		setComponentPanelPosition(newPanelPosition);
-		setContextMenuPosition(newPanelPosition);
+	
+		return newPanelPosition;
 	}
+	
 
 	// Show the component panel context menu
 	const showComponentPanel = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -919,7 +938,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		const node_position = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
 		setNodePosition(node_position);
-		panelPosition(event);
+		let newPanelPosition = getPanelPosition(event, "ComponentPanel");
+		setComponentPanelPosition(newPanelPosition);
 		setIsComponentPanelShown(true);
 	};
 
@@ -941,7 +961,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		setLooseLinkData({link: event.link, sourcePort: event.sourcePort});
 		setNodePosition(event.linkEvent);
-		panelPosition(event.linkEvent);
+		
+		let newPanelPosition = getPanelPosition(event.linkEvent, "ComponentPanel");
+		setComponentPanelPosition(newPanelPosition);
 		setIsComponentPanelShown(true);
 	};
 
@@ -963,7 +985,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		const node_position = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
 		setNodePosition(node_position);
-		panelPosition(event)
+
+		let newPanelPosition = getPanelPosition(event, "ContextMenu")
+		setContextMenuPosition(newPanelPosition);
 		setContextMenuShown(true);
 	};
 
