@@ -1,13 +1,8 @@
 import ComponentList from './Component';
-
-import React, { useEffect, useState } from 'react';
-
+import React, { useEffect, useState, useRef } from 'react';
 import styled from '@emotion/styled';
-
 import { TrayItemWidget } from './TrayItemWidget';
-
 import { TrayWidget } from './TrayWidget';
-
 import { JupyterFrontEnd } from '@jupyterlab/application';
 
 import {
@@ -76,6 +71,16 @@ export interface SidebarProps {
     factory: XircuitsFactory;
 }
 
+const ContextMenu = ({ x, y, ref, val, onInstall, onShowInExplorer, onSeeReadme, onClose }) => {
+    return (
+        <div ref={ref} style={{ position: 'absolute', top: y, left: x, zIndex: 1000, backgroundColor: 'white', border: '1px solid black' }}>
+            <div onClick={() => { onInstall(val); onClose(); }}>Install</div>
+            <div onClick={() => { onShowInExplorer(val); onClose(); }}>Show in File Explorer</div>
+            <div onClick={() => { onSeeReadme(val); onClose(); }}>See Readme</div>
+        </div>
+    );
+};
+
 async function requestToInstallLibrary(libraryName: string) {
     const data = {
       "libraryName": libraryName,
@@ -90,19 +95,6 @@ async function requestToInstallLibrary(libraryName: string) {
       console.error('Error on POST /library/install', data, reason);
     }
 }
-
-const handleRightClick = async (e, val) => {
-    e.preventDefault();
-    console.log(val);
-  
-    try {
-      const response = await requestToInstallLibrary(val);
-      console.log('Installation Response:', response);
-    } catch (error) {
-      console.error('Installation Failed:', error);
-    }
-};
-  
 
 async function fetchComponent(componentList: string[]) {
     let component_root = componentList.map(x => x["category"]);
@@ -150,23 +142,6 @@ export default function Sidebar(props: SidebarProps) {
         setSearchTerm(searchTerm);
     }
 
-    async function getConfig(request: string) {
-        const dataToSend = { "config_request": request };
-
-        try {
-            const server_reply = await requestAPI<any>('get/config', {
-                body: JSON.stringify(dataToSend),
-                method: 'POST',
-            });
-
-            return server_reply;
-        } catch (reason) {
-            console.error(
-                `Error on POST get/config ${dataToSend}.\n${reason}`
-            );
-        }
-    };
-
     const fetchComponentList = async () => {
           // get the component list 
         const response_1 = await ComponentList();
@@ -209,6 +184,73 @@ export default function Sidebar(props: SidebarProps) {
         }, 300); // Send component list to canvas once render or when refresh
         return () => clearInterval(intervalId);
     },[componentList, handleRefreshOnClick]);
+
+
+
+    const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, val: null });
+     // Ref for the context menu
+     const contextMenuRef = useRef(null);
+
+     // Function to handle right-click
+     const handleRightClick = (e, val) => {
+         e.preventDefault();
+         setContextMenu({
+             visible: true,
+             x: e.clientX,
+             y: e.clientY,
+             val: val
+         });
+     };
+ 
+     // Function to close context menu
+     const closeContextMenu = () => {
+         setContextMenu({ visible: false, x: 0, y: 0, val: null });
+     };
+ 
+     // Function to check if a click is outside the context menu
+     const handleClickOutside = (event) => {
+         if (contextMenuRef.current && !contextMenuRef.current.contains(event.target)) {
+             closeContextMenu();
+         }
+     };
+ 
+     // Effect for handling click outside
+     useEffect(() => {
+         if (contextMenu.visible) {
+             document.addEventListener('click', handleClickOutside, true);
+         }
+         return () => {
+             document.removeEventListener('click', handleClickOutside, true);
+         };
+     }, [contextMenu.visible]);
+    
+    
+    const handleInstall = async (val) => {
+        try {
+            const response = await requestToInstallLibrary(val);
+            console.log('Installation Response:', response);
+          } catch (error) {
+            console.error('Installation Failed:', error);
+          }
+    };
+    
+    const handleShowInExplorer = (val) => {
+        console.log("Show in Explorer!")
+        console.log(val)
+    };
+    
+    const handleSeeReadme = (val) => {
+        console.log("Show Readme!")
+        console.log(val)
+    };
+
+    useEffect(() => {
+        return () => {
+            document.removeEventListener('click', handleClickOutside, true);
+        };
+    }, []);
+    
+    
 
     return (
         <Body>
@@ -298,6 +340,18 @@ export default function Sidebar(props: SidebarProps) {
                     </div>
                 </TrayWidget>
             </Content>
+            {contextMenu.visible && (
+            <ContextMenu
+                ref={contextMenuRef}
+                x={contextMenu.x}
+                y={contextMenu.y}
+                val={contextMenu.val}
+                onInstall={handleInstall}
+                onShowInExplorer={handleShowInExplorer}
+                onSeeReadme={handleSeeReadme}
+                onClose={closeContextMenu}
+                />
+            )}
         </Body>
     )
 };
