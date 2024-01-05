@@ -1,22 +1,16 @@
 import * as React from 'react';
 
-import styled from '@emotion/styled';
 import { JupyterFrontEnd } from '@jupyterlab/application';
 import { DiagramEngine, NodeModel, LinkModel } from '@projectstorm/react-diagrams';
 import { commandIDs } from '../components/XircuitsBodyWidget';
+
+import '../../style/ContextMenu.css'
 
 export interface CanvasContextMenuProps {
 	app: JupyterFrontEnd;
 	engine: DiagramEngine;
 	nodePosition?: {x: number, y: number};
 }
-
-export const ContextMenu = styled.div`
-	border-color: #000;
-	border-radius: 25px;
-	border-top: 10px;
-	z-index: 10;
-`;
 
 export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
 	hideCanvasContextMenu() {
@@ -29,7 +23,7 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
         let visibility = getMenuOptionsVisibility(models);
 
         return (
-            <ContextMenu onClick={this.hideCanvasContextMenu.bind(this)}>
+            <div className="context-menu" onClick={this.hideCanvasContextMenu.bind(this)}>
                 {visibility.showCutCopyPaste && (
                     <>
                         <div className="option" onClick={() => this.props.app.commands.execute(commandIDs.cutNode)}>Cut</div>
@@ -58,7 +52,7 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
                 {visibility.showAddComment && (
                     <div className="option" onClick={() => this.props.app.commands.execute(commandIDs.addCommentNode, {nodePosition: this.props.nodePosition})}>Add Comment</div>
                 )}
-            </ContextMenu>
+            </div>
         );
     }
 }

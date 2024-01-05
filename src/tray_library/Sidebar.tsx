@@ -15,6 +15,9 @@ import {
 
 import { requestAPI } from '../server/handler';
 import { XircuitsFactory } from '../XircuitsFactory';
+import ReactDOM from 'react-dom';
+
+import '../../style/ContextMenu.css'
 
 export const Body = styled.div`
   flex-grow: 1;
@@ -72,12 +75,21 @@ export interface SidebarProps {
 }
 
 const ContextMenu = ({ x, y, ref, val, onInstall, onShowInExplorer, onSeeReadme, onClose }) => {
-    return (
-        <div ref={ref} style={{ position: 'absolute', top: y, left: x, zIndex: 1000, backgroundColor: 'white', border: '1px solid black' }}>
-            <div onClick={() => { onInstall(val); onClose(); }}>Install</div>
-            <div onClick={() => { onShowInExplorer(val); onClose(); }}>Show in File Explorer</div>
-            <div onClick={() => { onSeeReadme(val); onClose(); }}>See Readme</div>
-        </div>
+    
+    const contextMenuStyle = {
+        position: 'absolute' as 'absolute',
+        left: `${x+5}px`,
+        top: `${y}px`,
+        zIndex: 1000
+    };
+
+    return ReactDOM.createPortal(
+        <div className="context-menu" ref={ref} style={contextMenuStyle}>
+            <div className="option" onClick={() => { onInstall(val); onClose(); }}>Install</div>
+            <div className="option" onClick={() => { onShowInExplorer(val); onClose(); }}>Show in File Explorer</div>
+            <div className="option" onClick={() => { onSeeReadme(val); onClose(); }}>See Readme</div>
+        </div>,
+        document.body
     );
 };
 
@@ -191,38 +203,49 @@ export default function Sidebar(props: SidebarProps) {
      // Ref for the context menu
      const contextMenuRef = useRef(null);
 
-     // Function to handle right-click
-     const handleRightClick = (e, val) => {
-         e.preventDefault();
-         setContextMenu({
-             visible: true,
-             x: e.clientX,
-             y: e.clientY,
-             val: val
-         });
-     };
+    // Function to handle right-click
+    const handleRightClick = (e, val) => {
+        e.preventDefault();
+
+        // Get the bounding rectangle of the clicked element
+        const rect = e.target.getBoundingClientRect();
+
+        const posX = rect.right;
+        const posY = rect.top;
+
+        setContextMenu({
+            visible: true,
+            x: posX,
+            y: posY,
+            val: val
+        });
+    };
  
-     // Function to close context menu
-     const closeContextMenu = () => {
-         setContextMenu({ visible: false, x: 0, y: 0, val: null });
-     };
+    // Function to close context menu
+    const closeContextMenu = () => {
+        setContextMenu({ visible: false, x: 0, y: 0, val: null });
+    };
  
      // Function to check if a click is outside the context menu
      const handleClickOutside = (event) => {
+        console.log("this is handle click outside")
          if (contextMenuRef.current && !contextMenuRef.current.contains(event.target)) {
              closeContextMenu();
          }
      };
  
-     // Effect for handling click outside
-     useEffect(() => {
-         if (contextMenu.visible) {
-             document.addEventListener('click', handleClickOutside, true);
-         }
-         return () => {
-             document.removeEventListener('click', handleClickOutside, true);
-         };
-     }, [contextMenu.visible]);
+    // Effect for handling click outside
+    useEffect(() => {
+        // Only add event listener if context menu is visible
+        if (contextMenu.visible) {
+            document.addEventListener('click', handleClickOutside, true);
+        }
+        // Cleanup function to remove event listener
+        return () => {
+            document.removeEventListener('click', handleClickOutside, true);
+        };
+    }, [contextMenu.visible]); // Dependency on contextMenu.visible
+
     
     
     const handleInstall = async (val) => {
