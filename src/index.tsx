@@ -142,7 +142,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     changeFavicon(xircuitsFaviconLink);
 
     // Creating the sidebar widget for the xai components
-    const sidebarWidget = ReactWidget.create(<Sidebar lab={app} factory={widgetFactory}/>);
+    const sidebarWidget = ReactWidget.create(<Sidebar app={app} factory={widgetFactory}/>);
     sidebarWidget.id = 'xircuits-component-sidebar';
     sidebarWidget.title.icon = componentLibIcon;
     sidebarWidget.title.caption = "Xircuits Component Library";

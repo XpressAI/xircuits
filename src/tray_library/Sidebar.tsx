@@ -70,11 +70,11 @@ const colorList_general = [
 ];
 
 export interface SidebarProps {
-    lab: JupyterFrontEnd;
+    app: JupyterFrontEnd;
     factory: XircuitsFactory;
 }
 
-const ContextMenu = ({ x, y, ref, val, onInstall, onShowInExplorer, onSeeReadme, onClose }) => {
+const ContextMenu = ({ x, y, ref, val, onInstall, onShowInFileBrowser, onSeeReadme, onShowExample, onClose }) => {
     
     const contextMenuStyle = {
         position: 'absolute' as 'absolute',
@@ -86,8 +86,9 @@ const ContextMenu = ({ x, y, ref, val, onInstall, onShowInExplorer, onSeeReadme,
     return ReactDOM.createPortal(
         <div className="context-menu" ref={ref} style={contextMenuStyle}>
             <div className="option" onClick={() => { onInstall(val); onClose(); }}>Install</div>
-            <div className="option" onClick={() => { onShowInExplorer(val); onClose(); }}>Show in File Explorer</div>
+            <div className="option" onClick={() => { onShowInFileBrowser(val); onClose(); }}>Show in File Explorer</div>
             <div className="option" onClick={() => { onSeeReadme(val); onClose(); }}>See Readme</div>
+            <div className="option" onClick={() => { onShowExample(val); onClose(); }}>Show Example</div>
         </div>,
         document.body
     );
@@ -139,6 +140,9 @@ async function fetchComponent(componentList: string[]) {
 }
 
 export default function Sidebar(props: SidebarProps) {
+    
+    const app = props.app
+
     const [componentList, setComponentList] = React.useState([]);
     const [category, setCategory] = React.useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -257,14 +261,19 @@ export default function Sidebar(props: SidebarProps) {
           }
     };
     
-    const handleShowInExplorer = (val) => {
-        console.log("Show in Explorer!")
-        console.log(val)
+    const handleShowInFileBrowser = async (val) => {
+        const path = `xai_components/xai_${val.toLowerCase()}`;
+        await app.commands.execute('filebrowser:go-to-path', { path: path });
     };
     
-    const handleSeeReadme = (val) => {
-        console.log("Show Readme!")
-        console.log(val)
+    const handleSeeReadme = async (val) => {
+        const path = `xai_components/xai_${val.toLowerCase()}/readme.md`;
+        await app.commands.execute('markdownviewer:open', { path: path, options: { mode: 'split-right'} });
+    };
+
+    const handleShowExample = async (val) => {
+        const path = `xai_components/xai_${val.toLowerCase()}/example.xircuits`;
+        await app.commands.execute('docmanager:open', { path: path });
     };
 
     useEffect(() => {
@@ -319,7 +328,7 @@ export default function Sidebar(props: SidebarProps) {
                                                                         }}
                                                                         name={componentVal.task}
                                                                         color={componentVal.color}
-                                                                        app={props.lab}
+                                                                        app={props.app}
                                                                         path={componentVal.file_path}
                                                                         lineNo= {componentVal.lineno}/>
                                                                 </div>
@@ -353,7 +362,7 @@ export default function Sidebar(props: SidebarProps) {
                                             }}
                                             name={val.task}
                                             color={val.color}
-                                            app={props.lab}
+                                            app={props.app}
                                             path={val.file_path}
                                             lineNo= {val.lineno} />
                                     </div>
@@ -370,8 +379,9 @@ export default function Sidebar(props: SidebarProps) {
                 y={contextMenu.y}
                 val={contextMenu.val}
                 onInstall={handleInstall}
-                onShowInExplorer={handleShowInExplorer}
+                onShowInFileBrowser={handleShowInFileBrowser}
                 onSeeReadme={handleSeeReadme}
+                onShowExample={handleShowExample}
                 onClose={closeContextMenu}
                 />
             )}
