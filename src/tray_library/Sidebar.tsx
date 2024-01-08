@@ -74,7 +74,7 @@ export interface SidebarProps {
     factory: XircuitsFactory;
 }
 
-const ContextMenu = ({ x, y, ref, val, onInstall, onShowInFileBrowser, onSeeReadme, onShowExample, onClose }) => {
+const ContextMenu = ({ x, y, ref, val, onInstall, onShowInFileBrowser, onShowReadme, onShowExample, onClose }) => {
     
     const contextMenuStyle = {
         position: 'absolute' as 'absolute',
@@ -87,25 +87,23 @@ const ContextMenu = ({ x, y, ref, val, onInstall, onShowInFileBrowser, onSeeRead
         <div className="context-menu" ref={ref} style={contextMenuStyle}>
             <div className="option" onClick={() => { onInstall(val); onClose(); }}>Install</div>
             <div className="option" onClick={() => { onShowInFileBrowser(val); onClose(); }}>Show in File Explorer</div>
-            <div className="option" onClick={() => { onSeeReadme(val); onClose(); }}>See Readme</div>
+            <div className="option" onClick={() => { onShowReadme(val); onClose(); }}>See Readme</div>
             <div className="option" onClick={() => { onShowExample(val); onClose(); }}>Show Example</div>
         </div>,
         document.body
     );
 };
 
-async function requestToInstallLibrary(libraryName: string) {
-    const data = {
-      "libraryName": libraryName,
-    };
+async function requestLibrary(libraryName, endpoint) {
+    const data = { libraryName };
   
     try {
-      return await requestAPI<any>('library/install', {
+      return await requestAPI(endpoint, {
         body: JSON.stringify(data),
         method: 'POST',
       });
     } catch (reason) {
-      console.error('Error on POST /library/install', data, reason);
+      console.error(`Error on POST /${endpoint}`, data, reason);
     }
 }
 
@@ -254,7 +252,7 @@ export default function Sidebar(props: SidebarProps) {
     
     const handleInstall = async (val) => {
         try {
-            const response = await requestToInstallLibrary(val);
+            const response = await requestLibrary(val, "library/install");
             console.log('Installation Response:', response);
           } catch (error) {
             console.error('Installation Failed:', error);
@@ -262,18 +260,18 @@ export default function Sidebar(props: SidebarProps) {
     };
     
     const handleShowInFileBrowser = async (val) => {
-        const path = `xai_components/xai_${val.toLowerCase()}`;
-        await app.commands.execute('filebrowser:go-to-path', { path: path });
+        const response = await requestLibrary(val, "library/get_directory");
+        await app.commands.execute('filebrowser:go-to-path', { path: response['directory_path'] });
     };
     
-    const handleSeeReadme = async (val) => {
-        const path = `xai_components/xai_${val.toLowerCase()}/readme.md`;
-        await app.commands.execute('markdownviewer:open', { path: path, options: { mode: 'split-right'} });
+    const handleShowReadme = async (val) => {
+        const response = await requestLibrary(val, "library/get_readme");
+        await app.commands.execute('markdownviewer:open', { path: response['file_path'], options: { mode: 'split-right'} });
     };
 
     const handleShowExample = async (val) => {
-        const path = `xai_components/xai_${val.toLowerCase()}/example.xircuits`;
-        await app.commands.execute('docmanager:open', { path: path });
+        const response = await requestLibrary(val, "library/get_example");
+        await app.commands.execute('docmanager:open', { path: response['file_path'] });
     };
 
     useEffect(() => {
@@ -380,7 +378,7 @@ export default function Sidebar(props: SidebarProps) {
                 val={contextMenu.val}
                 onInstall={handleInstall}
                 onShowInFileBrowser={handleShowInFileBrowser}
-                onSeeReadme={handleSeeReadme}
+                onShowReadme={handleShowReadme}
                 onShowExample={handleShowExample}
                 onClose={closeContextMenu}
                 />

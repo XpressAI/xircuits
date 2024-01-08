@@ -5,7 +5,7 @@ from .components import ComponentsRouteHandler
 from .config import RunConfigRouteHandler, SplitModeConfigHandler
 from .debugger import DebuggerRouteHandler
 from .spark_submit import SparkSubmitRouteHandler
-from .install_library import InstallLibraryRouteHandler
+from .request_library import InstallLibraryRouteHandler, GetLibraryDirectoryRouteHandler, GetLibraryReadmeRouteHandler, GetLibraryExampleRouteHandler
 
 
 def setup_handlers(web_app, url_path):
@@ -41,6 +41,18 @@ def setup_handlers(web_app, url_path):
         (
             url_path_join(base_url, url_path, "library/install"),
             InstallLibraryRouteHandler
+        ),
+        (
+            url_path_join(base_url, url_path, "library/get_directory"),
+            GetLibraryDirectoryRouteHandler
+        ),
+        (
+            url_path_join(base_url, url_path, "library/get_readme"),
+            GetLibraryReadmeRouteHandler
+        ),
+        (
+            url_path_join(base_url, url_path, "library/get_example"),
+            GetLibraryExampleRouteHandler
         )
 
     ])
