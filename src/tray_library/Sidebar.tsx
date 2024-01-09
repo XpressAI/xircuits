@@ -13,9 +13,8 @@ import {
     AccordionItemPanel
 } from "react-accessible-accordion";
 
-import { requestAPI } from '../server/handler';
 import { XircuitsFactory } from '../XircuitsFactory';
-import ReactDOM from 'react-dom';
+import TrayContextMenu from '../context-menu/TrayContextMenu';
 
 import '../../style/ContextMenu.css'
 
@@ -72,39 +71,6 @@ const colorList_general = [
 export interface SidebarProps {
     app: JupyterFrontEnd;
     factory: XircuitsFactory;
-}
-
-const ContextMenu = ({ x, y, ref, val, onInstall, onShowInFileBrowser, onShowReadme, onShowExample, onClose }) => {
-    
-    const contextMenuStyle = {
-        position: 'absolute' as 'absolute',
-        left: `${x+5}px`,
-        top: `${y}px`,
-        zIndex: 1000
-    };
-
-    return ReactDOM.createPortal(
-        <div className="context-menu" ref={ref} style={contextMenuStyle}>
-            <div className="context-menu-option" onClick={() => { onInstall(val); onClose(); }}>Install</div>
-            <div className="context-menu-option" onClick={() => { onShowInFileBrowser(val); onClose(); }}>Show in File Explorer</div>
-            <div className="context-menu-option" onClick={() => { onShowReadme(val); onClose(); }}>See Readme</div>
-            <div className="context-menu-option" onClick={() => { onShowExample(val); onClose(); }}>Show Example</div>
-        </div>,
-        document.body
-    );
-};
-
-async function requestLibrary(libraryName, endpoint) {
-    const data = { libraryName };
-  
-    try {
-      return await requestAPI(endpoint, {
-        body: JSON.stringify(data),
-        method: 'POST',
-      });
-    } catch (reason) {
-      console.error(`Error on POST /${endpoint}`, data, reason);
-    }
 }
 
 async function fetchComponent(componentList: string[]) {
@@ -200,109 +166,27 @@ export default function Sidebar(props: SidebarProps) {
     },[componentList, handleRefreshOnClick]);
 
 
-    const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, val: null });
-     // Ref for the context menu
-     const contextMenuRef = useRef(null);
+    const [contextMenuState, setContextMenuState] = useState({
+        visible: false,
+        x: 0,
+        y: 0,
+        val: null
+    });
 
-    // Function to handle right-click
     const handleRightClick = (e, val) => {
         e.preventDefault();
-
-        // Get the bounding rectangle of the clicked element
         const rect = e.target.getBoundingClientRect();
-
-        const posX = rect.right;
-        const posY = rect.top;
-
-        setContextMenu({
+        setContextMenuState({
             visible: true,
-            x: posX,
-            y: posY,
+            x: rect.right,
+            y: rect.top,
             val: val
         });
     };
- 
-    // Function to close context menu
+
     const closeContextMenu = () => {
-        setContextMenu({ visible: false, x: 0, y: 0, val: null });
+        setContextMenuState({ ...contextMenuState, visible: false });
     };
- 
-     // Function to check if a click is outside the context menu
-     const handleClickOutside = (event) => {
-         if (event.target.className!="context-menu-option") {
-             closeContextMenu();
-         }
-     };
- 
-    // Effect for handling click outside
-    useEffect(() => {
-        // Only add event listener if context menu is visible
-        if (contextMenu.visible) {
-            document.addEventListener('click', handleClickOutside, true);
-        }
-        // Cleanup function to remove event listener
-        return () => {
-            document.removeEventListener('click', handleClickOutside, true);
-        };
-    }, [contextMenu.visible]); // Dependency on contextMenu.visible
-
-    
-    
-    const handleInstall = async (val) => {
-        try {
-            const response = await requestLibrary(val, "library/install");
-            console.log('Installation Response:', response);
-          } catch (error) {
-            console.error('Installation Failed:', error);
-          }
-    };
-    const handleShowInFileBrowser = async (val) => {
-        try {
-            const response = await requestLibrary(val, "library/get_directory");
-            if (response['path']) {
-                await app.commands.execute('filebrowser:go-to-path', { path: response['path'] });
-            } else if (response['message']) {
-                alert(response['message']);
-            }
-        } catch (error) {
-            alert('Failed to Show in File Browser: ' + error);
-        }
-    };
-    
-    const handleShowReadme = async (val) => {
-        try {
-            const response = await requestLibrary(val, "library/get_readme");
-            if (response['path']) {
-                await app.commands.execute('markdownviewer:open', { path: response['path'], options: { mode: 'split-right'} });
-            } else if (response['message']) {
-                alert(response['message']);
-            }
-        } catch (error) {
-            alert('Failed to Show Readme: ' + error);
-        }
-    };
-    
-    const handleShowExample = async (val) => {
-        try {
-            const response = await requestLibrary(val, "library/get_example");
-            if (response['path']) {
-                await app.commands.execute('docmanager:open', { path: response['path'] });
-            } else if (response['message']) {
-                alert(response['message']);
-            }
-        } catch (error) {
-            alert('Failed to Show Example: ' + error);
-        }
-    };
-    
-
-    useEffect(() => {
-        return () => {
-            document.removeEventListener('click', handleClickOutside, true);
-        };
-    }, []);
-    
-    
 
     return (
         <Body>
@@ -392,19 +276,14 @@ export default function Sidebar(props: SidebarProps) {
                     </div>
                 </TrayWidget>
             </Content>
-            {contextMenu.visible && (
-            <ContextMenu
-                ref={contextMenuRef}
-                x={contextMenu.x}
-                y={contextMenu.y}
-                val={contextMenu.val}
-                onInstall={handleInstall}
-                onShowInFileBrowser={handleShowInFileBrowser}
-                onShowReadme={handleShowReadme}
-                onShowExample={handleShowExample}
+            <TrayContextMenu
+                app={app}
+                x={contextMenuState.x}
+                y={contextMenuState.y}
+                visible={contextMenuState.visible}
+                val={contextMenuState.val}
                 onClose={closeContextMenu}
-                />
-            )}
+            />
         </Body>
     )
 };
