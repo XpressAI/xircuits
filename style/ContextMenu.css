@@ -14,7 +14,7 @@
   z-index: 10;
 }
 
-.option {
+.context-menu-option {
   cursor: pointer;
   flex-grow: 1;
   width: 90%;
@@ -25,6 +25,6 @@
   background:rgb(35, 35, 35);
 }
 
-.option:hover {
+.context-menu-option:hover {
   background-color: rgb(36, 64, 110);
 }

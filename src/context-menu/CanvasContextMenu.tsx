@@ -26,31 +26,31 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
             <div className="context-menu" onClick={this.hideCanvasContextMenu.bind(this)}>
                 {visibility.showCutCopyPaste && (
                     <>
-                        <div className="option" onClick={() => this.props.app.commands.execute(commandIDs.cutNode)}>Cut</div>
-                        <div className="option" onClick={() => this.props.app.commands.execute(commandIDs.copyNode)}>Copy</div>
-                        <div className="option" onClick={() => this.props.app.commands.execute(commandIDs.pasteNode)}>Paste</div>
+                        <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.cutNode)}>Cut</div>
+                        <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.copyNode)}>Copy</div>
+                        <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.pasteNode)}>Paste</div>
                     </>
                 )}
                 {visibility.showReloadNode && (
-                    <div className="option" onClick={() => this.props.app.commands.execute(commandIDs.reloadNode)}>Reload Node</div>
+                    <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.reloadNode)}>Reload Node</div>
                 )}
                 {visibility.showEdit && (
-                    <div className="option" onClick={() => this.props.app.commands.execute(commandIDs.editNode)}>Edit</div>
+                    <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.editNode)}>Edit</div>
                 )}
                 {visibility.showOpenScript && (
-                    <div className="option" onClick={() => this.props.app.commands.execute(commandIDs.openScript)}>Open Script</div>
+                    <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.openScript)}>Open Script</div>
                 )}
                 {visibility.showDelete && (
-                    <div className="option" onClick={() => this.props.app.commands.execute(commandIDs.deleteEntity)}>Delete</div>
+                    <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.deleteEntity)}>Delete</div>
                 )}
                 {visibility.showUndoRedo && (
                     <>
-                        <div className="option" onClick={() => this.props.app.commands.execute(commandIDs.undo)}>Undo</div>
-                        <div className="option" onClick={() => this.props.app.commands.execute(commandIDs.redo)}>Redo</div>
+                        <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.undo)}>Undo</div>
+                        <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.redo)}>Redo</div>
                     </>
                 )}
                 {visibility.showAddComment && (
-                    <div className="option" onClick={() => this.props.app.commands.execute(commandIDs.addCommentNode, {nodePosition: this.props.nodePosition})}>Add Comment</div>
+                    <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.addCommentNode, {nodePosition: this.props.nodePosition})}>Add Comment</div>
                 )}
             </div>
         );

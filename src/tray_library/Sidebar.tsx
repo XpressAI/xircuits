@@ -85,10 +85,10 @@ const ContextMenu = ({ x, y, ref, val, onInstall, onShowInFileBrowser, onShowRea
 
     return ReactDOM.createPortal(
         <div className="context-menu" ref={ref} style={contextMenuStyle}>
-            <div className="option" onClick={() => { onInstall(val); onClose(); }}>Install</div>
-            <div className="option" onClick={() => { onShowInFileBrowser(val); onClose(); }}>Show in File Explorer</div>
-            <div className="option" onClick={() => { onShowReadme(val); onClose(); }}>See Readme</div>
-            <div className="option" onClick={() => { onShowExample(val); onClose(); }}>Show Example</div>
+            <div className="context-menu-option" onClick={() => { onInstall(val); onClose(); }}>Install</div>
+            <div className="context-menu-option" onClick={() => { onShowInFileBrowser(val); onClose(); }}>Show in File Explorer</div>
+            <div className="context-menu-option" onClick={() => { onShowReadme(val); onClose(); }}>See Readme</div>
+            <div className="context-menu-option" onClick={() => { onShowExample(val); onClose(); }}>Show Example</div>
         </div>,
         document.body
     );
@@ -200,7 +200,6 @@ export default function Sidebar(props: SidebarProps) {
     },[componentList, handleRefreshOnClick]);
 
 
-
     const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, val: null });
      // Ref for the context menu
      const contextMenuRef = useRef(null);
@@ -230,8 +229,7 @@ export default function Sidebar(props: SidebarProps) {
  
      // Function to check if a click is outside the context menu
      const handleClickOutside = (event) => {
-        console.log("this is handle click outside")
-         if (contextMenuRef.current && !contextMenuRef.current.contains(event.target)) {
+         if (event.target.className!="context-menu-option") {
              closeContextMenu();
          }
      };
