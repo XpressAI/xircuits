@@ -37,7 +37,7 @@ class GetLibraryDirectoryRouteHandler(APIHandler):
 
         directory_path = posixpath.join("xai_components", f"xai_{library_name.lower()}")
 
-        response = {"directory_path": directory_path}
+        response = {"path": directory_path}
         self.finish(json.dumps(response))
 
 class GetLibraryReadmeRouteHandler(APIHandler):
@@ -60,9 +60,9 @@ class GetLibraryReadmeRouteHandler(APIHandler):
                     break
 
         if readme_filename:
-            response = {"file_path": readme_filename}
+            response = {"path": readme_filename}
         else:
-            response = {"message": "README file not found"}
+            response = {"message": "README file not found."}
 
         self.finish(json.dumps(response))
 
@@ -82,34 +82,37 @@ class GetLibraryExampleRouteHandler(APIHandler):
         example_xircuits, search_status = self.find_example_xircuits(base_path, examples_path)
 
         if example_xircuits:
-            response = {"file_path": example_xircuits, "searchStatus": search_status}
+            response = {"path": example_xircuits, "searchStatus": search_status}
         else:
-            response = {"message": "No .xircuits file found in the library"}
+            response = {"message": "No .xircuits example file found in the library."}
 
         self.finish(json.dumps(response))
 
     def find_example_xircuits(self, base_path, examples_path):
         # Priority 1: Search for example.xircuits in base_path
         example_xircuits_path = posixpath.join(base_path, "example.xircuits")
-        if os.path.exists(example_xircuits_path):
+        if os.path.isfile(example_xircuits_path):
             return example_xircuits_path, "Found in base directory"
 
         # Priority 2: Search for examples/example.xircuits
         example_xircuits_path = posixpath.join(examples_path, "example.xircuits")
-        if os.path.exists(example_xircuits_path):
+        if os.path.isfile(example_xircuits_path):
             return example_xircuits_path, "Found in examples directory"
 
         # Priority 3: Pick any .xircuits in the examples/ dir
         if os.path.isdir(examples_path):
             for file in os.listdir(examples_path):
-                if file.endswith('.xircuits'):
-                    return posixpath.join(examples_path, file), "Picked any .xircuits from examples directory"
+                file_path = posixpath.join(examples_path, file)
+                if file.endswith('.xircuits') and os.path.isfile(file_path):
+                    return file_path, "Picked any .xircuits from examples directory"
 
         # Priority 4: Pick any .xircuits in the library dir
         if os.path.isdir(base_path):
             for file in os.listdir(base_path):
-                if file.endswith('.xircuits'):
-                    return posixpath.join(base_path, file), "Picked any .xircuits from base directory"
+                file_path = posixpath.join(base_path, file)
+                if file.endswith('.xircuits') and os.path.isfile(file_path):
+                    return file_path, "Picked any .xircuits from base directory"
 
         # If not found
         return None, None
+

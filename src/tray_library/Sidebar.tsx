@@ -258,21 +258,45 @@ export default function Sidebar(props: SidebarProps) {
             console.error('Installation Failed:', error);
           }
     };
-    
     const handleShowInFileBrowser = async (val) => {
-        const response = await requestLibrary(val, "library/get_directory");
-        await app.commands.execute('filebrowser:go-to-path', { path: response['directory_path'] });
+        try {
+            const response = await requestLibrary(val, "library/get_directory");
+            if (response['path']) {
+                await app.commands.execute('filebrowser:go-to-path', { path: response['path'] });
+            } else if (response['message']) {
+                alert(response['message']);
+            }
+        } catch (error) {
+            alert('Failed to Show in File Browser: ' + error);
+        }
     };
     
     const handleShowReadme = async (val) => {
-        const response = await requestLibrary(val, "library/get_readme");
-        await app.commands.execute('markdownviewer:open', { path: response['file_path'], options: { mode: 'split-right'} });
+        try {
+            const response = await requestLibrary(val, "library/get_readme");
+            if (response['path']) {
+                await app.commands.execute('markdownviewer:open', { path: response['path'], options: { mode: 'split-right'} });
+            } else if (response['message']) {
+                alert(response['message']);
+            }
+        } catch (error) {
+            alert('Failed to Show Readme: ' + error);
+        }
     };
-
+    
     const handleShowExample = async (val) => {
-        const response = await requestLibrary(val, "library/get_example");
-        await app.commands.execute('docmanager:open', { path: response['file_path'] });
+        try {
+            const response = await requestLibrary(val, "library/get_example");
+            if (response['path']) {
+                await app.commands.execute('docmanager:open', { path: response['path'] });
+            } else if (response['message']) {
+                alert(response['message']);
+            }
+        } catch (error) {
+            alert('Failed to Show Example: ' + error);
+        }
     };
+    
 
     useEffect(() => {
         return () => {
