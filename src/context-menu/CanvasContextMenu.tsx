@@ -62,19 +62,19 @@ export function getMenuOptionsVisibility(models) {
 	function isParameterNode(node) {
 		return node.getOptions()["name"].startsWith("Literal");
 	}
-	
+
 	let isNodeSelected = models.some(model => model instanceof NodeModel);
 	let isLinkSelected = models.some(model => model instanceof LinkModel);
 	let parameterNodes = models.filter(model => isParameterNode(model));
 	let isSingleParameterNodeSelected = parameterNodes.length === 1;
-	let multipleNodesSelected = models.filter(model => model instanceof NodeModel).length > 1;
 	let multipleLinksSelected = models.filter(model => model instanceof LinkModel).length > 1;
+	let isSingleNonParameterNodeSelected = models.length === 1 && isNodeSelected && !isParameterNode(models[0]);
 
 	return {
 		showCutCopyPaste: !models.length || isNodeSelected || isLinkSelected,
 		showReloadNode: isNodeSelected && !multipleLinksSelected,
 		showEdit: isSingleParameterNodeSelected,
-		showOpenScript: isNodeSelected && !multipleNodesSelected,
+		showOpenScript: isSingleNonParameterNodeSelected,
 		showDelete: isNodeSelected || isLinkSelected || parameterNodes.length > 0,
 		showUndoRedo: !models.length,
 		showAddComment: !models.length

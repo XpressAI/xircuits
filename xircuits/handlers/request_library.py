@@ -17,7 +17,7 @@ class InstallLibraryRouteHandler(APIHandler):
             return
 
         try:
-            # install_library(library_name)
+            install_library(library_name)
             message = f"Installation of {library_name} completed successfully."
         except Exception as e:
             message = f"An error occurred: {traceback.format_exc()}"
