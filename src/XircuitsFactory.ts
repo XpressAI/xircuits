@@ -27,7 +27,7 @@ import { ToolbarButton } from '@jupyterlab/apputils';
 import { commandIDs } from './components/XircuitsBodyWidget';
 import { LoggerCommandIDs } from './log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
-import { RunSwitcher } from './components/RunSwitcher';
+import { RunSwitcher } from './components/runner/RunSwitcher';
 import { lockIcon, reloadAllIcon, xircuitsIcon, toggleAnimationIcon } from './ui-components/icons';
 const XIRCUITS_CLASS = 'xircuits-editor';
 

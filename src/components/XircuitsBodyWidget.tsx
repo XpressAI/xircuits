@@ -25,6 +25,8 @@ import { CanvasContextMenu, countVisibleMenuOptions, getMenuOptionsVisibility } 
 import { cancelDialog, GeneralComponentLibrary } 		from '../tray_library/GeneralComponentLib';
 import { AdvancedComponentLibrary, fetchNodeByName } 	from '../tray_library/AdvanceComponentLib';
 import { lowPowerMode, setLowPowerMode } from './state/powerModeState';
+import { startRunOutputStr } from './runner/RunOutput';
+import { doRemoteRun } from './runner/RemoteRun';
 
 import styled from '@emotion/styled';
 
@@ -585,11 +587,23 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		// Run Mode
 		context.ready.then(async () => {
 			let runArgs = await handleRunDialog();
-			let runCommand = runArgs["commandStr"];
+			let runCommand = runArgs["runCommand"];
 			let config = runArgs["config"];
 
+			const current_path = context.path;
+			const model_path = current_path.split(".xircuits")[0] + ".py";
+
+			let code = startRunOutputStr()
+
+			if (runType == 'remote-run') {
+			  // Run subprocess when run type is Remote Run
+			  code += doRemoteRun(model_path, config['command'], config['msg'], config['url']);
+			} else {
+			  code += "%run " + model_path + runCommand
+			}
+  
 			if (runArgs) {
-				commands.execute(commandIDs.executeToOutputPanel, { runCommand, runType, config });
+				commands.execute(commandIDs.executeToOutputPanel, { code });
 			}
 		})
 	}
@@ -756,7 +770,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		const date = new Date();
 		xircuitLogger.info(`experiment name: ${date.toLocaleString()}`)
 
-		const commandStr = [
+		const runCommand = [
 			stringNodes.filter(param => param != "experiment name"),
 			boolNodes, intNodes, floatNodes
 		].filter(it => !!it).reduce((s, nodes) => {
@@ -770,7 +784,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				}, s);
 		}, "");
 
-		return { commandStr, config };
+		return { runCommand, config };
 	};
 
 	const connectSignal = ([signal, handler]) => {

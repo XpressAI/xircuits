@@ -1,7 +1,7 @@
 import { ReactWidget, UseSignal } from '@jupyterlab/apputils';
 import { HTMLSelect } from '@jupyterlab/ui-components';
 import React from 'react';
-import { XircuitsFactory } from '../XircuitsFactory';
+import { XircuitsFactory } from '../../XircuitsFactory';
 
 /**
  * A toolbar widget that switches output types.
