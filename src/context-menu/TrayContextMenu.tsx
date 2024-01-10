@@ -44,14 +44,26 @@ const TrayContextMenu = ({ app, x, y, visible, val, onClose }: TrayContextMenuPr
         };
     }, []);
     // Context menu action handlers
-    const handleInstall = async (val) => {
-        try {
-            const response = await requestLibrary(val, "library/install");
-            console.log('Installation Response:', response);
-          } catch (error) {
-            console.error('Installation Failed:', error);
-          }
+    const handleInstall = (val) => {
+        const userResponse = confirm("Do you want to proceed with " + val + " library installation?");
+        if (userResponse) {
+            requestLibrary(val, "library/install")
+                .then(response => {
+                    console.log('Installation Response:', response);
+                    
+                    // Check if the response contains a message and display it
+                    if (response['message']) {
+                        alert(response['message']);
+                    }
+                })
+                .catch(error => {
+                    console.error('Installation Failed:', error);
+                    alert('Installation Failed: ' + error);
+                });
+        }
     };
+    
+    
     const handleShowInFileBrowser = async (val) => {
         try {
             const response = await requestLibrary(val, "library/get_directory");

@@ -60,7 +60,7 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
 export function getMenuOptionsVisibility(models) {
 
 	function isParameterNode(node) {
-		return node.getOptions()["name"].startsWith("Literal");
+        return node.getOptions()?.name?.startsWith("Literal") ?? false;
 	}
 
 	let isNodeSelected = models.some(model => model instanceof NodeModel);

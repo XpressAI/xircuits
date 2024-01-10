@@ -20,7 +20,8 @@ def get_component_library_path(library_name: str) -> str:
     else:
         return build_component_library_path(library_name)
 
-def install_library(library_name: str) -> None:
+def install_library(library_name: str) -> str:
+    messages = []
     print(f"Installing {library_name}...")
     component_library_path = get_component_library_path(library_name)
 
@@ -30,17 +31,25 @@ def install_library(library_name: str) -> None:
     requirements_file = Path(component_library_path) / "requirements.txt"
 
     if requirements_file.exists():
-        print(f"Installing requirements for {library_name}...")
-        subprocess.run([sys.executable, "-m", "pip", "install", "-r", str(requirements_file)], check=True)
+        try:
+            print(f"Installing requirements for {library_name}...")
+            subprocess.run([sys.executable, "-m", "pip", "install", "-r", str(requirements_file)], check=True)
+        except Exception as e:
+            raise RuntimeError(f"An error occurred while installing requirements for {library_name}: {e}")
     else:
-        print(f"No requirements.txt found for {library_name}. Skipping installation of dependencies.")
+        messages.append(f"No requirements.txt found for {library_name}. Skipping installation of dependencies.")
 
+    messages.append(f"Library {library_name} ready to use.")
+    return '\n'.join(messages)
 
-def fetch_library(library_name: str) -> None:
-    print(f"Fetching {library_name}...")
+def fetch_library(library_name: str) -> str:
+    messages = [f"Fetching {library_name}..."]
     component_library_path = get_component_library_path(library_name)
 
     if not Path(component_library_path).is_dir() or is_empty(component_library_path):
         request_submodule_library(component_library_path)
+        messages.append(f"{library_name} library fetched and stored in {component_library_path}.")
     else:
-        print(f"{library_name} library already exists in {component_library_path}.")
+        messages.append(f"{library_name} library already exists in {component_library_path}.")
+
+    return '\n'.join(messages)

@@ -17,10 +17,12 @@ class InstallLibraryRouteHandler(APIHandler):
             return
 
         try:
-            install_library(library_name)
-            message = f"Installation of {library_name} completed successfully."
+            message = install_library(library_name)
+        except RuntimeError as e:
+            message = str(e)
+            print(message)
         except Exception as e:
-            message = f"An error occurred: {traceback.format_exc()}"
+            message = f"An unexpected error occurred: {traceback.format_exc()}"
             print(message)
 
         self.finish(json.dumps({"message": message}))
