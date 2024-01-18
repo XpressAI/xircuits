@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { requestAPI } from '../server/handler';
+import { commandIDs } from '../components/XircuitsBodyWidget';
+import { startRunOutputStr } from '../components/runner/RunOutput';
 import '../../style/ContextMenu.css';
 
 export interface TrayContextMenuProps {
@@ -44,25 +46,24 @@ const TrayContextMenu = ({ app, x, y, visible, val, onClose }: TrayContextMenuPr
         };
     }, []);
     // Context menu action handlers
-    const handleInstall = (val) => {
+    const handleInstall = async (val) => {
         const userResponse = confirm("Do you want to proceed with " + val + " library installation?");
         if (userResponse) {
-            requestLibrary(val, "library/install")
-                .then(response => {
-                    console.log('Installation Response:', response);
-                    
-                    // Check if the response contains a message and display it
-                    if (response['message']) {
-                        alert(response['message']);
-                    }
-                })
-                .catch(error => {
-                    console.error('Installation Failed:', error);
-                    alert('Installation Failed: ' + error);
-                });
-        }
-    };
-    
+            try {
+                const response = await requestLibrary(val, "library/get_directory");
+                if (response['path']) {
+                    let code = startRunOutputStr()
+                    code += "!pip install -r " + response['path'] + "/requirements.txt"
+                    app.commands.execute(commandIDs.executeToOutputPanel, { code });
+                    console.log(`${val} library sucessfully installed.`);
+                } else if (response['message']) {
+                    alert(response['message']);
+                }
+            } catch (error) {
+                alert(`Failed to install ${val}: ` + error);
+            }
+          }
+    }
     
     const handleShowInFileBrowser = async (val) => {
         try {
