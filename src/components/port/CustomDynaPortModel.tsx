@@ -1,6 +1,6 @@
 import { DeserializeEvent} from '@projectstorm/react-canvas-core';
-import { CustomPortModel, CustomPortModelOptions } from './CustomPortModel';
-import { CustomNodeModel } from '../CustomNodeModel';
+import { CustomPortModel, CustomPortModelOptions } from '../port/CustomPortModel';
+import { CustomNodeModel } from '../node/CustomNodeModel';
 
 export const DYNAMIC_PARAMETER_NODE_TYPES = [
     'dynalist', 'dynadict', 'dynatuple'

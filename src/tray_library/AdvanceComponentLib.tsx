@@ -1,4 +1,4 @@
-import { CustomNodeModel } from "../components/CustomNodeModel";
+import { CustomNodeModel } from "../components/node/CustomNodeModel";
 import ComponentList from "./Component";
 
 interface AdvancedComponentLibraryProps {

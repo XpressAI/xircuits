@@ -15,7 +15,7 @@ import { Message } from '@lumino/messaging';
 import { StackedPanel } from '@lumino/widgets';
 import { Log } from '../log/LogPlugin';
 import { xircuitsIcon } from '../ui-components/icons';
-import { XircuitFactory } from '../xircuitFactory';
+import { XircuitsFactory } from '../XircuitsFactory';
 
 /**
  * The class name added to the output panel.
@@ -40,13 +40,13 @@ export class OutputPanel extends StackedPanel {
     constructor(
         manager: ServiceManager.IManager,
         rendermime: IRenderMimeRegistry,
-        xircuitFactory: XircuitFactory,
+        XircuitsFactory: XircuitsFactory,
         translator?: ITranslator
     ) {
         super();
         this._translator = translator || nullTranslator;
         this._trans = this._translator.load('jupyterlab');
-        this._xircuitFactory = xircuitFactory;
+        this._XircuitsFactory = XircuitsFactory;
         this.addClass(PANEL_CLASS);
         this.id = 'xircuit-output-panel';
         this.title.label = this._trans.__('Xircuit Output');
@@ -145,7 +145,7 @@ export class OutputPanel extends StackedPanel {
     private _outputarea: CustomOutputArea;
     private _outputareamodel: OutputAreaModel;
     private _sessionContextDialogs: SessionContextDialogs;
-    private _xircuitFactory: XircuitFactory;
+    private _XircuitsFactory: XircuitsFactory;
 
     private _translator: ITranslator;
     private _trans: TranslationBundle;

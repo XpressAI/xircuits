@@ -1,13 +1,8 @@
 import ComponentList from './Component';
-
-import React, { useEffect, useState } from 'react';
-
+import React, { useEffect, useState, useRef } from 'react';
 import styled from '@emotion/styled';
-
 import { TrayItemWidget } from './TrayItemWidget';
-
 import { TrayWidget } from './TrayWidget';
-
 import { JupyterFrontEnd } from '@jupyterlab/application';
 
 import {
@@ -18,8 +13,10 @@ import {
     AccordionItemPanel
 } from "react-accessible-accordion";
 
-import { requestAPI } from '../server/handler';
-import { XircuitFactory } from '../xircuitFactory';
+import { XircuitsFactory } from '../XircuitsFactory';
+import TrayContextMenu from '../context-menu/TrayContextMenu';
+
+import '../../style/ContextMenu.css'
 
 export const Body = styled.div`
   flex-grow: 1;
@@ -72,8 +69,8 @@ const colorList_general = [
 ];
 
 export interface SidebarProps {
-    lab: JupyterFrontEnd;
-    factory: XircuitFactory;
+    app: JupyterFrontEnd;
+    factory: XircuitsFactory;
 }
 
 async function fetchComponent(componentList: string[]) {
@@ -107,6 +104,9 @@ async function fetchComponent(componentList: string[]) {
 }
 
 export default function Sidebar(props: SidebarProps) {
+    
+    const app = props.app
+
     const [componentList, setComponentList] = React.useState([]);
     const [category, setCategory] = React.useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -121,23 +121,6 @@ export default function Sidebar(props: SidebarProps) {
         setSearchTerm("");
         setSearchTerm(searchTerm);
     }
-
-    async function getConfig(request: string) {
-        const dataToSend = { "config_request": request };
-
-        try {
-            const server_reply = await requestAPI<any>('get/config', {
-                body: JSON.stringify(dataToSend),
-                method: 'POST',
-            });
-
-            return server_reply;
-        } catch (reason) {
-            console.error(
-                `Error on POST get/config ${dataToSend}.\n${reason}`
-            );
-        }
-    };
 
     const fetchComponentList = async () => {
           // get the component list 
@@ -182,6 +165,29 @@ export default function Sidebar(props: SidebarProps) {
         return () => clearInterval(intervalId);
     },[componentList, handleRefreshOnClick]);
 
+
+    const [contextMenuState, setContextMenuState] = useState({
+        visible: false,
+        x: 0,
+        y: 0,
+        val: null
+    });
+
+    const handleRightClick = (e, val) => {
+        e.preventDefault();
+        const rect = e.target.getBoundingClientRect();
+        setContextMenuState({
+            visible: true,
+            x: rect.right,
+            y: rect.top,
+            val: val
+        });
+    };
+
+    const closeContextMenu = () => {
+        setContextMenuState({ ...contextMenuState, visible: false });
+    };
+
     return (
         <Body>
             <Content>
@@ -203,7 +209,7 @@ export default function Sidebar(props: SidebarProps) {
                                     return (
                                         <AccordionItem key={`index-1-${val["task"].toString()}`}>
                                             <AccordionItemHeading>
-                                                <AccordionItemButton>{val["task"]}</AccordionItemButton>
+                                                <AccordionItemButton onContextMenu={(e) => handleRightClick(e, val["task"])}>{val["task"]}</AccordionItemButton>
                                             </AccordionItemHeading>
                                             <AccordionItemPanel>
                                                 {
@@ -226,7 +232,7 @@ export default function Sidebar(props: SidebarProps) {
                                                                         }}
                                                                         name={componentVal.task}
                                                                         color={componentVal.color}
-                                                                        app={props.lab}
+                                                                        app={props.app}
                                                                         path={componentVal.file_path}
                                                                         lineNo= {componentVal.lineno}/>
                                                                 </div>
@@ -260,7 +266,7 @@ export default function Sidebar(props: SidebarProps) {
                                             }}
                                             name={val.task}
                                             color={val.color}
-                                            app={props.lab}
+                                            app={props.app}
                                             path={val.file_path}
                                             lineNo= {val.lineno} />
                                     </div>
@@ -270,6 +276,14 @@ export default function Sidebar(props: SidebarProps) {
                     </div>
                 </TrayWidget>
             </Content>
+            <TrayContextMenu
+                app={app}
+                x={contextMenuState.x}
+                y={contextMenuState.y}
+                visible={contextMenuState.visible}
+                val={contextMenuState.val}
+                onClose={closeContextMenu}
+            />
         </Body>
     )
 };
