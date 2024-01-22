@@ -59,27 +59,37 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
 
 export function getMenuOptionsVisibility(models) {
 
-	function isParameterNode(node) {
+    function isLiteralNode(node) {
         return node.getOptions()?.name?.startsWith("Literal") ?? false;
-	}
+    }
 
-	let isNodeSelected = models.some(model => model instanceof NodeModel);
-	let isLinkSelected = models.some(model => model instanceof LinkModel);
-	let parameterNodes = models.filter(model => isParameterNode(model));
-	let isSingleParameterNodeSelected = parameterNodes.length === 1;
-	let multipleLinksSelected = models.filter(model => model instanceof LinkModel).length > 1;
-	let isSingleNonParameterNodeSelected = models.length === 1 && isNodeSelected && !isParameterNode(models[0]);
+    function isArgumentNode(node) {
+        return node.getOptions()?.name?.startsWith("Argument") ?? false;
+    }
 
-	return {
-		showCutCopyPaste: !models.length || isNodeSelected || isLinkSelected,
-		showReloadNode: isNodeSelected && !multipleLinksSelected,
-		showEdit: isSingleParameterNodeSelected,
-		showOpenScript: isSingleNonParameterNodeSelected,
-		showDelete: isNodeSelected || isLinkSelected || parameterNodes.length > 0,
-		showUndoRedo: !models.length,
-		showAddComment: !models.length
-	};
+    function isComponentNode(node) {
+        return !isLiteralNode(node) && !isArgumentNode(node);
+    }
+
+    let isNodeSelected = models.some(model => model instanceof NodeModel);
+    let isLinkSelected = models.some(model => model instanceof LinkModel);
+    let literalNodes = models.filter(model => isLiteralNode(model));
+    let componentNodes = models.filter(model => isComponentNode(model));
+    let isSingleLiteralNodeSelected = literalNodes.length === 1;
+    let isSingleComponentNodeSelected = componentNodes.length === 1;
+    let showReloadNode = isNodeSelected && componentNodes.length > 0;
+
+    return {
+        showCutCopyPaste: !models.length || isNodeSelected || isLinkSelected,
+        showReloadNode: showReloadNode,
+        showEdit: isSingleLiteralNodeSelected,
+        showOpenScript: isSingleComponentNodeSelected,
+        showDelete: isNodeSelected || isLinkSelected || literalNodes.length > 0,
+        showUndoRedo: !models.length,
+        showAddComment: !models.length
+    };
 }
+
 
 export function countVisibleMenuOptions(visibility) {
     let count = Object.values(visibility).filter(isVisible => isVisible).length;
