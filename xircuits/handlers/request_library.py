@@ -4,7 +4,8 @@ import traceback
 import tornado
 import posixpath
 from jupyter_server.base.handlers import APIHandler
-from xircuits.library import install_library
+from pathlib import Path
+from xircuits.library import install_library, get_library_config
 
 class InstallLibraryRouteHandler(APIHandler):
     @tornado.web.authenticated
@@ -42,6 +43,22 @@ class GetLibraryDirectoryRouteHandler(APIHandler):
         response = {"path": directory_path}
         self.finish(json.dumps(response))
 
+
+def get_library_file_path(library_name, path_key, default_filename):
+    config = get_library_config(library_name)
+    base_path = Path("xai_components") / f"xai_{library_name.lower()}"
+
+    if config and 'Paths' in config and path_key in config['Paths']:
+        relative_path = config['Paths'][path_key]
+    else:
+        relative_path = default_filename
+
+    full_path = posixpath.join(base_path, relative_path)
+    if os.path.isfile(full_path):
+        return full_path
+    else:
+        return None
+
 class GetLibraryReadmeRouteHandler(APIHandler):
     @tornado.web.authenticated
     def post(self):
@@ -52,22 +69,13 @@ class GetLibraryReadmeRouteHandler(APIHandler):
             self.finish(json.dumps({"message": "Library name is required"}))
             return
 
-        base_path = posixpath.join("xai_components", f"xai_{library_name.lower()}")
-        readme_filename = None
-
-        if os.path.isdir(base_path):
-            for file in os.listdir(base_path):
-                if file.lower() == 'readme.md':
-                    readme_filename = posixpath.join(base_path, file)
-                    break
-
-        if readme_filename:
-            response = {"path": readme_filename}
+        readme_path = get_library_file_path(library_name, 'readme_path', "README.md")
+        if readme_path:
+            response = {"path": readme_path}
         else:
             response = {"message": "README file not found."}
 
         self.finish(json.dumps(response))
-
 
 class GetLibraryExampleRouteHandler(APIHandler):
     @tornado.web.authenticated
@@ -79,42 +87,10 @@ class GetLibraryExampleRouteHandler(APIHandler):
             self.finish(json.dumps({"message": "Library name is required"}))
             return
 
-        base_path = posixpath.join("xai_components", f"xai_{library_name.lower()}")
-        examples_path = posixpath.join(base_path, "examples")
-        example_xircuits, search_status = self.find_example_xircuits(base_path, examples_path)
-
-        if example_xircuits:
-            response = {"path": example_xircuits, "searchStatus": search_status}
+        example_path = get_library_file_path(library_name, 'default_example_path', "example.xircuits")
+        if example_path:
+            response = {"path": example_path}
         else:
             response = {"message": "No .xircuits example file found in the library."}
 
         self.finish(json.dumps(response))
-
-    def find_example_xircuits(self, base_path, examples_path):
-        # Priority 1: Search for example.xircuits in base_path
-        example_xircuits_path = posixpath.join(base_path, "example.xircuits")
-        if os.path.isfile(example_xircuits_path):
-            return example_xircuits_path, "Found in base directory"
-
-        # Priority 2: Search for examples/example.xircuits
-        example_xircuits_path = posixpath.join(examples_path, "example.xircuits")
-        if os.path.isfile(example_xircuits_path):
-            return example_xircuits_path, "Found in examples directory"
-
-        # Priority 3: Pick any .xircuits in the examples/ dir
-        if os.path.isdir(examples_path):
-            for file in os.listdir(examples_path):
-                file_path = posixpath.join(examples_path, file)
-                if file.endswith('.xircuits') and os.path.isfile(file_path):
-                    return file_path, "Picked any .xircuits from examples directory"
-
-        # Priority 4: Pick any .xircuits in the library dir
-        if os.path.isdir(base_path):
-            for file in os.listdir(base_path):
-                file_path = posixpath.join(base_path, file)
-                if file.endswith('.xircuits') and os.path.isfile(file_path):
-                    return file_path, "Picked any .xircuits from base directory"
-
-        # If not found
-        return None, None
-
