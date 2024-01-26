@@ -165,16 +165,15 @@ def main(args):
                     ports_by_varName[port.varName] = []
                 ports_by_varName[port.varName].append(port)
 
-            # Iterate through grouped ports and append values
             for varName, ports in ports_by_varName.items():
                 appended_list = []
                 merged_dict = {}
-                convert_to_tuple = False 
+                convert_to_tuple = False
 
                 for port in ports:
                     if port.source.id not in named_nodes:
                         if port.source.type == "string":
-                            value = port.sourceLabel
+                            value = repr(port.sourceLabel)  # Use repr to ensure strings are quoted
                         elif port.source.type == "list":
                             value = json.loads("[" + port.sourceLabel + "]")
                         elif port.source.type == "dict":
@@ -183,33 +182,36 @@ def main(args):
                             value = list(eval(port.sourceLabel))
                         else:
                             value = eval(port.sourceLabel)
-                        
                     else:
-                        value = "%s.%s" % (named_nodes[port.source.id], port.sourceLabel)
+                        value = "%s.%s" % (named_nodes[port.source.id], port.sourceLabel)  # Variable reference
 
                     if port.dataType == 'dynadict':
                         merged_dict.update(value)
                     else:
                         appended_list.append(value)
-                    
+
                     if port.dataType == 'dynatuple':
                         convert_to_tuple = True
 
-                # Create a single AST node for each unique varName and append to code
                 assignment_target = "%s.%s.value" % (named_nodes[ports[0].target.id], ports[0].varName)
-                
-                assignment_value = ''
+
+                assignment_value_elements = []
+                for item in appended_list:
+                    if isinstance(item, str) and '.' in item:  # Assuming '.' indicates a variable reference
+                        assignment_value_elements.append(item)  # Add variable reference as is
+                    else:
+                        assignment_value_elements.append(repr(item))  # Use repr for other items to ensure proper representation
+
+                assignment_value = '[' + ', '.join(assignment_value_elements) + ']'
+                if convert_to_tuple:
+                    assignment_value = '(' + assignment_value.strip('[]') + ',)'
 
                 if merged_dict:
                     assignment_value = repr(merged_dict)
-                elif appended_list:
-                    if convert_to_tuple:
-                        assignment_value = repr(tuple(appended_list))
-                    else:
-                        assignment_value = repr(appended_list)
-                
+
                 tpl = ast.parse("%s = %s" % (assignment_target, assignment_value))
                 code.append(tpl)
+
 
         # Set up control flow
         for node in component_nodes:
