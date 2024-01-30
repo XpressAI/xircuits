@@ -172,17 +172,3 @@ class dynatuple(tuple):
             else:
                 return item
         return tuple(resolve(item) for item in x)
-
-class dynadict(dict):
-    def __init__(self, *args):
-        super().__init__(args)
-
-    @staticmethod
-    def getter(x):
-        if x is None:
-            return {}
-
-        if isinstance(x, (InArg, InCompArg, OutArg)):
-            x = x.value
-
-        return {key: (val.value if isinstance(val, (InArg, OutArg)) else val) for key, val in x.items()}

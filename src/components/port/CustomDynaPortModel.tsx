@@ -3,7 +3,7 @@ import { CustomPortModel, CustomPortModelOptions } from './CustomPortModel';
 import { CustomNodeModel } from '../CustomNodeModel';
 
 export const DYNAMIC_PARAMETER_NODE_TYPES = [
-    'dynalist', 'dynadict', 'dynatuple'
+    'dynalist', 'dynatuple'
 ];
 
 export interface DynaPortRef {
@@ -57,11 +57,6 @@ export  class CustomDynaPortModel extends CustomPortModel {
         // if thisLinkedPortType is dynalist or dynatuple, treat it as any
         if (['dynalist', 'dynatuple'].includes(thisLinkedPortType)) {
             return true;  // Accepts anything
-        }
-
-        // if thisLinkedPortType is dynadict, accept only dict
-        if (thisLinkedPortType === 'dynadict' && thisNodeModelType !== 'dict') {
-            return false;
         }
 
         // default check

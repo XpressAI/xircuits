@@ -79,7 +79,6 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 			"dict": '{ }',
 			"dynalist": '«[]»',
 			"dynatuple": '«()»',
-			"dynadict": '«{}»',
 			"union": ' U',
 			"secret": '🗝️',
 			"chat": '🗨',

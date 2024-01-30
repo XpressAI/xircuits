@@ -1,5 +1,6 @@
 import ast
 import itertools
+from collections import namedtuple
 import re
 import json
 import sys
@@ -156,8 +157,9 @@ def main(args):
 
             # Handle dynamic connections
             dynaports = [p for p in node.ports if p.direction == 'in' and p.type != 'triangle-link' and p.dataType in DYNAMIC_PORTS]
-
             ports_by_varName = {}
+
+            RefOrValue = namedtuple('RefOrValue', ['value', 'is_ref'])  # Renamed to RefOrValue
 
             # Group ports by varName
             for port in dynaports:
@@ -166,12 +168,11 @@ def main(args):
                 ports_by_varName[port.varName].append(port)
 
             for varName, ports in ports_by_varName.items():
-                appended_list = []
-                merged_dicts = []  # Use a list to store dictionaries for direct merge or variable references for unpacking
-                convert_to_tuple = False
+                dynaport_values = []
 
                 for port in ports:
                     if port.source.id not in named_nodes:
+                        # Handle Literals
                         if port.source.type == "string":
                             value = port.sourceLabel
                         elif port.source.type == "list":
@@ -182,40 +183,27 @@ def main(args):
                             value = tuple(eval(port.sourceLabel))
                         else:
                             value = eval(port.sourceLabel)
-                        if port.dataType == 'dynadict' and isinstance(value, dict):
-                            merged_dicts.append(value)  # Append the dictionary for direct merge
+                        dynaport_values.append(RefOrValue(value, False))
                     else:
+                        # Handle named node references
                         value = "%s.%s" % (named_nodes[port.source.id], port.sourceLabel)  # Variable reference
-                        if port.dataType == 'dynadict':
-                            merged_dicts.append(value)  # Append the variable reference for unpacking
-                    if port.dataType != 'dynadict':
-                        appended_list.append(value)
-                    if port.dataType == 'dynatuple':
-                        convert_to_tuple = True
+                        dynaport_values.append(RefOrValue(value, True))
 
                 assignment_target = "%s.%s.value" % (named_nodes[ports[0].target.id], ports[0].varName)
-                if merged_dicts:
-                    if all(isinstance(item, dict) for item in merged_dicts):  # All items are actual dictionaries
-                        combined_dict = {}
-                        for d in merged_dicts:
-                            combined_dict.update(d)
-                        assignment_value = repr(combined_dict)
-                    else:  # At least one item is a variable reference
-                        dict_items_to_unpack = ', '.join('**{%s}' % item if isinstance(item, str) else '**' + repr(item) for item in merged_dicts)
-                        assignment_value = '{' + dict_items_to_unpack + '}'
-                elif convert_to_tuple:
-                    tuple_elements = [item if isinstance(item, str) and '.' in item else repr(item) for item in appended_list]
+
+                if ports[0].dataType == 'dynatuple':
+                    tuple_elements = [item.value if item.is_ref else repr(item.value) for item in dynaport_values]
                     if len(tuple_elements) == 1:
                         assignment_value = '(' + tuple_elements[0] + ',)'
                     else:
                         assignment_value = '(' + ', '.join(tuple_elements) + ')'
-                
                 else:
-                    list_elements = [item if isinstance(item, str) and '.' in item else repr(item) for item in appended_list]
+                    list_elements = [item.value if item.is_ref else repr(item.value) for item in dynaport_values]
                     assignment_value = '[' + ', '.join(list_elements) + ']'
 
                 tpl = ast.parse("%s = %s" % (assignment_target, assignment_value))
                 code.append(tpl)
+
 
         # Set up control flow
         for node in component_nodes:
