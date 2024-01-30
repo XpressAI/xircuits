@@ -157,7 +157,7 @@ def main(args):
             # Handle dynamic connections
             dynaports = [p for p in node.ports if p.direction == 'in' and p.type != 'triangle-link' and p.dataType in DYNAMIC_PORTS]
 
-            ports_by_varName = {}  
+            ports_by_varName = {}
 
             # Group ports by varName
             for port in dynaports:
@@ -167,51 +167,55 @@ def main(args):
 
             for varName, ports in ports_by_varName.items():
                 appended_list = []
-                merged_dict = {}
+                merged_dicts = []  # Use a list to store dictionaries for direct merge or variable references for unpacking
                 convert_to_tuple = False
 
                 for port in ports:
                     if port.source.id not in named_nodes:
                         if port.source.type == "string":
-                            value = repr(port.sourceLabel)  # Use repr to ensure strings are quoted
+                            value = port.sourceLabel
                         elif port.source.type == "list":
                             value = json.loads("[" + port.sourceLabel + "]")
                         elif port.source.type == "dict":
                             value = json.loads("{" + port.sourceLabel + "}")
                         elif port.source.type == "tuple":
-                            value = list(eval(port.sourceLabel))
+                            value = tuple(eval(port.sourceLabel))
                         else:
                             value = eval(port.sourceLabel)
+                        if port.dataType == 'dynadict' and isinstance(value, dict):
+                            merged_dicts.append(value)  # Append the dictionary for direct merge
                     else:
                         value = "%s.%s" % (named_nodes[port.source.id], port.sourceLabel)  # Variable reference
-
-                    if port.dataType == 'dynadict':
-                        merged_dict.update(value)
-                    else:
+                        if port.dataType == 'dynadict':
+                            merged_dicts.append(value)  # Append the variable reference for unpacking
+                    if port.dataType != 'dynadict':
                         appended_list.append(value)
-
                     if port.dataType == 'dynatuple':
                         convert_to_tuple = True
 
                 assignment_target = "%s.%s.value" % (named_nodes[ports[0].target.id], ports[0].varName)
-
-                assignment_value_elements = []
-                for item in appended_list:
-                    if isinstance(item, str) and '.' in item:  # Assuming '.' indicates a variable reference
-                        assignment_value_elements.append(item)  # Add variable reference as is
+                if merged_dicts:
+                    if all(isinstance(item, dict) for item in merged_dicts):  # All items are actual dictionaries
+                        combined_dict = {}
+                        for d in merged_dicts:
+                            combined_dict.update(d)
+                        assignment_value = repr(combined_dict)
+                    else:  # At least one item is a variable reference
+                        dict_items_to_unpack = ', '.join('**{%s}' % item if isinstance(item, str) else '**' + repr(item) for item in merged_dicts)
+                        assignment_value = '{' + dict_items_to_unpack + '}'
+                elif convert_to_tuple:
+                    tuple_elements = [item if isinstance(item, str) and '.' in item else repr(item) for item in appended_list]
+                    if len(tuple_elements) == 1:
+                        assignment_value = '(' + tuple_elements[0] + ',)'
                     else:
-                        assignment_value_elements.append(repr(item))  # Use repr for other items to ensure proper representation
-
-                assignment_value = '[' + ', '.join(assignment_value_elements) + ']'
-                if convert_to_tuple:
-                    assignment_value = '(' + assignment_value.strip('[]') + ',)'
-
-                if merged_dict:
-                    assignment_value = repr(merged_dict)
+                        assignment_value = '(' + ', '.join(tuple_elements) + ')'
+                
+                else:
+                    list_elements = [item if isinstance(item, str) and '.' in item else repr(item) for item in appended_list]
+                    assignment_value = '[' + ', '.join(list_elements) + ']'
 
                 tpl = ast.parse("%s = %s" % (assignment_target, assignment_value))
                 code.append(tpl)
-
 
         # Set up control flow
         for node in component_nodes:

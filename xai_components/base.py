@@ -17,12 +17,30 @@ class InArg(Generic[T]):
         self._value = value
 
 class OutArg(Generic[T]):
-    def __init__(self, value: T = None, *args, **kwargs) -> None:
+    def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
         self.value = value
+        self._getter = getter
+
+    @property
+    def value(self):
+        return self._getter(self._value)
+
+    @value.setter
+    def value(self, value: T):
+        self._value = value
 
 class InCompArg(Generic[T]):
-    def __init__(self, value: T = None, *args, **kwargs) -> None:
+    def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
         self.value = value
+        self._getter = getter
+
+    @property
+    def value(self):
+        return self._getter(self._value)
+
+    @value.setter
+    def value(self, value: T):
+        self._value = value
 
 def xai_component(*args, **kwargs):
     # Passthrough element without any changes.
@@ -123,7 +141,7 @@ class secret:
 
     def get_value(self):
         return self.__value
-    
+
 class message(NamedTuple):
     role: str
     content: str
@@ -131,44 +149,40 @@ class message(NamedTuple):
 class chat(NamedTuple):
     messages: List[message]
     
-class dynalist:
-    @staticmethod
-    def initial_value():
-        return []
+class dynalist(list):
+    def __init__(self, *args):
+        super().__init__(args)
 
     @staticmethod
     def getter(x):
+        if x is None:
+            return []
         return [item.value if isinstance(item, (InArg, OutArg)) else item for item in x]
 
-class dynatuple:
-    def __init__(self, value):
-        self.value = value
-
-    @staticmethod
-    def initial_value():
-        return tuple()
-
+class dynatuple(tuple):
+    def __init__(self, *args):
+        super().__init__(args)
     @staticmethod
     def getter(x):
+        if x is None:
+            return tuple()
         def resolve(item):
-            if isinstance(item, (InArg, OutArg)):
+            if isinstance(item, (InArg, InCompArg,OutArg)):
                 return item.value
-            elif isinstance(item, str):
-                return item
             else:
                 return item
-
         return tuple(resolve(item) for item in x)
-    
-class dynadict:
-    def __init__(self, value):
-        self.value = value
 
-    @staticmethod
-    def initial_value():
-        return {}
+class dynadict(dict):
+    def __init__(self, *args):
+        super().__init__(args)
 
     @staticmethod
     def getter(x):
-        # Check for InArg and OutArg instances in the dictionary and extract their values
+        if x is None:
+            return {}
+
+        if isinstance(x, (InArg, InCompArg, OutArg)):
+            x = x.value
+
         return {key: (val.value if isinstance(val, (InArg, OutArg)) else val) for key, val in x.items()}
