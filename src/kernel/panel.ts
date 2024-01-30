@@ -1,7 +1,7 @@
 import {
     ISessionContext,
     SessionContext,
-    sessionContextDialogs,
+    SessionContextDialogs,
 } from '@jupyterlab/apputils';
 import { OutputAreaModel, SimplifiedOutputArea } from '@jupyterlab/outputarea';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
@@ -15,7 +15,7 @@ import { Message } from '@lumino/messaging';
 import { StackedPanel } from '@lumino/widgets';
 import { Log } from '../log/LogPlugin';
 import { xircuitsIcon } from '../ui-components/icons';
-import { XircuitFactory } from '../xircuitFactory';
+import { XircuitsFactory } from '../XircuitsFactory';
 
 /**
  * The class name added to the output panel.
@@ -40,13 +40,13 @@ export class OutputPanel extends StackedPanel {
     constructor(
         manager: ServiceManager.IManager,
         rendermime: IRenderMimeRegistry,
-        xircuitFactory: XircuitFactory,
+        XircuitsFactory: XircuitsFactory,
         translator?: ITranslator
     ) {
         super();
         this._translator = translator || nullTranslator;
         this._trans = this._translator.load('jupyterlab');
-        this._xircuitFactory = xircuitFactory;
+        this._XircuitsFactory = XircuitsFactory;
         this.addClass(PANEL_CLASS);
         this.id = 'xircuit-output-panel';
         this.title.label = this._trans.__('Xircuit Output');
@@ -65,13 +65,15 @@ export class OutputPanel extends StackedPanel {
             rendermime: rendermime,
         });
 
+        this._sessionContextDialogs = new SessionContextDialogs();
+
         this.addWidget(this._outputarea);
 
         void this._sessionContext
             .initialize()
             .then(async (value) => {
                 if (value) {
-                    await sessionContextDialogs.selectKernel(this._sessionContext);
+                    await this._sessionContextDialogs.selectKernel(this._sessionContext);
                     // Dispose panel when no kernel selected
                     if (this._sessionContext.hasNoKernel) {
                         super.dispose();
@@ -142,7 +144,8 @@ export class OutputPanel extends StackedPanel {
     private _sessionContext: SessionContext;
     private _outputarea: CustomOutputArea;
     private _outputareamodel: OutputAreaModel;
-    private _xircuitFactory: XircuitFactory;
+    private _sessionContextDialogs: SessionContextDialogs;
+    private _XircuitsFactory: XircuitsFactory;
 
     private _translator: ITranslator;
     private _trans: TranslationBundle;

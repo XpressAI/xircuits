@@ -2,7 +2,7 @@ import { ReactWidget } from '@jupyterlab/apputils';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { Signal } from '@lumino/signaling';
 import { Context } from '@jupyterlab/docregistry';
-import { BodyWidget } from './components/xircuitBodyWidget';
+import { BodyWidget } from './components/XircuitsBodyWidget';
 import React from 'react';
 import { ServiceManager } from '@jupyterlab/services';
 import { XircuitsApplication } from './components/XircuitsApp';
@@ -10,7 +10,7 @@ import { XircuitsApplication } from './components/XircuitsApp';
 /**
  * DocumentWidget: widget that represents the view or editor for a file type.
  */
-export class XPipePanel extends ReactWidget {
+export class XircuitsPanel extends ReactWidget {
   app: JupyterFrontEnd;
   shell: ILabShell;
   commands: any;
@@ -30,7 +30,7 @@ export class XPipePanel extends ReactWidget {
   mousePosition = { x: 0, y: 0 };
 
   constructor(options: any) {
-    super(options);
+    super();
     this.app = options.app;
     this.shell = options.shell;
     this.commands = options.commands;

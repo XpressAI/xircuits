@@ -1,0 +1,30 @@
+.canvas-context-menu {
+  position: absolute;
+  z-index: 1000;
+  max-width: 95px;
+  border-top: 10px;
+  border-color: #000;
+  border-radius: 12px;
+}
+
+.context-menu {
+  border-color: #000;
+  border-radius: 25px;
+  border-top: 10px;
+  z-index: 10;
+}
+
+.context-menu-option {
+  cursor: pointer;
+  flex-grow: 1;
+  width: 90%;
+  height: 19px;
+  font-size:small;
+  padding: 5px 7px;
+  color: #fff;
+  background:rgb(35, 35, 35);
+}
+
+.context-menu-option:hover {
+  background-color: rgb(36, 64, 110);
+}

@@ -1,7 +1,7 @@
 import { DefaultNodeModel } from '@projectstorm/react-diagrams';
 import { BaseModelOptions, DeserializeEvent} from '@projectstorm/react-canvas-core';
-import { CustomPortModel } from "./port/CustomPortModel";
-import { CustomDynaPortModel, DYNAMIC_PARAMETER_NODE_TYPES, DynaPortRef } from "./port/CustomDynaPortModel";
+import { CustomPortModel } from "../port/CustomPortModel";
+import { CustomDynaPortModel, DYNAMIC_PARAMETER_NODE_TYPES, DynaPortRef } from "../port/CustomDynaPortModel";
 
 
 export interface CustomNodeModelOptions extends BaseModelOptions {

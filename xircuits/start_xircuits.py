@@ -1,48 +1,15 @@
 import argparse
 from pathlib import Path
 import os
-import pkg_resources
-import shutil
-from .handlers.request_folder import request_folder, clone_from_github_url
-from .handlers.request_submodule import request_submodule_library
+from .handlers.request_folder import request_folder
+from .utils import is_empty, copy_from_installed_wheel
+from .library import list_component_library, install_library, fetch_library
 from .compiler import compile
-import subprocess
-import sys
 import json
-import urllib.parse
 
 def init_xircuits():
     package_name = 'xircuits'
     copy_from_installed_wheel(package_name, resource='.xircuits', dest_path='.xircuits')
-
-def build_component_library_path(component_library_query: str) -> str:
-    # ensure syntax is as xai_components/xai_library_name
-
-    if "xai" not in component_library_query:
-        component_library_query = "xai_" + component_library_query
-
-    if "xai_components" not in component_library_query:
-        component_library_query = "xai_components/" + component_library_query
-
-    return component_library_query
-
-def is_empty(directory):
-    # will return true for uninitialized submodules
-    return not os.path.exists(directory) or not os.listdir(directory)
-
-def is_valid_url(url):
-    try:
-        result = urllib.parse.urlparse(url)
-        return all([result.scheme, result.netloc])
-    except ValueError:
-        return False
-    
-def copy_from_installed_wheel(package_name, resource="", dest_path=None):
-    if dest_path is None:
-        dest_path = package_name
-
-    resource_path = pkg_resources.resource_filename(package_name, resource)
-    shutil.copytree(resource_path, dest_path)
 
 def cmd_start_xircuits(args, extra_args=[]):
     # fetch xai_components
@@ -69,40 +36,10 @@ def cmd_download_examples(args, extra_args=[]):
         request_folder("datasets", branch=args.branch)
 
 def cmd_fetch_library(args, extra_args=[]):
-    print(f"Fetching {args.library_name}...")
-
-    if is_valid_url(args.library_name):
-        component_library_path = clone_from_github_url(args.library_name)
-        return
-    
-    else:
-        component_library_path = build_component_library_path(args.library_name)
-        
-    if not Path(component_library_path).is_dir() or is_empty(Path(component_library_path)):
-        request_submodule_library(component_library_path)
-    else:
-        print(f"{args.library_name} library already exists in {component_library_path}.")
-
+    fetch_library(args.library_name)
 
 def cmd_install_library(args, extra_args=[]):
-    print(f"Installing {args.library_name}...")
-    
-    if is_valid_url(args.library_name):
-        component_library_path = clone_from_github_url(args.library_name)
-
-    else:
-        component_library_path = build_component_library_path(args.library_name)
-    
-    if not Path(component_library_path).is_dir() or is_empty(Path(component_library_path)):
-        request_submodule_library(component_library_path)
-
-    requirements_file = Path(component_library_path) / "requirements.txt"
-
-    if requirements_file.exists():
-        print(f"Installing requirements for {args.library_name}...")
-        subprocess.run([sys.executable, "-m", "pip", "install", "-r", str(requirements_file)], check=True)
-    else:
-        print(f"No requirements.txt found for {args.library_name}. Skipping installation of dependencies.")
+    install_library(args.library_name)
 
 def cmd_compile(args, extra_args=[]):
     component_paths = {}
@@ -110,68 +47,8 @@ def cmd_compile(args, extra_args=[]):
         component_paths = json.load(args.python_paths_file)
     compile(args.source_file, args.out_file, component_python_paths=component_paths)
 
-def get_installed_packages():
-    """Return a list of installed packages."""
-    result = subprocess.check_output([sys.executable, "-m", "pip", "freeze"])
-    packages = {package.split('==')[0] for package in result.decode().splitlines()}
-    return packages
-
-def check_requirements_installed(installed_packages, requirements_path):
-    """Check if all packages in a requirements file are installed using a given list of installed packages."""
-    with open(requirements_path, 'r') as file:
-        required_packages = {line.strip().split('==')[0] for line in file.readlines()}
-    return required_packages.issubset(installed_packages)
-
 def cmd_list_libraries(args, extra_args=[]):
-    
-    component_library_path = Path(os.getcwd()) / "xai_components"
-    if not component_library_path.exists():
-        copy_from_installed_wheel('xai_components', '', 'xai_components')
-
-    print("Checking installed packages... This might take a moment.")
-    installed_packages = get_installed_packages()
-
-    # Fetch libraries from .gitmodules
-    gitmodules_path = Path(".gitmodules") if Path(".gitmodules").exists() else Path(".xircuits/.gitmodules")
-    submodule_paths = []
-    
-    if gitmodules_path.exists():
-        with gitmodules_path.open() as f:
-            lines = f.readlines()
-            for line in lines:
-                if "path = " in line:
-                    submodule_paths.append(line.split("=")[-1].strip().split('/')[-1])
-                    
-    # Fetch libraries from xai_components/
-    component_library_path = Path("xai_components")
-    directories = [d.name for d in component_library_path.iterdir() if d.is_dir() and d.name.startswith("xai_")]
-    non_empty_directories = [dir_name for dir_name in directories if not is_empty(component_library_path / dir_name)]
-
-    installed_packages_dirs = []
-
-    for dir_name in directories:
-        requirements_path = component_library_path / dir_name / "requirements.txt"
-        if requirements_path.exists() and check_requirements_installed(installed_packages, requirements_path):
-            installed_packages_dirs.append(dir_name)
-
-    # Crosscheck and categorize based on installed packages
-    fully_installed = set(installed_packages_dirs)
-    available = set(non_empty_directories) - fully_installed
-    remote = [lib for lib in submodule_paths if lib not in fully_installed and lib not in available and is_empty(component_library_path / lib)]
-    
-    # Display
-    print(f"\nFully installed component libraries({len(fully_installed)}):")
-    for lib in sorted(fully_installed):
-        print(f" - {lib}")
-
-    print(f"\nAvailable component libraries({len(available)}):")
-    for lib in sorted(available):
-        print(f" - {lib}")
-
-    print(f"\nRemote component libraries({len(remote)}):")
-    for lib in sorted(remote):
-        print(f" - {lib}")
-
+    list_component_library()
 
 def main():
     parser = argparse.ArgumentParser(description='Xircuits Command Line Interface', add_help=False)

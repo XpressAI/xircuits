@@ -1,9 +1,10 @@
 import * as React from 'react';
 import styled from '@emotion/styled';
 
-export interface DemoCanvasWidgetProps {
+export interface XircuitsCanvasWidgetProps {
 	color?: string;
 	background?: string;
+	children?: any;
 }
 
 //namespace S {
@@ -46,7 +47,7 @@ export interface DemoCanvasWidgetProps {
 	`;
 //}
 
-export class DemoCanvasWidget extends React.Component<DemoCanvasWidgetProps> {
+export class XircuitsCanvasWidget extends React.Component<XircuitsCanvasWidgetProps> {
 	render() {
 		return (
 			<Container

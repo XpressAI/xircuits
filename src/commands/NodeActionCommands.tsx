@@ -1,13 +1,13 @@
 import * as SRD from '@projectstorm/react-diagrams';
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import { commandIDs } from '../components/xircuitBodyWidget';
+import { commandIDs } from '../components/XircuitsBodyWidget';
 import { ITranslator } from '@jupyterlab/translation';
 import { IXircuitsDocTracker } from '../index';
 import * as _ from 'lodash';
 import { NodeModel } from '@projectstorm/react-diagrams';
-import { CustomNodeModel } from '../components/CustomNodeModel';
+import { CustomNodeModel } from '../components/node/CustomNodeModel';
 import { LinkModel } from '@projectstorm/react-diagrams';
-import { XPipePanel } from '../xircuitWidget';
+import { XircuitsPanel } from '../XircuitsWidget';
 import { Dialog, showDialog } from '@jupyterlab/apputils';
 import { DefaultLinkModel } from '@projectstorm/react-diagrams';
 import { BaseModel, BaseModelGenerics } from '@projectstorm/react-canvas-core';
@@ -17,8 +17,6 @@ import { formDialogWidget } from '../dialog/formDialogwidget';
 import { CommentDialog } from '../dialog/CommentDialog';
 import React from 'react';
 import { showFormDialog } from '../dialog/FormDialog';
-import { inputDialog } from '../dialog/LiteralInputDialog';
-import { checkInput } from '../helpers/InputSanitizer';
 import { CustomPortModel } from '../components/port/CustomPortModel';
 import { CustomLinkModel, ParameterLinkModel, TriangleLinkModel } from '../components/link/CustomLinkModel';
 import { PointModel } from '@projectstorm/react-diagrams';
@@ -48,7 +46,7 @@ export function addNodeActionCommands(
     }
 
     function getLastSelectedNode() {
-        const widget = tracker.currentWidget?.content as XPipePanel;
+        const widget = tracker.currentWidget?.content as XircuitsPanel;
         const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
         let node;
         selectedEntities.map((x) => node = x);
@@ -58,11 +56,18 @@ export function addNodeActionCommands(
     //Add command to open node's script at specific line
     commands.addCommand(commandIDs.openScript, {
         execute: async (args) => {
-            const node = getLastSelectedNode();
-            const nodePath = args['nodePath'] as string ?? node.extras.path;
-            const nodeName = args['nodeName'] as string ?? node.name;
-            const nodeLineNo = args['nodeLineNo'] as number ?? node.extras.lineNo;
+            let node, nodePath, nodeName, nodeLineNo;
 
+            // call getLastSelectedNode() if opened from Xircuits canvas
+            if (args['nodePath'] === undefined && args['nodeName'] === undefined && args['nodeLineNo'] === undefined) {
+                node = getLastSelectedNode();
+            }
+    
+            // Assign values based on whether args were provided or derived from getLastSelectedNode()
+            nodePath = args['nodePath'] ?? node?.extras.path;
+            nodeName = args['nodeName'] ?? node?.name;
+            nodeLineNo = args['nodeLineNo'] ?? node?.extras.lineNo;
+    
             if (nodeName.startsWith('Literal') || nodeName.startsWith('Argument')) {
                 showDialog({
                     title: `${node.name} don't have its own script`,
@@ -72,29 +77,22 @@ export function addNodeActionCommands(
             }
 
             // Open node's file name
-            const newWidget = await app.commands.execute(
-                commandIDs.openDocManager,
-                {
-                    path: nodePath
-                }
-            );
-            newWidget.context.ready.then(() => {
-                // Go to end of node's line first before go to its class
-                app.commands.execute('codemirror:go-to-line', {
-                    line: nodeLineNo[0].end_lineno
-                }).then(() => {
-                    app.commands.execute('codemirror:go-to-line', {
-                        line: nodeLineNo[0].lineno
-                    })
-                })
-            });
+            const newWidget = await app.commands.execute(commandIDs.openDocManager, { path: nodePath });
+            await newWidget.context.ready;
+
+            // Go to end of node's line first before go to its class
+            await app.commands.execute('fileeditor:go-to-line', { line: nodeLineNo[0].end_lineno });
+
+            await new Promise(resolve => setTimeout(resolve, 10));
+            // Then go to the specific line
+            await app.commands.execute('fileeditor:go-to-line', { line: nodeLineNo[0].lineno });
         }
     });
 
     //Add command to undo
     commands.addCommand(commandIDs.undo, {
         execute: () => {
-            const widget = tracker.currentWidget?.content as XPipePanel;
+            const widget = tracker.currentWidget?.content as XircuitsPanel;
             const model = widget.context.model.sharedModel;
 
             model.undo();
@@ -102,7 +100,7 @@ export function addNodeActionCommands(
         label: trans.__('Undo'),
         icon: undoIcon,
         isEnabled: () => {
-            const widget = tracker.currentWidget?.content as XPipePanel;
+            const widget = tracker.currentWidget?.content as XircuitsPanel;
             const canUndo = widget.context.model.sharedModel.canUndo();
 
             return canUndo ?? false;
@@ -112,7 +110,7 @@ export function addNodeActionCommands(
     //Add command to redo
     commands.addCommand(commandIDs.redo, {
         execute: () => {
-            const widget = tracker.currentWidget?.content as XPipePanel;
+            const widget = tracker.currentWidget?.content as XircuitsPanel;
             const model = widget.context.model.sharedModel;
 
             model.redo();
@@ -120,7 +118,7 @@ export function addNodeActionCommands(
         label: trans.__('Redo'),
         icon: redoIcon,
         isEnabled: () => {
-            const widget = tracker.currentWidget?.content as XPipePanel;
+            const widget = tracker.currentWidget?.content as XircuitsPanel;
             const canRedo = widget.context.model.sharedModel.canRedo();
 
             return canRedo ?? false;
@@ -133,7 +131,7 @@ export function addNodeActionCommands(
         label: trans.__('Cut'),
         icon: cutIcon,
         isEnabled: () => {
-            const widget = tracker.currentWidget?.content as XPipePanel;
+            const widget = tracker.currentWidget?.content as XircuitsPanel;
             const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
             let isNodeSelected: boolean;
             if (selectedEntities.length > 0) {
@@ -149,7 +147,7 @@ export function addNodeActionCommands(
         label: trans.__('Copy'),
         icon: copyIcon,
         isEnabled: () => {
-            const widget = tracker.currentWidget?.content as XPipePanel;
+            const widget = tracker.currentWidget?.content as XircuitsPanel;
             const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
             let isNodeSelected: boolean;
             if (selectedEntities.length > 0) {
@@ -193,7 +191,7 @@ export function addNodeActionCommands(
         execute: deleteEntity,
         label: "Delete",
         isEnabled: () => {
-            const widget = tracker.currentWidget?.content as XPipePanel;
+            const widget = tracker.currentWidget?.content as XircuitsPanel;
             const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
             let isNodeSelected: boolean
             if (selectedEntities.length > 0) {
@@ -206,7 +204,7 @@ export function addNodeActionCommands(
     // Add command to reload selected node
     commands.addCommand(commandIDs.reloadNode, {
         execute: async () => {
-            const widget = tracker.currentWidget?.content as XPipePanel;
+            const widget = tracker.currentWidget?.content as XircuitsPanel;
             const engine = widget.xircuitsApp.getDiagramEngine()
             const model = engine.getModel()
             const selected_entities = model.getSelectedEntities();
@@ -345,7 +343,7 @@ export function addNodeActionCommands(
             const node = args['node'] as unknown as CustomNodeModel;
             const nodePosition = args['nodePosition'] as any;
 
-            const widget = tracker.currentWidget?.content as XPipePanel;
+            const widget = tracker.currentWidget?.content as XircuitsPanel;
 
             const canvasNodePosition = widget.xircuitsApp.getDiagramEngine().getRelativeMousePoint(nodePosition)
             node.setPosition(canvasNodePosition);
@@ -361,7 +359,7 @@ export function addNodeActionCommands(
             const targetNode = args['targetNode'] as any;
             const sourceLink = args['sourceLink'] as any;
             const isParameterLink = args['isParameterLink'] as boolean;
-            const widget = tracker.currentWidget?.content as XPipePanel;
+            const widget = tracker.currentWidget?.content as XircuitsPanel;
 
             // Create new link to connect to new node automatically
             let newLink = new DefaultLinkModel();
@@ -397,7 +395,7 @@ export function addNodeActionCommands(
     //Add command to connect link to obvious port given link and target node
     commands.addCommand(commandIDs.connectLinkToObviousPorts, {
         execute: (args) => {
-            const widget = tracker.currentWidget?.content as XPipePanel;
+            const widget = tracker.currentWidget?.content as XircuitsPanel;
             const draggedLink = args['draggedLink'] as any;
             const droppedSourceLink = args['droppedSourceLink'] as any;
             // Check whether link is dropped or dragged
@@ -459,7 +457,7 @@ export function addNodeActionCommands(
     //Add command to add comment node at given position
     commands.addCommand(commandIDs.addCommentNode, {
         execute: async (args) => {
-            const widget = tracker.currentWidget?.content as XPipePanel;
+            const widget = tracker.currentWidget?.content as XircuitsPanel;
             
             const dialogOptions: Partial<Dialog.IOptions<any>> = {
                 body: formDialogWidget(
@@ -485,7 +483,7 @@ export function addNodeActionCommands(
     });
 
     function cutNode(): void {
-        const widget = tracker.currentWidget?.content as XPipePanel;
+        const widget = tracker.currentWidget?.content as XircuitsPanel;
 
         if (!widget) return;
 
@@ -504,7 +502,7 @@ export function addNodeActionCommands(
     }
 
     function copyNode(): void {
-        const widget = tracker.currentWidget?.content as XPipePanel;
+        const widget = tracker.currentWidget?.content as XircuitsPanel;
 
         if (!widget) return;
 
@@ -516,7 +514,7 @@ export function addNodeActionCommands(
     }
 
     function pasteNode(): void {
-        const widget = tracker.currentWidget?.content as XPipePanel;
+        const widget = tracker.currentWidget?.content as XircuitsPanel;
         if (!widget) return;
     
         const engine = widget.xircuitsApp.getDiagramEngine();
@@ -695,7 +693,7 @@ export function addNodeActionCommands(
     
 
     async function editLiteral(): Promise<void> {
-        const widget = tracker.currentWidget?.content as XPipePanel;
+        const widget = tracker.currentWidget?.content as XircuitsPanel;
 
         if (widget) {
             const selected_node = getLastSelectedNode();
@@ -763,7 +761,7 @@ export function addNodeActionCommands(
     }
 
     function deleteEntity(): void {
-        const widget = tracker.currentWidget?.content as XPipePanel;
+        const widget = tracker.currentWidget?.content as XircuitsPanel;
         
         if (widget) {
             const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();

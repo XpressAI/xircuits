@@ -1,4 +1,4 @@
-import { CustomNodeModel } from "../components/CustomNodeModel";
+import { CustomNodeModel } from "../components/node/CustomNodeModel";
 import { inputDialog } from "../dialog/LiteralInputDialog";
 import { showFormDialog } from "../dialog/FormDialog";
 import { checkInput } from "../helpers/InputSanitizer";

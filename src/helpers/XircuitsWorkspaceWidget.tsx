@@ -1,8 +1,9 @@
 import * as React from 'react';
 import styled from '@emotion/styled';
 
-export interface DemoWorkspaceWidgetProps {
+export interface XircuitsWorkspaceWidgetProps {
 	buttons?: any;
+	children?: any;
 }
 
 namespace S {
@@ -28,7 +29,7 @@ namespace S {
 }
 
 
-export class DemoWorkspaceWidget extends React.Component<DemoWorkspaceWidgetProps> {
+export class XircuitsWorkspaceWidget extends React.Component<XircuitsWorkspaceWidgetProps> {
 	render() {
 		return (
 			<S.Container>
