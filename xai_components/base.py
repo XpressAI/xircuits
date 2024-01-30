@@ -135,12 +135,7 @@ def execute_graph(args: Namespace, start: BaseComponent, ctx) -> None:
             
 
 class secret:
-
-    def __init__(self, value):
-        self.__value = value
-
-    def get_value(self):
-        return self.__value
+    pass
 
 class message(NamedTuple):
     role: str
