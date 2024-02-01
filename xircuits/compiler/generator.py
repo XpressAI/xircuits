@@ -1,5 +1,6 @@
 import ast
 import itertools
+from collections import namedtuple
 import re
 import json
 import sys
@@ -156,8 +157,9 @@ def main(args):
 
             # Handle dynamic connections
             dynaports = [p for p in node.ports if p.direction == 'in' and p.type != 'triangle-link' and p.dataType in DYNAMIC_PORTS]
+            ports_by_varName = {}
 
-            ports_by_varName = {}  
+            RefOrValue = namedtuple('RefOrValue', ['value', 'is_ref'])  # Renamed to RefOrValue
 
             # Group ports by varName
             for port in dynaports:
@@ -165,14 +167,12 @@ def main(args):
                     ports_by_varName[port.varName] = []
                 ports_by_varName[port.varName].append(port)
 
-            # Iterate through grouped ports and append values
             for varName, ports in ports_by_varName.items():
-                appended_list = []
-                merged_dict = {}
-                convert_to_tuple = False 
+                dynaport_values = []
 
                 for port in ports:
                     if port.source.id not in named_nodes:
+                        # Handle Literals
                         if port.source.type == "string":
                             value = port.sourceLabel
                         elif port.source.type == "list":
@@ -180,36 +180,30 @@ def main(args):
                         elif port.source.type == "dict":
                             value = json.loads("{" + port.sourceLabel + "}")
                         elif port.source.type == "tuple":
-                            value = list(eval(port.sourceLabel))
+                            value = tuple(eval(port.sourceLabel))
                         else:
                             value = eval(port.sourceLabel)
-                        
+                        dynaport_values.append(RefOrValue(value, False))
                     else:
-                        value = "%s.%s" % (named_nodes[port.source.id], port.sourceLabel)
+                        # Handle named node references
+                        value = "%s.%s" % (named_nodes[port.source.id], port.sourceLabel)  # Variable reference
+                        dynaport_values.append(RefOrValue(value, True))
 
-                    if port.dataType == 'dynadict':
-                        merged_dict.update(value)
-                    else:
-                        appended_list.append(value)
-                    
-                    if port.dataType == 'dynatuple':
-                        convert_to_tuple = True
-
-                # Create a single AST node for each unique varName and append to code
                 assignment_target = "%s.%s.value" % (named_nodes[ports[0].target.id], ports[0].varName)
-                
-                assignment_value = ''
 
-                if merged_dict:
-                    assignment_value = repr(merged_dict)
-                elif appended_list:
-                    if convert_to_tuple:
-                        assignment_value = repr(tuple(appended_list))
+                if ports[0].dataType == 'dynatuple':
+                    tuple_elements = [item.value if item.is_ref else repr(item.value) for item in dynaport_values]
+                    if len(tuple_elements) == 1:
+                        assignment_value = '(' + tuple_elements[0] + ',)'
                     else:
-                        assignment_value = repr(appended_list)
-                
+                        assignment_value = '(' + ', '.join(tuple_elements) + ')'
+                else:
+                    list_elements = [item.value if item.is_ref else repr(item.value) for item in dynaport_values]
+                    assignment_value = '[' + ', '.join(list_elements) + ']'
+
                 tpl = ast.parse("%s = %s" % (assignment_target, assignment_value))
                 code.append(tpl)
+
 
         # Set up control flow
         for node in component_nodes:

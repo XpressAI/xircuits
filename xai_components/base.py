@@ -1,40 +1,46 @@
 from argparse import Namespace
-from typing import TypeVar, Generic, Tuple, NamedTuple, List
+from typing import TypeVar, Generic, Tuple, NamedTuple, Callable, List
 
 T = TypeVar('T')
 
-
 class InArg(Generic[T]):
-    value: T
+    def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
+        self._value = value
+        self._getter = getter
 
-    def __init__(self, value: T) -> None:
-        self.value = value
+    @property
+    def value(self):
+        return self._getter(self._value)
 
-    @classmethod
-    def empty(cls):
-        return InArg(None)
-
+    @value.setter
+    def value(self, value: T):
+        self._value = value
 
 class OutArg(Generic[T]):
-    value: T
-
-    def __init__(self, value: T) -> None:
+    def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
         self.value = value
+        self._getter = getter
 
-    @classmethod
-    def empty(cls):
-        return OutArg(None)
+    @property
+    def value(self):
+        return self._getter(self._value)
+
+    @value.setter
+    def value(self, value: T):
+        self._value = value
 
 class InCompArg(Generic[T]):
-    value: T
-
-    def __init__(self, value: T) -> None:
+    def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
         self.value = value
+        self._getter = getter
 
-    @classmethod
-    def empty(cls):
-        return InCompArg(None)
+    @property
+    def value(self):
+        return self._getter(self._value)
 
+    @value.setter
+    def value(self, value: T):
+        self._value = value
 
 def xai_component(*args, **kwargs):
     # Passthrough element without any changes.
@@ -54,19 +60,24 @@ class ExecutionContext:
     def __init__(self, args: Namespace):
         self.args = args
 
-
 class BaseComponent:
-
     def __init__(self):
         all_ports = self.__annotations__
         for key, type_arg in all_ports.items():
-            if isinstance(type_arg, InArg[any].__class__):
-                setattr(self, key, InArg.empty())
-            elif isinstance(type_arg, InCompArg[any].__class__):
-                setattr(self, key, InCompArg.empty())
-            elif isinstance(type_arg, OutArg[any].__class__):
-                setattr(self, key, OutArg.empty())
-            elif type_arg == str(self.__class__):
+            port_class = type_arg.__origin__
+            port_type = type_arg.__args__[0]
+            if port_class in (InArg, InCompArg, OutArg):
+                if hasattr(port_type, 'initial_value'):
+                    port_value = port_type.initial_value()
+                else:
+                    port_value = None
+
+                if hasattr(port_type, 'getter'):
+                    port_getter = port_type.getter
+                else:
+                    port_getter = lambda x: x
+                setattr(self, key, port_class(port_value, port_getter))
+            else:
                 setattr(self, key, None)
 
     @classmethod
@@ -78,7 +89,6 @@ class BaseComponent:
 
     def do(self, ctx) -> Tuple[bool, 'BaseComponent']:
         pass
-
 
 class Component(BaseComponent):
     next: BaseComponent
@@ -125,14 +135,8 @@ def execute_graph(args: Namespace, start: BaseComponent, ctx) -> None:
             
 
 class secret:
+    pass
 
-    def __init__(self, value):
-        self.__value = value
-
-    def get_value(self):
-        return self.__value
-    
-    
 class message(NamedTuple):
     role: str
     content: str
@@ -140,14 +144,26 @@ class message(NamedTuple):
 class chat(NamedTuple):
     messages: List[message]
     
-class dynalist:
-    def __init__(self, value):
-        self.value = value
+class dynalist(list):
+    def __init__(self, *args):
+        super().__init__(args)
 
-class dynatuple:
-    def __init__(self, value):
-        self.value = value
+    @staticmethod
+    def getter(x):
+        if x is None:
+            return []
+        return [item.value if isinstance(item, (InArg, OutArg)) else item for item in x]
 
-class dynadict:
-    def __init__(self, value):
-        self.value = value
+class dynatuple(tuple):
+    def __init__(self, *args):
+        super().__init__(args)
+    @staticmethod
+    def getter(x):
+        if x is None:
+            return tuple()
+        def resolve(item):
+            if isinstance(item, (InArg, InCompArg,OutArg)):
+                return item.value
+            else:
+                return item
+        return tuple(resolve(item) for item in x)

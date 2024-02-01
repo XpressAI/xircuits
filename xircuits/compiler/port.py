@@ -13,4 +13,4 @@ class Port:
     sourceLabel: str
     direction: str
 
-DYNAMIC_PORTS = ['dynalist', 'dynadict', 'dynatuple']
+DYNAMIC_PORTS = ['dynalist', 'dynatuple']

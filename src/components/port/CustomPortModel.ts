@@ -154,19 +154,35 @@ export  class CustomPortModel extends DefaultPortModel  {
         return PARAMETER_NODE_TYPES.includes(nodeModelType);
     }
 
+    static typeCompatibilityMap = {
+        "chat": ["list"],
+        "secret": ["string", "int", "float"],
+    };
+
     isTypeCompatible(thisNodeModelType, dataType) {
-        if(thisNodeModelType !== dataType){
-            // Skip 'any' type check
-            if(dataType === 'any'){
-                return true;
-            }
-            // if multiple types are accepted by target node port, check if source port type is among them
-            if(dataType.includes(thisNodeModelType)) {
-                return true;
-            }
-            return false;  // types are incompatible
+        // Check for direct compatibility or 'any' type
+        if (thisNodeModelType === dataType || dataType === 'any') {
+            return true;
         }
-        return true;
+
+        // Check if the thisNodeModelType exists in the compatibility map
+        if (CustomPortModel.typeCompatibilityMap.hasOwnProperty(thisNodeModelType)) {
+            // Get the array of compatible data types for thisNodeModelType
+            const compatibleDataTypes = CustomPortModel.typeCompatibilityMap[thisNodeModelType];
+
+            // Check if dataType is in the array of compatible types
+            if (compatibleDataTypes.includes(dataType)) {
+                return true;
+            }
+        }
+
+        // If multiple types are accepted by target node port, check if source port type is among them
+        if (dataType.includes(thisNodeModelType)) {
+            return true;
+        }
+
+        // If none of the above checks pass, the types are incompatible
+        return false;
     }
 
     canTriangleLinkToTriangle = (thisPort, port) => {

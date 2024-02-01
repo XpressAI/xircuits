@@ -1,4 +1,4 @@
-from xai_components.base import InArg, OutArg, InCompArg, Component, xai_component
+from xai_components.base import InArg, OutArg, InCompArg, Component, xai_component, dynalist, dynatuple
 
 import os
 import sys
@@ -168,6 +168,68 @@ class SleepComponent(Component):
         print("Sleeping for " + str(sleep_timer) + " seconds.")
         time.sleep(sleep_timer)
 
+@xai_component(color="grey")
+class MakeList(Component):
+    """
+    A component that takes values from its dynamic list port and output as a normal list.
+    ##### inPorts:
+    - list_values: Dynamic list port that can take any vars and append it in a list.
+
+    ##### outPorts:
+    - output_list: The constructed list from the dynamic list inPorts.
+    """
+    list_values: InArg[dynalist]
+    output_list: OutArg[list]
+
+    def execute(self, ctx) -> None:
+
+        self.output_list.value = self.list_values.value
+        print("Constructed List:", self.output_list.value)
+
+@xai_component(color="grey")
+class MakeTuple(Component):
+    """
+    A component that takes values from its dynamic tuple port and output as a normal tuple.
+    ##### inPorts:
+    - tuple_values: Dynamic tuple port that can take any vars and append it in a tuple.
+
+    ##### outPorts:
+    - output_tuple: The constructed tuple from the dynamic tuple inPorts.
+    """
+    tuple_values: InArg[dynatuple]
+    output_tuple: OutArg[tuple]
+
+    def execute(self, ctx) -> None:
+
+        self.output_tuple.value = self.tuple_values.value
+        print("Constructed Tuple:", self.output_tuple.value)
+
+@xai_component(color="grey")
+class MakeDict(Component):
+    """
+    A component that takes two dynamic lists (dynalists) as inputs - one for keys and one for values,
+    and constructs a dictionary from these lists. If there are more keys than values, the unmatched keys
+    will have None as their value.
+
+    ##### inPorts:
+    - keys_list: Dynamic list of keys for the dictionary.
+    - values_list: Dynamic list of values for the dictionary.
+
+    ##### outPorts:
+    - output_dict: The constructed dictionary from the provided keys and values.
+    """
+    keys_list: InArg[dynalist]
+    values_list: InArg[dynalist]
+    output_dict: OutArg[dict]
+
+    def execute(self, ctx) -> None:
+        keys = self.keys_list.value
+        values = self.values_list.value
+
+        constructed_dict = {key: values[i] if i < len(values) else None for i, key in enumerate(keys)}
+        
+        self.output_dict.value = constructed_dict
+        print("Constructed Dictionary:", self.output_dict.value)
 
 @xai_component(color="orange")
 class ExecuteNotebook(Component):
