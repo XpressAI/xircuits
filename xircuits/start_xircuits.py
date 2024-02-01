@@ -62,11 +62,7 @@ def cmd_start_xircuits(args, extra_args=[]):
         os.system("jupyter lab")
 
 def cmd_download_examples(args, extra_args=[]):
-    if not os.path.exists("examples") or is_empty("examples"):
-        request_folder("examples", branch=args.branch)
-
-    if not os.path.exists("datasets") or is_empty("datasets"):
-        request_folder("datasets", branch=args.branch)
+    print(f"You may view a component library's example in their respective directories.")
 
 def cmd_fetch_library(args, extra_args=[]):
     print(f"Fetching {args.library_name}...")
