@@ -1,7 +1,0 @@
-tensorflow
-tensorflow-datasets
-numpy
-scikit-learn
-opencv-python
-tqdm
-pillow
