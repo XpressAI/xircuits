@@ -64,19 +64,22 @@ class BaseComponent:
     def __init__(self):
         all_ports = self.__annotations__
         for key, type_arg in all_ports.items():
-            port_class = type_arg.__origin__
-            port_type = type_arg.__args__[0]
-            if port_class in (InArg, InCompArg, OutArg):
-                if hasattr(port_type, 'initial_value'):
-                    port_value = port_type.initial_value()
-                else:
-                    port_value = None
+            if hasattr(type_arg, '__origin__'):
+                port_class = type_arg.__origin__
+                port_type = type_arg.__args__[0]
+                if port_class in (InArg, InCompArg, OutArg):
+                    if hasattr(port_type, 'initial_value'):
+                        port_value = port_type.initial_value()
+                    else:
+                        port_value = None
 
-                if hasattr(port_type, 'getter'):
-                    port_getter = port_type.getter
+                    if hasattr(port_type, 'getter'):
+                        port_getter = port_type.getter
+                    else:
+                        port_getter = lambda x: x
+                    setattr(self, key, port_class(port_value, port_getter))
                 else:
-                    port_getter = lambda x: x
-                setattr(self, key, port_class(port_value, port_getter))
+                    setattr(self, key, None)
             else:
                 setattr(self, key, None)
 
