@@ -1,4 +1,4 @@
-from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component, dynalist, dynatuple, dynadict
+from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component, dynalist, dynatuple
 
 from typing import Union
 @xai_component(color="red")
@@ -138,23 +138,19 @@ class MultiBranchComponent(BaseComponent):
 
 @xai_component
 class DynaPorts(Component):
-    """A component showcasing dynamic ports: `dynalist`, `dynatuple`, and `dynadict`.
+    """A component showcasing dynamic ports: `dynalist`, and `dynatuple`.
     
     ##### inPorts:
     - dlist: A `dynalist` port. 
     - dtuple: A `dynatuple` port.
-    - ddict: A `dynadict` port. Accepts only Literal Dicts.
     
     """
     
     dlist: InArg[dynalist]
     dtuple: InArg[dynatuple]
-    ddict: InArg[dynadict]
     
     def execute(self, ctx) -> None:
         print("Printing dynalist value:")
         print(self.dlist.value)
         print("Printing dynatuple value:")
         print(self.dtuple.value)
-        print("Printing dynadict value:")
-        print(self.ddict.value)

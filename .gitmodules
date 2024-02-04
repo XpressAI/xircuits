@@ -58,18 +58,18 @@
 [submodule "xai_components/xai_vertexai"]
 	path = xai_components/xai_vertexai
 	url = https://github.com/XpressAI/xai-google-vertexai
-[submodule "xai_component/xai_tensorflow_keras"]
-	path = xai_component/xai_tensorflow_keras
+[submodule "xai_components/xai_tensorflow_keras"]
+	path = xai_components/xai_tensorflow_keras
 	url = https://github.com/XpressAI/xai-tensorflow-keras
-[submodule "xai_component/xai_pytorch"]
-	path = xai_component/xai_pytorch
+[submodule "xai_components/xai_pytorch"]
+	path = xai_components/xai_pytorch
 	url = https://github.com/XpressAI/xai-pytorch
-[submodule "xai_component/xai_sklearn"]
-	path = xai_component/xai_sklearn
+[submodule "xai_components/xai_sklearn"]
+	path = xai_components/xai_sklearn
 	url = https://github.com/XpressAI/xai-sklearn
-[submodule "xai_component/xai_xgboost"]
-	path = xai_component/xai_xgboost
+[submodule "xai_components/xai_xgboost"]
+	path = xai_components/xai_xgboost
 	url = https://github.com/XpressAI/xai-xgboost
-[submodule "xai_component/xai_spark"]
-	path = xai_component/xai_spark
+[submodule "xai_components/xai_spark"]
+	path = xai_components/xai_spark
 	url = https://github.com/XpressAI/xai-spark
