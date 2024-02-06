@@ -208,7 +208,12 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
     }
     
     render() {
-        if (this.props.node['extras']['type'] == 'comment') {
+
+        const isCommentNode = this.props.node['extras']['type'] == 'comment';
+        const isLiteralNode = this.props.node.getOptions()["name"].startsWith('Literal');
+        const isArgumentNode = this.props.node.getOptions()["name"].startsWith('Argument');
+
+        if (isCommentNode) {
             return (
                 <S.CommentContainer
                     onDoubleClick={this.handleEditComment.bind(this)}
@@ -220,7 +225,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                 </S.CommentContainer>
             );
         } 
-        else if (this.props.node.getOptions()["name"].startsWith('Literal')) {
+        else if (isLiteralNode) {
             return (
                 <S.Node
                     borderColor={this.props.node.getOptions().extras["borderColor"]}
@@ -259,12 +264,14 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                                     checked={this.props.node.isLocked()}
                                     onChange={this.handleDeletableNode.bind(this, 'nodeDeletable')}
                                 />
-                                <Toggle
-                                    className='description'
-                                    name='Description'
-                                    checked={this.state.showDescription}
-                                    onChange={this.handleDescription.bind(this)}
-                                />
+                                {!isArgumentNode && (
+                                    <Toggle
+                                        className='description'
+                                        name='Description'
+                                        checked={this.state.showDescription}
+                                        onChange={this.handleDescription.bind(this)}
+                                    />
+                                )}
                             </label>
                         </S.Title>
                         <S.Ports>
