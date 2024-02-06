@@ -66,8 +66,15 @@ jobs:
         python -m pip install --upgrade build
         python -m build
 
-    - name: Upload Dist Directory Artifact
-      uses: actions/upload-artifact@v3
+    - name: Sanitize Branch Name and Git Hash
+      run: |
+        sanitized_branch_name=$(echo "${{ env.branch_name }}" | sed 's/[^a-zA-Z0-9_]/_/g')
+        sanitized_git_hash=$(echo "${{ env.git_hash }}" | sed 's/[^a-zA-Z0-9_]/_/g')
+        echo "sanitized_branch_name=$sanitized_branch_name" >> $GITHUB_ENV
+        echo "sanitized_git_hash=$sanitized_git_hash" >> $GITHUB_ENV
+
+    - uses: actions/upload-artifact@v3
       with:
-        name: xircuits-wheel-${{ env.branch_name }}-${{ env.git_hash }}
+        name: xircuits-wheel-${{ env.sanitized_branch_name }}-${{ env.sanitized_git_hash }}
         path: dist
+        if-no-files-found: warn
