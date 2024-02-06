@@ -919,7 +919,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			y: canvas.innerHeight / 2,
 		};
 	
-		let fileBrowserWidth = document.getElementsByClassName("jp-SidePanel")[0].parentElement.clientWidth;
+		let fileBrowserWidth = document.getElementById('jp-left-stack').clientWidth;
 		const tabWidth = document.getElementsByClassName("lm-TabBar")[0].clientWidth;
 		const yOffset = 84;
 	

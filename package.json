@@ -56,15 +56,18 @@
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@jupyterlab/application": "^4.0.0",
-    "@jupyterlab/coreutils": "^6.0.0",
-    "@jupyterlab/launcher": "^4.0.9",
-    "@jupyterlab/logconsole": "^4.0.9",
-    "@jupyterlab/services": "^7.0.0",
-    "@jupyterlab/settingregistry": "^4.0.0",
+    "@emotion/core": "^11.0.0",
+    "@emotion/react": "^11.0.0",
+    "@emotion/styled": "^11.0.0",
+    "@jupyterlab/application": "^3.0.0",
+    "@jupyterlab/launcher": "^3.0.0",
+    "@jupyterlab/logconsole": "^3.0.0",
+    "@jupyterlab/settingregistry": "^3.0.0",
     "@projectstorm/geometry": "^7.0.2",
     "@projectstorm/react-diagrams": "^7.0.3",
     "marked": "^11.0.0",
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0",
     "react-accessible-accordion": "^5.0.0",
     "react-numeric-input": "^2.2.3",
     "react-switch": "^7.0.0",
@@ -73,11 +76,11 @@
     "react-tooltip": "^4.2.21"
   },
   "devDependencies": {
-    "@jupyterlab/builder": "^4.0.0",
-    "@jupyterlab/testutils": "^4.0.0",
+    "@jupyterlab/builder": "^3.0.0",
+    "@jupyterlab/testutils": "^3.0.0",
     "@types/jest": "^29.2.0",
     "@types/json-schema": "^7.0.11",
-    "@types/react": "^18.0.26",
+    "@types/react": "^17.0.0",
     "@types/react-addons-linked-state-mixin": "^0.14.22",
     "@typescript-eslint/eslint-plugin": "^6.1.0",
     "@typescript-eslint/parser": "^6.1.0",
@@ -97,7 +100,7 @@
     "stylelint-config-standard": "^34.0.0",
     "stylelint-csstree-validator": "^3.0.0",
     "stylelint-prettier": "^4.0.0",
-    "typescript": "~5.0.2",
+    "typescript": "^4.0.0",
     "yjs": "^13.5.0"
   },
   "sideEffects": [

@@ -1,7 +1,7 @@
 import {
     ISessionContext,
     SessionContext,
-    SessionContextDialogs,
+    sessionContextDialogs,
 } from '@jupyterlab/apputils';
 import { OutputAreaModel, SimplifiedOutputArea } from '@jupyterlab/outputarea';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
@@ -40,13 +40,13 @@ export class OutputPanel extends StackedPanel {
     constructor(
         manager: ServiceManager.IManager,
         rendermime: IRenderMimeRegistry,
-        XircuitsFactory: XircuitsFactory,
+        xircuitsFactory: XircuitsFactory,
         translator?: ITranslator
     ) {
         super();
         this._translator = translator || nullTranslator;
         this._trans = this._translator.load('jupyterlab');
-        this._XircuitsFactory = XircuitsFactory;
+        this._xircuitsFactory = xircuitsFactory;
         this.addClass(PANEL_CLASS);
         this.id = 'xircuit-output-panel';
         this.title.label = this._trans.__('Xircuit Output');
@@ -65,15 +65,13 @@ export class OutputPanel extends StackedPanel {
             rendermime: rendermime,
         });
 
-        this._sessionContextDialogs = new SessionContextDialogs();
-
         this.addWidget(this._outputarea);
 
         void this._sessionContext
             .initialize()
             .then(async (value) => {
                 if (value) {
-                    await this._sessionContextDialogs.selectKernel(this._sessionContext);
+                    await sessionContextDialogs.selectKernel(this._sessionContext);
                     // Dispose panel when no kernel selected
                     if (this._sessionContext.hasNoKernel) {
                         super.dispose();
@@ -144,8 +142,7 @@ export class OutputPanel extends StackedPanel {
     private _sessionContext: SessionContext;
     private _outputarea: CustomOutputArea;
     private _outputareamodel: OutputAreaModel;
-    private _sessionContextDialogs: SessionContextDialogs;
-    private _XircuitsFactory: XircuitsFactory;
+    private _xircuitsFactory: XircuitsFactory;
 
     private _translator: ITranslator;
     private _trans: TranslationBundle;
