@@ -12,33 +12,39 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8","3.9","3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
-    
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Set Branch Name
+    - name: Determine Branch Name
       run: |
-        echo "branch_name=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV               
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          branch_name="${{ github.head_ref }}"
+        else
+          branch_name="${{ github.ref_name }}"
+        fi
+        echo "branch_name=$branch_name" >> $GITHUB_ENV
 
-    - name: Check Branch
-      run: echo "$env.branch_name"
+    - name: Sanitize Branch Name and Git Hash
+      run: |
+        sanitized_branch_name=$(echo "$branch_name" | sed 's/[^a-zA-Z0-9_-]/_/g')  # Preserving hyphens
+        sanitized_git_hash=$(git rev-parse --short "$GITHUB_SHA" | sed 's/[^a-zA-Z0-9_-]/_/g')  # Preserving hyphens
+        echo "sanitized_branch_name=$sanitized_branch_name" >> $GITHUB_ENV
+        echo "sanitized_git_hash=$sanitized_git_hash" >> $GITHUB_ENV
 
-    - name: Get Hash
-      id: hash
-      run: echo "git_hash=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
-
-    - name: Check Hash
-      run: echo "$env.git_hash"
+    - name: Check Branch and Hash
+      run: |
+        echo "Branch: $sanitized_branch_name"
+        echo "Hash: $sanitized_git_hash"
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: 18
 
@@ -49,16 +55,15 @@ jobs:
       run: python -m pip install --upgrade pip
 
     - name: Build Extension in Dev Mode
-      run: |
-        pip install -e .
+      run: pip install -e .
                 
     - name: Build Wheel
       run: |
-        python -m pip install --upgrade build &&
+        python -m pip install --upgrade build
         python -m build
 
     - name: Upload Dist Directory Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: xircuits-wheel-${{ env.branch_name }}-${{ env.git_hash }}
+        name: xircuits-wheel-${{ env.sanitized_branch_name }}-${{ matrix.python-version }}-${{ env.sanitized_git_hash }}
         path: dist

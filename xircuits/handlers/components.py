@@ -127,12 +127,12 @@ class ComponentsRouteHandler(APIHandler):
                         python_path = None
 
                     try:
-                        components.extend(chain.from_iterable(self.extract_components(f, directory, python_path) for f in python_files))
+                        components.extend(chain.from_iterable(self.extract_components(f, directory, python_path) for f in python_files if not f.name.startswith(".")))
                     except Exception:
                         error_msg = traceback.format_exc()
                         pass
                     finally:
-                        components.extend(chain.from_iterable(self.extract_components(f, directory, python_path) for f in python_files))
+                        components.extend(chain.from_iterable(self.extract_components(f, directory, python_path) for f in python_files if not f.name.startswith(".")))
 
 
         components = list({(c["header"], c["task"]): c for c in components}.values())

@@ -4,7 +4,13 @@ on:
   push:
     branches: [ master ]
   pull_request:
-    branches: "*"
+    branches: [ "*" ]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to run the tests on'
+        required: false
+        default: 'master'
 
 jobs:
   build_and_test:
@@ -12,32 +18,37 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8","3.9","3.10","3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.branch || github.ref }}
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 
     - name: Set Branch Name
       run: |
-        echo "branch_name=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV               
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          echo "branch_name=${{ github.event.inputs.branch }}" >> $GITHUB_ENV
+        else
+          echo "branch_name=${{ github.ref_name }}" >> $GITHUB_ENV
+        fi
 
     - name: Check Branch
-      run: echo "$env.branch_name"
+      run: echo "Branch name is ${{ env.branch_name }}"
 
     - name: Get Hash
-      id: hash
-      run: echo "git_hash=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
+      run: echo "git_hash=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
 
     - name: Check Hash
-      run: echo "$env.git_hash"
+      run: echo "Git hash is ${{ env.git_hash }}"
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: 18
 
@@ -45,35 +56,34 @@ jobs:
       run: npm install --global yarn
 
     - name: Build Extension in Dev Mode
-      run: |
-        pip install -e .
+      run: pip install -e .
+
+    - name: Upgrade pip
+      run: python -m pip install --upgrade pip
 
     - name: Build Wheel
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade build &&
+        python -m pip install --upgrade build
         python -m build
 
     - name: Install Xircuits from wheel
       run: |
-        whl_name=$(echo dist/*whl)
+        whl_name=$(ls dist/*.whl)
         pip install $whl_name
 
     - name: Install Xircuits Test Component Library
-      run: |
-        xircuits install tests
+      run: xircuits install tests
 
     - name: Install xvfb
-      run: |
-        sudo apt-get install xvfb
+      run: sudo apt-get install -y xvfb
 
     - name: Test E2E
       run: |
-        ( ls && jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset ) & cd ui-tests && jlpm install && jlpm playwright install && xvfb-run jlpm playwright test e2e/datatype-test.spec.ts
+        (jupyter lab --ServerApp.token='' --ServerApp.password='' --LabApp.default_url='/lab?reset' &) && cd ui-tests && jlpm install && jlpm playwright install && xvfb-run jlpm playwright test e2e/datatype-test.spec.ts
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
-        name: playwright-report-${{ matrix.python-version }}
+        name: playwright-report-${{ matrix.python-version }}-${{ env.branch_name }}-${{ env.git_hash }}
         path: ui-tests/playwright-report/
         retention-days: 1
