@@ -30,10 +30,7 @@ def cmd_start_xircuits(args, extra_args=[]):
 
 def cmd_download_examples(args, extra_args=[]):
     if not os.path.exists("examples") or is_empty("examples"):
-        request_folder("examples", branch=args.branch)
-
-    if not os.path.exists("datasets") or is_empty("datasets"):
-        request_folder("datasets", branch=args.branch)
+        copy_from_installed_wheel('examples')
 
 def cmd_fetch_library(args, extra_args=[]):
     fetch_library(args.library_name)
@@ -72,8 +69,8 @@ def main():
     fetch_parser.set_defaults(func=cmd_fetch_library)
 
     # Adding parser for 'examples' command
-    examples_parser = subparsers.add_parser('examples', help='Download examples for Xircuits.')
-    examples_parser.add_argument('--branch', nargs='?', default="master", help='pull files from a xircuits branch')
+    examples_parser = subparsers.add_parser('examples', help='Get example workflows for Xircuits.')
+    examples_parser.add_argument('--branch', nargs='?', default="master", help='Load example workflows to current working directory/')
     examples_parser.set_defaults(func=cmd_download_examples)
 
     # Adding parser for 'compile' command

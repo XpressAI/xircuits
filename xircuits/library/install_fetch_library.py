@@ -31,13 +31,15 @@ def get_component_library_path(library_name: str) -> str:
     else:
         return build_component_library_path(library_name)
 
-def install_library(library_name: str) -> str:
-    messages = []
+def install_library(library_name: str):
     print(f"Installing {library_name}...")
     component_library_path = get_component_library_path(library_name)
 
     if not Path(component_library_path).is_dir() or is_empty(component_library_path):
-        request_submodule_library(component_library_path)
+        success, message = request_submodule_library(component_library_path)
+        if not success:
+            print(message)
+            return
 
     # Get config and determine requirements path
     config = get_library_config(library_name)
@@ -49,21 +51,22 @@ def install_library(library_name: str) -> str:
             print(f"Installing requirements for {library_name}...")
             subprocess.run([sys.executable, "-m", "pip", "install", "-r", str(requirements_path)], check=True)
         except Exception as e:
-            raise RuntimeError(f"An error occurred while installing requirements for {library_name}: {e}")
+            print(f"An error occurred while installing requirements for {library_name}: {e}")
+
     else:
-        messages.append(f"No requirements.txt found for {library_name}. Skipping installation of dependencies.")
+        print(f"No requirements.txt found for {library_name}. Skipping installation of dependencies.")
 
-    messages.append(f"Library {library_name} ready to use.")
-    return '\n'.join(messages)
+    print(f"Library {library_name} ready to use.")
 
-def fetch_library(library_name: str) -> str:
-    messages = [f"Fetching {library_name}..."]
+def fetch_library(library_name: str):
+    print(f"Fetching {library_name}...")
     component_library_path = get_component_library_path(library_name)
 
     if not Path(component_library_path).is_dir() or is_empty(component_library_path):
-        request_submodule_library(component_library_path)
-        messages.append(f"{library_name} library fetched and stored in {component_library_path}.")
+        success, message = request_submodule_library(component_library_path)
+        if success:
+            print(f"{library_name} library fetched and stored in {component_library_path}.")
+        else:
+            print(message)
     else:
-        messages.append(f"{library_name} library already exists in {component_library_path}.")
-
-    return '\n'.join(messages)
+        print(f"{library_name} library already exists in {component_library_path}.")
