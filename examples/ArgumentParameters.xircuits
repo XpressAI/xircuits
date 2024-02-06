@@ -1,12 +1,12 @@
 {
     "id": "11b9d835-f7c3-4b78-a927-bec01ae39956",
-    "offsetX": 138.70289808530393,
-    "offsetY": 112.11086262472926,
-    "zoom": 62.96296034657244,
+    "offsetX": 41.62530181365142,
+    "offsetY": 95.06629852512813,
+    "zoom": 72.22222025992934,
     "gridSize": 0,
     "layers": [
         {
-            "id": "e8c7e3ab-cc6d-4d15-8c15-25b3b24cacd0",
+            "id": "b4df5992-c80d-4834-a92d-2c835cbb3e76",
             "type": "diagram-links",
             "isSvg": true,
             "transformed": true,
@@ -23,14 +23,14 @@
                         {
                             "id": "0ddd19f6-a0da-440f-a802-3932fb342c9a",
                             "type": "point",
-                            "x": 193.281,
-                            "y": 118.015
+                            "x": 133.744,
+                            "y": 144.323
                         },
                         {
                             "id": "22ff1dfd-b7f5-4ce9-b642-296b831d0fdf",
                             "type": "point",
-                            "x": 353.929,
-                            "y": 196.811
+                            "x": 358.085,
+                            "y": 194.034
                         }
                     ],
                     "labels": [],
@@ -51,8 +51,8 @@
                         {
                             "id": "c3b6116d-aaf4-459e-9c1d-2eac10f71110",
                             "type": "point",
-                            "x": 454.253,
-                            "y": 196.811
+                            "x": 458.409,
+                            "y": 194.034
                         },
                         {
                             "id": "7640dc8e-dddc-4cd2-ac4f-e800452a3f2b",
@@ -95,34 +95,6 @@
                     "curvyness": 50,
                     "selectedColor": "rgb(0,192,255)"
                 },
-                "9d08656b-7508-4eae-a449-f50a3a125289": {
-                    "id": "9d08656b-7508-4eae-a449-f50a3a125289",
-                    "type": "parameter-link",
-                    "selected": false,
-                    "source": "7affbe5e-678b-4a5c-ad27-c5c4a12fc733",
-                    "sourcePort": "bef4edd7-d310-463f-8ac3-dba1fb71e80e",
-                    "target": "16949768-609b-4f49-9637-1362acd39ebe",
-                    "targetPort": "d487a5cd-ffe5-4fba-800f-4651634f1ff5",
-                    "points": [
-                        {
-                            "id": "16128708-cec8-4c5c-aa18-eccc1d8aae67",
-                            "type": "point",
-                            "x": 201.892,
-                            "y": 495.92
-                        },
-                        {
-                            "id": "c6baf25d-ff3d-40c2-b43e-0430d3a05514",
-                            "type": "point",
-                            "x": 353.929,
-                            "y": 228.779
-                        }
-                    ],
-                    "labels": [],
-                    "width": 3,
-                    "color": "gray",
-                    "curvyness": 50,
-                    "selectedColor": "rgb(0,192,255)"
-                },
                 "14625014-44cf-4966-b34f-7b5d2023afe6": {
                     "id": "14625014-44cf-4966-b34f-7b5d2023afe6",
                     "type": "parameter-link",
@@ -135,8 +107,8 @@
                         {
                             "id": "b92a9e9d-47ca-45df-b50b-2725a1077ab2",
                             "type": "point",
-                            "x": 454.253,
-                            "y": 212.795
+                            "x": 458.409,
+                            "y": 210.017
                         },
                         {
                             "id": "1d373617-9c69-4839-aea5-ec027d58b4d3",
@@ -151,26 +123,54 @@
                     "curvyness": 50,
                     "selectedColor": "rgb(0,192,255)"
                 },
-                "fd5f44a5-80b1-4b70-9e05-a6922ed2b49f": {
-                    "id": "fd5f44a5-80b1-4b70-9e05-a6922ed2b49f",
-                    "type": "parameter-link",
+                "dfe0e02b-4be3-40d8-8ba1-d22f15d66180": {
+                    "id": "dfe0e02b-4be3-40d8-8ba1-d22f15d66180",
+                    "type": "triangle-link",
                     "selected": false,
-                    "source": "bd066e96-970a-4477-86c7-fdc2dc88c4a1",
-                    "sourcePort": "d9cf851b-f1de-4ab8-9244-9e8b24399ffd",
+                    "source": "11595c97-f698-4a2c-ae76-61b115a9942b",
+                    "sourcePort": "1f32d7c2-9c81-475c-977c-c1bb419265e7",
                     "target": "16949768-609b-4f49-9637-1362acd39ebe",
                     "targetPort": "14fbc718-0f8f-4c0b-bc47-4ac837d39b27",
                     "points": [
                         {
-                            "id": "86e6c64b-d0b2-40e3-b746-dc56b9c2e56b",
+                            "id": "7309ed4a-7898-42c1-8926-1204df936349",
                             "type": "point",
-                            "x": 200.295,
-                            "y": 422.066
+                            "x": 247.402,
+                            "y": 263.929
                         },
                         {
-                            "id": "fd5a730e-8422-4d27-95fb-b954065393ca",
+                            "id": "e47e2d42-d31f-45bb-8bc7-9b4b46e1b5c8",
                             "type": "point",
-                            "x": 353.929,
-                            "y": 212.795
+                            "x": 358.085,
+                            "y": 210.017
+                        }
+                    ],
+                    "labels": [],
+                    "width": 3,
+                    "color": "gray",
+                    "curvyness": 50,
+                    "selectedColor": "rgb(0,192,255)"
+                },
+                "8c2621d5-8520-4b5f-8b30-56178e7afc72": {
+                    "id": "8c2621d5-8520-4b5f-8b30-56178e7afc72",
+                    "type": "triangle-link",
+                    "selected": false,
+                    "source": "de7f8944-e157-41cc-b4ba-7e30ff13672e",
+                    "sourcePort": "17699a46-4920-431d-b5e2-78010339b80f",
+                    "target": "16949768-609b-4f49-9637-1362acd39ebe",
+                    "targetPort": "d487a5cd-ffe5-4fba-800f-4651634f1ff5",
+                    "points": [
+                        {
+                            "id": "c0a8e087-b604-462e-a3bd-bd12490b2174",
+                            "type": "point",
+                            "x": 249.682,
+                            "y": 319.716
+                        },
+                        {
+                            "id": "01116f4f-99de-4906-aaf6-ad04cc149739",
+                            "type": "point",
+                            "x": 358.085,
+                            "y": 226.001
                         }
                     ],
                     "labels": [],
@@ -182,7 +182,7 @@
             }
         },
         {
-            "id": "b1e2c329-efb4-4370-8927-38e61e23c5d2",
+            "id": "b3711d08-7be5-461c-b763-aa649c45d337",
             "type": "diagram-nodes",
             "isSvg": false,
             "transformed": true,
@@ -195,15 +195,15 @@
                         "type": "Start",
                         "borderColor": "rgb(0,192,255)"
                     },
-                    "x": 155.159,
-                    "y": 86.223,
+                    "x": 95.621,
+                    "y": 112.531,
                     "ports": [
                         {
                             "id": "1bfb241e-2860-4cd8-887c-ace64dc6b9da",
                             "type": "default",
                             "extras": {},
-                            "x": 185.787,
-                            "y": 110.521,
+                            "x": 126.25,
+                            "y": 136.829,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "15df3e50-91c2-47a1-9c48-59f040abc728",
@@ -261,78 +261,6 @@
                     ],
                     "portsOutOrder": []
                 },
-                "7affbe5e-678b-4a5c-ad27-c5c4a12fc733": {
-                    "id": "7affbe5e-678b-4a5c-ad27-c5c4a12fc733",
-                    "type": "custom-node",
-                    "selected": false,
-                    "extras": {
-                        "type": "string"
-                    },
-                    "x": 133.861,
-                    "y": 464.122,
-                    "ports": [
-                        {
-                            "id": "bef4edd7-d310-463f-8ac3-dba1fb71e80e",
-                            "type": "default",
-                            "extras": {},
-                            "x": 194.398,
-                            "y": 488.426,
-                            "name": "out-0",
-                            "alignment": "right",
-                            "parentNode": "7affbe5e-678b-4a5c-ad27-c5c4a12fc733",
-                            "links": [
-                                "9d08656b-7508-4eae-a449-f50a3a125289"
-                            ],
-                            "in": false,
-                            "label": "Xircuits!",
-                            "varName": "Xircuits!",
-                            "portType": "",
-                            "dataType": ""
-                        }
-                    ],
-                    "name": "Literal String",
-                    "color": "lightpink",
-                    "portsInOrder": [],
-                    "portsOutOrder": [
-                        "bef4edd7-d310-463f-8ac3-dba1fb71e80e"
-                    ]
-                },
-                "bd066e96-970a-4477-86c7-fdc2dc88c4a1": {
-                    "id": "bd066e96-970a-4477-86c7-fdc2dc88c4a1",
-                    "type": "custom-node",
-                    "selected": false,
-                    "extras": {
-                        "type": "string"
-                    },
-                    "x": 134.61,
-                    "y": 390.271,
-                    "ports": [
-                        {
-                            "id": "d9cf851b-f1de-4ab8-9244-9e8b24399ffd",
-                            "type": "default",
-                            "extras": {},
-                            "x": 192.801,
-                            "y": 414.572,
-                            "name": "out-0",
-                            "alignment": "right",
-                            "parentNode": "bd066e96-970a-4477-86c7-fdc2dc88c4a1",
-                            "links": [
-                                "fd5f44a5-80b1-4b70-9e05-a6922ed2b49f"
-                            ],
-                            "in": false,
-                            "label": "Hello ",
-                            "varName": "Hello ",
-                            "portType": "",
-                            "dataType": ""
-                        }
-                    ],
-                    "name": "Literal String",
-                    "color": "lightpink",
-                    "portsInOrder": [],
-                    "portsOutOrder": [
-                        "d9cf851b-f1de-4ab8-9244-9e8b24399ffd"
-                    ]
-                },
                 "16949768-609b-4f49-9637-1362acd39ebe": {
                     "id": "16949768-609b-4f49-9637-1362acd39ebe",
                     "type": "custom-node",
@@ -346,17 +274,18 @@
                                 "lineno": 16,
                                 "end_lineno": 22
                             }
-                        ]
+                        ],
+                        "borderColor": "rgb(0,192,255)"
                     },
-                    "x": 344.958,
-                    "y": 165.014,
+                    "x": 349.112,
+                    "y": 162.245,
                     "ports": [
                         {
                             "id": "40888689-6dc0-4d53-bdbf-f74cd85f7e47",
                             "type": "default",
                             "extras": {},
-                            "x": 346.435,
-                            "y": 189.317,
+                            "x": 350.59,
+                            "y": 186.539,
                             "name": "in-0",
                             "alignment": "left",
                             "parentNode": "16949768-609b-4f49-9637-1362acd39ebe",
@@ -373,13 +302,13 @@
                             "id": "14fbc718-0f8f-4c0b-bc47-4ac837d39b27",
                             "type": "default",
                             "extras": {},
-                            "x": 346.435,
-                            "y": 205.301,
+                            "x": 350.59,
+                            "y": 202.523,
                             "name": "parameter-string-a",
                             "alignment": "left",
                             "parentNode": "16949768-609b-4f49-9637-1362acd39ebe",
                             "links": [
-                                "fd5f44a5-80b1-4b70-9e05-a6922ed2b49f"
+                                "dfe0e02b-4be3-40d8-8ba1-d22f15d66180"
                             ],
                             "in": true,
                             "label": "a",
@@ -391,13 +320,13 @@
                             "id": "d487a5cd-ffe5-4fba-800f-4651634f1ff5",
                             "type": "default",
                             "extras": {},
-                            "x": 346.435,
-                            "y": 221.285,
+                            "x": 350.59,
+                            "y": 218.507,
                             "name": "parameter-string-b",
                             "alignment": "left",
                             "parentNode": "16949768-609b-4f49-9637-1362acd39ebe",
                             "links": [
-                                "9d08656b-7508-4eae-a449-f50a3a125289"
+                                "8c2621d5-8520-4b5f-8b30-56178e7afc72"
                             ],
                             "in": true,
                             "label": "b",
@@ -409,8 +338,8 @@
                             "id": "13ff60b4-096f-43ac-9f8d-fd7eb6c68b00",
                             "type": "default",
                             "extras": {},
-                            "x": 446.759,
-                            "y": 189.317,
+                            "x": 450.914,
+                            "y": 186.539,
                             "name": "out-0",
                             "alignment": "right",
                             "parentNode": "16949768-609b-4f49-9637-1362acd39ebe",
@@ -427,8 +356,8 @@
                             "id": "625956f7-cee1-4476-a9e7-ea34af1805d2",
                             "type": "default",
                             "extras": {},
-                            "x": 446.759,
-                            "y": 205.301,
+                            "x": 450.914,
+                            "y": 202.523,
                             "name": "parameter-out-string-out",
                             "alignment": "right",
                             "parentNode": "16949768-609b-4f49-9637-1362acd39ebe",
@@ -467,7 +396,8 @@
                                 "lineno": 9,
                                 "end_lineno": 13
                             }
-                        ]
+                        ],
+                        "nextNode": "None"
                     },
                     "x": 699.144,
                     "y": 244.771,
@@ -537,80 +467,122 @@
                         "8d80f536-fec5-41ca-a82a-23972097d32f"
                     ]
                 },
-                "35a75ed7-cd63-45d0-83a8-82b6f2a1e295": {
-                    "id": "35a75ed7-cd63-45d0-83a8-82b6f2a1e295",
-                    "type": "custom-node",
-                    "selected": true,
-                    "extras": {
-                        "type": "comment",
-                        "commentInput": "[1] Xircuits workflows are designed around \n      the concept of linking nodes and configuring \n      them with specific parameters."
-                    },
-                    "x": -2.913,
-                    "y": -76.821,
-                    "ports": [],
-                    "name": "Comment:",
-                    "color": "rgb(255,255,255)",
-                    "portsInOrder": [],
-                    "portsOutOrder": []
-                },
-                "d64c2fc8-73a6-4f7e-a406-f491c2ce2bce": {
-                    "id": "d64c2fc8-73a6-4f7e-a406-f491c2ce2bce",
-                    "type": "custom-node",
-                    "selected": false,
-                    "extras": {
-                        "type": "comment",
-                        "commentInput": "[2] The blue flowing link connecting ▶ ports\n      represent the sequence of execution."
-                    },
-                    "x": 339.679,
-                    "y": 51.942,
-                    "ports": [],
-                    "name": "Comment:",
-                    "color": "rgb(255,255,255)",
-                    "portsInOrder": [],
-                    "portsOutOrder": []
-                },
-                "ef86f386-48c9-456c-9b3c-7af11c9c4575": {
-                    "id": "ef86f386-48c9-456c-9b3c-7af11c9c4575",
-                    "type": "custom-node",
-                    "selected": false,
-                    "extras": {
-                        "type": "comment",
-                        "commentInput": "[4] You can also pass parameters \n      from one component node to another."
-                    },
-                    "x": 381.006,
-                    "y": 339.556,
-                    "ports": [],
-                    "name": "Comment:",
-                    "color": "rgb(255,255,255)",
-                    "portsInOrder": [],
-                    "portsOutOrder": []
-                },
                 "f2c978ce-51d3-4327-a01b-2490500dffb4": {
                     "id": "f2c978ce-51d3-4327-a01b-2490500dffb4",
                     "type": "custom-node",
                     "selected": false,
                     "extras": {
                         "type": "comment",
-                        "commentInput": "[3] Literals are one way of supplying parameters\n      to your component node.\n      You can double click literals to edit their value."
+                        "commentInput": "Another way of supplying parameters is \nusing `Argument` components."
                     },
-                    "x": -143.813,
-                    "y": 231.319,
+                    "x": 99.065,
+                    "y": -77.288,
                     "ports": [],
                     "name": "Comment:",
                     "color": "rgb(255,255,255)",
                     "portsInOrder": [],
                     "portsOutOrder": []
                 },
-                "d4c2e2ce-f0dd-4104-9355-df2c96d0aa84": {
-                    "id": "d4c2e2ce-f0dd-4104-9355-df2c96d0aa84",
+                "11595c97-f698-4a2c-ae76-61b115a9942b": {
+                    "id": "11595c97-f698-4a2c-ae76-61b115a9942b",
+                    "type": "custom-node",
+                    "selected": false,
+                    "extras": {
+                        "type": "string",
+                        "borderColor": "rgb(0,192,255)"
+                    },
+                    "x": 117.097,
+                    "y": 232.136,
+                    "ports": [
+                        {
+                            "id": "1f32d7c2-9c81-475c-977c-c1bb419265e7",
+                            "type": "default",
+                            "extras": {},
+                            "x": 239.907,
+                            "y": 256.435,
+                            "name": "parameter-out-0",
+                            "alignment": "right",
+                            "parentNode": "11595c97-f698-4a2c-ae76-61b115a9942b",
+                            "links": [
+                                "dfe0e02b-4be3-40d8-8ba1-d22f15d66180"
+                            ],
+                            "in": false,
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
+                        }
+                    ],
+                    "name": "Argument (string): str1",
+                    "color": "lightpink",
+                    "portsInOrder": [],
+                    "portsOutOrder": [
+                        "1f32d7c2-9c81-475c-977c-c1bb419265e7"
+                    ]
+                },
+                "de7f8944-e157-41cc-b4ba-7e30ff13672e": {
+                    "id": "de7f8944-e157-41cc-b4ba-7e30ff13672e",
+                    "type": "custom-node",
+                    "selected": false,
+                    "extras": {
+                        "type": "string",
+                        "borderColor": "rgb(0,192,255)"
+                    },
+                    "x": 119.378,
+                    "y": 287.927,
+                    "ports": [
+                        {
+                            "id": "17699a46-4920-431d-b5e2-78010339b80f",
+                            "type": "default",
+                            "extras": {},
+                            "x": 242.188,
+                            "y": 312.222,
+                            "name": "parameter-out-0",
+                            "alignment": "right",
+                            "parentNode": "de7f8944-e157-41cc-b4ba-7e30ff13672e",
+                            "links": [
+                                "8c2621d5-8520-4b5f-8b30-56178e7afc72"
+                            ],
+                            "in": false,
+                            "label": "▶",
+                            "varName": "▶",
+                            "portType": "",
+                            "dataType": ""
+                        }
+                    ],
+                    "name": "Argument (string): str2",
+                    "color": "lightpink",
+                    "portsInOrder": [],
+                    "portsOutOrder": [
+                        "17699a46-4920-431d-b5e2-78010339b80f"
+                    ]
+                },
+                "7b838194-f039-40c8-b45d-33f120dd2ddd": {
+                    "id": "7b838194-f039-40c8-b45d-33f120dd2ddd",
                     "type": "custom-node",
                     "selected": false,
                     "extras": {
                         "type": "comment",
-                        "commentInput": "[5] Once you're done, you can compile \n      and execute the workflow."
+                        "commentInput": "Upon compilation and execution, you can provide the \nnecessary values through their corresponding text inputs."
                     },
-                    "x": 824.994,
-                    "y": 456.905,
+                    "x": 451.116,
+                    "y": 38.696,
+                    "ports": [],
+                    "name": "Comment:",
+                    "color": "rgb(255,255,255)",
+                    "portsInOrder": [],
+                    "portsOutOrder": []
+                },
+                "3d7119d7-b7e0-484a-b6d7-83d0dd2408f2": {
+                    "id": "3d7119d7-b7e0-484a-b6d7-83d0dd2408f2",
+                    "type": "custom-node",
+                    "selected": true,
+                    "extras": {
+                        "type": "comment",
+                        "commentInput": "The compiled workflow can be executed from the CLI. \nFor instance, to run this particular workflow: \n\npython examples/ArgumentParameters.py --str1 hello --str2 world\n\nThis enables dynamic workflows that can be flexibly \nadjusted according to your needs."
+                    },
+                    "x": 287.729,
+                    "y": 361.312,
                     "ports": [],
                     "name": "Comment:",
                     "color": "rgb(255,255,255)",
