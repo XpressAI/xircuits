@@ -5,12 +5,6 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to run the workflow on'
-        required: false
-        default: 'master'
 
 jobs:
   build:
@@ -21,31 +15,33 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: ${{ github.event.inputs.branch || github.ref }}
-
+    - uses: actions/checkout@v4
+    
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Set Branch Name
+    - name: Determine Branch Name
       run: |
-        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-          echo "branch_name=${{ github.event.inputs.branch }}" >> $GITHUB_ENV
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          branch_name="${{ github.head_ref }}"
         else
-          echo "branch_name=${{ github.ref_name }}" >> $GITHUB_ENV
+          branch_name="${{ github.ref_name }}"
         fi
+        echo "branch_name=$branch_name" >> $GITHUB_ENV
 
-    - name: Check Branch
-      run: echo "Branch name is ${{ env.branch_name }}"
+    - name: Sanitize Branch Name and Git Hash
+      run: |
+        sanitized_branch_name=$(echo "$branch_name" | sed 's/[^a-zA-Z0-9_-]/_/g')  # Preserving hyphens
+        sanitized_git_hash=$(git rev-parse --short "$GITHUB_SHA" | sed 's/[^a-zA-Z0-9_-]/_/g')  # Preserving hyphens
+        echo "sanitized_branch_name=$sanitized_branch_name" >> $GITHUB_ENV
+        echo "sanitized_git_hash=$sanitized_git_hash" >> $GITHUB_ENV
 
-    - name: Get Hash
-      run: echo "git_hash=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
-
-    - name: Check Hash
-      run: echo "Git hash is ${{ env.git_hash }}"
+    - name: Check Branch and Hash
+      run: |
+        echo "Branch: $sanitized_branch_name"
+        echo "Hash: $sanitized_git_hash"
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -60,21 +56,14 @@ jobs:
 
     - name: Build Extension in Dev Mode
       run: pip install -e .
-
+                
     - name: Build Wheel
       run: |
         python -m pip install --upgrade build
         python -m build
 
-    - name: Sanitize Branch Name and Git Hash
-      run: |
-        sanitized_branch_name=$(echo "${{ env.branch_name }}" | sed 's/[^a-zA-Z0-9_]/_/g')
-        sanitized_git_hash=$(echo "${{ env.git_hash }}" | sed 's/[^a-zA-Z0-9_]/_/g')
-        echo "sanitized_branch_name=$sanitized_branch_name" >> $GITHUB_ENV
-        echo "sanitized_git_hash=$sanitized_git_hash" >> $GITHUB_ENV
-
-    - uses: actions/upload-artifact@v3
+    - name: Upload Dist Directory Artifact
+      uses: actions/upload-artifact@v4
       with:
-        name: xircuits-wheel-${{ env.sanitized_branch_name }}-${{ env.sanitized_git_hash }}
+        name: xircuits-wheel-${{ env.sanitized_branch_name }}-${{ matrix.python-version }}-${{ env.sanitized_git_hash }}
         path: dist
-        if-no-files-found: warn
