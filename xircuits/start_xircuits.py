@@ -10,7 +10,10 @@ import json
 def init_xircuits():
     package_name = 'xircuits'
     copy_from_installed_wheel(package_name, resource='.xircuits', dest_path='.xircuits')
-
+    component_library_path = Path(os.getcwd()) / "xai_components"
+    if not component_library_path.exists():
+        copy_from_installed_wheel('xai_components', '', 'xai_components')
+        
 def cmd_start_xircuits(args, extra_args=[]):
     # fetch xai_components
     component_library_path = Path(os.getcwd()) / "xai_components"
