@@ -1,5 +1,5 @@
 {
-  "name": "xircuits/xircuits-ui-tests",
+  "name": "@xircuits/xircuits-ui-tests",
   "version": "0.1.0",
   "description": "Integration test for xircuits ui",
   "repository": "https://github.com/XpressAI/xircuits",
