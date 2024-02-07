@@ -35,7 +35,7 @@ namespace S {
 		border: 1px solid oklch(0 0 0 / 0.2);
 		padding: 0 2px;
 		margin: 2px 0;
-		&:hover {
+		&:hover, &.hover {
 			background: rgb(192, 255, 0);
 			box-shadow:  ${(p) => p.selected ? '' : 'inset'} 0 4px 8px rgb(0 0 0 / 0.5);
 		}
@@ -62,7 +62,7 @@ namespace S {
 		align-items: center;
 		padding: 0 2px;
 		margin: 2px 0;
-		&:hover {
+		&:hover, &.hover {
 			background: rgb(192, 255, 0);
 			box-shadow:  ${(p) => p.hasLinks ? '' : 'inset'} 0 4px 8px rgb(0 0 0 / 0.5);
 		}
