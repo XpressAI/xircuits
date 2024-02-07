@@ -119,10 +119,13 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 
 		const isIn = !!this.props.port.getOptions().in
 		const hasLinks = Object.keys(this.props.port.getLinks()).length > 0;
+		const isTrianglePort = this.props.port.getOptions().label.indexOf('▶') >= 0 &&
+			/* Workaround for Arguments being set up as triangle ports in other places */
+			!this.props.node['name'].match('Argument \(.+?\):');
 
 		const port = (
 			<S.Port isOutPort={!isIn} hasLinks={hasLinks}>
-				{this.props.port.getOptions().label.indexOf('▶') < 0 ? null : (isIn ?
+				{!isTrianglePort ? null : (isIn ?
 					<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" >
 						<path stroke="none" d="M0 0h24v24H0z" fill="none" />
 						<path d="M3 12h12" />
@@ -142,6 +145,7 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 		if (Object.keys(propLinks).length != 0) {
 			portHasLink = true;
 		}
+
 
 		const symbol = (
 			<S.SymbolContainer symbolType={symbolLabel} selected={portHasLink} isOutPort={isOutPort}>
