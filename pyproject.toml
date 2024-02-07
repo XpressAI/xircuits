@@ -106,5 +106,6 @@ path = "xircuits/hatch_build_hook.py"
 include = [
     "xai_components/",
     "xircuits/",
+    "examples/",
 ]
 artifacts = ["xircuits/labextension"]
