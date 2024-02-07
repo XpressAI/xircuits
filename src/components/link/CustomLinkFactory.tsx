@@ -24,6 +24,7 @@ namespace S {
 
 		fill: none;
 		pointer-events: auto;
+		filter: drop-shadow(2px 2px 4px rgb(0 0 0 / 40%)) opacity(60%);
 		
 		body.low-powered-mode & {
 			animation: none !important;

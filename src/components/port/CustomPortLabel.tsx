@@ -32,6 +32,10 @@ namespace S {
 		border-radius: ${(p) => (p.isOutPort ? '20px 0px 0px 20px' : '0px 20px 20px 0px')} ;
 		display: ${(p) => p.symbolType == null ? 'none' : 'visible'};
 		text-align: center;
+		box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.05);
+		&:hover {
+			background: rgb(192, 255, 0);
+		}
 	`;
 
 	export const Symbol = styled.div<{ isOutPort: boolean }>`
@@ -94,9 +98,7 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 		}
 
 		const port = (
-			<PortWidget engine={this.props.engine} port={this.props.port}>
 				<S.Port />
-			</PortWidget>
 		);
 
 		const propLinks = this.props.port.links;
@@ -121,9 +123,11 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 
 		return (
 			<S.PortLabel>
-				{this.props.port.getOptions().in ? port : label}
-				{symbol}
-				{this.props.port.getOptions().in ? label : port}
+				{this.props.port.getOptions().in ? null : label}
+				<PortWidget engine={this.props.engine} port={this.props.port}>
+					{symbolLabel == null ? port : symbol}
+				</PortWidget>
+				{this.props.port.getOptions().in ? label : null}
 			</S.PortLabel>
 		);
 	}
