@@ -4,7 +4,13 @@ on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master ]
+    branches: [ "*" ]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to run the tests on'
+        required: false
+        default: 'master'
 
 jobs:
   build:

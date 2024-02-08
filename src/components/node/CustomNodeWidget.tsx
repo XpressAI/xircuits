@@ -13,18 +13,24 @@ import { showFormDialog } from '../../dialog/FormDialog';
 import { CommentDialog } from '../../dialog/CommentDialog';
 import ReactTooltip from "react-tooltip"
 import { marked } from 'marked';
+import Color from 'colorjs.io';
 
 var S;
 (function (S) {
     S.Node = styled.div<{ borderColor:string,background: string; selected: boolean;  }>`
-		background-color: ${(p) => p.background};
+		background-color: ${(p) => {
+        const color = new Color(p.background);
+        color.alpha = 0.75;
+        color.oklch.c *= 1.2;
+        return color.to('oklch').toString();
+    }};
+    box-shadow: 1px 1px 10px ${(p) => p.selected ? '3px rgb(0 192 255 / 0.5)' : '0px rgb(0 0 0 / 0.5)'};    
 		border-radius: 5px;
 		font-family: sans-serif;
 		color: white;
-		border: solid 2px black;
 		overflow: visible;
 		font-size: 11px;
-		border: solid 2px ${(p) => (p.selected ? (p.borderColor==undefined? 'rgb(0,192,255)': p.borderColor ):'black')};
+		border: solid 1px ${(p) => (p.selected ? (p.borderColor==undefined? 'rgb(0,192,255)': p.borderColor ):'black')};
 	`;
 
     S.Title = styled.div`
@@ -32,6 +38,7 @@ var S;
 		display: flex;
 		white-space: nowrap;
 		justify-items: center;
+    box-shadow: inset 0 -2px 4px 0 rgb(0 0 0 / 0.05);  
 	`;
 
     S.TitleName = styled.div`

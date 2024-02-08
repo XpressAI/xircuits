@@ -64,6 +64,7 @@
     "@jupyterlab/settingregistry": "^4.0.0",
     "@projectstorm/geometry": "^7.0.2",
     "@projectstorm/react-diagrams": "^7.0.3",
+    "colorjs.io": "^0.4.5",
     "marked": "^11.0.0",
     "react-accessible-accordion": "^5.0.0",
     "react-numeric-input": "^2.2.3",
