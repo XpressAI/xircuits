@@ -241,8 +241,6 @@ class %s(Component):
                 port_name = "%s_%s" % (port.sourceLabel, output_ports[port.sourceLabel])
             output_ports[port.sourceLabel] = output_ports.setdefault(port.sourceLabel, 0) + 1
 
-            args_code.append(ast.parse("%s: OutArg[any]" % port_name).body[0])
-
             assignment_target = "self.%s" % port_name
             if port.source.id not in named_nodes:
                 # Literal
@@ -266,12 +264,15 @@ class %s(Component):
                 else:
                     value = eval(port.sourceLabel)
                 tpl.body[0].value.value = value
+                port_type = type(value).__name__
             else:
+                port_type = type_mapping[port.sourceType] if port.sourceType in type_mapping else port.sourceType
                 assignment_source = "%s.%s" % (
                     named_nodes[port.source.id],
                     port.sourceLabel
                 )
                 tpl = ast.parse("%s = %s" % (assignment_target, assignment_source))
+            args_code.append(ast.parse("%s: OutArg[%s]" % (port_name, port_type)).body[0])
             init_code.append(tpl)
 
 
@@ -326,6 +327,7 @@ while next_component is not None:
     def _generate_main(self, flow_name):
         main = ast.parse("""
 def main(args):
+    import pprint
     ctx = {}
     ctx['args'] = args
     flow = %s()
@@ -334,7 +336,9 @@ def main(args):
 
         body = main.body
 
+        # Set up the input values
         nodes = self._build_node_set()
+        finish_node = [n for n in nodes if n.name == 'Finish' and n.type == 'Finish'][0]
         argument_nodes = [n for n in nodes if n.name.startswith("Argument ") and n.file is None]
         for arg in argument_nodes:
             m = pattern.match(arg.name)
@@ -345,6 +349,22 @@ def main(args):
         body.extend(ast.parse("""
 flow.do(ctx)
 """).body)
+
+        # Print out the output values
+        output_ports = {}
+        # Handle output connections
+        for port in (p for p in finish_node.ports if p.dataType == 'dynalist'):
+            if port.sourceLabel not in output_ports:
+                port_name = port.sourceLabel
+            else:
+                port_name = "%s_%s" % (port.sourceLabel, output_ports[port.sourceLabel])
+            output_ports[port.sourceLabel] = output_ports.setdefault(port.sourceLabel, 0) + 1
+
+            body.extend(ast.parse("""
+print("%s:")
+pprint.pprint(flow.%s.value)
+""" % (port_name, port_name)).body)
+
         return [main]
 
     def _build_node_set(self):

@@ -49,6 +49,9 @@ class XircuitsFileParser:
                 target_node = self.nodes[link['target']]
 
                 sourceLabel = [p for p in source_node['ports'] if p['id'] == link['sourcePort']][0]['label']
+                sourceName = [p for p in source_node['ports'] if p['id'] == link['sourcePort']][0]['name']
+                typeExtract = re.match(r'parameter-out-(.+?)-out', sourceName)
+                sourceType = typeExtract.group(1) if typeExtract is not None else 'any'
 
                 # filter compulsory port [★] label from port name
                 sourceLabel = re.sub(r"★", "", sourceLabel)
@@ -57,6 +60,7 @@ class XircuitsFileParser:
                 p = Port(
                     name=port['name'],
                     type=link['type'],
+                    sourceType=sourceType,
                     varName=port['varName'],
                     dataType=port['dataType'],
                     target=self.traverse_node(target_node),
