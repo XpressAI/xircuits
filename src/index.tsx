@@ -156,35 +156,29 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       label: (args) => (args['isLauncher'] ? 'Xircuits File' : 'Create New Xircuits'),
       icon: xircuitsIcon,
       caption: 'Create a new xircuits file',
-      execute: () => {
-
-        const currentBrowser = browserFactory.tracker.currentWidget 
-
+      execute: async () => {
+        const currentBrowser = browserFactory.tracker.currentWidget;
         if (!currentBrowser) {
-          console.error('No active file browser found.');
+          console.error("No active file browser found.");
           return;
         }
-
-        app.commands
+        const model = await app.commands
           .execute(commandIDs.newDocManager, {
             path: currentBrowser.model.path,
-            type: 'file',
-            ext: '.xircuits'
-          })
-          .then(async model => {
-            const newWidget = await app.commands.execute(
-              commandIDs.openDocManager,
-              {
-                path: model.path,
-                factory: FACTORY
-              }
-            );
-            newWidget.context.ready.then(() => {
-              app.commands.execute(commandIDs.saveXircuit, {
-                path: model.path
-              });
-            });
+            type: "file",
+            ext: ".xircuits"
           });
+        const newWidget = await app.commands.execute(
+          commandIDs.openDocManager,
+          {
+            path: model.path,
+            factory: FACTORY
+          }
+        );
+        await newWidget.content.renderPromise;
+        await app.commands.execute(commandIDs.saveXircuit, {
+            path: model.path
+        });
       }
     });
 
