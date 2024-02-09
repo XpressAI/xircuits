@@ -21,9 +21,13 @@ def parse_gitmodules(gitmodules_path):
     return modules
 
 def parse_toml_file(toml_path):
-    with open(toml_path, 'r') as toml_file:
-        data = toml.load(toml_file)
-    return data
+    try:
+        with open(toml_path, 'r') as toml_file:
+            data = toml.load(toml_file)
+        return data
+    except Exception as e:
+        print(f"Error parsing TOML file at {toml_path}: {e}")
+        return None 
 
 def read_file_lines_to_list(file_path):
     if not os.path.exists(file_path):
@@ -39,6 +43,10 @@ def extract_library_info(lib_path, base_path, status="installed"):
         return None
 
     toml_data = parse_toml_file(toml_path)
+
+    # Check if TOML data was successfully parsed
+    if toml_data is None:
+        return None
 
     # Remove 'xai_' or 'xai-' prefix and convert to uppercase
     library_id = toml_data["project"]["name"].replace("xai_", "").replace("xai-", "").upper()
