@@ -331,6 +331,7 @@ def main(args):
     ctx = {}
     ctx['args'] = args
     flow = %s()
+    flow.next = None
 """ % flow_name).body[0]
         pattern = re.compile(r'^Argument \(.+?\): (.+)$')
 
