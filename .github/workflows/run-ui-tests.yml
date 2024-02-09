@@ -38,14 +38,12 @@ jobs:
           echo "branch_name=${{ github.ref_name }}" >> $GITHUB_ENV
         fi
 
-    - name: Check Branch
-      run: echo "Branch name is ${{ env.branch_name }}"
-
-    - name: Get Hash
-      run: echo "git_hash=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
-
-    - name: Check Hash
-      run: echo "Git hash is ${{ env.git_hash }}"
+    - name: Sanitize Branch Name and Git Hash
+      run: |
+        sanitized_branch_name=$(echo "${{ env.branch_name }}" | sed 's/[^a-zA-Z0-9_-]/_/g')
+        sanitized_git_hash=$(git rev-parse --short "${{ github.sha }}" | sed 's/[^a-zA-Z0-9_-]/_/g')
+        echo "sanitized_branch_name=${sanitized_branch_name}" >> $GITHUB_ENV
+        echo "sanitized_git_hash=${sanitized_git_hash}" >> $GITHUB_ENV
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -55,11 +53,11 @@ jobs:
     - name: Install Yarn
       run: npm install --global yarn
 
-    - name: Build Extension in Dev Mode
-      run: pip install -e .
-
     - name: Upgrade pip
       run: python -m pip install --upgrade pip
+
+    - name: Build Extension in Dev Mode
+      run: pip install -e .
 
     - name: Build Wheel
       run: |
@@ -84,6 +82,6 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: failure()
       with:
-        name: playwright-report-${{ matrix.python-version }}-${{ env.branch_name }}-${{ env.git_hash }}
+        name: playwright-report-${{ matrix.python-version }}-${{ env.sanitized_branch_name }}-${{ env.sanitized_git_hash }}
         path: ui-tests/playwright-report/
         retention-days: 1
