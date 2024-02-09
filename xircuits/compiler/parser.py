@@ -18,9 +18,9 @@ class XircuitsFileParser:
         self.nodes = [n for n in xircuits_file['layers'] if n['type'] == 'diagram-nodes'][0]['models']
         self.links = [n for n in xircuits_file['layers'] if n['type'] == 'diagram-links'][0]['models']
 
-        start_node = [n for n in self.nodes.values() if n['extras']['type'] == 'Start'][0]
+        start_nodes = [n for n in self.nodes.values() if n['extras']['type'] == 'Start']
 
-        return self.traverse_node(start_node)
+        return [self.traverse_node(start_node) for start_node in start_nodes]
 
     def traverse_node(self, node):
         node_id = node['id']
@@ -49,6 +49,9 @@ class XircuitsFileParser:
                 target_node = self.nodes[link['target']]
 
                 sourceLabel = [p for p in source_node['ports'] if p['id'] == link['sourcePort']][0]['label']
+                sourceName = [p for p in source_node['ports'] if p['id'] == link['sourcePort']][0]['name']
+                typeExtract = re.match(r'parameter-out-(.+?)-out', sourceName)
+                sourceType = typeExtract.group(1) if typeExtract is not None else 'any'
 
                 # filter compulsory port [★] label from port name
                 sourceLabel = re.sub(r"★", "", sourceLabel)
@@ -57,6 +60,7 @@ class XircuitsFileParser:
                 p = Port(
                     name=port['name'],
                     type=link['type'],
+                    sourceType=sourceType,
                     varName=port['varName'],
                     dataType=port['dataType'],
                     target=self.traverse_node(target_node),

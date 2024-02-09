@@ -33,6 +33,7 @@ export class XircuitsApplication {
 
                 let finishedNode = new CustomNodeModel({ name: 'Finish', color: 'rgb(255,102,102)', extras: { "type": "Finish" } });
                 finishedNode.addInPortEnhance({label: '▶', name: 'in-0'});
+                finishedNode.addInPortEnhance({label: 'outputs', name: 'parameter-dynalist-outputs', varName: 'outputs', dataType: 'dynalist'});
                 finishedNode.setPosition(700, 100);
 
                 this.activeModel.addAll(startNode, finishedNode);

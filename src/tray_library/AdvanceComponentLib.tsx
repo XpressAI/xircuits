@@ -37,7 +37,10 @@ export function AdvancedComponentLibrary(props: AdvancedComponentLibraryProps) {
             "options": nodeData.options
         }
     });
-    node.addInPortEnhance({label: '▶', name: 'in-0'});
+
+    if(node.extras.type != "Start"){
+        node.addInPortEnhance({label: '▶', name: 'in-0'});
+    }
     node.addOutPortEnhance({label: '▶', name: 'out-0'});
 
     // TODO: Get rid of the remapping by using compatible type names everywhere
