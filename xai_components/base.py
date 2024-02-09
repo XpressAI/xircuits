@@ -90,13 +90,13 @@ class BaseComponent:
     def execute(self, ctx) -> None:
         pass
 
-    def do(self, ctx) -> Tuple[bool, 'BaseComponent']:
+    def do(self, ctx) -> 'BaseComponent':
         pass
 
 class Component(BaseComponent):
     next: BaseComponent
 
-    def do(self, ctx) -> Tuple[bool, BaseComponent]:
+    def do(self, ctx) -> BaseComponent:
         print(f"\nExecuting: {self.__class__.__name__}")
         self.execute(ctx)
 
