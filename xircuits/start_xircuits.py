@@ -3,14 +3,17 @@ from pathlib import Path
 import os
 from .handlers.request_folder import request_folder
 from .utils import is_empty, copy_from_installed_wheel
-from .library import list_component_library, install_library, fetch_library
+from .library import list_component_library, install_library, fetch_library, save_component_library_config
 from .compiler import compile
 import json
 
 def init_xircuits():
     package_name = 'xircuits'
     copy_from_installed_wheel(package_name, resource='.xircuits', dest_path='.xircuits')
-
+    component_library_path = Path(os.getcwd()) / "xai_components"
+    if not component_library_path.exists():
+        copy_from_installed_wheel('xai_components', '', 'xai_components')
+        
 def cmd_start_xircuits(args, extra_args=[]):
     # fetch xai_components
     component_library_path = Path(os.getcwd()) / "xai_components"
@@ -31,6 +34,7 @@ def cmd_start_xircuits(args, extra_args=[]):
 def cmd_download_examples(args, extra_args=[]):
     if not os.path.exists("examples") or is_empty("examples"):
         copy_from_installed_wheel('examples')
+        print("Example workflows ready at working directory.")
 
 def cmd_fetch_library(args, extra_args=[]):
     fetch_library(args.library_name)
@@ -120,3 +124,5 @@ __   __  ___                _ _
 config_path = Path(os.getcwd()) / ".xircuits"
 if not config_path.exists():
     init_xircuits()
+
+save_component_library_config()

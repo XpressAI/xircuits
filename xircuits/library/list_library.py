@@ -1,66 +1,67 @@
 import os
 import sys
-from pathlib import Path
+import json
 import subprocess
-from ..utils import copy_from_installed_wheel, is_empty
+from pathlib import Path
 
 def get_installed_packages():
-    """Return a list of installed packages."""
+    """Return a set of installed packages."""
     result = subprocess.check_output([sys.executable, "-m", "pip", "freeze"])
     packages = {package.split('==')[0] for package in result.decode().splitlines()}
     return packages
 
-def check_requirements_installed(installed_packages, requirements_path):
-    """Check if all packages in a requirements file are installed using a given list of installed packages."""
-    with open(requirements_path, 'r') as file:
-        required_packages = {line.strip().split('==')[0] for line in file.readlines()}
-    return required_packages.issubset(installed_packages)
+def check_requirements_installed(installed_packages, requirements):
+    """Check if all required packages are installed."""
+    required_packages = {pkg.strip() for pkg in requirements}
+    missing_packages = required_packages - installed_packages
+    return len(missing_packages) == 0, missing_packages
 
 def list_component_library():
-    component_library_path = Path(os.getcwd()) / "xai_components"
-    if not component_library_path.exists():
-        copy_from_installed_wheel('xai_components', '', 'xai_components')
+    config_path = Path(".xircuits/component_library_config.json")
+    if not config_path.exists():
+        print("Component library config file not found.")
+        return
+
+    with open(config_path, 'r') as file:
+        config = json.load(file)
+    libraries = config.get("libraries", [])
 
     print("Checking installed packages... This might take a moment.")
     installed_packages = get_installed_packages()
 
-    # Fetch libraries from .gitmodules
-    gitmodules_path = Path(".gitmodules") if Path(".gitmodules").exists() else Path(".xircuits/.gitmodules")
-    submodule_paths = []
-    
-    if gitmodules_path.exists():
-        with gitmodules_path.open() as f:
-            lines = f.readlines()
-            for line in lines:
-                if "path = " in line:
-                    submodule_paths.append(line.split("=")[-1].strip().split('/')[-1])
-                    
-    # Fetch libraries from xai_components/
-    component_library_path = Path("xai_components")
-    directories = [d.name for d in component_library_path.iterdir() if d.is_dir() and d.name.startswith("xai_")]
-    non_empty_directories = [dir_name for dir_name in directories if not is_empty(component_library_path / dir_name)]
+    fully_installed = []
+    incomplete_installation = []
 
-    installed_packages_dirs = []
+    for lib in libraries:
+        lib_name = lib["name"]
+        status = lib["status"]
+        requirements = lib.get("requirements", [])
+        
+        if status != "remote":
+            is_fully_installed, missing_packages = check_requirements_installed(installed_packages, requirements)
+            if is_fully_installed:
+                fully_installed.append(lib_name)
+            else:
+                # Append a star to libraries with incomplete installations
+                incomplete_installation.append(f"{lib_name} [*]")
 
-    for dir_name in directories:
-        requirements_path = component_library_path / dir_name / "requirements.txt"
-        if requirements_path.exists() and check_requirements_installed(installed_packages, requirements_path):
-            installed_packages_dirs.append(dir_name)
-
-    # Crosscheck and categorize based on installed packages
-    fully_installed = set(installed_packages_dirs)
-    available = set(non_empty_directories) - fully_installed
-    remote = [lib for lib in submodule_paths if lib not in fully_installed and lib not in available and is_empty(component_library_path / lib)]
-    
-    # Display
-    print(f"\nFully installed component libraries({len(fully_installed)}):")
+    total_installed = len(fully_installed) + len(incomplete_installation)
+    print(f"\nInstalled component libraries({total_installed}):")
     for lib in sorted(fully_installed):
         print(f" - {lib}")
-
-    print(f"\nAvailable component libraries({len(available)}):")
-    for lib in sorted(available):
+    for lib in sorted(incomplete_installation):
         print(f" - {lib}")
 
-    print(f"\nRemote component libraries({len(remote)}):")
-    for lib in sorted(remote):
-        print(f" - {lib}")
+    if incomplete_installation:
+        print("\n[*] indicates an incomplete installation.")
+
+    # Handle remote libraries separately
+    remote = [lib["name"] for lib in libraries if lib["status"] == "remote"]
+    if remote:
+        print(f"\nRemote component libraries({len(remote)}):")
+        for lib in sorted(remote):
+            print(f" - {lib}")
+        print("\nYou can install remote libraries using 'xircuits install <libName>'.\n\n")
+
+if __name__ == "__main__":
+    list_component_library()

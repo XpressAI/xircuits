@@ -1,0 +1,13 @@
+[project]
+name = "xai-template"
+version = "0.1.0"
+description = "Xircuits component library template for Xircuits."
+authors = [{ name = "XpressAI", email = "eduardo@xpress.ai" }]
+license = "Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/XpressAI/xircuits/tree/master/xai_components/xai_template"
+keywords = ["xircuits", "example components"]
+
+# Xircuits-specific configurations
+[tool.xircuits]
+requirements_path = "requirements.txt"

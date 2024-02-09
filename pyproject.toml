@@ -28,7 +28,8 @@ dependencies = [
     "requests",
     "gitpython",
     "pygithub",
-    "tqdm"
+    "tqdm",
+    "toml",
 ]
 dynamic = ["version", "description", "authors", "urls", "keywords"]
 
