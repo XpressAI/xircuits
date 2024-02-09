@@ -24,19 +24,35 @@ def get_library_config(library_name, config_key):
             for library in config.get("libraries", []):
                 if library.get("library_id") == library_name:
                     return library.get(config_key)
-    
+
     print(f"'{config_key}' not found for library '{library_name}'.")
     return None
 
-def build_library_file_path_from_config(library_name, config_key):
+def get_library_config(library_name, config_key):
+    config_path = ".xircuits/component_library_config.json"
+    if os.path.exists(config_path):
+        with open(config_path, "r") as config_file:
+            config = json.load(config_file)
+            for library in config.get("libraries", []):
+                if library.get("library_id") == library_name:
+                    # Check for the existence of the key and that its value is not None
+                    if config_key in library and library[config_key] is not None:
+                        return library[config_key]
+                    else:
+                        return None  # Explicitly return None if the key is missing or its value is None
+    
+    return None  # Return None if the library isn't found or the file doesn't exist
 
+def build_library_file_path_from_config(library_name, config_key):
     file_path = get_library_config(library_name, config_key)
     if file_path is None:
         return None
-    
-    base_path = get_library_config(library_name, "local_path")
-    full_path = Path(base_path, file_path)
 
+    base_path = get_library_config(library_name, "local_path")
+    if base_path is None:
+        return None
+    
+    full_path = Path(base_path, file_path)
     return full_path.as_posix()
 
 def get_component_library_path(library_name: str) -> str:
