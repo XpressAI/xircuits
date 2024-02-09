@@ -82,9 +82,14 @@ def extract_library_info(lib_path, base_path, status="installed"):
     return lib_info
 
 def generate_component_library_config(base_path="xai_components", gitmodules_path=".gitmodules"):
+
+    if not os.path.exists(gitmodules_path):
+        # Construct the .xircuits/.gitmodules path
+        gitmodules_path = os.path.join('.xircuits', '.gitmodules')
+    
     libraries = {}
     library_id_map = {}  # Map library IDs to library info
-
+    
     # Parse submodules first and set them as "remote"
     if os.path.exists(gitmodules_path):
         submodules = parse_gitmodules(gitmodules_path)
