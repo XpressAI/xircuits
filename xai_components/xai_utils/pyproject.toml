@@ -1,5 +1,5 @@
 [project]
-name = "xai-controlflow"
+name = "xai-utils"
 version = "0.1.0"
 description = "A collection of utility components for Xircuits."
 authors = [{ name = "XpressAI", email = "eduardo@xpress.ai" }]

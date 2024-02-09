@@ -1,6 +1,7 @@
 import subprocess
 import sys
-import configparser
+import os
+import json
 from pathlib import Path
 from ..utils import is_valid_url, is_empty
 from ..handlers.request_submodule import request_submodule_library
@@ -15,15 +16,28 @@ def build_component_library_path(component_library_query: str) -> str:
 
     return component_library_query
 
-def get_library_config(library_name: str):
-    config_path = Path("xai_components") / f"xai_{library_name.lower()}" / "library-config.ini"
-    config = configparser.ConfigParser()
-    if config_path.exists():
-        config.read(config_path)
-        return config
-    else:
-        print(f"Config file for {library_name} not found at {config_path}.")
+def get_library_config(library_name, config_key):
+    config_path = ".xircuits/component_library_config.json"
+    if os.path.exists(config_path):
+        with open(config_path, "r") as config_file:
+            config = json.load(config_file)
+            for library in config.get("libraries", []):
+                if library.get("library_id") == library_name:
+                    return library.get(config_key)
+    
+    print(f"'{config_key}' not found for library '{library_name}'.")
+    return None
+
+def build_library_file_path_from_config(library_name, config_key):
+
+    file_path = get_library_config(library_name, config_key)
+    if file_path is None:
         return None
+    
+    base_path = get_library_config(library_name, "local_path")
+    full_path = Path(base_path, file_path)
+
+    return full_path.as_posix()
 
 def get_component_library_path(library_name: str) -> str:
     if is_valid_url(library_name):
@@ -41,22 +55,22 @@ def install_library(library_name: str):
             print(message)
             return
 
-    # Get config and determine requirements path
-    config = get_library_config(library_name)
-    requirements_path = Path(config.get('requirements_path') if config and 'requirements_path' in config else Path(component_library_path) / "requirements.txt")
+    # Get the requirements path from the configuration
+    requirements_path = get_library_config(library_name, "requirements_path")
+    # Convert to Path object and ensure it's absolute
+    requirements_path = Path(requirements_path).resolve() if requirements_path else Path(component_library_path) / "requirements.txt"
 
     # Install requirements if the file exists
     if requirements_path.exists():
         try:
             print(f"Installing requirements for {library_name}...")
             subprocess.run([sys.executable, "-m", "pip", "install", "-r", str(requirements_path)], check=True)
+            print(f"Library {library_name} ready to use.")
         except Exception as e:
             print(f"An error occurred while installing requirements for {library_name}: {e}")
-
     else:
         print(f"No requirements.txt found for {library_name}. Skipping installation of dependencies.")
-
-    print(f"Library {library_name} ready to use.")
+        print(f"Library {library_name} ready to use.")
 
 def fetch_library(library_name: str):
     print(f"Fetching {library_name}...")

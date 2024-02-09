@@ -5,7 +5,7 @@ import tornado
 import posixpath
 from jupyter_server.base.handlers import APIHandler
 from pathlib import Path
-from xircuits.library import install_library, get_library_config
+from xircuits.library import install_library, build_library_file_path_from_config
 
 class InstallLibraryRouteHandler(APIHandler):
     @tornado.web.authenticated
@@ -43,22 +43,6 @@ class GetLibraryDirectoryRouteHandler(APIHandler):
         response = {"path": directory_path}
         self.finish(json.dumps(response))
 
-
-def get_library_file_path(library_name, path_key, default_filename):
-    config = get_library_config(library_name)
-    base_path = Path("xai_components") / f"xai_{library_name.lower()}"
-
-    if config and 'Paths' in config and path_key in config['Paths']:
-        relative_path = config['Paths'][path_key]
-    else:
-        relative_path = default_filename
-
-    full_path = posixpath.join(base_path, relative_path)
-    if os.path.isfile(full_path):
-        return full_path
-    else:
-        return None
-
 class GetLibraryReadmeRouteHandler(APIHandler):
     @tornado.web.authenticated
     def post(self):
@@ -68,12 +52,13 @@ class GetLibraryReadmeRouteHandler(APIHandler):
         if not library_name:
             self.finish(json.dumps({"message": "Library name is required"}))
             return
+        
+        file_path = build_library_file_path_from_config(library_name, "readme")
 
-        readme_path = get_library_file_path(library_name, 'readme_path', "README.md")
-        if readme_path:
-            response = {"path": readme_path}
+        if file_path:
+            response = {"path": file_path}
         else:
-            response = {"message": "README file not found."}
+            response = {"message": "readme not found."}
 
         self.finish(json.dumps(response))
 
@@ -87,7 +72,8 @@ class GetLibraryExampleRouteHandler(APIHandler):
             self.finish(json.dumps({"message": "Library name is required"}))
             return
 
-        example_path = get_library_file_path(library_name, 'default_example_path', "example.xircuits")
+        example_path = build_library_file_path_from_config(library_name, "default_example_path")
+
         if example_path:
             response = {"path": example_path}
         else:
