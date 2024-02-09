@@ -1,0 +1,13 @@
+[project]
+name = "xai-events"
+version = "0.1.0"
+description = "Xircuits component library for decoupling features, like functions or events."
+authors = [{ name = "XpressAI", email = "paul@xpress.ai" }]
+license = "Apache-2.0"
+readme = "readme.md"
+repository = "https://github.com/XpressAI/xircuits/tree/master/xai_components/xai_events"
+keywords = ["xircuits", "events"]
+
+# Xircuits-specific configurations
+[tool.xircuits]
+default_example_path = "Events.xircuits"
