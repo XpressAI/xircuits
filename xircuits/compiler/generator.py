@@ -232,14 +232,11 @@ class %s(Component):
                 tpl = ast.parse("%s = %s" % (assignment_target, assignment_value))
                 init_code.append(tpl)
 
-        output_ports = {}
         # Handle output connections
-        for port in (p for p in finish_node.ports if p.dataType == 'dynalist'):
-            if port.sourceLabel not in output_ports:
-                port_name = port.sourceLabel
-            else:
-                port_name = "%s_%s" % (port.sourceLabel, output_ports[port.sourceLabel])
-            output_ports[port.sourceLabel] = output_ports.setdefault(port.sourceLabel, 0) + 1
+        for i, port in enumerate(p for p in finish_node.ports if p.dataType == 'dynalist'):
+            port_name = 'output'
+            if i > 0:
+                port_name = "%s_%s" % (port_name, i)
 
             assignment_target = "self.%s" % port_name
             if port.source.id not in named_nodes:
@@ -352,14 +349,10 @@ flow.do(ctx)
 """).body)
 
         # Print out the output values
-        output_ports = {}
-        # Handle output connections
-        for port in (p for p in finish_node.ports if p.dataType == 'dynalist'):
-            if port.sourceLabel not in output_ports:
-                port_name = port.sourceLabel
-            else:
-                port_name = "%s_%s" % (port.sourceLabel, output_ports[port.sourceLabel])
-            output_ports[port.sourceLabel] = output_ports.setdefault(port.sourceLabel, 0) + 1
+        for i, port in enumerate(p for p in finish_node.ports if p.dataType == 'dynalist'):
+            port_name = 'output'
+            if i > 0:
+                port_name = "%s_%s" % (port_name, i)
 
             body.extend(ast.parse("""
 print("%s:")
