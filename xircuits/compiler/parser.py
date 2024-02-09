@@ -18,9 +18,9 @@ class XircuitsFileParser:
         self.nodes = [n for n in xircuits_file['layers'] if n['type'] == 'diagram-nodes'][0]['models']
         self.links = [n for n in xircuits_file['layers'] if n['type'] == 'diagram-links'][0]['models']
 
-        start_node = [n for n in self.nodes.values() if n['extras']['type'] == 'Start'][0]
+        start_nodes = [n for n in self.nodes.values() if n['extras']['type'] == 'Start']
 
-        return self.traverse_node(start_node)
+        return [self.traverse_node(start_node) for start_node in start_nodes]
 
     def traverse_node(self, node):
         node_id = node['id']

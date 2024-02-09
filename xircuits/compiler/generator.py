@@ -4,6 +4,7 @@ from collections import namedtuple
 import re
 import json
 import sys
+import os
 from .port import DYNAMIC_PORTS
 
 if sys.version_info >= (3, 9):
@@ -25,11 +26,15 @@ class CodeGenerator:
         self.component_python_paths = component_python_paths
 
     def generate(self, filelike):
+        output_filename = os.path.basename(filelike.name)
+        flow_name = re.sub(r'\W', '_', output_filename.replace('.py', ''))
+
         module_body = list(itertools.chain(
             self._generate_python_path(),
             self._generate_fixed_imports(),
             self._generate_component_imports(),
-            self._generate_main(),
+            self._generate_flows(flow_name),
+            self._generate_main(flow_name),
             self._generate_trailer()
         ))
 
@@ -60,7 +65,7 @@ import sys
     def _generate_fixed_imports(self):
         fixed_imports = """
 from argparse import ArgumentParser
-from xai_components.base import SubGraphExecutor
+from xai_components.base import SubGraphExecutor, InArg, OutArg, Component, xai_component
 
 """
         return ast.parse(fixed_imports).body
@@ -81,44 +86,66 @@ from xai_components.base import SubGraphExecutor
 
         return imports
 
-    def _generate_main(self):
-        main = ast.parse("""
-def main(args):
-    ctx = {}
-    ctx['args'] = args
-""""").body[0]
+    def _generate_flows(self, flow_name):
+        mainFlowCls = ast.parse("""
+@xai_component        
+class %s(Component):
+    def __init__(self):
+        super().__init__()
+        self.__start_nodes__ = []
+    
+    def execute(self, ctx):
+        pass
+""" % flow_name).body[0]
 
         nodes = self._build_node_set()
         component_nodes = [n for n in nodes if n.file is not None]
-        named_nodes = dict((n.id, "c_%s" % idx) for idx, n in enumerate(component_nodes))
+        named_nodes = dict((n.id, "self.c_%s" % idx) for idx, n in enumerate(component_nodes))
 
-        code = []
+        finish_node = [n for n in nodes if n.name == 'Finish' and n.type == 'Finish'][0]
+
+        init_code = []
+        exec_code = []
+        args_code = []
 
         # Instantiate all components
-        code.extend([
+        init_code.extend([
             ast.parse("%s = %s()" % (named_nodes[n.id], n.name)) for n in component_nodes
         ])
+
+        type_mapping = {
+            "int": "int",
+            "string": "str",
+            "boolean": "bool",
+            "float": "float"
+        }
+
 
         # Set up component argument links
         for node in component_nodes:
             # Handle argument connections
             for port in (p for p in node.ports if
-                         p.direction == 'in' and p.type == 'triangle-link' and p.source.name.startswith('Argument ')):
+                         p.direction == 'in' and p.type == 'triangle-link' and p.source.name.startswith(
+                             'Argument ')):
                 # Unfortunately, we don't have the information anywhere else and updating the file format isn't an option at the moment
 
-                pattern = re.compile(r'^Argument \(.+?\): (.+)$')
-                arg_name = pattern.match(port.source.name).group(1)
+                pattern = re.compile(r'^Argument \((.+?)\): (.+)$')
+                match = pattern.match(port.source.name)
+                arg_type = type_mapping[match.group(1)]
+                arg_name = match.group(2)
 
-                assignment_target = "%s.%s.value" % (
+                assignment_target = "%s.%s" % (
                     named_nodes[port.target.id],
                     port.targetLabel
                 )
-                assignment_source = "args.%s" % arg_name
+                assignment_source = "self.%s" % arg_name
                 tpl = ast.parse("%s = %s" % (assignment_target, assignment_source))
-                code.append(tpl)
+                init_code.append(tpl)
+                args_code.append(ast.parse("%s: InArg[%s]" % (arg_name, arg_type)).body[0])
 
             # Handle regular connections
-            for port in (p for p in node.ports if p.direction == 'in' and p.type != 'triangle-link' and p.dataType not in DYNAMIC_PORTS):
+            for port in (p for p in node.ports if
+                         p.direction == 'in' and p.type != 'triangle-link' and p.dataType not in DYNAMIC_PORTS):
                 assignment_target = "%s.%s" % (
                     named_nodes[port.target.id],
                     port.targetLabel
@@ -153,17 +180,18 @@ def main(args):
                         port.sourceLabel
                     )
                     tpl = ast.parse("%s = %s" % (assignment_target, assignment_source))
-                code.append(tpl)
+                init_code.append(tpl)
 
             # Handle dynamic connections
-            dynaports = [p for p in node.ports if p.direction == 'in' and p.type != 'triangle-link' and p.dataType in DYNAMIC_PORTS]
+            dynaports = [p for p in node.ports if
+                         p.direction == 'in' and p.type != 'triangle-link' and p.dataType in DYNAMIC_PORTS]
             ports_by_varName = {}
 
             RefOrValue = namedtuple('RefOrValue', ['value', 'is_ref'])  # Renamed to RefOrValue
 
             # Group ports by varName
             for port in dynaports:
-                if port.varName not in ports_by_varName:  
+                if port.varName not in ports_by_varName:
                     ports_by_varName[port.varName] = []
                 ports_by_varName[port.varName].append(port)
 
@@ -202,7 +230,50 @@ def main(args):
                     assignment_value = '[' + ', '.join(list_elements) + ']'
 
                 tpl = ast.parse("%s = %s" % (assignment_target, assignment_value))
-                code.append(tpl)
+                init_code.append(tpl)
+
+        output_ports = {}
+        # Handle output connections
+        for port in (p for p in finish_node.ports if p.dataType == 'dynalist'):
+            if port.sourceLabel not in output_ports:
+                port_name = port.sourceLabel
+            else:
+                port_name = "%s_%s" % (port.sourceLabel, output_ports[port.sourceLabel])
+            output_ports[port.sourceLabel] = output_ports.setdefault(port.sourceLabel, 0) + 1
+
+            args_code.append(ast.parse("%s: OutArg[any]" % port_name).body[0])
+
+            assignment_target = "self.%s" % port_name
+            if port.source.id not in named_nodes:
+                # Literal
+                assignment_target += ".value"
+                tpl = ast.parse("%s = 1" % (assignment_target))
+                if port.source.type == "string":
+                    value = port.sourceLabel
+                elif port.source.type == "list":
+                    value = json.loads("[" + port.sourceLabel + "]")
+                elif port.source.type == "dict":
+                    value = json.loads("{" + port.sourceLabel + "}")
+                elif port.source.type == "secret":
+                    value = port.sourceLabel
+                elif port.source.type == "chat":
+                    value = json.loads(port.sourceLabel)
+                elif port.source.type == "tuple":
+                    value = eval(port.sourceLabel)
+                    if not isinstance(value, tuple):
+                        # handler for single entry tuple
+                        value = (value,)
+                else:
+                    value = eval(port.sourceLabel)
+                tpl.body[0].value.value = value
+            else:
+                assignment_source = "%s.%s" % (
+                    named_nodes[port.source.id],
+                    port.sourceLabel
+                )
+                tpl = ast.parse("%s = %s" % (assignment_target, assignment_source))
+            init_code.append(tpl)
+
 
 
         # Set up control flow
@@ -213,35 +284,72 @@ def main(args):
                 if port.name == "out-0":
                     assignment_target = "%s.next" % named_nodes[port.source.id]
                     assignment_source = named_nodes[port.target.id] if port.target.id in named_nodes else None
-                    code.append(
+                    init_code.append(
                         ast.parse("%s = %s" % (assignment_target, assignment_source))
                     )
                 elif port.name.startswith("out-flow-"):
                     assignment_target = "%s.%s" % (named_nodes[port.source.id], port.name[len("out-flow-"):])
                     assignment_source = "SubGraphExecutor(%s)" % named_nodes[
                         port.target.id] if port.target.id in named_nodes else None
-                    code.append(
+                    init_code.append(
                         ast.parse("%s = %s" % (assignment_target, assignment_source))
                     )
             if not has_next:
                 assignment_target = "%s.next" % named_nodes[node.id]
-                code.append(
+                init_code.append(
                     ast.parse("%s = None" % assignment_target)
                 )
+        # Setup start node initialization
+        for node in (n for n in self.graph if n.id in named_nodes):
+            init_code.append(
+                ast.parse("self.__start_nodes__.append(%s)" % named_nodes[node.id])
+            )
 
         trailer = """
+for node in self.__start_nodes__:
+    if hasattr(node, 'init'):
+        node.init(ctx)
+    
 next_component = %s
-while next_component:
+while next_component is not None:
     next_component = next_component.do(ctx)        
-        """ % (named_nodes[self.graph.ports[0].target.id])
-        code.append(ast.parse(trailer))
+        """ % (named_nodes[self.graph[0].ports[0].target.id])
+        exec_code.append(ast.parse(trailer))
 
-        main.body.extend(code)
+        mainFlowCls.body[0].body.extend(init_code)
+        mainFlowCls.body[1].body = exec_code
+
+        args_code.sort(key=lambda x: x.target.id)
+        mainFlowCls.body = args_code + mainFlowCls.body
+        return [mainFlowCls]
+
+    def _generate_main(self, flow_name):
+        main = ast.parse("""
+def main(args):
+    ctx = {}
+    ctx['args'] = args
+    flow = %s()
+""" % flow_name).body[0]
+        pattern = re.compile(r'^Argument \(.+?\): (.+)$')
+
+        body = main.body
+
+        nodes = self._build_node_set()
+        argument_nodes = [n for n in nodes if n.name.startswith("Argument ") and n.file is None]
+        for arg in argument_nodes:
+            m = pattern.match(arg.name)
+            arg_name = m.group(1)
+            tpl = "flow.%s.value = args.%s" % (arg_name, arg_name)
+            body.extend(ast.parse(tpl).body)
+
+        body.extend(ast.parse("""
+flow.do(ctx)
+""").body)
         return [main]
 
     def _build_node_set(self):
         nodes = set()
-        node_queue = [self.graph]
+        node_queue = list(self.graph)
         while len(node_queue) != 0:
             current_node = node_queue.pop()
             nodes.add(current_node)
