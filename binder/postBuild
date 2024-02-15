@@ -2,4 +2,4 @@ python -m pip install -U pip
 pip install -e .
 jupyter labextension develop . --overwrite
 jupyter server extension enable xircuits
-xircuits
+xircuits list
