@@ -1,5 +1,5 @@
 import { CustomNodeModel } from "../components/node/CustomNodeModel";
-import ComponentList from "./Component";
+import { ComponentList } from "./Component";
 
 interface AdvancedComponentLibraryProps {
     model: any;

@@ -1,39 +1,43 @@
 import { showDialog, Dialog } from '@jupyterlab/apputils';
-
 import { requestAPI } from "../server/handler";
 import React from 'react';
 
-async function get_all_components_method() {
+let componentsCache = {
+  data: null
+};
 
-    try {
-      // Trigger the load library config on refresh
-      await requestAPI('library/reload_config', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
-  
-      // Proceed with the GET request to fetch components
-      const componentsResponse = await requestAPI<any>('components/');
-      const components = componentsResponse["components"];
-      const error_msg = componentsResponse["error_msg"];
-  
-      if (error_msg) {
-        showDialog({
-          title: 'Parse Component Failed',
-          body: (
-            <pre>{error_msg}</pre>
-          ),
-          buttons: [Dialog.warnButton({ label: 'OK' })]
-        });
-      }
-  
-      return components;
-    } catch (error) {
-      console.error('Failed to get components or trigger library reload', error);
-      // Handle the error appropriately in your application
+async function fetchComponents() {
+  console.log("Fetching all components... this might take a while.")
+  try {
+    const componentsResponse = await requestAPI<any>('components/');
+    const components = componentsResponse["components"];
+    const error_msg = componentsResponse["error_msg"];
+
+    if (error_msg) {
+      showDialog({
+        title: 'Parse Component Failed',
+        body: (
+          <pre>{error_msg}</pre>
+        ),
+        buttons: [Dialog.warnButton({ label: 'OK' })]
+      });
     }
+    console.log("Fetch complete.")
+    return components;
+  } catch (error) {
+    console.error('Failed to get components', error);
   }
-  
+}
 
-export default async function ComponentList() {
-    let component_list_result: string[] = await get_all_components_method();
+export async function ComponentList() {
 
-    return component_list_result;
+  if (!componentsCache.data) {
+    componentsCache.data = await fetchComponents();
+  }
+
+  return componentsCache.data;
+}
+
+export async function refreshComponentListCache() {
+  componentsCache.data = await fetchComponents();
 }
