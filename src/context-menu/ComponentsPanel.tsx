@@ -1,9 +1,5 @@
-import ComponentList from '../tray_library/Component';
-
 import React, { useEffect, useState } from 'react';
-
 import styled from '@emotion/styled';
-
 import { JupyterFrontEnd } from '@jupyterlab/application';
 
 import {
@@ -17,6 +13,7 @@ import {
 import { DefaultLinkModel, DiagramEngine } from '@projectstorm/react-diagrams';
 import { TrayPanel } from './TrayPanel';
 import { TrayItemPanel } from './TrayItemPanel';
+import { ComponentList } from '../tray_library/Component';
 
 export const Body = styled.div`
   display: flex;

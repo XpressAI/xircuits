@@ -1,9 +1,10 @@
-import ComponentList from './Component';
-import React, { useEffect, useState, useRef } from 'react';
+import { ComponentList, refreshComponentListCache } from './Component';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { TrayItemWidget } from './TrayItemWidget';
 import { TrayWidget } from './TrayWidget';
 import { JupyterFrontEnd } from '@jupyterlab/application';
+import { requestAPI } from '../server/handler';
 
 import {
     Accordion,
@@ -101,7 +102,15 @@ export default function Sidebar(props: SidebarProps) {
     }
 
     const fetchComponentList = async () => {
-          // get the component list 
+
+        try {
+            // Trigger the load library config on refresh
+            await requestAPI('library/reload_config', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+        } catch (error){
+            console.error('Failed to reload config: ', error);
+        }
+
+        // get the component list 
         const component_list = await ComponentList();
 
         // get the header from the components
@@ -126,6 +135,7 @@ export default function Sidebar(props: SidebarProps) {
     }, [category, componentList]);
 
     function handleRefreshOnClick() {
+        refreshComponentListCache()
         fetchComponentList();
     }
 
