@@ -23,6 +23,9 @@
     <a href="https://github.com/XpressAI/xircuits/releases">
         <img alt="GitHub release" src="https://img.shields.io/github/release/XpressAI/xircuits.svg?color=yellow">
     </a>
+    <a href="https://mybinder.org/v2/gh/XpressAi/xircuits/main?urlpath=lab">
+        <img alt="Binder" src="https://mybinder.org/badge_logo.svg">
+    </a>
     <a href="https://xircuits.io">
         <img alt="Documentation" src="https://img.shields.io/website/http/xircuits.io.svg?color=orange">
     </a>
