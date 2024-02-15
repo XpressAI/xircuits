@@ -1,0 +1,20 @@
+name: xircuits-demo
+
+channels:
+  - conda-forge
+
+dependencies:
+  # Runtime dependencies installed through conda
+  - python >=3.8,<3.11
+  - pip
+  - nodejs >=18,<19
+
+  - pip:
+    - jupyterlab>=4.0.0,<4.1
+    - jupyter_server>=2.0.1,<3
+    - requests
+    - gitpython
+    - pygithub
+    - tqdm
+    - toml
+    - xircuits
