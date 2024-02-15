@@ -29,17 +29,13 @@ async function fetchComponents() {
   }
 }
 
-async function get_all_components_method() {
+export async function ComponentList() {
+
   if (!componentsCache.data) {
     componentsCache.data = await fetchComponents();
   }
 
   return componentsCache.data;
-}
-
-export async function ComponentList() {
-  let component_list_result = await get_all_components_method();
-  return component_list_result;
 }
 
 export async function refreshComponentListCache() {
