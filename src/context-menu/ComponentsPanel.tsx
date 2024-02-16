@@ -121,7 +121,6 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
     const [componentList, setComponentList] = React.useState([]);
     const [category, setCategory] = React.useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [runOnce, setRunOnce] = useState(false);
     const [allowableComponents, setAllowableComponents] = useState([]);
 
     let handleOnChange = (event) => {
@@ -151,12 +150,8 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
     }
 
     useEffect(() => {
-        if (!runOnce) {
-            fetchComponentList();
-            setRunOnce(true);
-        }
-
-    }, [category, componentList]);
+        fetchComponentList();
+    }, []);
 
     function focusInput() {
         document.getElementById("add-component-input").focus();
