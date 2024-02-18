@@ -82,8 +82,8 @@ test('Test editing literal nodes', async ({ page, browserName }) => {
 
   const updateParamsList = [
     { type: "Literal String",   updateValue: "Updated String" },
-    { type: "Literal Integer",  updateValue: "456" },
-    { type: "Literal Float",    updateValue: "4.56" },
+    { type: "Literal Integer",  updateValue: "456e1" },
+    { type: "Literal Float",    updateValue: "456e-1" },
     { type: "Literal Boolean",  updateValue: false },
     { type: "Literal List",     updateValue: '"d", "e", "f"' },
     { type: "Literal Tuple",    updateValue: '"g", "h", "i"' },

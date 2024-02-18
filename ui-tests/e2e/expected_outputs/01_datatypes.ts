@@ -22,9 +22,9 @@ export const datatype_test_2 = `Executing: AllLiteralTypes
 String inPort:
 Updated String
 Integer inPort:
-456
+4560.0
 Float inPort:
-4.56
+45.6
 Boolean inPort:
 False
 List inPort:
