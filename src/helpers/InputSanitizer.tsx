@@ -9,38 +9,46 @@ function checkInput(input: any, dataType: string): boolean {
     let processedInput = "";
     let errorDetails = "";
     let exampleInput = "";
+    let inputAsNumber;
 
     const formatError = (detail: string, example: string) => `Invalid ${dataType} input: ${detail} \nExample of a correct ${dataType} format: ${example}`;
-    
+
     switch (normalizedDataType) {
         case "int":
         case "integer":
-            // Regex: Matches possibly negative integers
-            if(!/^\-?\d+$/.test(input)){
-                errorDetails = "Input is not an integer.";
-                exampleInput = "e.g. 3";
-                alert(formatError(errorDetails, exampleInput));
-                return false;
-            }
-            processedInput = `${input}`;
-            break;
+            inputAsNumber = Number(input); // Parse the input as a number which can handle scientific notation
+            
+                // Check if the parsed number is an integer and not NaN
+                if(!Number.isInteger(inputAsNumber)){
+                    errorDetails = `${input} is not an integer.`;
+                    exampleInput = "e.g. 3, -4, or 5e2 (which is 500 in scientific notation)";
+                    alert(formatError(errorDetails, exampleInput));
+                    return false;
+                }
+                processedInput = `${input}`;
+                break;
+            
         case "float":
-            // Regex: Matches possibly negative floats
-            if(!/^\-?\d*\.\d+$/.test(input)){
-                errorDetails = "Input is not a float.";
-                exampleInput = "e.g. 3.14";
+            const floatVal = parseFloat(input);
+            inputAsNumber = Number(input);
+        
+            // Check if the parsed float is a number and if it equals the input when also parsed as a number
+            if(isNaN(floatVal) || floatVal !== inputAsNumber){
+                errorDetails = `${input} is not a float.`;
+                exampleInput = "e.g. 3.14, 3.14e2, or 314e-2";
                 alert(formatError(errorDetails, exampleInput));
                 return false;
             }
             processedInput = `${input}`;
             break;
+
         case "string":
         case "secret":
         case "chat":
             processedInput = JSON.stringify(input);
             break;
         case "list":
-        case "tuple": // validate tuple as list,as JS doesn't have native tuples
+        case "tuple": // Validate tuple as list, as JS doesn't have native tuples
             processedInput = `[${input}]`;
             break;
         case "dict":
@@ -51,7 +59,7 @@ function checkInput(input: any, dataType: string): boolean {
         case "boolean":
             return true;
         case "undefined_any":
-            //handler if called from any inputDialogue
+            // Handler if called from any inputDialogue
             alert(`Type is undefined or not provided. Please insert the first character as shown in example.`);
             return false;
         default:

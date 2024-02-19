@@ -843,12 +843,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				const dialogOptions = inputDialog({ title:boolTitle, oldValue:"", type:'boolean'});
 				const dialogResult = await showFormDialog(dialogOptions);
 				if (cancelDialog(dialogResult)) return;
-				let boolValue = dialogResult["value"][boolTitle];
-				if (boolValue == false) {
-					nodeType = 'False'
-				} else {
-					nodeType = 'True'
-				}
+				let boolValue = dialogResult["value"][boolTitle].toLowerCase();
+				nodeType = boolValue === 'false' ? 'False' : 'True';
 				break;
 			case 'any':
 				// When inPort is 'any' type, get the correct literal type based on the first character inputed
