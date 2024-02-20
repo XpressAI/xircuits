@@ -23,6 +23,7 @@ import { PointModel } from '@projectstorm/react-diagrams';
 import { Point } from '@projectstorm/geometry';
 import { handleLiteralInput } from '../tray_library/GeneralComponentLib';
 import { CustomDynaPortModel } from '../components/port/CustomDynaPortModel';
+import { fetchComponents } from '../tray_library/Component';
 
 /**
  * Add the commands for node actions.
@@ -204,6 +205,9 @@ export function addNodeActionCommands(
     // Add command to reload selected node
     commands.addCommand(commandIDs.reloadNode, {
         execute: async () => {
+
+            await fetchComponents();
+
             const widget = tracker.currentWidget?.content as XircuitsPanel;
             const engine = widget.xircuitsApp.getDiagramEngine()
             const model = engine.getModel()

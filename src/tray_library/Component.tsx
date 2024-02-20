@@ -6,7 +6,7 @@ let componentsCache = {
   data: null
 };
 
-async function fetchComponents() {
+export async function fetchComponents() {
   console.log("Fetching all components... this might take a while.")
   try {
     const componentsResponse = await requestAPI<any>('components/');
