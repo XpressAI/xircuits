@@ -23,6 +23,7 @@ export class XircuitsPanel extends ReactWidget {
   runXircuitSignal: Signal<this, any>;
   runTypeXircuitSignal: Signal<this, any>;
   lockNodeSignal: Signal<this, any>;
+  triggerLoadingAnimationSignal: Signal<this, any>;
   reloadAllNodesSignal: Signal<this, any>;
   toggleAllLinkAnimationSignal: Signal<this, any>;
 
@@ -42,6 +43,7 @@ export class XircuitsPanel extends ReactWidget {
     this.runXircuitSignal = options.runXircuitSignal;
     this.runTypeXircuitSignal = options.runTypeXircuitSignal;
     this.lockNodeSignal = options.lockNodeSignal;
+    this.triggerLoadingAnimationSignal = options.triggerLoadingAnimationSignal;
     this.reloadAllNodesSignal = options.reloadAllNodesSignal;
     this.toggleAllLinkAnimationSignal = options.toggleAllLinkAnimationSignal;
     this.xircuitsApp = new XircuitsApplication(this.app, this.shell);
@@ -92,6 +94,7 @@ export class XircuitsPanel extends ReactWidget {
         runXircuitSignal={this.runXircuitSignal}
         runTypeXircuitSignal={this.runTypeXircuitSignal}
         lockNodeSignal={this.lockNodeSignal}
+        triggerLoadingAnimationSignal={this.triggerLoadingAnimationSignal}
         reloadAllNodesSignal={this.reloadAllNodesSignal}
         toggleAllLinkAnimationSignal={this.toggleAllLinkAnimationSignal}
       />

@@ -44,6 +44,7 @@ export interface BodyWidgetProps {
 	runXircuitSignal: Signal<XircuitsPanel, any>;
 	runTypeXircuitSignal: Signal<XircuitsPanel, any>;
 	lockNodeSignal: Signal<XircuitsPanel, any>;
+	triggerLoadingAnimationSignal: Signal<XircuitsPanel, any>;
 	reloadAllNodesSignal: Signal<XircuitsPanel, any>;
 	toggleAllLinkAnimationSignal: Signal<XircuitsPanel, any>;
 }
@@ -82,6 +83,7 @@ export const commandIDs = {
 	cutNode: 'Xircuit-editor:cut-node',
 	copyNode: 'Xircuit-editor:copy-node',
 	pasteNode: 'Xircuit-editor:paste-node',
+	triggerLoadingAnimation: 'Xircuit-editor:trigger-loading-animation',
 	reloadNode: 'Xircuit-editor:reload-node',
 	reloadAllNodes: 'Xircuit-editor:reload-all-nodes',
 	toggleAllLinkAnimation: 'Xircuit-editor:toggle-all-link-animation',
@@ -111,6 +113,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	runXircuitSignal,
 	runTypeXircuitSignal,
 	lockNodeSignal,
+	triggerLoadingAnimationSignal,
 	reloadAllNodesSignal,
 	toggleAllLinkAnimationSignal,
 }) => {
@@ -507,6 +510,35 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return true;
 	}
 
+	const triggerLoadingAnimation = async (operationPromise, { loadingDisplayDuration = 1000, showLoadingAfter = 100 } = {}) => {
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
+		let shouldSetLoading = false;
+	
+		// Start a timer that will check if the operation exceeds showLoadingAfter
+		const startTimer = setTimeout(() => {
+		  shouldSetLoading = true;
+		  setIsLoading(true);
+		}, showLoadingAfter);
+	
+		await operationPromise;
+	
+		// Clear the start timer as the operation has completed
+		clearTimeout(startTimer);
+	
+		if (shouldSetLoading) {
+		  // If loading was started, ensure it stays for the minimum loading time
+		  const minTimer = setTimeout(() => setIsLoading(false), loadingDisplayDuration);
+		  // Clear the minimum timer to prevent memory leaks in case the component unmounts
+		  return () => clearTimeout(minTimer);
+		} else {
+		  // If loading was not started, just ensure loading state is set to false
+		  setIsLoading(false);
+		}
+	};
+
 	const handleSaveClick = async () => {
 		// Only save xircuit if it is currently in focus
 		// This must be first to avoid unnecessary complication
@@ -641,28 +673,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 		  return;
 		}
-	  
-		const commandPromise = app.commands.execute(commandIDs.reloadNode);
-		let shouldSetLoading = false;
-
-		// Set a timeout to check if the command is still executing
-		const timer = setTimeout(() => {
-		  shouldSetLoading = true;
-		  setIsLoading(true);
-		}, 100);
-	  
-		await commandPromise;
-	  
-		// Clear the timeout in case the command finishes before 100ms
-		clearTimeout(timer);
-	  
-		if (shouldSetLoading) {
-		  // If isLoading was set, ensure it stays true for at least 1 second
-		  setTimeout(() => setIsLoading(false), 1000);
-		}
-	  
+	
+		const reloadPromise = app.commands.execute(commandIDs.reloadNode);
+	
+		// Trigger loading animation
+		await triggerLoadingAnimation(reloadPromise);
+	
 		console.log("Reload all complete.");
-	  }
+	};
 
 	const handleToggleAllLinkAnimation = () => {
 		// This must be first to avoid unnecessary complication
@@ -817,6 +835,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		[compileXircuitSignal, handleCompileClick],
 		[runXircuitSignal, handleRunClick],
 		[lockNodeSignal, handleLockClick],
+		[triggerLoadingAnimationSignal, triggerLoadingAnimation],
 		[reloadAllNodesSignal, handleReloadAll],
 		[toggleAllLinkAnimationSignal, handleToggleAllLinkAnimation]
 	];
