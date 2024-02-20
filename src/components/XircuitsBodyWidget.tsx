@@ -126,6 +126,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [floatNodes, setFloatNodes] = useState<string[]>([]);
 	const [boolNodes, setBoolNodes] = useState<string[]>([]);
 	const [componentList, setComponentList] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const [runType, setRunType] = useState<string>("run");
@@ -636,16 +637,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		});
 	}
 
-	const handleReloadAll = () => {
+	const handleReloadAll = async() => {
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-
-		let allNodes = xircuitsApp.getDiagramEngine().getModel().getNodes()
+		setIsLoading(true);
+		let allNodes = xircuitsApp.getDiagramEngine().getModel().getNodes();
 		allNodes.forEach(node => node.setSelected(true));
-		app.commands.execute(commandIDs.reloadNode);
-		
+		await app.commands.execute(commandIDs.reloadNode);
+		setIsLoading(false);
+		console.log("Reload all complete.")
 	}
 
 	const handleToggleAllLinkAnimation = () => {
@@ -1057,6 +1059,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	return (
 		<Body>
 			<Content>
+				{isLoading && (
+					<div className="loading-indicator">
+					<div className="loading-text">Reloading components...</div>
+					</div>
+				)}
 				<Layer
 					onDrop={handleDropEvent}
 					onDragOver={preventDefault}
@@ -1067,7 +1074,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					onClick={handleClick}>
 					<XircuitsCanvasWidget>
 						<CanvasWidget engine={xircuitsApp.getDiagramEngine()} />
-						{/**Add Component Panel(ctrl + left-click, dropped link)*/}
+						{/* Add Component Panel(ctrl + left-click, dropped link) */}
 						{isComponentPanelShown && (
 							<div
 								onMouseEnter={()=>setDontHidePanel(true)}
@@ -1075,7 +1082,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								id='component-panel'
 								style={{
 									top: componentPanelPosition.y,
-									left:componentPanelPosition.x
+									left: componentPanelPosition.x
 								}}
 								className="add-component-panel">
 								<ComponentsPanel
@@ -1085,10 +1092,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 									linkData={looseLinkData}
 									isParameter={isParameterLink}
 									key="component-panel"
-								></ComponentsPanel>
+								/>
 							</div>
 						)}
-						{/**Node Action Panel(left-click)*/}
+						{/* Node Action Panel(left-click) */}
 						{contextMenuShown && (
 							<div
 								id='context-menu'
@@ -1101,7 +1108,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 									app={app}
 									engine={xircuitsApp.getDiagramEngine()}
 									nodePosition={nodePosition}
-								></CanvasContextMenu>
+								/>
 							</div>
 						)}
 					</XircuitsCanvasWidget>
