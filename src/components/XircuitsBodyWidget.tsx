@@ -637,18 +637,32 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		});
 	}
 
-	const handleReloadAll = async() => {
-		// This must be first to avoid unnecessary complication
+	const handleReloadAll = async () => {
 		if (shell.currentWidget?.id !== widgetId) {
-			return;
+		  return;
 		}
-		setIsLoading(true);
-		let allNodes = xircuitsApp.getDiagramEngine().getModel().getNodes();
-		allNodes.forEach(node => node.setSelected(true));
-		await app.commands.execute(commandIDs.reloadNode);
-		setIsLoading(false);
-		console.log("Reload all complete.")
-	}
+	  
+		const commandPromise = app.commands.execute(commandIDs.reloadNode);
+		let shouldSetLoading = false;
+
+		// Set a timeout to check if the command is still executing
+		const timer = setTimeout(() => {
+		  shouldSetLoading = true;
+		  setIsLoading(true);
+		}, 100);
+	  
+		await commandPromise;
+	  
+		// Clear the timeout in case the command finishes before 100ms
+		clearTimeout(timer);
+	  
+		if (shouldSetLoading) {
+		  // If isLoading was set, ensure it stays true for at least 1 second
+		  setTimeout(() => setIsLoading(false), 1000);
+		}
+	  
+		console.log("Reload all complete.");
+	  }
 
 	const handleToggleAllLinkAnimation = () => {
 		// This must be first to avoid unnecessary complication
@@ -1060,9 +1074,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		<Body>
 			<Content>
 				{isLoading && (
-					<div className="loading-indicator">
+				<div className="loading-indicator">
+					<div className="loading-gif-wrapper"></div>
 					<div className="loading-text">Reloading components...</div>
-					</div>
+				</div>
 				)}
 				<Layer
 					onDrop={handleDropEvent}
