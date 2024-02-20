@@ -24,6 +24,7 @@ import { Point } from '@projectstorm/geometry';
 import { handleLiteralInput } from '../tray_library/GeneralComponentLib';
 import { CustomDynaPortModel } from '../components/port/CustomDynaPortModel';
 import { fetchComponents } from '../tray_library/Component';
+import { BaseComponentLibrary } from '../tray_library/BaseComponentLib';
 
 /**
  * Add the commands for node actions.
@@ -222,28 +223,31 @@ export function addNodeActionCommands(
                 if (
                     selected_node.name.startsWith("Literal") || 
                     selected_node.name.startsWith("Argument") ||
-                    selected_node.name.startsWith("Start") ||
-                    selected_node.name.startsWith("Finish")
+                    selected_node.name.startsWith("Start")
                 ) {
                     console.info(selected_node.name + " cannot be reloaded.");
                     continue;
                 }
-
-                let current_node = await fetchNodeByName(selected_node.name)
-
+            
                 let node;
-
-                try {
-                    node = AdvancedComponentLibrary({ model: current_node });
-                  } catch (error) {
-                    let path = selected_node.getOptions()["extras"].path;
-                    console.log(`Error reloading component from path: ${path}. Error: ${error.message}`);
-                    selected_node.getOptions().extras["tip"] = `Component could not be loaded from path: \`${path}\`.\nPlease ensure that the component exists!`;
-                    selected_node.getOptions().extras["borderColor"]="red";
-                    nodesToHighlight.push(selected_node)
-                    continue;
-                  }
-
+            
+                if (selected_node.name.startsWith("Finish")) {
+                    node = BaseComponentLibrary('Finish');
+                } else {
+                    // For other nodes, fetch from AdvancedComponentLibrary
+                    try {
+                        let current_node = await fetchNodeByName(selected_node.name);
+                        node = AdvancedComponentLibrary({ model: current_node });
+                    } catch (error) {
+                        let path = selected_node.getOptions()["extras"].path;
+                        console.log(`Error reloading component from path: ${path}. Error: ${error.message}`);
+                        selected_node.getOptions().extras["tip"] = `Component could not be loaded from path: \`${path}\`.\nPlease ensure that the component exists!`;
+                        selected_node.getOptions().extras["borderColor"]="red";
+                        nodesToHighlight.push(selected_node);
+                        continue;
+                    }
+                }
+            
                 let nodePositionX = selected_node.getX();
                 let nodePositionY = selected_node.getY();
                 
