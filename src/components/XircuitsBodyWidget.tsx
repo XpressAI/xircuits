@@ -130,6 +130,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [boolNodes, setBoolNodes] = useState<string[]>([]);
 	const [componentList, setComponentList] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
+	const [loadingMessage, setLoadingMessage] = useState('Xircuits loading...');
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const [runType, setRunType] = useState<string>("run");
@@ -510,24 +511,31 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return true;
 	}
 
-	const triggerLoadingAnimation = async (operationPromise, { loadingDisplayDuration = 1000, showLoadingAfter = 100 } = {}) => {
+	const triggerLoadingAnimation = async (
+		operationPromise, 
+		{ 	loadingMessage = 'Xircuits loading...', 
+			loadingDisplayDuration = 1000, 
+			showLoadingAfter = 100 } = {}
+	  ) => {
 		if (shell.currentWidget?.id !== widgetId) {
-			return;
+		  return;
 		}
-
+	  
 		let shouldSetLoading = false;
-	
+	  
+		setLoadingMessage(loadingMessage);
+	  
 		// Start a timer that will check if the operation exceeds showLoadingAfter
 		const startTimer = setTimeout(() => {
 		  shouldSetLoading = true;
 		  setIsLoading(true);
 		}, showLoadingAfter);
-	
+	  
 		await operationPromise;
-	
+	  
 		// Clear the start timer as the operation has completed
 		clearTimeout(startTimer);
-	
+	  
 		if (shouldSetLoading) {
 		  // If loading was started, ensure it stays for the minimum loading time
 		  const minTimer = setTimeout(() => setIsLoading(false), loadingDisplayDuration);
@@ -677,7 +685,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		const reloadPromise = app.commands.execute(commandIDs.reloadNode);
 	
 		// Trigger loading animation
-		await triggerLoadingAnimation(reloadPromise);
+		await triggerLoadingAnimation(reloadPromise, { loadingMessage: 'Reloading all nodes...'});
 	
 		console.log("Reload all complete.");
 	};
@@ -1095,7 +1103,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				{isLoading && (
 				<div className="loading-indicator">
 					<div className="loading-gif-wrapper"></div>
-					<div className="loading-text">Reloading components...</div>
+					<div className="loading-text">{loadingMessage}</div>
 				</div>
 				)}
 				<Layer
