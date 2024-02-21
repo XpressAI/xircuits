@@ -51,7 +51,7 @@ const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayConte
         const userResponse = confirm("Do you want to proceed with " + val + " library installation?");
         if (userResponse) {
             try {
-                await requestLibrary(val, "library/get_directory");
+                await requestLibrary(val, "library/fetch");
                 const response = await requestLibrary(val, "library/get_directory");
                 if (response['path']) {
                     let code = startRunOutputStr()
@@ -116,7 +116,6 @@ const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayConte
                 <div className="context-menu-option" onClick={() => { handleInstall(val); onClose(); }}>Install</div>
             ) : (
                 <>
-                    <div className="context-menu-option" onClick={() => { handleInstall(val); onClose(); }}>Install</div>
                     <div className="context-menu-option" onClick={() => { handleShowInFileBrowser(val); onClose(); }}>Show in File Explorer</div>
                     <div className="context-menu-option" onClick={() => { handleShowReadme(val); onClose(); }}>See Readme</div>
                     <div className="context-menu-option" onClick={() => { handleShowExample(val); onClose(); }}>Show Example</div>

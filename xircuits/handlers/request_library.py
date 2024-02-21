@@ -4,7 +4,7 @@ import traceback
 import tornado
 import posixpath
 from jupyter_server.base.handlers import APIHandler
-from xircuits.library import install_library, build_library_file_path_from_config, save_component_library_config, get_component_library_config
+from xircuits.library import install_library, fetch_library, build_library_file_path_from_config, save_component_library_config, get_component_library_config
 
 class InstallLibraryRouteHandler(APIHandler):
     @tornado.web.authenticated
@@ -18,6 +18,27 @@ class InstallLibraryRouteHandler(APIHandler):
 
         try:
             message = install_library(library_name)
+        except RuntimeError as e:
+            message = str(e)
+            print(message)
+        except Exception as e:
+            message = f"An unexpected error occurred: {traceback.format_exc()}"
+            print(message)
+
+        self.finish(json.dumps({"message": message}))
+
+class FetchLibraryRouteHandler(APIHandler):
+    @tornado.web.authenticated
+    def post(self):
+        input_data = self.get_json_body()
+        library_name = input_data.get("libraryName")
+
+        if not library_name:
+            self.finish(json.dumps({"message": "Library name is required"}))
+            return
+
+        try:
+            message = fetch_library(library_name.lower())
         except RuntimeError as e:
             message = str(e)
             print(message)
