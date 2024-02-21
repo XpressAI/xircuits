@@ -113,7 +113,7 @@ const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayConte
     return ReactDOM.createPortal(
         <div className="context-menu" ref={trayContextMenuRef} style={{ position: 'absolute', left: `${x+5}px`, top: `${y}px`, zIndex: 1000 }}>
             {status === 'remote' ? (
-                <div className="context-menu-option" onClick={() => { handleInstall(val); onClose(); }}>Install                     </div>
+                <div className="context-menu-option" onClick={() => { handleInstall(val); onClose(); }}>Install</div>
             ) : (
                 <>
                     <div className="context-menu-option" onClick={() => { handleInstall(val); onClose(); }}>Install</div>

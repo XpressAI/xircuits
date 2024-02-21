@@ -212,15 +212,15 @@ export default function Sidebar(props: SidebarProps) {
 
     const mapRemoteLibraries = () => {
         return remoteLibList.map((lib, i) => (
-          <AccordionItem key={`remote-lib-${i}`}>
-            <AccordionItemHeading>
-            <AccordionItemButton 
-                className="accordion__button accordion__button--remote"
-                onContextMenu={(event) => handleRightClick(event, lib.library_id, 'remote')}>{lib.library_id}</AccordionItemButton>
-            </AccordionItemHeading>
-          </AccordionItem>
+            <AccordionItem key={`remote-lib-${i}`}>
+                <AccordionItemHeading>
+                    <AccordionItemButton className="accordion__button accordion__button--remote" onContextMenu={(event) => handleRightClick(event, lib.library_id, 'remote')}>
+                        {lib.library_id}
+                    </AccordionItemButton>
+                </AccordionItemHeading>
+            </AccordionItem>
         ));
-      };
+    };
     
     const [contextMenuState, setContextMenuState] = useState({
         visible: false,
@@ -252,22 +252,31 @@ export default function Sidebar(props: SidebarProps) {
                 <TrayWidget>
                     <div>
                         <div className="search-input">
-                            <input type="text" name="" value={searchTerm} placeholder="SEARCH" className="search-input__text-input" style={{ width: "75%" }} onChange={handleOnChange} />
+                        <input type="text" name="" value={searchTerm} placeholder="SEARCH" className="search-input__text-input" style={{ width: "75%" }} onChange={handleOnChange} />
                             <a onClick={handleSearchOnClick} className="search-input__button"><i className="fa fa-search "></i></a>
                             <a onClick={handleRefreshOnClick} className="search-input__button"><i className="fa fa-refresh "></i></a>
-                        </div>
-
+                         </div>
                         {searchTerm === "" ? (
-                        <>
-                            <Accordion allowMultipleExpanded={true} allowZeroExpanded={true}>
+                            <>
+                                <Accordion allowMultipleExpanded={true} allowZeroExpanded={true}>
+                                    {mapCategories(category, componentList)}
+                                </Accordion>
                                 
-                                {mapCategories(category, componentList)}
-                            </Accordion>
-                            <div style={{ height: '10px' }} />
-                            <Accordion>
-                                {mapRemoteLibraries()}
-                            </Accordion>
-                        </>
+                                <div style={{ height: '10px' }} />
+                                
+                                <Accordion allowZeroExpanded>
+                                    <AccordionItem>
+                                        <AccordionItemHeading>
+                                            <AccordionItemButton className="accordion__button accordion__button--remote">REMOTE</AccordionItemButton>
+                                        </AccordionItemHeading>
+                                        <AccordionItemPanel>
+                                            <Accordion allowZeroExpanded>
+                                                {mapRemoteLibraries()}
+                                            </Accordion>
+                                        </AccordionItemPanel>
+                                    </AccordionItem>
+                                </Accordion>
+                            </>
                         ) : (
                             mapComponents(componentList, searchTerm)
                         )}
