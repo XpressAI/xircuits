@@ -23,18 +23,6 @@ def get_library_config(library_name, config_key):
             config = json.load(config_file)
             for library in config.get("libraries", []):
                 if library.get("library_id") == library_name:
-                    return library.get(config_key)
-
-    print(f"'{config_key}' not found for library '{library_name}'.")
-    return None
-
-def get_library_config(library_name, config_key):
-    config_path = ".xircuits/component_library_config.json"
-    if os.path.exists(config_path):
-        with open(config_path, "r") as config_file:
-            config = json.load(config_file)
-            for library in config.get("libraries", []):
-                if library.get("library_id") == library_name:
                     # Check for the existence of the key and that its value is not None
                     if config_key in library and library[config_key] is not None:
                         return library[config_key]

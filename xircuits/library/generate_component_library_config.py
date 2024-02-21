@@ -128,6 +128,18 @@ def save_component_library_config(filename=".xircuits/component_library_config.j
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, 'w') as json_file:
         json.dump(libraries_data, json_file, indent=4)
+    return libraries_data
+
+def get_component_library_config(filename=".xircuits/component_library_config.json"):
+    if os.path.exists(filename):
+        try:
+            with open(filename, 'r') as json_file:
+                return json.load(json_file)
+        except Exception as e:
+            print(f"Error reading JSON file at {filename}: {e}")
+            return None
+    else:
+        return save_component_library_config(filename)
 
 if __name__ == "__main__":
     save_component_library_config()

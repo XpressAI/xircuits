@@ -4,7 +4,7 @@ import traceback
 import tornado
 import posixpath
 from jupyter_server.base.handlers import APIHandler
-from xircuits.library import install_library, build_library_file_path_from_config, save_component_library_config
+from xircuits.library import install_library, build_library_file_path_from_config, save_component_library_config, get_component_library_config
 
 class InstallLibraryRouteHandler(APIHandler):
     @tornado.web.authenticated
@@ -84,6 +84,17 @@ class ReloadComponentLibraryConfigHandler(APIHandler):
         try:
             save_component_library_config()
             response = {"message": "Library config updated."}
+        except Exception as e:
+            response = {"message": f"Something went wrong: {str(e)}"}
+
+        self.finish(json.dumps(response))
+
+class GetComponentLibraryConfigHandler(APIHandler):
+    @tornado.web.authenticated
+    def post(self):
+        try:
+            library_data = get_component_library_config()
+            response = {"library_config": library_data}
         except Exception as e:
             response = {"message": f"Something went wrong: {str(e)}"}
 
