@@ -22,6 +22,13 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
         let models = this.props.engine.getModel().getSelectedEntities();
         let visibility = getMenuOptionsVisibility(models);
 
+        const handleReloadNode = async () => {
+            let loadPromise = await this.props.app.commands.execute(commandIDs.reloadNode);
+            await this.props.app.commands.execute(commandIDs.triggerLoadingAnimation, { loadPromise,
+                loadingMessage: 'Reloading node...', loadingDisplayDuration: 10000, showLoadingAfter: 10 
+            });
+        };
+
         return (
             <div className="context-menu" onClick={this.hideCanvasContextMenu.bind(this)}>
                 {visibility.showCutCopyPaste && (
@@ -32,7 +39,7 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
                     </>
                 )}
                 {visibility.showReloadNode && (
-                    <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.reloadNode)}>Reload Node</div>
+                <div className="context-menu-option" onClick={handleReloadNode}>Reload Node</div>
                 )}
                 {visibility.showEdit && (
                     <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.editNode)}>Edit</div>

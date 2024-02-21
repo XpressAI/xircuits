@@ -44,6 +44,7 @@ export interface BodyWidgetProps {
 	runXircuitSignal: Signal<XircuitsPanel, any>;
 	runTypeXircuitSignal: Signal<XircuitsPanel, any>;
 	lockNodeSignal: Signal<XircuitsPanel, any>;
+	triggerLoadingAnimationSignal: Signal<XircuitsPanel, any>;
 	reloadAllNodesSignal: Signal<XircuitsPanel, any>;
 	toggleAllLinkAnimationSignal: Signal<XircuitsPanel, any>;
 }
@@ -82,6 +83,7 @@ export const commandIDs = {
 	cutNode: 'Xircuit-editor:cut-node',
 	copyNode: 'Xircuit-editor:copy-node',
 	pasteNode: 'Xircuit-editor:paste-node',
+	triggerLoadingAnimation: 'Xircuit-editor:trigger-loading-animation',
 	reloadNode: 'Xircuit-editor:reload-node',
 	reloadAllNodes: 'Xircuit-editor:reload-all-nodes',
 	toggleAllLinkAnimation: 'Xircuit-editor:toggle-all-link-animation',
@@ -111,6 +113,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	runXircuitSignal,
 	runTypeXircuitSignal,
 	lockNodeSignal,
+	triggerLoadingAnimationSignal,
 	reloadAllNodesSignal,
 	toggleAllLinkAnimationSignal,
 }) => {
@@ -126,6 +129,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [floatNodes, setFloatNodes] = useState<string[]>([]);
 	const [boolNodes, setBoolNodes] = useState<string[]>([]);
 	const [componentList, setComponentList] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [loadingMessage, setLoadingMessage] = useState('Xircuits loading...');
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const [runType, setRunType] = useState<string>("run");
@@ -506,6 +511,42 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return true;
 	}
 
+	const triggerLoadingAnimation = async (
+		operationPromise, 
+		{ 	loadingMessage = 'Xircuits loading...', 
+			loadingDisplayDuration = 1000, 
+			showLoadingAfter = 100 } = {}
+	  ) => {
+		if (shell.currentWidget?.id !== widgetId) {
+		  return;
+		}
+	  
+		let shouldSetLoading = false;
+	  
+		setLoadingMessage(loadingMessage);
+	  
+		// Start a timer that will check if the operation exceeds showLoadingAfter
+		const startTimer = setTimeout(() => {
+		  shouldSetLoading = true;
+		  setIsLoading(true);
+		}, showLoadingAfter);
+	  
+		await operationPromise;
+	  
+		// Clear the start timer as the operation has completed
+		clearTimeout(startTimer);
+	  
+		if (shouldSetLoading) {
+		  // If loading was started, ensure it stays for the minimum loading time
+		  const minTimer = setTimeout(() => setIsLoading(false), loadingDisplayDuration);
+		  // Clear the minimum timer to prevent memory leaks in case the component unmounts
+		  return () => clearTimeout(minTimer);
+		} else {
+		  // If loading was not started, just ensure loading state is set to false
+		  setIsLoading(false);
+		}
+	};
+
 	const handleSaveClick = async () => {
 		// Only save xircuit if it is currently in focus
 		// This must be first to avoid unnecessary complication
@@ -636,17 +677,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		});
 	}
 
-	const handleReloadAll = () => {
-		// This must be first to avoid unnecessary complication
+	const handleReloadAll = async () => {
 		if (shell.currentWidget?.id !== widgetId) {
-			return;
+		  return;
 		}
-
-		let allNodes = xircuitsApp.getDiagramEngine().getModel().getNodes()
-		allNodes.forEach(node => node.setSelected(true));
-		app.commands.execute(commandIDs.reloadNode);
-		
-	}
+	
+		const reloadPromise = app.commands.execute(commandIDs.reloadNode);
+	
+		// Trigger loading animation
+		await triggerLoadingAnimation(reloadPromise, { loadingMessage: 'Reloading all nodes...'});
+	
+		console.log("Reload all complete.");
+	};
 
 	const handleToggleAllLinkAnimation = () => {
 		// This must be first to avoid unnecessary complication
@@ -801,6 +843,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		[compileXircuitSignal, handleCompileClick],
 		[runXircuitSignal, handleRunClick],
 		[lockNodeSignal, handleLockClick],
+		[triggerLoadingAnimationSignal, triggerLoadingAnimation],
 		[reloadAllNodesSignal, handleReloadAll],
 		[toggleAllLinkAnimationSignal, handleToggleAllLinkAnimation]
 	];
@@ -1053,6 +1096,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	return (
 		<Body>
 			<Content>
+				{isLoading && (
+				<div className="loading-indicator">
+					<div className="loading-gif-wrapper"></div>
+					<div className="loading-text">{loadingMessage}</div>
+				</div>
+				)}
 				<Layer
 					onDrop={handleDropEvent}
 					onDragOver={preventDefault}
@@ -1063,7 +1112,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					onClick={handleClick}>
 					<XircuitsCanvasWidget>
 						<CanvasWidget engine={xircuitsApp.getDiagramEngine()} />
-						{/**Add Component Panel(ctrl + left-click, dropped link)*/}
+						{/* Add Component Panel(ctrl + left-click, dropped link) */}
 						{isComponentPanelShown && (
 							<div
 								onMouseEnter={()=>setDontHidePanel(true)}
@@ -1071,7 +1120,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								id='component-panel'
 								style={{
 									top: componentPanelPosition.y,
-									left:componentPanelPosition.x
+									left: componentPanelPosition.x
 								}}
 								className="add-component-panel">
 								<ComponentsPanel
@@ -1081,10 +1130,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 									linkData={looseLinkData}
 									isParameter={isParameterLink}
 									key="component-panel"
-								></ComponentsPanel>
+								/>
 							</div>
 						)}
-						{/**Node Action Panel(left-click)*/}
+						{/* Node Action Panel(left-click) */}
 						{contextMenuShown && (
 							<div
 								id='context-menu'
@@ -1097,7 +1146,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 									app={app}
 									engine={xircuitsApp.getDiagramEngine()}
 									nodePosition={nodePosition}
-								></CanvasContextMenu>
+								/>
 							</div>
 						)}
 					</XircuitsCanvasWidget>

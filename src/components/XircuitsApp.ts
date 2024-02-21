@@ -9,6 +9,7 @@ import { ParameterLinkModel, TriangleLinkModel } from './link/CustomLinkModel';
 import { ParameterLinkFactory, TriangleLinkFactory } from './link/CustomLinkFactory';
 import { PointModel } from '@projectstorm/react-diagrams';
 import { Point } from '@projectstorm/geometry';
+import { BaseComponentLibrary } from '../tray_library/BaseComponentLib';
 
 export class XircuitsApplication {
 
@@ -26,17 +27,13 @@ export class XircuitsApplication {
                 this.diagramEngine.getActionEventBus().registerAction(new ZoomCanvasAction({ inverseZoom: true }))
                 this.diagramEngine.getActionEventBus().registerAction(new CustomActionEvent({ app }));
                 this.diagramEngine.getStateMachine().pushState(new CustomDiagramState());
-
-                let startNode = new CustomNodeModel({ name: 'Start', color: 'rgb(255,102,102)', extras: { "type": "Start" } });
-                startNode.addOutPortEnhance({label: '▶', name: 'out-0'});
+                
+                let startNode = BaseComponentLibrary('Start')
                 startNode.setPosition(100, 100);
+                let finishNode = BaseComponentLibrary('Finish')
+                finishNode.setPosition(700, 100);
 
-                let finishedNode = new CustomNodeModel({ name: 'Finish', color: 'rgb(255,102,102)', extras: { "type": "Finish" } });
-                finishedNode.addInPortEnhance({label: '▶', name: 'in-0'});
-                finishedNode.addInPortEnhance({label: 'outputs', name: 'parameter-dynalist-outputs', varName: 'outputs', dataType: 'dynalist'});
-                finishedNode.setPosition(700, 100);
-
-                this.activeModel.addAll(startNode, finishedNode);
+                this.activeModel.addAll(startNode, finishNode);
                 this.diagramEngine.setModel(this.activeModel);
         }
 

@@ -319,6 +319,14 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     });
 
+    // Add command signal to triggerLoadingAnimation
+    app.commands.addCommand(commandIDs.triggerLoadingAnimation, {
+      execute: args => {
+        console.log("loading animation triggered!");
+        widgetFactory.triggerLoadingAnimationSignal.emit(args);
+      }
+    });
+
     // Add command signal to reloadAllNodes
     app.commands.addCommand(commandIDs.reloadAllNodes, {
       execute: args => {
