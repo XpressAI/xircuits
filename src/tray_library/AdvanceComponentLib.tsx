@@ -8,9 +8,7 @@ interface AdvancedComponentLibraryProps {
 export async function fetchNodeByName(name?: string) {
     let componentList: string[] = [];
 
-    // get the component list 
-    const response_1 = await ComponentList();
-    componentList = response_1;
+    componentList = await ComponentList();
 
     let component_task = componentList.map(x => x["task"]);
     let drop_node = component_task.indexOf(name);

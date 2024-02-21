@@ -82,12 +82,23 @@ async function fetchComponent(componentList) {
     return displayHeaderList;
 }
 
+async function fetchLibraryConfig() {
+    try {
+        const response = await requestAPI<any>('library/get_config');
+        return response.libraries;
+    } catch (error) {
+        console.error('Failed to fetch remote libraries:', error);
+        return [];
+    }
+}
+
 export default function Sidebar(props: SidebarProps) {
     
     const app = props.app
 
     const [componentList, setComponentList] = React.useState([]);
     const [category, setCategory] = React.useState([]);
+    const [remoteLibList, setRemoteLibList] = React.useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [runOnce, setRunOnce] = useState(false);
 
@@ -124,6 +135,10 @@ export default function Sidebar(props: SidebarProps) {
 
         setComponentList(component_list);
         setCategory(component_library_name);
+
+        const libraryConfig = await fetchLibraryConfig();
+        const remoteLibraries = libraryConfig.filter(library => library.status === "remote");
+        setRemoteLibList(remoteLibraries);
     }
 
     useEffect(() => {
@@ -186,7 +201,7 @@ export default function Sidebar(props: SidebarProps) {
         return categories.map((val, i) => (
             <AccordionItem key={`category-${i}`}>
                 <AccordionItemHeading>
-                    <AccordionItemButton onContextMenu={(e) => handleRightClick(e, val["task"])}>{val["task"]}</AccordionItemButton>
+                    <AccordionItemButton onContextMenu={(event) => handleRightClick(event, val["task"], 'installed')}>{val["task"]}</AccordionItemButton>
                 </AccordionItemHeading>
                 <AccordionItemPanel>
                     {mapComponents(components.filter(component => component["category"].toString().toUpperCase() === val["task"].toString()), "")}
@@ -194,22 +209,36 @@ export default function Sidebar(props: SidebarProps) {
             </AccordionItem>
         ));
     }
+
+    const mapRemoteLibraries = () => {
+        return remoteLibList.map((lib, i) => (
+          <AccordionItem key={`remote-lib-${i}`}>
+            <AccordionItemHeading>
+            <AccordionItemButton 
+                className="accordion__button accordion__button--remote"
+                onContextMenu={(event) => handleRightClick(event, lib.library_id, 'remote')}>{lib.library_id}</AccordionItemButton>
+            </AccordionItemHeading>
+          </AccordionItem>
+        ));
+      };
     
     const [contextMenuState, setContextMenuState] = useState({
         visible: false,
         x: 0,
         y: 0,
-        val: null
+        val: null,
+        status: 'installed'
     });
 
-    const handleRightClick = (e, val) => {
+    const handleRightClick = (e, val, status) => {
         e.preventDefault();
         const rect = e.target.getBoundingClientRect();
         setContextMenuState({
             visible: true,
             x: rect.right,
             y: rect.top,
-            val: val
+            val: val,
+            status: status
         });
     };
 
@@ -229,9 +258,16 @@ export default function Sidebar(props: SidebarProps) {
                         </div>
 
                         {searchTerm === "" ? (
-                            <Accordion allowZeroExpanded>
+                        <>
+                            <Accordion allowMultipleExpanded={true} allowZeroExpanded={true}>
+                                
                                 {mapCategories(category, componentList)}
                             </Accordion>
+                            <div style={{ height: '10px' }} />
+                            <Accordion>
+                                {mapRemoteLibraries()}
+                            </Accordion>
+                        </>
                         ) : (
                             mapComponents(componentList, searchTerm)
                         )}
@@ -244,6 +280,7 @@ export default function Sidebar(props: SidebarProps) {
                 y={contextMenuState.y}
                 visible={contextMenuState.visible}
                 val={contextMenuState.val}
+                status={contextMenuState.status}
                 onClose={closeContextMenu}
             />
         </Body>

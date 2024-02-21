@@ -6,11 +6,12 @@ import { startRunOutputStr } from '../components/runner/RunOutput';
 import '../../style/ContextMenu.css';
 
 export interface TrayContextMenuProps {
-    app: any; // Specify the correct type
+    app: any;
     x: number;
     y: number;
     visible: boolean;
-    val: any; // Type this appropriately
+    val: any;
+    status: string;
     onClose: () => void;
 }
 
@@ -27,7 +28,7 @@ async function requestLibrary(libraryName, endpoint) {
     }
 }
 
-const TrayContextMenu = ({ app, x, y, visible, val, onClose }: TrayContextMenuProps) => {
+const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayContextMenuProps) => {
     // Ref for the context menu
     const trayContextMenuRef = useRef(null);
 
@@ -50,6 +51,7 @@ const TrayContextMenu = ({ app, x, y, visible, val, onClose }: TrayContextMenuPr
         const userResponse = confirm("Do you want to proceed with " + val + " library installation?");
         if (userResponse) {
             try {
+                await requestLibrary(val, "library/get_directory");
                 const response = await requestLibrary(val, "library/get_directory");
                 if (response['path']) {
                     let code = startRunOutputStr()
@@ -110,10 +112,16 @@ const TrayContextMenu = ({ app, x, y, visible, val, onClose }: TrayContextMenuPr
 
     return ReactDOM.createPortal(
         <div className="context-menu" ref={trayContextMenuRef} style={{ position: 'absolute', left: `${x+5}px`, top: `${y}px`, zIndex: 1000 }}>
-            <div className="context-menu-option" onClick={() => { handleInstall(val); onClose(); }}>Install</div>
-            <div className="context-menu-option" onClick={() => { handleShowInFileBrowser(val); onClose(); }}>Show in File Explorer</div>
-            <div className="context-menu-option" onClick={() => { handleShowReadme(val); onClose(); }}>See Readme</div>
-            <div className="context-menu-option" onClick={() => { handleShowExample(val); onClose(); }}>Show Example</div>
+            {status === 'remote' ? (
+                <div className="context-menu-option" onClick={() => { handleInstall(val); onClose(); }}>Install                     </div>
+            ) : (
+                <>
+                    <div className="context-menu-option" onClick={() => { handleInstall(val); onClose(); }}>Install</div>
+                    <div className="context-menu-option" onClick={() => { handleShowInFileBrowser(val); onClose(); }}>Show in File Explorer</div>
+                    <div className="context-menu-option" onClick={() => { handleShowReadme(val); onClose(); }}>See Readme</div>
+                    <div className="context-menu-option" onClick={() => { handleShowExample(val); onClose(); }}>Show Example</div>
+                </>
+            )}
         </div>,
         document.body
     );

@@ -91,10 +91,9 @@ class ReloadComponentLibraryConfigHandler(APIHandler):
 
 class GetComponentLibraryConfigHandler(APIHandler):
     @tornado.web.authenticated
-    def post(self):
+    def get(self):
         try:
-            library_data = get_component_library_config()
-            response = {"library_config": library_data}
+            response = get_component_library_config()
         except Exception as e:
             response = {"message": f"Something went wrong: {str(e)}"}
 
