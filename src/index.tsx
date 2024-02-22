@@ -175,7 +175,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
             factory: FACTORY
           }
         );
-        await newWidget.content.renderPromise;
+        await Promise.all([newWidget.context.ready, newWidget.content.renderPromise]);
         await app.commands.execute(commandIDs.saveXircuit, {
             path: model.path
         });
