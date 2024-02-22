@@ -11,25 +11,12 @@ export interface TrayContextMenuProps {
     x: number;
     y: number;
     visible: boolean;
-    val: any;
+    libraryName: string;
     status: string;
     onClose: () => void;
 }
 
-async function requestLibrary(libraryName, endpoint) {
-    const data = { libraryName };
-  
-    try {
-      return await requestAPI(endpoint, {
-        body: JSON.stringify(data),
-        method: 'POST',
-      });
-    } catch (reason) {
-      console.error(`Error on POST /${endpoint}`, data, reason);
-    }
-}
-
-const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayContextMenuProps) => {
+const TrayContextMenu = ({ app, x, y, visible, libraryName, status, onClose }: TrayContextMenuProps) => {
     const trayContextMenuRef = useRef(null);
     const [validOptions, setValidOptions] = useState({
         showInFileBrowser: false,
@@ -49,11 +36,11 @@ const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayConte
 
         const validateOptions = async () => {
             try {
-                const libraryConfig = await fetchLibraryConfig(val);
+                const libraryConfig = await fetchLibraryConfig(libraryName);
                 setValidOptions({
                     showInFileBrowser: !!libraryConfig.local_path,
-                    showReadme: await buildLocalFilePath(val, 'readme') !== null,
-                    showExample: await buildLocalFilePath(val, 'default_example_path') !== null,
+                    showReadme: await buildLocalFilePath(libraryName, 'readme') !== null,
+                    showExample: await buildLocalFilePath(libraryName, 'default_example_path') !== null,
                     showPageInNewTab: !!libraryConfig.repository
                 });
             } catch (error) {
@@ -64,7 +51,7 @@ const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayConte
         if (visible) {
             validateOptions();
         }
-    }, [val, visible]);
+    }, [libraryName, visible]);
 
     const handleClickOutside = (event) => {
         if (event.target.className !== "context-menu-option") {
@@ -80,29 +67,39 @@ const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayConte
     }, []);
 
     // Context menu action handlers
-    const handleInstall = async (val) => {
-        const userResponse = confirm("Do you want to proceed with " + val + " library installation?");
+    const handleInstall = async (libraryName) => {
+        const userResponse = confirm(`Do you want to proceed with ${libraryName} library installation?`);
         if (userResponse) {
             try {
-                await requestLibrary(val, "library/fetch");
-                const response = await requestLibrary(val, "library/get_directory");
-                if (response['path']) {
-                    let code = startRunOutputStr()
-                    code += "!pip install -r " + response['path'] + "/requirements.txt"
+                // clone the repository
+                const response: any = await requestAPI("library/fetch", {
+                    body: JSON.stringify({libraryName}),
+                    method: 'POST',
+                  });
+
+                if (response.status !== 'OK') {
+                    throw new Error(response.message || 'Failed to fetch the library.');
+                }
+
+                const libraryConfig = await fetchLibraryConfig(libraryName);
+                if (libraryConfig && libraryConfig.local_path) {
+                    let code = startRunOutputStr();
+                    code += `!pip install -r ${libraryConfig.local_path}/requirements.txt`;
                     app.commands.execute(commandIDs.executeToOutputPanel, { code });
-                    console.log(`${val} library sucessfully installed.`);
-                } else if (response['message']) {
-                    alert(response['message']);
+                    console.log(`${libraryName} library successfully installed.`);
+                } else {
+                    alert(`Library configuration not found for: ${libraryName}`);
                 }
             } catch (error) {
-                alert(`Failed to install ${val}: ` + error);
+                alert(`Failed to install ${libraryName}. Please check the console for more details.`);
+                console.error(`Failed to install ${libraryName}:`, error);
             }
-          }
-    }
-    
-    const handleShowInFileBrowser = async (val) => {
+        }
+    };
+
+    const handleShowInFileBrowser = async (libraryName) => {
         try {
-            const libraryConfig = await fetchLibraryConfig(val);
+            const libraryConfig = await fetchLibraryConfig(libraryName);
     
             if (libraryConfig && libraryConfig.local_path) {
                 await app.commands.execute('filebrowser:go-to-path', { path: libraryConfig.local_path });
@@ -112,9 +109,9 @@ const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayConte
         }
     };
 
-    const handleShowReadme = async (val) => {
+    const handleShowReadme = async (libraryName) => {
     try {
-        const readmePath = await buildLocalFilePath(val, 'readme');
+        const readmePath = await buildLocalFilePath(libraryName, 'readme');
         if (readmePath) {
             await app.commands.execute('markdownviewer:open', { path: readmePath, options: { mode: 'split-right' } });
         }
@@ -123,9 +120,9 @@ const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayConte
         }
     };
 
-    const handleShowExample = async (val) => {
+    const handleShowExample = async (libraryName) => {
         try {
-            const examplePath = await buildLocalFilePath(val, 'default_example_path');
+            const examplePath = await buildLocalFilePath(libraryName, 'default_example_path');
             if (examplePath) {
                 await app.commands.execute('docmanager:open', { path: examplePath });
             }
@@ -134,9 +131,9 @@ const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayConte
         }
     };
     
-    const handleShowPageInNewTab = async (libName) => {
+    const handleShowPageInNewTab = async (libraryName) => {
         try {
-            const libraryConfig = await fetchLibraryConfig(libName);
+            const libraryConfig = await fetchLibraryConfig(libraryName);
     
             if (libraryConfig && libraryConfig.repository) {
                 window.open(libraryConfig.repository, '_blank');
@@ -154,24 +151,24 @@ const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayConte
         <div className="context-menu" ref={trayContextMenuRef} style={{ position: 'absolute', left: `${x+5}px`, top: `${y}px`, zIndex: 1000 }}>
             {status === 'remote' ? (
                 <>
-                    <div className="context-menu-option" onClick={() => { handleInstall(val); onClose(); }}>Install</div>
+                    <div className="context-menu-option" onClick={() => { handleInstall(libraryName); onClose(); }}>Install</div>
                     {validOptions.showPageInNewTab && (
-                        <div className="context-menu-option" onClick={() => { handleShowPageInNewTab(val); onClose(); }}>Open Repository</div>
+                        <div className="context-menu-option" onClick={() => { handleShowPageInNewTab(libraryName); onClose(); }}>Open Repository</div>
                     )}
                 </>
             ) : (
                 <>
                     {validOptions.showInFileBrowser && (
-                        <div className="context-menu-option" onClick={() => { handleShowInFileBrowser(val); onClose(); }}>Show in File Explorer</div>
+                        <div className="context-menu-option" onClick={() => { handleShowInFileBrowser(libraryName); onClose(); }}>Show in File Explorer</div>
                     )}
                     {validOptions.showReadme && (
-                        <div className="context-menu-option" onClick={() => { handleShowReadme(val); onClose(); }}>See Readme</div>
+                        <div className="context-menu-option" onClick={() => { handleShowReadme(libraryName); onClose(); }}>See Readme</div>
                     )}
                     {validOptions.showExample && (
-                        <div className="context-menu-option" onClick={() => { handleShowExample(val); onClose(); }}>Show Example</div>
+                        <div className="context-menu-option" onClick={() => { handleShowExample(libraryName); onClose(); }}>Show Example</div>
                     )}
                     {validOptions.showPageInNewTab && (
-                        <div className="context-menu-option" onClick={() => { handleShowPageInNewTab(val); onClose(); }}>Open Repository</div>
+                        <div className="context-menu-option" onClick={() => { handleShowPageInNewTab(libraryName); onClose(); }}>Open Repository</div>
                     )}
                 </>
             )}

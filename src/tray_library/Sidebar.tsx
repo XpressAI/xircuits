@@ -183,13 +183,13 @@ export default function Sidebar(props: SidebarProps) {
 
     // Function to map categories
     const mapCategories = (categories, components) => {
-        return categories.map((val, i) => (
+        return categories.map((libraryName, i) => (
             <AccordionItem key={`category-${i}`}>
                 <AccordionItemHeading>
-                    <AccordionItemButton onContextMenu={(event) => handleRightClick(event, val["task"], 'installed')}>{val["task"]}</AccordionItemButton>
+                    <AccordionItemButton onContextMenu={(event) => handleRightClick(event, libraryName["task"], 'installed')}>{libraryName["task"]}</AccordionItemButton>
                 </AccordionItemHeading>
                 <AccordionItemPanel>
-                    {mapComponents(components.filter(component => component["category"].toString().toUpperCase() === val["task"].toString()), "")}
+                    {mapComponents(components.filter(component => component["category"].toString().toUpperCase() === libraryName["task"].toString()), "")}
                 </AccordionItemPanel>
             </AccordionItem>
         ));
@@ -213,15 +213,15 @@ export default function Sidebar(props: SidebarProps) {
         visible: false,
         x: 0,
         y: 0,
-        val: null,
+        libraryName: null,
         status: 'installed'
     });
 
-    const handleRightClick = (e, val, status) => {
+    const handleRightClick = (e, libraryName, status) => {
         e.preventDefault();
 
         // Prevent context menu from appearing for GENERAL component library
-        if (val === 'GENERAL') {
+        if (libraryName === 'GENERAL') {
             return;
         }
         
@@ -230,7 +230,7 @@ export default function Sidebar(props: SidebarProps) {
             visible: true,
             x: rect.right,
             y: rect.top,
-            val: val,
+            libraryName: libraryName,
             status: status
         });
     };
@@ -272,7 +272,7 @@ export default function Sidebar(props: SidebarProps) {
                 x={contextMenuState.x}
                 y={contextMenuState.y}
                 visible={contextMenuState.visible}
-                val={contextMenuState.val}
+                libraryName={contextMenuState.libraryName}
                 status={contextMenuState.status}
                 onClose={closeContextMenu}
             />

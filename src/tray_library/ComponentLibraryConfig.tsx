@@ -6,8 +6,13 @@ let libraryConfigCache = {
 
 export async function fetchComponentLibraryConfig() {
     try {
-        const response = await requestAPI < any > ('library/get_config');
-        return response.libraries;
+        const response = await requestAPI<any>('library/get_config');
+        if (response.status === 'OK' && response.config) {
+            return response.config.libraries;
+        } else {
+            console.error('Failed to fetch remote libraries due to unexpected response:', response);
+            return [];
+        }
     } catch (error) {
         console.error('Failed to fetch remote libraries:', error);
         return [];
@@ -48,13 +53,13 @@ export const fetchLibraryConfig = async (libName) => {
         const libraryConfig = config.find(library => library.library_id === libName.toUpperCase());
 
         if (!libraryConfig) {
-            console.log(`Library not found for: ${libName}`);
+            // console.log(`Library not found for: ${libName}`);
             return null;
         }
 
         return libraryConfig;
     } catch (error) {
-        console.log(`Failed to fetch library configuration: ${error}`);
+        // console.log(`Failed to fetch library configuration: ${error}`);
         return null;
     }
 };
@@ -65,7 +70,7 @@ export const buildLocalFilePath = async (libName, fileKey) => {
     if (libraryConfig && libraryConfig[fileKey]) {
         return `${libraryConfig.local_path}/${libraryConfig[fileKey]}`;
     } else if (libraryConfig) {
-        console.log(`File not found for: ${libName} (Key: ${fileKey})`);
+        // console.log(`File not found for: ${libName} (Key: ${fileKey})`);
     }
 
     return null;
