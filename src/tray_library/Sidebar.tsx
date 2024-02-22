@@ -274,6 +274,7 @@ export default function Sidebar(props: SidebarProps) {
                 visible={contextMenuState.visible}
                 libraryName={contextMenuState.libraryName}
                 status={contextMenuState.status}
+                refreshTrigger={handleRefreshOnClick}
                 onClose={closeContextMenu}
             />
         </Body>

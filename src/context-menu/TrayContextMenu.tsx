@@ -13,10 +13,11 @@ export interface TrayContextMenuProps {
     visible: boolean;
     libraryName: string;
     status: string;
+    refreshTrigger: () => void;
     onClose: () => void;
 }
 
-const TrayContextMenu = ({ app, x, y, visible, libraryName, status, onClose }: TrayContextMenuProps) => {
+const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigger, onClose }: TrayContextMenuProps) => {
     const trayContextMenuRef = useRef(null);
     const [validOptions, setValidOptions] = useState({
         showInFileBrowser: false,
@@ -67,7 +68,7 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, onClose }: T
     }, []);
 
     // Context menu action handlers
-    const handleInstall = async (libraryName) => {
+    const handleInstall = async (libraryName, refreshTrigger) => {
         const userResponse = confirm(`Do you want to proceed with ${libraryName} library installation?`);
         if (userResponse) {
             try {
@@ -90,6 +91,7 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, onClose }: T
                 } else {
                     alert(`Library configuration not found for: ${libraryName}`);
                 }
+                refreshTrigger();
             } catch (error) {
                 alert(`Failed to install ${libraryName}. Please check the console for more details.`);
                 console.error(`Failed to install ${libraryName}:`, error);
@@ -151,7 +153,7 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, onClose }: T
         <div className="context-menu" ref={trayContextMenuRef} style={{ position: 'absolute', left: `${x+5}px`, top: `${y}px`, zIndex: 1000 }}>
             {status === 'remote' ? (
                 <>
-                    <div className="context-menu-option" onClick={() => { handleInstall(libraryName); onClose(); }}>Install</div>
+                    <div className="context-menu-option" onClick={() => { handleInstall(libraryName, refreshTrigger); onClose(); }}>Install</div>
                     {validOptions.showPageInNewTab && (
                         <div className="context-menu-option" onClick={() => { handleShowPageInNewTab(libraryName); onClose(); }}>Open Repository</div>
                     )}
