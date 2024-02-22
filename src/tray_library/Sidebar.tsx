@@ -4,7 +4,6 @@ import styled from '@emotion/styled';
 import { TrayItemWidget } from './TrayItemWidget';
 import { TrayWidget } from './TrayWidget';
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import { requestAPI } from '../server/handler';
 
 import {
     Accordion,
@@ -18,6 +17,7 @@ import { XircuitsFactory } from '../XircuitsFactory';
 import TrayContextMenu from '../context-menu/TrayContextMenu';
 
 import '../../style/ContextMenu.css'
+import { ComponentLibraryConfig, refreshComponentLibraryConfigCache } from './ComponentLibraryConfig';
 
 export const Body = styled.div`
   flex-grow: 1;
@@ -82,16 +82,6 @@ async function fetchComponent(componentList) {
     return displayHeaderList;
 }
 
-async function fetchLibraryConfig() {
-    try {
-        const response = await requestAPI<any>('library/get_config');
-        return response.libraries;
-    } catch (error) {
-        console.error('Failed to fetch remote libraries:', error);
-        return [];
-    }
-}
-
 export default function Sidebar(props: SidebarProps) {
     
     const app = props.app
@@ -114,12 +104,7 @@ export default function Sidebar(props: SidebarProps) {
 
     const fetchComponentList = async () => {
 
-        try {
-            // Trigger the load library config on refresh
-            await requestAPI('library/reload_config', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
-        } catch (error){
-            console.error('Failed to reload config: ', error);
-        }
+        await refreshComponentLibraryConfigCache();
 
         // get the component list 
         const component_list = await ComponentList();
@@ -136,7 +121,7 @@ export default function Sidebar(props: SidebarProps) {
         setComponentList(component_list);
         setCategory(component_library_name);
 
-        const libraryConfig = await fetchLibraryConfig();
+        const libraryConfig = await ComponentLibraryConfig();
         const remoteLibraries = libraryConfig.filter(library => library.status === "remote");
         setRemoteLibList(remoteLibraries);
     }

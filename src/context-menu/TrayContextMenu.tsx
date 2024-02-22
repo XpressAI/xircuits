@@ -4,6 +4,7 @@ import { requestAPI } from '../server/handler';
 import { commandIDs } from '../components/XircuitsBodyWidget';
 import { startRunOutputStr } from '../components/runner/RunOutput';
 import '../../style/ContextMenu.css';
+import { buildLocalFilePath, fetchLibraryConfig } from '../tray_library/ComponentLibraryConfig';
 
 export interface TrayContextMenuProps {
     app: any;
@@ -46,6 +47,7 @@ const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayConte
             document.removeEventListener('click', handleClickOutside, true);
         };
     }, []);
+
     // Context menu action handlers
     const handleInstall = async (val) => {
         const userResponse = confirm("Do you want to proceed with " + val + " library installation?");
@@ -69,40 +71,47 @@ const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayConte
     
     const handleShowInFileBrowser = async (val) => {
         try {
-            const response = await requestLibrary(val, "library/get_directory");
-            if (response['path']) {
-                await app.commands.execute('filebrowser:go-to-path', { path: response['path'] });
-            } else if (response['message']) {
-                alert(response['message']);
+            const libraryConfig = await fetchLibraryConfig(val);
+    
+            if (libraryConfig && libraryConfig.local_path) {
+                await app.commands.execute('filebrowser:go-to-path', { path: libraryConfig.local_path });
             }
         } catch (error) {
-            alert('Failed to Show in File Browser: ' + error);
+            alert(`Failed to Show in File Browser: ${error}`);
         }
     };
-    
+
     const handleShowReadme = async (val) => {
-        try {
-            const response = await requestLibrary(val, "library/get_readme");
-            if (response['path']) {
-                await app.commands.execute('markdownviewer:open', { path: response['path'], options: { mode: 'split-right'} });
-            } else if (response['message']) {
-                alert(response['message']);
-            }
-        } catch (error) {
-            alert('Failed to Show Readme: ' + error);
+    try {
+        const readmePath = await buildLocalFilePath(val, 'readme');
+        if (readmePath) {
+            await app.commands.execute('markdownviewer:open', { path: readmePath, options: { mode: 'split-right' } });
+        }
+    } catch (error) {
+        alert('Failed to Show Readme: ' + error);
         }
     };
-    
+
     const handleShowExample = async (val) => {
         try {
-            const response = await requestLibrary(val, "library/get_example");
-            if (response['path']) {
-                await app.commands.execute('docmanager:open', { path: response['path'] });
-            } else if (response['message']) {
-                alert(response['message']);
+            const examplePath = await buildLocalFilePath(val, 'default_example_path');
+            if (examplePath) {
+                await app.commands.execute('docmanager:open', { path: examplePath });
             }
         } catch (error) {
             alert('Failed to Show Example: ' + error);
+        }
+    };
+    
+    const handleShowPageInNewTab = async (libName) => {
+        try {
+            const libraryConfig = await fetchLibraryConfig(libName);
+    
+            if (libraryConfig && libraryConfig.repository) {
+                window.open(libraryConfig.repository, '_blank');
+            }
+        } catch (error) {
+            alert(`Failed to Open Page: ${error}`);
         }
     };
 
@@ -113,12 +122,16 @@ const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayConte
     return ReactDOM.createPortal(
         <div className="context-menu" ref={trayContextMenuRef} style={{ position: 'absolute', left: `${x+5}px`, top: `${y}px`, zIndex: 1000 }}>
             {status === 'remote' ? (
+                <>
                 <div className="context-menu-option" onClick={() => { handleInstall(val); onClose(); }}>Install</div>
+                <div className="context-menu-option" onClick={() => { handleShowPageInNewTab(val); onClose(); }}>Open Repository</div>
+                </>
             ) : (
                 <>
                     <div className="context-menu-option" onClick={() => { handleShowInFileBrowser(val); onClose(); }}>Show in File Explorer</div>
                     <div className="context-menu-option" onClick={() => { handleShowReadme(val); onClose(); }}>See Readme</div>
                     <div className="context-menu-option" onClick={() => { handleShowExample(val); onClose(); }}>Show Example</div>
+                    <div className="context-menu-option" onClick={() => { handleShowPageInNewTab(val); onClose(); }}>Open Repository</div>
                 </>
             )}
         </div>,
