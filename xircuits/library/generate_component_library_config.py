@@ -35,49 +35,38 @@ def read_file_lines_to_list(file_path):
     with open(file_path, 'r') as file:
         return [line.strip() for line in file.readlines()]
 
-def extract_library_info(lib_path, base_path, status="installed"):
-    relative_lib_path = os.path.join(base_path, os.path.relpath(lib_path, start=base_path))
-    toml_path = os.path.join(lib_path, 'pyproject.toml')
+def is_installed_component(directory_path):
+    # Check for an __init__.py file to determine if the directory is an installed component
+    return os.path.isfile(os.path.join(directory_path, '__init__.py'))
 
-    if not os.path.exists(toml_path):
-        return None
+def extract_library_info(lib_path, base_path, status="remote"):
+    # If __init__.py exists, confirm the component is installed
+    if is_installed_component(lib_path):
+        status = "installed"
 
-    toml_data = parse_toml_file(toml_path)
-
-    # Check if TOML data was successfully parsed
-    if toml_data is None:
-        return None
-
-    # Remove 'xai_' or 'xai-' prefix and convert to uppercase
-    library_id = toml_data["project"]["name"].replace("xai_", "").replace("xai-", "").upper()
-
-    requirements_rel_path = toml_data["tool"]["xircuits"].get("requirements_path", None)
-    requirements_path = None
-    requirements = []
-
-    if requirements_rel_path is not None:
-        requirements_path = os.path.join(lib_path, requirements_rel_path)
-        if os.path.isfile(requirements_path):
-            requirements = read_file_lines_to_list(requirements_path)
-        else:
-            requirements_path = None  # Reset to None if the file does not exist
-
+    library_id = os.path.basename(lib_path).replace('xai_', '').replace('xai-', '').upper()
     lib_info = {
-        "name": toml_data["project"]["name"],
+        "name": os.path.basename(lib_path),
         "library_id": library_id,
-        "version": toml_data["project"].get("version", "N/A"),
-        "description": toml_data["project"].get("description", "No description available."),
-        "authors": toml_data["project"].get("authors", []),
-        "license": toml_data["project"].get("license", "N/A"),
-        "readme": toml_data["project"].get("readme", None),
-        "repository": toml_data["project"].get("repository", None),
-        "keywords": toml_data["project"].get("keywords", []),
-        "local_path": relative_lib_path,
-        "status": status,
-        "requirements_path": requirements_path,
-        "requirements": requirements,
-        "default_example_path": toml_data["tool"]["xircuits"].get("default_example_path", None),
+        "local_path": os.path.join(base_path, os.path.relpath(lib_path, start=base_path)),
+        "status": status
     }
+
+    toml_path = os.path.join(lib_path, 'pyproject.toml')
+    if os.path.exists(toml_path):
+        toml_data = parse_toml_file(toml_path)
+        if toml_data:
+            lib_info.update({
+                "version": toml_data["project"].get("version", "N/A"),
+                "description": toml_data["project"].get("description", "No description available."),
+                "authors": toml_data["project"].get("authors", []),
+                "license": toml_data["project"].get("license", "N/A"),
+                "readme": toml_data["project"].get("readme", None),
+                "repository": toml_data["project"].get("repository", None),
+                "keywords": toml_data["project"].get("keywords", []),
+                "requirements": toml_data["project"].get("dependencies", []),
+                "default_example_path": toml_data["tool"].get("xircuits", {}).get("default_example_path", None),
+            })
 
     return lib_info
 
