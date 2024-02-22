@@ -219,6 +219,12 @@ export default function Sidebar(props: SidebarProps) {
 
     const handleRightClick = (e, val, status) => {
         e.preventDefault();
+
+        // Prevent context menu from appearing for GENERAL component library
+        if (val === 'GENERAL') {
+            return;
+        }
+        
         const rect = e.target.getBoundingClientRect();
         setContextMenuState({
             visible: true,

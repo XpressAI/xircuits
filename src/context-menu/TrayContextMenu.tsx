@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { requestAPI } from '../server/handler';
 import { commandIDs } from '../components/XircuitsBodyWidget';
@@ -30,17 +30,48 @@ async function requestLibrary(libraryName, endpoint) {
 }
 
 const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayContextMenuProps) => {
-    // Ref for the context menu
     const trayContextMenuRef = useRef(null);
+    const [validOptions, setValidOptions] = useState({
+        showInFileBrowser: false,
+        showReadme: false,
+        showExample: false,
+        showPageInNewTab: false
+    });
 
-    // Function to check if a click is outside the context menu
+    useEffect(() => {
+        // Initialize all options as invalid
+        setValidOptions({
+            showInFileBrowser: false,
+            showReadme: false,
+            showExample: false,
+            showPageInNewTab: false
+        });
+
+        const validateOptions = async () => {
+            try {
+                const libraryConfig = await fetchLibraryConfig(val);
+                setValidOptions({
+                    showInFileBrowser: !!libraryConfig.local_path,
+                    showReadme: await buildLocalFilePath(val, 'readme') !== null,
+                    showExample: await buildLocalFilePath(val, 'default_example_path') !== null,
+                    showPageInNewTab: !!libraryConfig.repository
+                });
+            } catch (error) {
+                console.error('Error validating context menu options:', error);
+            }
+        };
+
+        if (visible) {
+            validateOptions();
+        }
+    }, [val, visible]);
+
     const handleClickOutside = (event) => {
         if (event.target.className !== "context-menu-option") {
             onClose();
         }
     };
 
-    // Effect for handling click outside
     useEffect(() => {
         document.addEventListener('click', handleClickOutside, true);
         return () => {
@@ -123,15 +154,25 @@ const TrayContextMenu = ({ app, x, y, visible, val, status, onClose }: TrayConte
         <div className="context-menu" ref={trayContextMenuRef} style={{ position: 'absolute', left: `${x+5}px`, top: `${y}px`, zIndex: 1000 }}>
             {status === 'remote' ? (
                 <>
-                <div className="context-menu-option" onClick={() => { handleInstall(val); onClose(); }}>Install</div>
-                <div className="context-menu-option" onClick={() => { handleShowPageInNewTab(val); onClose(); }}>Open Repository</div>
+                    <div className="context-menu-option" onClick={() => { handleInstall(val); onClose(); }}>Install</div>
+                    {validOptions.showPageInNewTab && (
+                        <div className="context-menu-option" onClick={() => { handleShowPageInNewTab(val); onClose(); }}>Open Repository</div>
+                    )}
                 </>
             ) : (
                 <>
-                    <div className="context-menu-option" onClick={() => { handleShowInFileBrowser(val); onClose(); }}>Show in File Explorer</div>
-                    <div className="context-menu-option" onClick={() => { handleShowReadme(val); onClose(); }}>See Readme</div>
-                    <div className="context-menu-option" onClick={() => { handleShowExample(val); onClose(); }}>Show Example</div>
-                    <div className="context-menu-option" onClick={() => { handleShowPageInNewTab(val); onClose(); }}>Open Repository</div>
+                    {validOptions.showInFileBrowser && (
+                        <div className="context-menu-option" onClick={() => { handleShowInFileBrowser(val); onClose(); }}>Show in File Explorer</div>
+                    )}
+                    {validOptions.showReadme && (
+                        <div className="context-menu-option" onClick={() => { handleShowReadme(val); onClose(); }}>See Readme</div>
+                    )}
+                    {validOptions.showExample && (
+                        <div className="context-menu-option" onClick={() => { handleShowExample(val); onClose(); }}>Show Example</div>
+                    )}
+                    {validOptions.showPageInNewTab && (
+                        <div className="context-menu-option" onClick={() => { handleShowPageInNewTab(val); onClose(); }}>Open Repository</div>
+                    )}
                 </>
             )}
         </div>,

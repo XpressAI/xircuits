@@ -48,13 +48,13 @@ export const fetchLibraryConfig = async (libName) => {
         const libraryConfig = config.find(library => library.library_id === libName.toUpperCase());
 
         if (!libraryConfig) {
-            alert(`Library not found for: ${libName}`);
+            console.log(`Library not found for: ${libName}`);
             return null;
         }
 
         return libraryConfig;
     } catch (error) {
-        alert(`Failed to fetch library configuration: ${error}`);
+        console.log(`Failed to fetch library configuration: ${error}`);
         return null;
     }
 };
@@ -65,7 +65,7 @@ export const buildLocalFilePath = async (libName, fileKey) => {
     if (libraryConfig && libraryConfig[fileKey]) {
         return `${libraryConfig.local_path}/${libraryConfig[fileKey]}`;
     } else if (libraryConfig) {
-        alert(`File not found for: ${libName} (Key: ${fileKey})`);
+        console.log(`File not found for: ${libName} (Key: ${fileKey})`);
     }
 
     return null;
