@@ -150,7 +150,7 @@ export default function Sidebar(props: SidebarProps) {
     }, [category, componentList]);
 
     function handleRefreshOnClick() {
-        refreshComponentListCache()
+        refreshComponentListCache();
         fetchComponentList();
     }
 
@@ -211,12 +211,14 @@ export default function Sidebar(props: SidebarProps) {
     }
 
     const mapRemoteLibraries = () => {
-        return remoteLibList.map((lib, i) => (
+        const sortedRemoteLibList = remoteLibList.sort((a, b) => a.library_id.localeCompare(b.library_id));
+    
+        return sortedRemoteLibList.map((lib, i) => (
             <AccordionItem key={`remote-lib-${i}`}>
                 <AccordionItemHeading>
-                    <AccordionItemButton className="accordion__button accordion__button--remote" onContextMenu={(event) => handleRightClick(event, lib.library_id, 'remote')}>
-                        {lib.library_id}
-                    </AccordionItemButton>
+                    <AccordionItemButton 
+                        className="accordion__button accordion__button--remote"
+                        onContextMenu={(event) => handleRightClick(event, lib.library_id, 'remote')}>{lib.library_id}</AccordionItemButton>
                 </AccordionItemHeading>
             </AccordionItem>
         ));
@@ -262,19 +264,10 @@ export default function Sidebar(props: SidebarProps) {
                                     {mapCategories(category, componentList)}
                                 </Accordion>
                                 
-                                <div style={{ height: '10px' }} />
-                                
-                                <Accordion allowZeroExpanded>
-                                    <AccordionItem>
-                                        <AccordionItemHeading>
-                                            <AccordionItemButton className="accordion__button accordion__button--remote">REMOTE</AccordionItemButton>
-                                        </AccordionItemHeading>
-                                        <AccordionItemPanel>
-                                            <Accordion allowZeroExpanded>
-                                                {mapRemoteLibraries()}
-                                            </Accordion>
-                                        </AccordionItemPanel>
-                                    </AccordionItem>
+                                <hr style={{ marginTop: '10px', marginBottom: '10px' }} />
+                                <h6 style={{ paddingLeft: '10px', margin: '0px', marginBottom: '8px' }}>AVAILABLE FOR INSTALLATION</h6>
+                                <Accordion>
+                                    {mapRemoteLibraries()}
                                 </Accordion>
                             </>
                         ) : (
