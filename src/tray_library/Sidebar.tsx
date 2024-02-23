@@ -4,7 +4,6 @@ import styled from '@emotion/styled';
 import { TrayItemWidget } from './TrayItemWidget';
 import { TrayWidget } from './TrayWidget';
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import { requestAPI } from '../server/handler';
 
 import {
     Accordion,
@@ -18,6 +17,7 @@ import { XircuitsFactory } from '../XircuitsFactory';
 import TrayContextMenu from '../context-menu/TrayContextMenu';
 
 import '../../style/ContextMenu.css'
+import { ComponentLibraryConfig, refreshComponentLibraryConfigCache } from './ComponentLibraryConfig';
 
 export const Body = styled.div`
   flex-grow: 1;
@@ -88,6 +88,7 @@ export default function Sidebar(props: SidebarProps) {
 
     const [componentList, setComponentList] = React.useState([]);
     const [category, setCategory] = React.useState([]);
+    const [remoteLibList, setRemoteLibList] = React.useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [runOnce, setRunOnce] = useState(false);
 
@@ -103,12 +104,7 @@ export default function Sidebar(props: SidebarProps) {
 
     const fetchComponentList = async () => {
 
-        try {
-            // Trigger the load library config on refresh
-            await requestAPI('library/reload_config', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
-        } catch (error){
-            console.error('Failed to reload config: ', error);
-        }
+        await refreshComponentLibraryConfigCache();
 
         // get the component list 
         const component_list = await ComponentList();
@@ -124,6 +120,10 @@ export default function Sidebar(props: SidebarProps) {
 
         setComponentList(component_list);
         setCategory(component_library_name);
+
+        const libraryConfig = await ComponentLibraryConfig();
+        const remoteLibraries = libraryConfig.filter(library => library.status === "remote");
+        setRemoteLibList(remoteLibraries);
     }
 
     useEffect(() => {
@@ -135,7 +135,7 @@ export default function Sidebar(props: SidebarProps) {
     }, [category, componentList]);
 
     function handleRefreshOnClick() {
-        refreshComponentListCache()
+        refreshComponentListCache();
         fetchComponentList();
     }
 
@@ -183,33 +183,55 @@ export default function Sidebar(props: SidebarProps) {
 
     // Function to map categories
     const mapCategories = (categories, components) => {
-        return categories.map((val, i) => (
+        return categories.map((libraryName, i) => (
             <AccordionItem key={`category-${i}`}>
                 <AccordionItemHeading>
-                    <AccordionItemButton onContextMenu={(e) => handleRightClick(e, val["task"])}>{val["task"]}</AccordionItemButton>
+                    <AccordionItemButton onContextMenu={(event) => handleRightClick(event, libraryName["task"], 'installed')}>{libraryName["task"]}</AccordionItemButton>
                 </AccordionItemHeading>
                 <AccordionItemPanel>
-                    {mapComponents(components.filter(component => component["category"].toString().toUpperCase() === val["task"].toString()), "")}
+                    {mapComponents(components.filter(component => component["category"].toString().toUpperCase() === libraryName["task"].toString()), "")}
                 </AccordionItemPanel>
             </AccordionItem>
         ));
     }
+
+    const mapRemoteLibraries = () => {
+        const sortedRemoteLibList = remoteLibList.sort((a, b) => a.library_id.localeCompare(b.library_id));
+    
+        return sortedRemoteLibList.map((lib, i) => (
+            <AccordionItem key={`remote-lib-${i}`}>
+                <AccordionItemHeading>
+                    <AccordionItemButton 
+                        className="accordion__button accordion__button--remote"
+                        onContextMenu={(event) => handleRightClick(event, lib.library_id, 'remote')}>{lib.library_id}</AccordionItemButton>
+                </AccordionItemHeading>
+            </AccordionItem>
+        ));
+    };
     
     const [contextMenuState, setContextMenuState] = useState({
         visible: false,
         x: 0,
         y: 0,
-        val: null
+        libraryName: null,
+        status: 'installed'
     });
 
-    const handleRightClick = (e, val) => {
+    const handleRightClick = (e, libraryName, status) => {
         e.preventDefault();
+
+        // Prevent context menu from appearing for GENERAL component library
+        if (libraryName === 'GENERAL') {
+            return;
+        }
+        
         const rect = e.target.getBoundingClientRect();
         setContextMenuState({
             visible: true,
             x: rect.right,
             y: rect.top,
-            val: val
+            libraryName: libraryName,
+            status: status
         });
     };
 
@@ -223,15 +245,22 @@ export default function Sidebar(props: SidebarProps) {
                 <TrayWidget>
                     <div>
                         <div className="search-input">
-                            <input type="text" name="" value={searchTerm} placeholder="SEARCH" className="search-input__text-input" style={{ width: "75%" }} onChange={handleOnChange} />
+                        <input type="text" name="" value={searchTerm} placeholder="SEARCH" className="search-input__text-input" style={{ width: "75%" }} onChange={handleOnChange} />
                             <a onClick={handleSearchOnClick} className="search-input__button"><i className="fa fa-search "></i></a>
                             <a onClick={handleRefreshOnClick} className="search-input__button"><i className="fa fa-refresh "></i></a>
-                        </div>
-
+                         </div>
                         {searchTerm === "" ? (
-                            <Accordion allowZeroExpanded>
-                                {mapCategories(category, componentList)}
-                            </Accordion>
+                            <>
+                                <Accordion allowMultipleExpanded={true} allowZeroExpanded={true}>
+                                    {mapCategories(category, componentList)}
+                                </Accordion>
+                                
+                                <hr style={{ marginTop: '10px', marginBottom: '10px' }} />
+                                <h6 style={{ paddingLeft: '10px', margin: '0px', marginBottom: '8px' }}>AVAILABLE FOR INSTALLATION</h6>
+                                <Accordion>
+                                    {mapRemoteLibraries()}
+                                </Accordion>
+                            </>
                         ) : (
                             mapComponents(componentList, searchTerm)
                         )}
@@ -243,7 +272,9 @@ export default function Sidebar(props: SidebarProps) {
                 x={contextMenuState.x}
                 y={contextMenuState.y}
                 visible={contextMenuState.visible}
-                val={contextMenuState.val}
+                libraryName={contextMenuState.libraryName}
+                status={contextMenuState.status}
+                refreshTrigger={handleRefreshOnClick}
                 onClose={closeContextMenu}
             />
         </Body>

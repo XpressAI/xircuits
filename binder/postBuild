@@ -1,3 +1,4 @@
+find xai_components/ -mindepth 1 -maxdepth 1 -type d ! -name 'xai_controlflow' ! -name 'xai_events' ! -name 'xai_template' ! -name 'xai_utils' -exec rm -rf {} +
 python -m pip install -U pip
 pip install -e .
 jupyter labextension develop . --overwrite

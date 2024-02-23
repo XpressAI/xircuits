@@ -53,6 +53,18 @@
     animation: fadein 0.45s ease-in;
   }
   
+  .accordion__button--remote {
+    background-color: #fff;
+    color: rgb(30, 69, 131);
+    outline: 2px solid rgb(30, 69, 131); 
+    outline-offset: -2px;
+  }
+  
+  .accordion__button--remote:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+    outline-color: rgba(30, 69, 131, 0.8);
+  }
+
   /* -------------------------------------------------- */
   /* ---------------- Animation part ------------------ */
   /* -------------------------------------------------- */

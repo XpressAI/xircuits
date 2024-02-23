@@ -19,6 +19,7 @@
   flex-grow: 1;
   width: 90%;
   height: 19px;
+  min-width: 100px;
   font-size:small;
   padding: 5px 7px;
   color: #fff;
