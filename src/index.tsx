@@ -26,6 +26,7 @@ import { addNodeActionCommands } from './commands/NodeActionCommands';
 import { Token } from '@lumino/coreutils';
 import { DockLayout } from '@lumino/widgets';
 import { xircuitsIcon, componentLibIcon, changeFavicon, xircuitsFaviconLink } from './ui-components/icons';
+import { createInitXircuits } from './helpers/CanvasInitializer';
 
 
 const FACTORY = 'Xircuits editor';
@@ -168,17 +169,24 @@ const xircuits: JupyterFrontEndPlugin<void> = {
             type: "file",
             ext: ".xircuits"
           });
-        const newWidget = await app.commands.execute(
+
+          // get init SRD json
+          const fileContent = createInitXircuits(app, app.shell);
+
+          // Use the document manager to write to the file
+          await app.serviceManager.contents.save(model.path, {
+            type: 'file',
+            format: 'text',
+            content: fileContent
+          });
+
+        await app.commands.execute(
           commandIDs.openDocManager,
           {
             path: model.path,
             factory: FACTORY
           }
         );
-        await Promise.all([newWidget.context.ready, newWidget.content.renderPromise]);
-        await app.commands.execute(commandIDs.saveXircuit, {
-            path: model.path
-        });
       }
     });
 
