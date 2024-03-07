@@ -73,3 +73,9 @@
 [submodule "xai_components/xai_pytorch"]
 	path = xai_components/xai_pytorch
 	url = https://github.com/XpressAI/xai-pytorch
+[submodule "xai_components/xai_agent"]
+	path = xai_components/xai_agent
+	url = https://github.com/XpressAI/xai-agent
+[submodule "xai_components/xai_converse"]
+	path = xai_components/xai_converse
+	url = https://github.com/XpressAI/xai-converse
