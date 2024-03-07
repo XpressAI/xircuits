@@ -1,4 +1,4 @@
-from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component
+from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component, dynalist
 
 @xai_component
 class BranchComponent(Component):
@@ -91,6 +91,7 @@ class GetVariableComponent(Component):
     def execute(self, ctx) -> None:
         self.value.set_fn(lambda: ctx[self.name.value])
 
+
 @xai_component
 class SetVariableComponent(Component):
     name: InArg[str]
@@ -134,7 +135,9 @@ class EvalBooleanExpression(Component):
 
         exec('self.out.value = ( ' + self.expression.value + ')', globals(), locals())
 
-        class IsNone(Component):
+
+@xai_component
+class IsNone(Component):
     a: InArg[any]
     
     out: OutArg[bool]
