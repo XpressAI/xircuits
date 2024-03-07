@@ -114,3 +114,22 @@ class DefineVariableComponent(Component):
     def execute(self, ctx) -> None:
         ctx[self.name.value] = self.value.value
         self.ref.set_fn(lambda: ctx[self.name.value])
+
+
+@xai_component
+class EvalBooleanExpression(Component):
+    expression: InCompArg[str]
+
+    args: InArg[dynalist]
+
+    out: OutArg[bool]
+
+    def execute(self, ctx) -> None:
+        args = []
+        for arg in self.args.value:
+            if hasattr(arg, 'value'):
+                args.append(arg.value)
+            else:
+                args.append(arg)
+
+        exec('self.out.value = ( ' + self.expression.value + ')', globals(), locals())
