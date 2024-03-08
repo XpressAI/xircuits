@@ -134,23 +134,3 @@ class EvalBooleanExpression(Component):
                 args.append(arg)
 
         exec('self.out.value = ( ' + self.expression.value + ')', globals(), locals())
-
-
-@xai_component
-class IsNone(Component):
-    a: InArg[any]
-    
-    out: OutArg[bool]
-
-    def execute(self, ctx) -> None:
-        self.out.value = self.a.value is None
-
-
-@xai_component
-class IsNotNone(Component):
-    a: InArg[any]
-    
-    out: OutArg[bool]
-
-    def execute(self, ctx) -> None:
-        self.out.value = self.a.value is not None

@@ -7,13 +7,41 @@ import time
 
 @xai_component
 class Print(Component):
+    """Prints a message to the console.
+    
+    ##### inPorts:
+    - msg: The message to be printed.
+    """
     msg: InArg[any]
     
     def execute(self, ctx) -> None:
         print(str(self.msg.value))
-        
+
+@xai_component
+class PrettyPrint(Component):
+    """Prints a message in a pretty format using pprint.
+    
+    ##### inPorts:
+    - msg: The message to be pretty printed.
+    """
+    msg: InArg[any]
+    
+    def execute(self, ctx) -> None:
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        print(pp.pformat(self.msg.value))
+
 @xai_component
 class ConcatString(Component):
+    """Concatenates two strings.
+    
+    ##### inPorts:
+    - a: The first string.
+    - b: The second string.
+    
+    ##### outPorts:
+    - out: The concatenated result of strings a and b.
+    """
     a: InArg[str]
     b: InArg[str]
     out: OutArg[str]
@@ -287,7 +315,40 @@ class ExecuteNotebook(Component):
                 with open(log_filepath, mode='w', encoding='utf-8') as f:
                     nbformat.write(nb, f)
 
+@xai_component
+class IsNone(Component):
+    """Checks if the input value is None.
+    
+    ##### inPorts:
+    - a: The value to be checked.
+    
+    ##### outPorts:
+    - out: True if 'a' is None, False otherwise.
+    """
+    a: InArg[any]
+    
+    out: OutArg[bool]
 
+    def execute(self, ctx) -> None:
+        self.out.value = self.a.value is None
+
+
+@xai_component
+class IsNotNone(Component):
+    """Checks if the input value is not None.
+    
+    ##### inPorts:
+    - a: The value to be checked.
+    
+    ##### outPorts:
+    - out: True if 'a' is not None, False otherwise.
+    """
+    a: InArg[any]
+    
+    out: OutArg[bool]
+
+    def execute(self, ctx) -> None:
+        self.out.value = self.a.value is not None
 
 @xai_component
 class SetDictValue(Component):
