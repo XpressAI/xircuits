@@ -278,8 +278,8 @@ class %s(Component):
         for node in component_nodes:
             has_next = False
             for port in (p for p in node.ports if p.direction == "out" and p.type == "triangle-link"):
-                has_next = True
                 if port.name == "out-0":
+                    has_next = True
                     assignment_target = "%s.next" % named_nodes[port.source.id]
                     assignment_source = named_nodes[port.target.id] if port.target.id in named_nodes else None
                     init_code.append(
