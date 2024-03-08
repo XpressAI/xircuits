@@ -41,13 +41,16 @@ $ xircuits install <component library name>
 ### 🤖 AI Agents
 | Name | Description | Version |
 | ---- | ----------- | ------- |
-| [GPT Agent Toolkit](https://github.com/XpressAI/xai-gpt-agent-toolkit) | Experiment with and create Collaborative Large Language Model-based automatons (Agents) in the style of BabyAGI and Auto-GPT. | 0.1.0 |
-| [Vecto](https://github.com/XpressAI/xai-vecto) | The power of vector embeddings in Xircuits. | 0.1.0 |
-| [OpenAI](https://github.com/XpressAI/xai-openai) | Easily integrate OpenAI's functionalities, such as retrieving models and generating text, into your Xircuits projects! | 0.1.0 |
-| [Anthropic](https://github.com/XpressAI/xai-anthropic) | Advanced components for anthropic principles. | - |
-| [HF Agent](https://github.com/XpressAI/xai-hfagent) | Advanced components for hugging face agents. | - |
-| [Actors](https://github.com/XpressAI/xai-actors) | Components for creating actor models. | - |
-| [VertexAI](https://github.com/XpressAI/xai-google-vertexai) | Components that interfaces with Google Vertex AI! | - |
+| [GPT Agent Toolkit](https://github.com/XpressAI/xai-gpt-agent-toolkit) | Experiment with CLM-based automatons in BabyAGI and Auto-GPT style. | 0.1.0 |
+| [Vecto](https://github.com/XpressAI/xai-vecto) | Leverage vector embeddings in Xircuits. | 0.1.0 |
+| [OpenAI](https://github.com/XpressAI/xai-openai) | Integrate OpenAI models and text generation into Xircuits. | 0.1.0 |
+| [Anthropic](https://github.com/XpressAI/xai-anthropic) | Advanced anthropic principle components. | - |
+| [HF Agent](https://github.com/XpressAI/xai-hfagent) | Components for Hugging Face agents. | - |
+| [Actors](https://github.com/XpressAI/xai-actors) | Create actor models in Xircuits. | - |
+| [VertexAI](https://github.com/XpressAI/xai-google-vertexai) | Interface with Google Vertex AI in Xircuits. | - |
+| [Xircuits Converse](https://github.com/XpressAI/xai-converse) | Integrate conversational AI with OpenAI API in Xircuits. | - |
+| [Xpress AI Agent Library](https://github.com/XpressAI/xai-agent) | Define agents and tools in Xircuits with OpenAI and Google Vertex support. | - |
+
 
 ### 💬 Communication
 | Name | Description | Version |
