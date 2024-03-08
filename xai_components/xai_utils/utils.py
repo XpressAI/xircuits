@@ -286,3 +286,36 @@ class ExecuteNotebook(Component):
             if log_filepath:
                 with open(log_filepath, mode='w', encoding='utf-8') as f:
                     nbformat.write(nb, f)
+
+
+
+@xai_component
+class SetDictValue(Component):
+    """
+    This component is used to set a value in a dict.
+    """
+    dict: InArg[dict]
+    key: InArg[str]
+    value: InArg[any]
+    out_dict: OutArg[dict]
+
+    def execute(self, ctx) -> None:
+        if self.dict.value is None:
+            self.out_dict.value = {}
+        else:
+            self.out_dict.value = self.dict.value
+            
+        self.out_dict.value[self.key.value] = self.value.value
+
+
+@xai_component
+class GetDictValue(Component):
+    """
+    This component is used to get a value from a dict.
+    """
+    dict: InArg[dict]
+    key: InArg[str]
+    value: OutArg[any]
+
+    def execute(self, ctx) -> None:
+        self.value.value = self.dict.value[self.key.value]
