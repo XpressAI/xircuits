@@ -1,4 +1,4 @@
-name: Mirror to Ebrains
+name: Mirror to Ebrains 2.0
 
 on:
   push:
@@ -13,19 +13,19 @@ jobs:
         with:
           source_repo: "the-virtual-brain/tvb-ext-xircuits"
           source_branch: "master"
-          destination_repo: "https://ghpusher:${{ secrets.EBRAINS_GITLAB_ACCESS_TOKEN }}@gitlab.ebrains.eu/tvb/tvb-ext-xircuits.git"
+          destination_repo: "https://ghpusher:${{ secrets.EBRAINS_2_0_SECRET }}@gitlab.ebrains.eu/ri/tech-hub/apps/tvb/tvb-ext-xircuits-mirror.git"
           destination_branch: "master"
       - name: syncdev
         uses: wei/git-sync@v3
         with:
           source_repo: "the-virtual-brain/tvb-ext-xircuits"
           source_branch: "dev"
-          destination_repo: "https://ghpusher:${{ secrets.EBRAINS_GITLAB_ACCESS_TOKEN }}@gitlab.ebrains.eu/tvb/tvb-ext-xircuits.git"
+          destination_repo: "https://ghpusher:${{ secrets.EBRAINS_2_0_SECRET }}@gitlab.ebrains.eu/ri/tech-hub/apps/tvb/tvb-ext-xircuits-mirror.git"
           destination_branch: "dev"
       - name: synctags
         uses: wei/git-sync@v3
         with:
           source_repo: "the-virtual-brain/tvb-ext-xircuits"
           source_branch: "refs/tags/*"
-          destination_repo: "https://ghpusher:${{ secrets.EBRAINS_GITLAB_ACCESS_TOKEN }}@gitlab.ebrains.eu/tvb/tvb-ext-xircuits.git"
+          destination_repo: "https://ghpusher:${{ secrets.EBRAINS_2_0_SECRET }}@gitlab.ebrains.eu/ri/tech-hub/apps/tvb/tvb-ext-xircuits-mirror.git"
           destination_branch: "refs/tags/*"
