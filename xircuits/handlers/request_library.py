@@ -5,7 +5,7 @@ import tornado
 import posixpath
 from http import HTTPStatus
 from jupyter_server.base.handlers import APIHandler
-from xircuits.library import install_library, fetch_library, build_library_file_path_from_config, save_component_library_config, get_component_library_config
+from xircuits.library import install_library, fetch_library, build_library_file_path_from_config, save_component_library_config, get_component_library_config, create_library
 
 class InstallLibraryRouteHandler(APIHandler):
     @tornado.web.authenticated
@@ -14,7 +14,7 @@ class InstallLibraryRouteHandler(APIHandler):
         library_name = input_data.get("libraryName")
 
         if not library_name:
-            self.set_status(HTTPStatus.BAD_REQUEST)  # Set appropriate HTTP status
+            self.set_status(HTTPStatus.BAD_REQUEST)
             self.finish(json.dumps({"error": "Library name is required"}))
             return
 
@@ -146,3 +146,26 @@ class GetComponentLibraryConfigHandler(APIHandler):
             print(f"An error occurred: {traceback.format_exc()}")
 
         self.finish(json.dumps(response))
+
+class CreateNewLibraryHandler(APIHandler):
+    @tornado.web.authenticated
+    def post(self):
+        input_data = self.get_json_body()
+        library_name = input_data.get("libraryName")
+
+        if not library_name:
+            self.set_status(HTTPStatus.BAD_REQUEST)
+            self.finish(json.dumps({"error": "Library name is required"}))
+            return
+
+        try:
+            message = create_library(library_name)
+            self.finish(json.dumps({"status": "OK", "message": message}))
+        except FileExistsError as e:
+            self.set_status(HTTPStatus.CONFLICT)
+            self.finish(json.dumps({"error": str(e)}))
+        except Exception as e:
+            self.set_status(HTTPStatus.INTERNAL_SERVER_ERROR)
+            message = f"An unexpected error occurred: {traceback.format_exc()}"
+            print(message)
+            self.finish(json.dumps({"error": message}))
