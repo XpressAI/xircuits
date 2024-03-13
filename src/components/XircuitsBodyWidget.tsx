@@ -18,12 +18,14 @@ import { formDialogWidget } 	from '../dialog/formDialogwidget';
 import { showFormDialog } 		from '../dialog/FormDialog';
 import { inputDialog } 			from '../dialog/LiteralInputDialog';
 import { getItsLiteralType } 	from '../dialog/input-dialogues/VariableInput';
+import { newLibraryInputDialog } from '../dialog/NewLibraryDialog';
 import { RunDialog } 			from '../dialog/RunDialog';
 import { requestAPI } 			from '../server/handler';
 import ComponentsPanel 			from '../context-menu/ComponentsPanel';
 import { CanvasContextMenu, countVisibleMenuOptions, getMenuOptionsVisibility } 	from '../context-menu/CanvasContextMenu';
 import { cancelDialog, GeneralComponentLibrary } 		from '../tray_library/GeneralComponentLib';
 import { AdvancedComponentLibrary, fetchNodeByName } 	from '../tray_library/AdvanceComponentLib';
+import { ComponentLibraryConfig } 						from '../tray_library/ComponentLibraryConfig';
 import { lowPowerMode, setLowPowerMode } from './state/powerModeState';
 import { startRunOutputStr } from './runner/RunOutput';
 import { doRemoteRun } from './runner/RemoteRun';
@@ -708,8 +710,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
+		
+		let libraries = await ComponentLibraryConfig();
+		let inputValue;
 
-		const dataToSend = { "libraryName": "new" };
+		let dialogOptions = newLibraryInputDialog({ title: 'Create New Library', oldValue: "", libraries: libraries});
+		let dialogResult = await showFormDialog(dialogOptions);
+		if (cancelDialog(dialogResult)) return;
+		
+		inputValue = dialogResult["value"][''];
+
+		const dataToSend = { "libraryName": inputValue };
 	
 		try {
 			const server_reply = await requestAPI<any>('library/new', {
