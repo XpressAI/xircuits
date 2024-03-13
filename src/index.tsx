@@ -349,6 +349,14 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     });
 
+
+    // Add command signal to trigger component library creation service.
+    app.commands.addCommand(commandIDs.createNewComponentLibrary, {
+      execute: args => {
+        widgetFactory.createNewComponentLibrarySignal.emit(args);
+      }
+    });
+
     // Add a launcher item if the launcher is available.
     if (launcher) {
       launcher.add({

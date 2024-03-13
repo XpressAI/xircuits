@@ -47,6 +47,7 @@ export interface BodyWidgetProps {
 	triggerLoadingAnimationSignal: Signal<XircuitsPanel, any>;
 	reloadAllNodesSignal: Signal<XircuitsPanel, any>;
 	toggleAllLinkAnimationSignal: Signal<XircuitsPanel, any>;
+	createNewComponentLibrarySignal: Signal<XircuitsPanel, any>;
 }
 
 export const Body = styled.div`
@@ -96,7 +97,8 @@ export const commandIDs = {
 	compileFile: 'Xircuit-editor:compile-file',
 	nextNode: 'Xircuit-editor:next-node',
 	outputMsg: 'Xircuit-log:logOutputMessage',
-	executeToOutputPanel: 'Xircuit-output-panel:execute'
+	executeToOutputPanel: 'Xircuit-output-panel:execute',
+	createNewComponentLibrary: 'Xircuit-editor:new-component-library'
 };
 
 
@@ -116,6 +118,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	triggerLoadingAnimationSignal,
 	reloadAllNodesSignal,
 	toggleAllLinkAnimationSignal,
+	createNewComponentLibrarySignal,
 }) => {
 	const xircuitLogger = new Log(app);
 
@@ -700,6 +703,28 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setLowPowerMode(!powerMode)
 	}
 
+	async function handleCreateNewComponentLibrarySignal(){
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
+		const dataToSend = { "libraryName": "new" };
+	
+		try {
+			const server_reply = await requestAPI<any>('library/new', {
+				body: JSON.stringify(dataToSend),
+				method: 'POST',
+			});
+			console.log(server_reply)
+			return server_reply;
+		} catch (reason) {
+			console.error(
+				`Error on POST library/new ${dataToSend}.\n${reason}`
+			);
+		}
+	}
+
 	async function getRunTypesFromConfig(request: string) {
 		const dataToSend = { "config_request": request };
 	
@@ -845,7 +870,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		[lockNodeSignal, handleLockClick],
 		[triggerLoadingAnimationSignal, triggerLoadingAnimation],
 		[reloadAllNodesSignal, handleReloadAll],
-		[toggleAllLinkAnimationSignal, handleToggleAllLinkAnimation]
+		[toggleAllLinkAnimationSignal, handleToggleAllLinkAnimation],
+		[createNewComponentLibrarySignal, handleCreateNewComponentLibrarySignal]
 	];
 
 	signalConnections.forEach(connectSignal);

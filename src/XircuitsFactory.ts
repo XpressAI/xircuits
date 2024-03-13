@@ -46,7 +46,7 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
   triggerLoadingAnimationSignal: Signal<this, any>;
   reloadAllNodesSignal: Signal<this, any>;
   toggleAllLinkAnimationSignal: Signal<this, any>;
-
+  createNewComponentLibrarySignal: Signal<this, any>;
   
   constructor(options: any) {
     super(options);
@@ -63,6 +63,7 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
     this.triggerLoadingAnimationSignal = new Signal<this, any>(this);
     this.reloadAllNodesSignal = new Signal<this, any>(this);
     this.toggleAllLinkAnimationSignal = new Signal<this, any>(this);
+    this.createNewComponentLibrarySignal = new Signal<this, any>(this);
   }
 
   protected createNewWidget(context: DocumentRegistry.Context): DocumentWidget {
@@ -82,8 +83,7 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
       triggerLoadingAnimationSignal: this.triggerLoadingAnimationSignal,
       reloadAllNodesSignal: this.reloadAllNodesSignal,
       toggleAllLinkAnimationSignal: this.toggleAllLinkAnimationSignal,
-
-
+      createNewComponentLibrarySignal: this.createNewComponentLibrarySignal,
     };
 
     const content = new XircuitsPanel(props);
@@ -172,13 +172,13 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
     /**
      * Create a debug button toolbar item.
      */
-    // let debugButton = new ToolbarButton({
-    //   icon:bugIcon,
-    //   tooltip: 'Open Xircuits Debugger and enable Image Viewer',
-    //   onClick: (): void => {
-    //     this.commands.execute(commandIDs.debugXircuit);
-    //   }
-    // });
+    let debugButton = new ToolbarButton({
+      icon:bugIcon,
+      tooltip: 'Open Xircuits Debugger and enable Image Viewer',
+      onClick: (): void => {
+        this.commands.execute(commandIDs.createNewComponentLibrary);
+      }
+    });
 
     /**
      * Create a lock button toolbar item.
@@ -260,6 +260,7 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.insertItem(11, 'xircuits-add-compile', compileButton);
     widget.toolbar.insertItem(12, 'xircuits-add-run', compileAndRunButton);
     widget.toolbar.insertItem(13, 'xircuits-run-type', new RunSwitcher(this));
+    widget.toolbar.insertItem(14, 'xircuits-new-library', debugButton)
     // TODO: Fix debugger
     // widget.toolbar.insertItem(5,'xircuits-add-debug', debugButton);
     

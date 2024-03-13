@@ -159,11 +159,12 @@ class CreateNewLibraryHandler(APIHandler):
             return
 
         try:
-            message = create_library(library_name)
-            self.finish(json.dumps({"status": "OK", "message": message}))
-        except FileExistsError as e:
-            self.set_status(HTTPStatus.CONFLICT)
-            self.finish(json.dumps({"error": str(e)}))
+            status, message = create_library(library_name)
+            if status:
+                self.finish(json.dumps({"status": "OK", "message": message}))
+            else:
+                self.set_status(HTTPStatus.CONFLICT)
+                self.finish(json.dumps({"error": message}))
         except Exception as e:
             self.set_status(HTTPStatus.INTERNAL_SERVER_ERROR)
             message = f"An unexpected error occurred: {traceback.format_exc()}"
