@@ -27,17 +27,16 @@ export const NewLibraryInput: React.FC<NewLibraryInputDialogProps> = ({ title, o
   const handleLibraryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
     setSelectedLibrary(value);
-    setCustomLibrary(value === 'custom-option' ? '' : value);
+    if (value === 'custom-option') {
+      setCustomLibrary('');
+    }
   };
 
-  // Handles input change for custom library name
   const handleCustomLibraryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setCustomLibrary(value);
-    setSelectedLibrary('custom-option');
   };
 
-  // Filter libraries to include only those with 'installed' status
   const installedLibraries = libraries.filter(library => library.status === 'installed');
 
   return (
@@ -46,11 +45,12 @@ export const NewLibraryInput: React.FC<NewLibraryInputDialogProps> = ({ title, o
         <label htmlFor="library-select">{title}</label>
         <select
           id="library-select"
+          name="library-select"
           value={selectedLibrary}
           onChange={handleLibraryChange}
           style={{ display: 'block', width: '100%', marginBottom: '10px' }}
         >
-          <option value="" disabled selected>Select a Library</option>
+          <option value="" disabled>Select a library</option>
           {installedLibraries.map(library => (
             <option key={library.library_id} value={library.library_id}>
               {library.library_id}
@@ -59,15 +59,21 @@ export const NewLibraryInput: React.FC<NewLibraryInputDialogProps> = ({ title, o
           <option value="custom-option">Other (Specify Below)</option>
         </select>
         {selectedLibrary === 'custom-option' && (
-          <input
-            type="text"
-            value={customLibrary}
-            onChange={handleCustomLibraryChange}
-            placeholder="Enter library name"
-            style={{ width: '100%' }}
-          />
+          <>
+            <input
+              type="text"
+              name="customLibrary"
+              value={customLibrary}
+              onChange={handleCustomLibraryChange}
+              placeholder="Enter library name"
+              style={{ width: '100%' }}
+            />
+            {/* Hidden input to hold the custom library value */}
+            <input type="hidden" name="selectedLibrary" value={customLibrary} />
+          </>
         )}
       </div>
     </form>
   );
 };
+

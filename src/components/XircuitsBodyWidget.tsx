@@ -718,8 +718,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let dialogResult = await showFormDialog(dialogOptions);
 		if (cancelDialog(dialogResult)) return;
 		
-		inputValue = dialogResult["value"][''];
-
+		const resultValue = dialogResult.value;
+		if (resultValue['library-select'] === 'custom-option') {
+		  inputValue = resultValue['customLibrary']; // For custom library name
+		} else {
+		  inputValue = resultValue['library-select']; // For selected predefined library
+		}
+		
 		const dataToSend = { "libraryName": inputValue };
 	
 		try {
