@@ -39,16 +39,34 @@ export const NewLibraryInput: React.FC<NewLibraryInputDialogProps> = ({ title, o
 
   const installedLibraries = libraries.filter(library => library.status === 'installed');
 
+  const gridContainer = {
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    gridGap: '10px',
+    padding: '20px',
+    width: '400px',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  };
+
+  const selectStyle = {
+    display: 'block',
+    width: '100%',
+    paddingTop: '5px',
+    paddingBottom: '5px',
+  };
+
   return (
     <form>
-      <div style={{ padding: '20px', width: '400px', margin: 'auto' }}>
-        <label htmlFor="library-select">{title}</label>
+      <div style={gridContainer} className="jp-mod-styled">
+        <label htmlFor="library-select">Component Save Location</label>
         <select
           id="library-select"
           name="library-select"
           value={selectedLibrary}
           onChange={handleLibraryChange}
-          style={{ display: 'block', width: '100%', marginBottom: '10px' }}
+          style={selectStyle}
+          className="jp-mod-styled"
         >
           <option value="" disabled>Select a library</option>
           {installedLibraries.map(library => (
@@ -66,7 +84,8 @@ export const NewLibraryInput: React.FC<NewLibraryInputDialogProps> = ({ title, o
               value={customLibrary}
               onChange={handleCustomLibraryChange}
               placeholder="Enter library name"
-              style={{ width: '100%' }}
+              style={{ width: '100%', marginBottom: '10px' }}
+              className="jp-mod-styled"
             />
             {/* Hidden input to hold the custom library value */}
             <input type="hidden" name="selectedLibrary" value={customLibrary} />
@@ -76,4 +95,3 @@ export const NewLibraryInput: React.FC<NewLibraryInputDialogProps> = ({ title, o
     </form>
   );
 };
-

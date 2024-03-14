@@ -36,7 +36,7 @@ export function addChatActionCommands(
             let libraries = await ComponentLibraryConfig();
             let inputValue;
 
-            let dialogOptions = newLibraryInputDialog({ title: 'Create New Library', oldValue: "", libraries: libraries});
+            let dialogOptions = newLibraryInputDialog({ title: 'Create New Component', oldValue: "", libraries: libraries});
             let dialogResult = await showFormDialog(dialogOptions);
             if (cancelDialog(dialogResult)) return;
             
