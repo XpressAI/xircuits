@@ -26,7 +26,6 @@ export class XircuitsPanel extends ReactWidget {
   triggerLoadingAnimationSignal: Signal<this, any>;
   reloadAllNodesSignal: Signal<this, any>;
   toggleAllLinkAnimationSignal: Signal<this, any>;
-  createNewComponentLibrarySignal: Signal<this, any>;
 
   // Add mousePosition state
   mousePosition = { x: 0, y: 0 };
@@ -47,7 +46,6 @@ export class XircuitsPanel extends ReactWidget {
     this.triggerLoadingAnimationSignal = options.triggerLoadingAnimationSignal;
     this.reloadAllNodesSignal = options.reloadAllNodesSignal;
     this.toggleAllLinkAnimationSignal = options.toggleAllLinkAnimationSignal;
-    this.createNewComponentLibrarySignal = options.createNewComponentLibrarySignal;
     this.xircuitsApp = new XircuitsApplication(this.app, this.shell);
   }
 
@@ -99,7 +97,6 @@ export class XircuitsPanel extends ReactWidget {
         triggerLoadingAnimationSignal={this.triggerLoadingAnimationSignal}
         reloadAllNodesSignal={this.reloadAllNodesSignal}
         toggleAllLinkAnimationSignal={this.toggleAllLinkAnimationSignal}
-        createNewComponentLibrarySignal={this.createNewComponentLibrarySignal}
       />
     );
   }

@@ -18,14 +18,12 @@ import { formDialogWidget } 	from '../dialog/formDialogwidget';
 import { showFormDialog } 		from '../dialog/FormDialog';
 import { inputDialog } 			from '../dialog/LiteralInputDialog';
 import { getItsLiteralType } 	from '../dialog/input-dialogues/VariableInput';
-import { newLibraryInputDialog } from '../dialog/NewLibraryDialog';
 import { RunDialog } 			from '../dialog/RunDialog';
 import { requestAPI } 			from '../server/handler';
 import ComponentsPanel 			from '../context-menu/ComponentsPanel';
 import { CanvasContextMenu, countVisibleMenuOptions, getMenuOptionsVisibility } 	from '../context-menu/CanvasContextMenu';
 import { cancelDialog, GeneralComponentLibrary } 		from '../tray_library/GeneralComponentLib';
 import { AdvancedComponentLibrary, fetchNodeByName } 	from '../tray_library/AdvanceComponentLib';
-import { ComponentLibraryConfig } 						from '../tray_library/ComponentLibraryConfig';
 import { lowPowerMode, setLowPowerMode } from './state/powerModeState';
 import { startRunOutputStr } from './runner/RunOutput';
 import { doRemoteRun } from './runner/RemoteRun';
@@ -49,7 +47,6 @@ export interface BodyWidgetProps {
 	triggerLoadingAnimationSignal: Signal<XircuitsPanel, any>;
 	reloadAllNodesSignal: Signal<XircuitsPanel, any>;
 	toggleAllLinkAnimationSignal: Signal<XircuitsPanel, any>;
-	createNewComponentLibrarySignal: Signal<XircuitsPanel, any>;
 }
 
 export const Body = styled.div`
@@ -120,7 +117,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	triggerLoadingAnimationSignal,
 	reloadAllNodesSignal,
 	toggleAllLinkAnimationSignal,
-	createNewComponentLibrarySignal,
 }) => {
 	const xircuitLogger = new Log(app);
 
@@ -705,42 +701,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setLowPowerMode(!powerMode)
 	}
 
-	async function handleCreateNewComponentLibrarySignal(){
-		// This must be first to avoid unnecessary complication
-		if (shell.currentWidget?.id !== widgetId) {
-			return;
-		}
-		
-		let libraries = await ComponentLibraryConfig();
-		let inputValue;
-
-		let dialogOptions = newLibraryInputDialog({ title: 'Create New Library', oldValue: "", libraries: libraries});
-		let dialogResult = await showFormDialog(dialogOptions);
-		if (cancelDialog(dialogResult)) return;
-		
-		const resultValue = dialogResult.value;
-		if (resultValue['library-select'] === 'custom-option') {
-		  inputValue = resultValue['customLibrary']; // For custom library name
-		} else {
-		  inputValue = resultValue['library-select']; // For selected predefined library
-		}
-		
-		const dataToSend = { "libraryName": inputValue };
-	
-		try {
-			const server_reply = await requestAPI<any>('library/new', {
-				body: JSON.stringify(dataToSend),
-				method: 'POST',
-			});
-			console.log(server_reply)
-			return server_reply;
-		} catch (reason) {
-			console.error(
-				`Error on POST library/new ${dataToSend}.\n${reason}`
-			);
-		}
-	}
-
 	async function getRunTypesFromConfig(request: string) {
 		const dataToSend = { "config_request": request };
 	
@@ -887,7 +847,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		[triggerLoadingAnimationSignal, triggerLoadingAnimation],
 		[reloadAllNodesSignal, handleReloadAll],
 		[toggleAllLinkAnimationSignal, handleToggleAllLinkAnimation],
-		[createNewComponentLibrarySignal, handleCreateNewComponentLibrarySignal]
 	];
 
 	signalConnections.forEach(connectSignal);

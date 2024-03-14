@@ -46,7 +46,6 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
   triggerLoadingAnimationSignal: Signal<this, any>;
   reloadAllNodesSignal: Signal<this, any>;
   toggleAllLinkAnimationSignal: Signal<this, any>;
-  createNewComponentLibrarySignal: Signal<this, any>;
   
   constructor(options: any) {
     super(options);
@@ -63,7 +62,6 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
     this.triggerLoadingAnimationSignal = new Signal<this, any>(this);
     this.reloadAllNodesSignal = new Signal<this, any>(this);
     this.toggleAllLinkAnimationSignal = new Signal<this, any>(this);
-    this.createNewComponentLibrarySignal = new Signal<this, any>(this);
   }
 
   protected createNewWidget(context: DocumentRegistry.Context): DocumentWidget {
@@ -83,7 +81,6 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
       triggerLoadingAnimationSignal: this.triggerLoadingAnimationSignal,
       reloadAllNodesSignal: this.reloadAllNodesSignal,
       toggleAllLinkAnimationSignal: this.toggleAllLinkAnimationSignal,
-      createNewComponentLibrarySignal: this.createNewComponentLibrarySignal,
     };
 
     const content = new XircuitsPanel(props);
@@ -176,7 +173,8 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
       icon:bugIcon,
       tooltip: 'Open Xircuits Debugger and enable Image Viewer',
       onClick: (): void => {
-        this.commands.execute(commandIDs.createNewComponentLibrary);
+        this.commands.execute('Xircuit-editor:new-component-library'
+        , {"componentCode": "example-script"});
       }
     });
 

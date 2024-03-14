@@ -23,6 +23,7 @@ import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { runIcon, saveIcon } from '@jupyterlab/ui-components';
 import { addNodeActionCommands } from './commands/NodeActionCommands';
+import { addChatActionCommands } from './commands/ChatActionCommands';
 import { Token } from '@lumino/coreutils';
 import { DockLayout } from '@lumino/widgets';
 import { xircuitsIcon, componentLibIcon, changeFavicon, xircuitsFaviconLink } from './ui-components/icons';
@@ -151,6 +152,9 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     // Additional commands for node action
     addNodeActionCommands(app, tracker, translator);
+
+    // Additional commands for chat actions
+    addChatActionCommands(app, tracker, translator);
 
     // Add a command for creating a new xircuits file.
     app.commands.addCommand(commandIDs.createNewXircuit, {
@@ -346,14 +350,6 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     app.commands.addCommand(commandIDs.toggleAllLinkAnimation, {
       execute: args => {
         widgetFactory.toggleAllLinkAnimationSignal.emit(args);
-      }
-    });
-
-
-    // Add command signal to trigger component library creation service.
-    app.commands.addCommand(commandIDs.createNewComponentLibrary, {
-      execute: args => {
-        widgetFactory.createNewComponentLibrarySignal.emit(args);
       }
     });
 
