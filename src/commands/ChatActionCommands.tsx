@@ -56,6 +56,7 @@ export function addChatActionCommands(
                     method: 'POST',
                 });
                 console.log(server_reply)
+                await app.commands.execute(commandIDs.refreshComponentList);
                 return server_reply;
             } catch (reason) {
                 console.error(

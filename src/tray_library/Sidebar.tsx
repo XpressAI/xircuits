@@ -18,6 +18,7 @@ import TrayContextMenu from '../context-menu/TrayContextMenu';
 
 import '../../style/ContextMenu.css'
 import { ComponentLibraryConfig, refreshComponentLibraryConfigCache } from './ComponentLibraryConfig';
+import { commandIDs } from '../components/XircuitsBodyWidget';
 
 export const Body = styled.div`
   flex-grow: 1;
@@ -41,6 +42,8 @@ export interface SidebarProps {
     app: JupyterFrontEnd;
     factory: XircuitsFactory;
 }
+
+let isCommandsRegistered = false;
 
 async function fetchComponent(componentList) {
     let headers = Array.from(new Set(componentList.map(x => x.category)));
@@ -139,6 +142,18 @@ export default function Sidebar(props: SidebarProps) {
         fetchComponentList();
     }
 
+    // handler to register the refresh component list only once
+    useEffect(() => {
+        if (!isCommandsRegistered) {
+            app.commands.addCommand(commandIDs.refreshComponentList, {
+                execute: async (args) => {
+                    handleRefreshOnClick();
+                }
+            });
+            isCommandsRegistered = true;
+        }
+    }, []);
+    
     useEffect(() => {
         const intervalId = setInterval(() => {
             fetchComponentList();
