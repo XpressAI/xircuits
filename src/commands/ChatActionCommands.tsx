@@ -34,6 +34,7 @@ export function addChatActionCommands(
     commands.addCommand(commandIDs.createNewComponentLibrary, {
         execute: async (args) => {
 
+            let componentCode = args['componentCode'] as any;
             let libraries = await ComponentLibraryConfig();
             let inputValue = "";
             let dialogResult;
@@ -43,12 +44,14 @@ export function addChatActionCommands(
                 let dialogOptions = newLibraryInputDialog({ 
                     title: 'Create New Component', 
                     oldValue: inputValue, 
-                    libraries: libraries
+                    libraries: libraries,
+                    oldComponentCode: componentCode
                 });
     
                 dialogResult = await showFormDialog(dialogOptions);
                 if (cancelDialog(dialogResult)) return;
-            
+
+                componentCode = dialogResult.value['component-code'];
                 if (dialogResult.value['library-select'] === 'custom-option') {
                     inputValue = dialogResult.value['customLibrary']; // For custom library name
                 } else {
@@ -57,7 +60,6 @@ export function addChatActionCommands(
     
             } while (!checkInput(inputValue, type))
 
-            const componentCode = args['componentCode'] as any;
             const dataToSend = { "libraryName": inputValue, "componentCode": componentCode };
         
             try {
