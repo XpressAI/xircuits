@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { Dialog } from '@jupyterlab/apputils';
 import { formDialogWidget } from './formDialogwidget';
 import { LibraryConfig } from '../tray_library/ComponentLibraryConfig';
-
+import TextareaAutosize from 'react-textarea-autosize';
 
 export interface NewLibraryInputDialogProps {
   title: string;
   oldValue: string;
   libraries: LibraryConfig[];
+  oldComponentCode: string;
 }
 
 export function newLibraryInputDialog(props: NewLibraryInputDialogProps) {
@@ -20,9 +21,10 @@ export function newLibraryInputDialog(props: NewLibraryInputDialogProps) {
   };
 }
 
-export const NewLibraryInput: React.FC<NewLibraryInputDialogProps> = ({ title, oldValue, libraries }) => {
+export const NewLibraryInput: React.FC<NewLibraryInputDialogProps> = ({ title, oldValue, libraries, oldComponentCode }) => {
   const [selectedLibrary, setSelectedLibrary] = useState(oldValue || '');
   const [customLibrary, setCustomLibrary] = useState('');
+  const [componentCode, setComponentCode] = useState(oldComponentCode || '');
 
   const handleLibraryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
@@ -44,7 +46,7 @@ export const NewLibraryInput: React.FC<NewLibraryInputDialogProps> = ({ title, o
     gridTemplateColumns: '1fr',
     gridGap: '10px',
     padding: '20px',
-    width: '400px',
+    width: '500px',
     marginLeft: 'auto',
     marginRight: 'auto',
   };
@@ -91,6 +93,17 @@ export const NewLibraryInput: React.FC<NewLibraryInputDialogProps> = ({ title, o
             <input type="hidden" name="selectedLibrary" value={customLibrary} />
           </>
         )}
+        <label htmlFor="component-code">Component Code</label>
+        <TextareaAutosize
+          id="component-code"
+          name="component-code"
+          minRows={12}
+          style={{ width: 500, height: 200, fontSize: 12, marginBottom: '10px' }}
+          value={componentCode}
+          onChange={(e) => setComponentCode(e.target.value)}
+          placeholder="Enter component code here"
+          className="jp-mod-styled"
+        />
       </div>
     </form>
   );
