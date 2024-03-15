@@ -58,6 +58,19 @@ function checkInput(input: any, dataType: string): boolean {
         case "false":
         case "boolean":
             return true;
+        case "libraryname":
+            const validLibNameRegex = /^[a-zA-Z][_a-zA-Z0-9]*$/;
+        
+            if (!validLibNameRegex.test(input)) {
+                errorDetails = `${input} is not a valid library name. It must start with a letter and can only contain letters, numbers, and underscores.`;
+                exampleInput = "e.g., 'My_Library', 'dataCollection', 'Project1'";
+                alert(formatError(errorDetails, exampleInput));
+                return false;
+            }
+        
+            processedInput = JSON.stringify(input);
+            break;
+
         case "undefined_any":
             // Handler if called from any inputDialogue
             alert(`Type is undefined or not provided. Please insert the first character as shown in example.`);
