@@ -23,7 +23,7 @@ import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { runIcon, saveIcon } from '@jupyterlab/ui-components';
 import { addNodeActionCommands } from './commands/NodeActionCommands';
-import { addChatActionCommands } from './commands/ChatActionCommands';
+import { addLibraryActionCommands } from './commands/LibraryActionCommands';
 import { Token } from '@lumino/coreutils';
 import { DockLayout } from '@lumino/widgets';
 import { xircuitsIcon, componentLibIcon, changeFavicon, xircuitsFaviconLink } from './ui-components/icons';
@@ -154,7 +154,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     addNodeActionCommands(app, tracker, translator);
 
     // Additional commands for chat actions
-    addChatActionCommands(app, tracker, translator);
+    addLibraryActionCommands(app, tracker, translator, widgetFactory);
 
     // Add a command for creating a new xircuits file.
     app.commands.addCommand(commandIDs.createNewXircuit, {

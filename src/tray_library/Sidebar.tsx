@@ -43,8 +43,6 @@ export interface SidebarProps {
     factory: XircuitsFactory;
 }
 
-let isCommandsRegistered = false;
-
 async function fetchComponent(componentList) {
     let headers = Array.from(new Set(componentList.map(x => x.category)));
     let parameterComponentList = [];
@@ -88,6 +86,7 @@ async function fetchComponent(componentList) {
 export default function Sidebar(props: SidebarProps) {
     
     const app = props.app
+    const factory = props.factory
 
     const [componentList, setComponentList] = React.useState([]);
     const [category, setCategory] = React.useState([]);
@@ -142,17 +141,19 @@ export default function Sidebar(props: SidebarProps) {
         fetchComponentList();
     }
 
-    // handler to register the refresh component list only once
     useEffect(() => {
-        if (!isCommandsRegistered) {
-            app.commands.addCommand(commandIDs.refreshComponentList, {
-                execute: async (args) => {
-                    handleRefreshOnClick();
-                }
-            });
-            isCommandsRegistered = true;
-        }
+        const refreshComponents = () => {
+            handleRefreshOnClick();
+        };
+
+        factory.refreshComponentsSignal.connect(refreshComponents);
+
+        // Return a cleanup function to unsubscribe
+        return () => {
+            factory.refreshComponentsSignal.disconnect(refreshComponents);
+        };
     }, []);
+
     
     useEffect(() => {
         const intervalId = setInterval(() => {

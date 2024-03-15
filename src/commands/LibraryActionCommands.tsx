@@ -9,14 +9,16 @@ import { ComponentLibraryConfig } from '../tray_library/ComponentLibraryConfig';
 import { newLibraryInputDialog } from '../dialog/NewLibraryDialog';
 import { requestAPI } from '../server/handler';
 import { checkInput } from '../helpers/InputSanitizer';
+import { XircuitsFactory } from '../XircuitsFactory';
 
 /**
  * Add the commands for node actions.
  */
-export function addChatActionCommands(
+export function addLibraryActionCommands(
     app: JupyterFrontEnd,
     tracker: IXircuitsDocTracker,
-    translator: ITranslator
+    translator: ITranslator,
+    factory: XircuitsFactory
 ): void {
     const trans = translator.load('jupyterlab');
     const { commands, shell } = app;
@@ -30,6 +32,12 @@ export function addChatActionCommands(
             tracker.currentWidget === shell.currentWidget
         );
     }
+
+    commands.addCommand(commandIDs.refreshComponentList, {
+        execute: async (args) => {
+            factory.refreshComponentsSignal.emit(args);
+        }
+    })
 
     commands.addCommand(commandIDs.createNewComponentLibrary, {
         execute: async (args) => {
@@ -67,7 +75,7 @@ export function addChatActionCommands(
                     body: JSON.stringify(dataToSend),
                     method: 'POST',
                 });
-                console.log(server_reply)
+
                 await app.commands.execute(commandIDs.refreshComponentList);
                 return server_reply;
             } catch (reason) {
