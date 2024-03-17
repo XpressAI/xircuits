@@ -79,3 +79,6 @@
 [submodule "xai_components/xai_converse"]
 	path = xai_components/xai_converse
 	url = https://github.com/XpressAI/xai-converse
+[submodule "xai_components/xai_stability_ai"]
+	path = xai_components/xai_stability_ai
+	url = https://github.com/XpressAI/xai-stability-ai
