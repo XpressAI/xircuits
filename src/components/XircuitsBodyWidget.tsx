@@ -96,7 +96,9 @@ export const commandIDs = {
 	compileFile: 'Xircuit-editor:compile-file',
 	nextNode: 'Xircuit-editor:next-node',
 	outputMsg: 'Xircuit-log:logOutputMessage',
-	executeToOutputPanel: 'Xircuit-output-panel:execute'
+	executeToOutputPanel: 'Xircuit-output-panel:execute',
+	createNewComponentLibrary: 'Xircuit-editor:new-component-library',
+	refreshComponentList: 'xircuits-sidebar:refresh-component-list'
 };
 
 
@@ -845,7 +847,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		[lockNodeSignal, handleLockClick],
 		[triggerLoadingAnimationSignal, triggerLoadingAnimation],
 		[reloadAllNodesSignal, handleReloadAll],
-		[toggleAllLinkAnimationSignal, handleToggleAllLinkAnimation]
+		[toggleAllLinkAnimationSignal, handleToggleAllLinkAnimation],
 	];
 
 	signalConnections.forEach(connectSignal);

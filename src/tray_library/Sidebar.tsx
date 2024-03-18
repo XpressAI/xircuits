@@ -18,6 +18,7 @@ import TrayContextMenu from '../context-menu/TrayContextMenu';
 
 import '../../style/ContextMenu.css'
 import { ComponentLibraryConfig, refreshComponentLibraryConfigCache } from './ComponentLibraryConfig';
+import { commandIDs } from '../components/XircuitsBodyWidget';
 
 export const Body = styled.div`
   flex-grow: 1;
@@ -85,6 +86,7 @@ async function fetchComponent(componentList) {
 export default function Sidebar(props: SidebarProps) {
     
     const app = props.app
+    const factory = props.factory
 
     const [componentList, setComponentList] = React.useState([]);
     const [category, setCategory] = React.useState([]);
@@ -139,6 +141,20 @@ export default function Sidebar(props: SidebarProps) {
         fetchComponentList();
     }
 
+    useEffect(() => {
+        const refreshComponents = () => {
+            handleRefreshOnClick();
+        };
+
+        factory.refreshComponentsSignal.connect(refreshComponents);
+
+        // Return a cleanup function to unsubscribe
+        return () => {
+            factory.refreshComponentsSignal.disconnect(refreshComponents);
+        };
+    }, []);
+
+    
     useEffect(() => {
         const intervalId = setInterval(() => {
             fetchComponentList();

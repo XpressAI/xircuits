@@ -1,5 +1,26 @@
 import { requestAPI } from "../server/handler";
 
+interface Author {
+    name: string;
+    email: string;
+}
+
+export interface LibraryConfig {
+    name: string;
+    library_id: string;
+    repository: string;
+    local_path: string;
+    status: string;
+    version?: string;
+    description?: string;
+    authors?: Author[];
+    license?: string;
+    readme?: string;
+    keywords?: string[];
+    requirements?: string[];
+    default_example_path?: string;
+}
+
 let libraryConfigCache = {
     data: null
 };
@@ -33,12 +54,10 @@ export async function reloadComponentLibraryConfig() {
     }
 }
 
-export async function ComponentLibraryConfig() {
-
+export async function ComponentLibraryConfig(): Promise<LibraryConfig[]> {
     if (!libraryConfigCache.data) {
         libraryConfigCache.data = await fetchComponentLibraryConfig();
     }
-
     return libraryConfigCache.data;
 }
 

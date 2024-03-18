@@ -5,7 +5,7 @@ import tornado
 import posixpath
 from http import HTTPStatus
 from jupyter_server.base.handlers import APIHandler
-from xircuits.library import install_library, fetch_library, build_library_file_path_from_config, save_component_library_config, get_component_library_config
+from xircuits.library import install_library, fetch_library, build_library_file_path_from_config, save_component_library_config, get_component_library_config, create_or_update_library
 
 class InstallLibraryRouteHandler(APIHandler):
     @tornado.web.authenticated
@@ -14,7 +14,7 @@ class InstallLibraryRouteHandler(APIHandler):
         library_name = input_data.get("libraryName")
 
         if not library_name:
-            self.set_status(HTTPStatus.BAD_REQUEST)  # Set appropriate HTTP status
+            self.set_status(HTTPStatus.BAD_REQUEST)
             self.finish(json.dumps({"error": "Library name is required"}))
             return
 
@@ -146,3 +146,25 @@ class GetComponentLibraryConfigHandler(APIHandler):
             print(f"An error occurred: {traceback.format_exc()}")
 
         self.finish(json.dumps(response))
+
+class CreateNewLibraryHandler(APIHandler):
+    @tornado.web.authenticated
+    def post(self):
+        input_data = self.get_json_body()
+        library_name = input_data.get("libraryName")
+        component_filename = input_data.get("componentFilename", "new_component.py")
+        component_content = input_data.get("componentCode", "")
+
+        if not library_name:
+            self.set_status(HTTPStatus.BAD_REQUEST)
+            self.finish(json.dumps({"error": "Library name is required"}))
+            return
+
+        try:
+            message = create_or_update_library(library_name, component_filename, component_content)
+            self.finish(json.dumps({"status": "OK", "message": message}))
+        except Exception as e:
+            self.set_status(HTTPStatus.INTERNAL_SERVER_ERROR)
+            message = f"An unexpected error occurred: {traceback.format_exc()}"
+            print(message)
+            self.finish(json.dumps({"error": message}))
