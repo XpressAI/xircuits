@@ -167,10 +167,13 @@ class %s(Component):
                     elif port.source.type == "chat":
                         value = json.loads(port.sourceLabel)
                     elif port.source.type == "tuple":
-                        value = eval(port.sourceLabel)
-                        if not isinstance(value, tuple):
-                            # handler for single entry tuple
-                            value = (value,)
+                        if port.sourceLabel == "":
+                            value = ()
+                        else:
+                            value = eval(port.sourceLabel)
+                            if not isinstance(value, tuple):
+                                # Handler for single entry tuple
+                                value = (value,)
                     else:
                         value = eval(port.sourceLabel)
                     tpl.body[0].value.value = value
@@ -208,7 +211,13 @@ class %s(Component):
                         elif port.source.type == "dict":
                             value = json.loads("{" + port.sourceLabel + "}")
                         elif port.source.type == "tuple":
-                            value = tuple(eval(port.sourceLabel))
+                            if port.sourceLabel == "":
+                                value = ()
+                            else:
+                                value = eval(port.sourceLabel)
+                                if not isinstance(value, tuple):
+                                    # Handler for single entry tuple
+                                    value = (value,)
                         else:
                             value = eval(port.sourceLabel)
                         dynaport_values.append(RefOrValue(value, False))
