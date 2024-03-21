@@ -31,6 +31,7 @@ class PrettyPrint(Component):
         pp = pprint.PrettyPrinter(indent=4)
         print(pp.pformat(self.msg.value))
 
+
 @xai_component
 class ConcatString(Component):
     """Concatenates two strings.
@@ -48,7 +49,36 @@ class ConcatString(Component):
 
     def execute(self, cts) -> None:
         self.out.value = self.a.value + self.b.value
+
+
+@xai_component
+class FormatString(Component):
+    format_str: InCompArg[str]
+    args: InArg[dict]
+    out_str: OutArg[str]
     
+    def execute(self, ctx):
+        self.out_str.value = self.format_str.value.format(**self.args.value)
+
+
+@xai_component
+class SplitString(Component):
+    string: InArg[str]
+    ch: InArg[str]
+    out: OutArg[list]
+
+    def execute(self, cts) -> None:
+        self.out.value = self.string.value.split(self.ch.value)
+
+@xai_component
+class JoinArrayWithString(Component):
+    array: InArg[list]
+    sep: InArg[str]
+    out: OutArg[str]
+
+    def execute(self, cts) -> None:
+        self.out.value = self.sep.value.join(self.array.value)
+
 @xai_component
 class ZipDirectory(Component):
     """Zips a directory.
@@ -380,3 +410,88 @@ class GetDictValue(Component):
 
     def execute(self, ctx) -> None:
         self.value.value = self.dict.value[self.key.value]
+
+@xai_component
+class ListAppend(Component):
+    the_list: InArg[list]
+    item: InCompArg[any]
+    out_list: OutArg[list]
+
+    def execute(self, ctx) -> None:
+        l = [] if self.the_list.value is None else self.the_list.value
+        l.append(self.item.value)
+        self.out_list.value = l
+
+@xai_component
+class ListGetItem(Component):
+    the_list: InCompArg[list]
+    index: InCompArg[int]
+    out_item: OutArg[any]
+
+    def execute(self, ctx) -> None:
+        self.out_item.value = self.the_list[self.index.value]
+
+@xai_component
+class ListSetItem(Component):
+    the_list: InCompArg[list]
+    index: InCompArg[int]
+    item: InCompArg[any]
+    out_list: OutArg[list]
+
+    def execute(self, ctx) -> None:
+        self.the_list.value[self.index.value] = self.item.value
+        self.out_list.value = self.the_list.value
+
+@xai_component
+class DictGetItem(Component):
+    the_dict: InCompArg[dict]
+    key: InCompArg[any]
+    out_item: OutArg[any]
+
+    def execute(self, ctx) -> None:
+        self.out_item.value = self.the_dict.value[self.key.value]
+
+
+@xai_component
+class DictSetItem(Component):
+    the_dict: InArg[dict]
+    key: InCompArg[any]
+    item: InCompArg[any]
+    out_dict: OutArg[dict]
+
+    def execute(self, ctx) -> None:
+        d = {} if self.the_dict.value is None else self.the_dict.value
+        d[self.key.value] = self.item.value
+        self.out_dict.value = d
+
+
+@xai_component
+class ToJson(Component):
+    obj: InCompArg[any]
+    
+    json_str: OutArg[str]
+    
+    def execute(self, ctx) -> None:
+        self.json_str.value = json.dumps(self.obj.value)
+
+
+@xai_component
+class FromJson(Component):
+    json_str: InCompArg[str]
+    
+    obj: OutArg[any]
+    
+    def execute(self, ctx) -> None:
+        self.obj.value = json.loads(self.json_str.value)
+
+
+@xai_component
+class GetRandomNumber(Component):
+    greater_than: InCompArg[int]
+    less_than: InCompArg[int]
+    
+    value: OutArg[int]
+    
+    def execute(self, ctx) -> None:
+        self.value.value = random.randint(self.greater_than.value, self.less_than.value)
+    
