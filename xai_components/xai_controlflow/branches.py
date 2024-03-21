@@ -8,16 +8,17 @@ class BranchComponent(Component):
     condition: InArg[bool]
     
     def do(self, ctx) -> BaseComponent:
+        next = None
         if self.condition.value:
-            next = self.when_true
+            if hasattr(self, 'when_true'):
+                next = self.when_true
         else:
-            next = self.when_false
+            if hasattr(self, 'when_false'):
+                next = self.when_false
         while next:
             next = next.do(ctx)
-        try:
+        if hasattr(self, 'next') and self.next:
             return self.next
-        except:
-            return None
     
 @xai_component
 class LoopComponent(Component):
@@ -31,8 +32,50 @@ class LoopComponent(Component):
             while next_body:
                 next_body = next_body.do(ctx)
             return self
-        return self.next
+        if hasattr(self, 'next') and self.next:
+            return self.next
+
+@xai_component
+class ReverseForEach(Component):
+    body: BaseComponent
     
+    items: InCompArg[list]
+
+    current_item: OutArg[any]
+    current_index: OutArg[int]
+    
+    def do(self, ctx) -> BaseComponent:
+        for i, item in enumerate(self.items.value[-1]):
+            self.current_item.value = item
+            self.current_index.value = i
+            
+            next_body = self.body.do(ctx)
+            while next_body:
+                next_body = next_body.do(ctx)
+        if hasattr(self, 'next') and self.next:
+            return self.next
+
+
+@xai_component
+class ForEach(Component):
+    body: BaseComponent
+    
+    items: InCompArg[list]
+
+    current_item: OutArg[any]
+    current_index: OutArg[int]
+    
+    def do(self, ctx) -> BaseComponent:
+        for i, item in enumerate(self.items.value):
+            self.current_item.value = item
+            self.current_index.value = i
+            
+            next_body = self.body.do(ctx)
+            while next_body:
+                next_body = next_body.do(ctx)
+        if hasattr(self, 'next') and self.next:
+            return self.next
+
 @xai_component
 class CounterComponent(Component):
     start_number: InArg[int]
