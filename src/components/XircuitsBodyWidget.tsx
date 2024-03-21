@@ -683,12 +683,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 		  return;
 		}
-	
+
+		let allNodes = xircuitsApp.getDiagramEngine().getModel().getNodes();
+		allNodes.forEach(node => node.setSelected(true));
+
 		const reloadPromise = app.commands.execute(commandIDs.reloadNode);
 	
 		// Trigger loading animation
 		await triggerLoadingAnimation(reloadPromise, { loadingMessage: 'Reloading all nodes...'});
-	
 		console.log("Reload all complete.");
 	};
 
