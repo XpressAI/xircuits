@@ -4,6 +4,45 @@ import os
 import sys
 from pathlib import Path
 import time
+import datetime
+import json
+import random
+
+
+@xai_component
+class GetCurrentTime(Component):
+    """Get's the current time in ISO 8601 format.
+    """
+    time_str: OutArg[str]
+    
+    def execute(self, ctx) -> None:
+        try:
+            import pytz
+    
+            tz = pytz.timezone('UTC')
+            now = datetime.datetime.now(tz)
+        except:
+            now = datetime.datetime.now()
+            
+        self.time_str.value = now.isoformat()
+
+
+@xai_component
+class GetCurrentDate(Component):
+    """Gets the current date
+    """
+    
+    year: OutArg[str]
+    month: OutArg[str]
+    day: OutArg[str]
+    
+    def execute(self, ctx) -> None:
+        today = datetime.date.today()
+        
+        self.year.value = str(today.year)
+        self.month.value = str(today.month)
+        self.day.value = str(today.day)
+
 
 @xai_component
 class Print(Component):
