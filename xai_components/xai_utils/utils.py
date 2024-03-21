@@ -194,7 +194,48 @@ class ZipDirectory(Component):
                     zipObj.write(os.path.join(root, filename))
 
         zipObj.close()        
-       
+
+
+@xai_component
+class MoveFile(Component):
+    """Move a file.
+    
+    ##### inPorts:
+    - source_path: path to the file to be moved
+    - dest_path: The destination
+
+    ##### outPorts:
+    - result_path: Resulting file path.
+    """
+    source_path: InArg[str]
+    dest_path: InArg[str]
+    result_path: OutArg[str]
+
+    def execute(self, ctx) -> None:
+        new_path = shutil.move(self.source_path.value, self.dest_path.value)
+        self.result_path.value = new_path
+
+
+@xai_component
+class CopyFile(Component):
+    """Copies a file.
+    
+    ##### inPorts:
+    - source_path: path to the file to be copied
+    - dest_path: The destination
+
+    ##### outPorts:
+    - result_path: Resulting file path.
+    """
+    source_path: InArg[str]
+    dest_path: InArg[str]
+    result_path: OutArg[str]
+
+    def execute(self, ctx) -> None:
+        new_path = shutil.copy2(self.source_path.value, self.dest_path.value)
+        self.result_path.value = new_path
+
+
 @xai_component
 class DeleteFile(Component):
     """Deletes a file.
