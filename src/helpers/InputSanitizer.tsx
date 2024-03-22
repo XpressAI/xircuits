@@ -1,15 +1,17 @@
 function checkInput(input: any, dataType: string): boolean {
 
-    if(input === ""){
-        alert("Input cannot be empty.");
-        return false;
-    }
-
     const normalizedDataType = dataType.toLowerCase();
     let processedInput = "";
     let errorDetails = "";
     let exampleInput = "";
     let inputAsNumber;
+
+    // Allow empty input for specific data types
+    const allowedEmptyTypes = ["string", "secret", "chat", "list", "tuple", "dict"];
+    if(input === "" && !allowedEmptyTypes.includes(normalizedDataType)){
+        alert("Input cannot be empty.");
+        return false;
+    }
 
     const formatError = (detail: string, example: string) => `Invalid ${dataType} input: ${detail} \nExample of a correct ${dataType} format: ${example}`;
 
@@ -49,10 +51,10 @@ function checkInput(input: any, dataType: string): boolean {
             break;
         case "list":
         case "tuple": // Validate tuple as list, as JS doesn't have native tuples
-            processedInput = `[${input}]`;
+            processedInput = input === "" ? "[]" : `[${input}]`;
             break;
         case "dict":
-            processedInput = `{${input}}`;
+            processedInput = input === "" ? "{}" : `{${input}}`;
             break;
         case "true":
         case "false":
