@@ -151,7 +151,7 @@ class CreateNewLibraryHandler(APIHandler):
     @tornado.web.authenticated
     def post(self):
         input_data = self.get_json_body()
-        library_name = input_data.get("libraryName")
+        library_name = input_data.get("libraryName", "").lower()
         component_filename = input_data.get("componentFilename", "new_component.py")
         component_content = input_data.get("componentCode", "")
 
