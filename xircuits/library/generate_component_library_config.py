@@ -1,4 +1,5 @@
 import os
+import posixpath
 import json
 import toml
 from configparser import ConfigParser
@@ -14,7 +15,7 @@ def parse_gitmodules(gitmodules_path):
         library_id = path.replace('xai_components/xai_', '').upper()
         if path and url:
             modules.append({
-                'path': os.path.normpath(path),
+                'path': posixpath.normpath(path),
                 'url': url,
                 'library_id': library_id 
             })
@@ -44,11 +45,11 @@ def extract_library_info(lib_path, base_path, status="remote"):
     if is_installed_component(lib_path):
         status = "installed"
 
-    library_id = os.path.basename(lib_path).replace('xai_', '').replace('xai-', '').upper()
+    library_id = posixpath.basename(lib_path).replace('xai_', '').replace('xai-', '').upper()
     lib_info = {
-        "name": os.path.basename(lib_path),
+        "name": posixpath.basename(lib_path),
         "library_id": library_id,
-        "local_path": os.path.join(base_path, os.path.relpath(lib_path, start=base_path)),
+        "local_path": posixpath.join(base_path, posixpath.relpath(lib_path, start=base_path)),
         "status": status
     }
 
@@ -74,7 +75,7 @@ def generate_component_library_config(base_path="xai_components", gitmodules_pat
 
     if not os.path.exists(gitmodules_path):
         # Construct the .xircuits/.gitmodules path
-        gitmodules_path = os.path.join('.xircuits', '.gitmodules')
+        gitmodules_path = posixpath.join('.xircuits', '.gitmodules')
     
     libraries = {}
     library_id_map = {}  # Map library IDs to library info
@@ -83,9 +84,9 @@ def generate_component_library_config(base_path="xai_components", gitmodules_pat
     if os.path.exists(gitmodules_path):
         submodules = parse_gitmodules(gitmodules_path)
         for submodule in submodules:
-            submodule_path = os.path.normpath(submodule['path'])
+            submodule_path = posixpath.normpath(submodule['path'])
             library_info = {
-                "name": os.path.basename(submodule_path),
+                "name": posixpath.basename(submodule_path),
                 "library_id": submodule['library_id'],  # Use the library ID from the submodule info
                 "repository": submodule['url'],
                 "local_path": submodule_path,
@@ -96,7 +97,7 @@ def generate_component_library_config(base_path="xai_components", gitmodules_pat
 
     def explore_directory(directory, base_path):
         for item in os.listdir(directory):
-            full_path = os.path.normpath(os.path.join(directory, item))
+            full_path = posixpath.normpath(posixpath.join(directory, item))
             if os.path.isdir(full_path) and item.startswith("xai_"):
                 lib_info = extract_library_info(full_path, base_path)
                 if lib_info:  # If a valid pyproject.toml is found
