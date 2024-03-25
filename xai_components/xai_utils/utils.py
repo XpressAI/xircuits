@@ -11,7 +11,11 @@ import random
 
 @xai_component
 class GetCurrentTime(Component):
-    """Get's the current time in ISO 8601 format.
+    """
+    Retrieves the current time in ISO 8601 format.
+    
+    ##### outPorts:
+    - time_str: The current time as a string in ISO 8601 format.
     """
     time_str: OutArg[str]
     
@@ -29,9 +33,14 @@ class GetCurrentTime(Component):
 
 @xai_component
 class GetCurrentDate(Component):
-    """Gets the current date
     """
+    Retrieves the current date components.
     
+    ##### outPorts:
+    - year: The current year.
+    - month: The current month.
+    - day: The current day.
+    """
     year: OutArg[str]
     month: OutArg[str]
     day: OutArg[str]
@@ -92,6 +101,16 @@ class ConcatString(Component):
 
 @xai_component
 class FormatString(Component):
+    """
+    Formats a string using placeholders and a dictionary of replacements.
+    
+    ##### inPorts:
+    - format_str: The string with placeholders.
+    - args: Dictionary with placeholder replacements.
+    
+    ##### outPorts:
+    - out_str: The formatted string.
+    """
     format_str: InCompArg[str]
     args: InArg[dict]
     out_str: OutArg[str]
@@ -102,6 +121,16 @@ class FormatString(Component):
 
 @xai_component
 class SplitString(Component):
+    """
+    Splits a string by a specified character.
+    
+    ##### inPorts:
+    - string: The string to split.
+    - ch: The character to split the string by.
+    
+    ##### outPorts:
+    - out: List of substrings.
+    """
     string: InArg[str]
     ch: InArg[str]
     out: OutArg[list]
@@ -111,6 +140,16 @@ class SplitString(Component):
 
 @xai_component
 class JoinArrayWithString(Component):
+    """
+    Joins an array of strings into a single string with a separator.
+    
+    ##### inPorts:
+    - array: The array of strings to join.
+    - sep: The separator string.
+    
+    ##### outPorts:
+    - out: The joined string.
+    """
     array: InArg[list]
     sep: InArg[str]
     out: OutArg[str]
@@ -212,6 +251,7 @@ class MoveFile(Component):
     result_path: OutArg[str]
 
     def execute(self, ctx) -> None:
+        import shutil
         new_path = shutil.move(self.source_path.value, self.dest_path.value)
         self.result_path.value = new_path
 
@@ -232,6 +272,7 @@ class CopyFile(Component):
     result_path: OutArg[str]
 
     def execute(self, ctx) -> None:
+        import shutil
         new_path = shutil.copy2(self.source_path.value, self.dest_path.value)
         self.result_path.value = new_path
 
@@ -442,7 +483,6 @@ class IsNone(Component):
     def execute(self, ctx) -> None:
         self.out.value = self.a.value is None
 
-
 @xai_component
 class IsNotNone(Component):
     """Checks if the input value is not None.
@@ -463,7 +503,15 @@ class IsNotNone(Component):
 @xai_component
 class SetDictValue(Component):
     """
-    This component is used to set a value in a dict.
+    Sets a key-value pair in a dictionary, creating a new one if none exists.
+    
+    ##### inPorts:
+    - dict: Input or existing dictionary.
+    - key: Key to set in the dictionary.
+    - value: Value to set for the key.
+    
+    ##### outPorts:
+    - out_dict: Dictionary with the updated key-value pair.
     """
     dict: InArg[dict]
     key: InArg[str]
@@ -471,28 +519,42 @@ class SetDictValue(Component):
     out_dict: OutArg[dict]
 
     def execute(self, ctx) -> None:
-        if self.dict.value is None:
-            self.out_dict.value = {}
-        else:
-            self.out_dict.value = self.dict.value
-            
+        self.out_dict.value = {} if self.dict.value is None else self.dict.value
         self.out_dict.value[self.key.value] = self.value.value
 
 
 @xai_component
 class GetDictValue(Component):
     """
-    This component is used to get a value from a dict.
+    Retrieves a value from a dictionary by key.
+    
+    ##### inPorts:
+    - dict: The dictionary to search.
+    - key: The key for the value to retrieve.
+    
+    ##### outPorts:
+    - value: The retrieved value, or None if the key is not found.
     """
     dict: InArg[dict]
     key: InArg[str]
     value: OutArg[any]
 
     def execute(self, ctx) -> None:
-        self.value.value = self.dict.value[self.key.value]
+        self.value.value = self.dict.value.get(self.key.value)
+
 
 @xai_component
 class ListAppend(Component):
+    """
+    Appends an item to a list.
+    
+    ##### inPorts:
+    - the_list: The list to which the item will be appended.
+    - item: The item to append to the list.
+    
+    ##### outPorts:
+    - out_list: The list with the appended item.
+    """
     the_list: InArg[list]
     item: InCompArg[any]
     out_list: OutArg[list]
@@ -504,6 +566,16 @@ class ListAppend(Component):
 
 @xai_component
 class ListGetItem(Component):
+    """
+    Retrieves an item from a list based on the specified index.
+    
+    ##### inPorts:
+    - the_list: The list from which to retrieve the item.
+    - index: The index of the item in the list.
+    
+    ##### outPorts:
+    - out_item: The retrieved item.
+    """
     the_list: InCompArg[list]
     index: InCompArg[int]
     out_item: OutArg[any]
@@ -513,6 +585,17 @@ class ListGetItem(Component):
 
 @xai_component
 class ListSetItem(Component):
+    """
+    Sets an item in a list at the specified index.
+    
+    ##### inPorts:
+    - the_list: The list in which to set the item.
+    - index: The index at which to set the item.
+    - item: The item to set in the list.
+    
+    ##### outPorts:
+    - out_list: The list with the set item.
+    """
     the_list: InCompArg[list]
     index: InCompArg[int]
     item: InCompArg[any]
@@ -524,6 +607,16 @@ class ListSetItem(Component):
 
 @xai_component
 class DictGetItem(Component):
+    """
+    Retrieves an item from a dictionary using the specified key.
+    
+    ##### inPorts:
+    - the_dict: The dictionary from which to retrieve the item.
+    - key: The key corresponding to the item in the dictionary.
+    
+    ##### outPorts:
+    - out_item: The retrieved item.
+    """
     the_dict: InCompArg[dict]
     key: InCompArg[any]
     out_item: OutArg[any]
@@ -534,6 +627,17 @@ class DictGetItem(Component):
 
 @xai_component
 class DictSetItem(Component):
+    """
+    Sets an item in a dictionary with the specified key.
+    
+    ##### inPorts:
+    - the_dict: The dictionary in which to set the item.
+    - key: The key under which to set the item.
+    - item: The item to be set in the dictionary.
+    
+    ##### outPorts:
+    - out_dict: The dictionary with the set item.
+    """
     the_dict: InArg[dict]
     key: InCompArg[any]
     item: InCompArg[any]
@@ -547,6 +651,15 @@ class DictSetItem(Component):
 
 @xai_component
 class ToJson(Component):
+    """
+    Converts an object to a JSON string.
+    
+    ##### inPorts:
+    - obj: The object to convert to JSON.
+    
+    ##### outPorts:
+    - json_str: The JSON string representation of the object.
+    """
     obj: InCompArg[any]
     
     json_str: OutArg[str]
@@ -557,6 +670,15 @@ class ToJson(Component):
 
 @xai_component
 class FromJson(Component):
+    """
+    Converts a JSON string to an object.
+    
+    ##### inPorts:
+    - json_str: The JSON string to convert to an object.
+    
+    ##### outPorts:
+    - obj: The object represented by the JSON string.
+    """
     json_str: InCompArg[str]
     
     obj: OutArg[any]
@@ -567,6 +689,16 @@ class FromJson(Component):
 
 @xai_component
 class GetRandomNumber(Component):
+    """
+    Generates a random number between the specified bounds.
+    
+    ##### inPorts:
+    - greater_than: The lower bound for the random number (inclusive).
+    - less_than: The upper bound for the random number (exclusive).
+    
+    ##### outPorts:
+    - value: The generated random number.
+    """
     greater_than: InCompArg[int]
     less_than: InCompArg[int]
     

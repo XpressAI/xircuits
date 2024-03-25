@@ -48,6 +48,7 @@ $ xircuits install <component library name>
 | [HF Agent](https://github.com/XpressAI/xai-hfagent) | Components for Hugging Face agents. | - |
 | [Actors](https://github.com/XpressAI/xai-actors) | Create actor models in Xircuits. | - |
 | [VertexAI](https://github.com/XpressAI/xai-google-vertexai) | Interface with Google Vertex AI in Xircuits. | - |
+| [Gemini](https://github.com/XpressAI/xai-google-gemini) |  A suite of components designed to integrate the newest Google Generative AI library into Xircuits. | - |
 | [Xircuits Converse](https://github.com/XpressAI/xai-converse) | Integrate conversational AI with OpenAI API in Xircuits. | - |
 | [Xpress AI Agent Library](https://github.com/XpressAI/xai-agent) | Define agents and tools in Xircuits with OpenAI and Google Vertex support. | - |
 | [Stability AI](https://github.com/YourGithubRepo/xai-stabilityai) | Generate, modify, and upscale images using Stability AI components. | 0.1.0 |
