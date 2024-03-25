@@ -20,16 +20,18 @@ def cmd_start_xircuits(args, extra_args=[]):
     if not component_library_path.exists():
         copy_from_installed_wheel('xai_components', '', 'xai_components')
 
+    news_url_option = '--LabApp.news_url="https://xpress.ai/blog/atom.xml"'
+
     # handler for extra jupyterlab launch options
     if extra_args:
         try:
-            launch_cmd = "jupyter lab" + " " + " ".join(extra_args)
+            launch_cmd = "jupyter lab" + " " + " ".join(extra_args) + " " + news_url_option
             os.system(launch_cmd)
         except Exception as e:
             print("Error in launch args! Error log:\n")
             print(e)
     else:
-        os.system("jupyter lab")
+        os.system(f"jupyter lab {news_url_option}")
 
 def cmd_download_examples(args, extra_args=[]):
     if not os.path.exists("examples") or is_empty("examples"):
