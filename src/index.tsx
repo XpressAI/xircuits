@@ -365,8 +365,9 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     
           try {
             await app.serviceManager.contents.copy(path, rootPath);
-            await app.commands.execute('filebrowser:go-to-path', { path: '/' });
             await app.commands.execute(commandIDs.openDocManager, { path: rootPath, factory: FACTORY });
+            await app.commands.execute('filebrowser:activate', { path: rootPath });
+            await app.commands.execute('filebrowser:go-to-path', { path: rootPath });
           } catch (err) {
             if (err.response && err.response.status === 400) {
               alert(`Error: The file '${fileName}' already exists in the root directory.`);
