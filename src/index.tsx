@@ -368,7 +368,11 @@ const xircuits: JupyterFrontEndPlugin<void> = {
             await app.commands.execute('filebrowser:go-to-path', { path: '/' });
             await app.commands.execute(commandIDs.openDocManager, { path: rootPath, factory: FACTORY });
           } catch (err) {
-            console.error(`Error copying file '${fileName}': ${err}`);
+            if (err.response && err.response.status === 400) {
+              alert(`Error: The file '${fileName}' already exists in the root directory.`);
+            } else {
+              alert(`Error copying file '${fileName}': ${err}`);
+            }
           }
         }
       },
