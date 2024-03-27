@@ -356,17 +356,25 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     app.commands.addCommand(commandIDs.copyXircuitsToRoot, {
       execute: async () => {
-        const xircuitsFile = browserFactory.tracker.currentWidget?.selectedItems().next().value;
-        const path = xircuitsFile.path;
-        const fileName = path.split('/').pop();
-        const rootPath = `/${fileName}`;
-
-        app.serviceManager.contents.copy(path, rootPath);
-        await app.commands.execute('filebrowser:activate', { path: rootPath });
-        await app.commands.execute('filebrowser:go-to-path', { path: '/' });
-        await app.commands.execute(commandIDs.openDocManager, { path: rootPath, factory: FACTORY });
+        const selectedItems = [...browserFactory.tracker.currentWidget.selectedItems()];
+        
+        for (const xircuitsFile of selectedItems) {
+          const path = xircuitsFile.path;
+          const fileName = path.split('/').pop();
+          const rootPath = `/${fileName}`;
+    
+          try {
+            await app.serviceManager.contents.copy(path, rootPath);
+            await app.commands.execute('filebrowser:go-to-path', { path: '/' });
+            await app.commands.execute(commandIDs.openDocManager, { path: rootPath, factory: FACTORY });
+          } catch (err) {
+            console.error(`Error copying file '${fileName}': ${err}`);
+          }
+        }
       },
-      label: 'Copy To Root Directory'
+      label: 'Copy To Root Directory',
+      isVisible: () => [...browserFactory.tracker.currentWidget.selectedItems()].length > 0,
+      icon: xircuitsIcon
     });
 
     app.contextMenu.addItem({
