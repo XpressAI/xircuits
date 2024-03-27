@@ -4,7 +4,6 @@ import {
   JupyterFrontEndPlugin,
   ILayoutRestorer
 } from '@jupyterlab/application';
-import { PathExt } from '@jupyterlab/coreutils';
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { commandIDs } from './components/XircuitsBodyWidget';
 import {
@@ -15,7 +14,7 @@ import {
 import { ILauncher } from '@jupyterlab/launcher';
 import { XircuitsFactory } from './XircuitsFactory';
 import Sidebar from './tray_library/Sidebar';
-import { IDocumentManager } from '@jupyterlab/docmanager';
+import { IDocumentManager, renameDialog } from '@jupyterlab/docmanager';
 import { ITranslator } from '@jupyterlab/translation';
 import { Log, logPlugin } from './log/LogPlugin';
 import { requestAPI } from './server/handler';
@@ -356,8 +355,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     app.commands.addCommand(commandIDs.copyXircuitsToRoot, {
       execute: async () => {
-        const selectedItems = [...browserFactory.tracker.currentWidget.selectedItems()];
-        
+        const selectedItems = Array.from(browserFactory.tracker.currentWidget.selectedItems());
+    
         for (const xircuitsFile of selectedItems) {
           const path = xircuitsFile.path;
           const fileName = path.split('/').pop();
@@ -365,14 +364,19 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     
           try {
             await app.serviceManager.contents.copy(path, rootPath);
-            await app.commands.execute(commandIDs.openDocManager, { path: rootPath, factory: FACTORY });
-            await app.commands.execute('filebrowser:activate', { path: rootPath });
-            await app.commands.execute('filebrowser:go-to-path', { path: rootPath });
+            await app.commands.execute('filebrowser:go-to-path', { path: '/' });
+    
+            // Open the file if needed, then prompt for renaming
+            const openedWidget = await app.commands.execute(commandIDs.openDocManager, { path: rootPath, factory: FACTORY });
+            const fileContext = docmanager.contextForWidget(openedWidget);
+            if (fileContext) {
+              await renameDialog(docmanager, fileContext);
+            }
           } catch (err) {
             if (err.response && err.response.status === 400) {
               alert(`Error: The file '${fileName}' already exists in the root directory.`);
             } else {
-              alert(`Error copying file '${fileName}': ${err}`);
+              alert(`Error copying file '${fileName}': ${err.message || err}`);
             }
           }
         }
