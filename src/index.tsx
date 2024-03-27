@@ -355,10 +355,16 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     });
 
     app.commands.addCommand(commandIDs.copyXircuitsToRoot, {
-      execute: args => {
+      execute: async () => {
         const xircuitsFile = browserFactory.tracker.currentWidget?.selectedItems().next().value;
         const path = xircuitsFile.path;
-        console.log(path);
+        const fileName = path.split('/').pop();
+        const rootPath = `/${fileName}`;
+
+        app.serviceManager.contents.copy(path, rootPath);
+        await app.commands.execute('filebrowser:activate', { path: rootPath });
+        await app.commands.execute('filebrowser:go-to-path', { path: '/' });
+        await app.commands.execute(commandIDs.openDocManager, { path: rootPath, factory: FACTORY });
       },
       label: 'Copy To Root Directory'
     });
