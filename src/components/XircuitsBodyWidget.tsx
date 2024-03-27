@@ -73,6 +73,7 @@ export const commandIDs = {
 	saveDocManager: 'docmanager:save',
 	reloadDocManager: 'docmanager:reload',
 	createNewXircuit: 'Xircuit-editor:create-new',
+	copyXircuitsToRoot: 'Xircuit-editor:copy-to-root',
 	saveXircuit: 'Xircuit-editor:save-node',
 	compileXircuit: 'Xircuit-editor:compile-node',
 	runXircuit: 'Xircuit-editor:run-node',

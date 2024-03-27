@@ -4,6 +4,7 @@ import {
   JupyterFrontEndPlugin,
   ILayoutRestorer
 } from '@jupyterlab/application';
+import { PathExt } from '@jupyterlab/coreutils';
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { commandIDs } from './components/XircuitsBodyWidget';
 import {
@@ -351,6 +352,20 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       execute: args => {
         widgetFactory.toggleAllLinkAnimationSignal.emit(args);
       }
+    });
+
+    app.commands.addCommand(commandIDs.copyXircuitsToRoot, {
+      execute: args => {
+        const xircuitsFile = browserFactory.tracker.currentWidget?.selectedItems().next().value;
+        const path = xircuitsFile.path;
+        console.log(path);
+      },
+      label: 'Copy To Root Directory'
+    });
+
+    app.contextMenu.addItem({
+      command: commandIDs.copyXircuitsToRoot,
+      selector: '.jp-DirListing-item[data-file-type="xircuits"]',
     });
 
     // Add a launcher item if the launcher is available.
