@@ -127,6 +127,8 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigg
             const examplePath = await buildLocalFilePath(libraryName, 'default_example_path');
             if (examplePath) {
                 await app.commands.execute('docmanager:open', { path: examplePath });
+                await app.commands.execute('filebrowser:activate', { path: examplePath });
+                await app.commands.execute('filebrowser:go-to-path', { path: examplePath });
             }
         } catch (error) {
             alert('Failed to Show Example: ' + error);

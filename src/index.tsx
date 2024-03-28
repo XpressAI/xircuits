@@ -14,7 +14,7 @@ import {
 import { ILauncher } from '@jupyterlab/launcher';
 import { XircuitsFactory } from './XircuitsFactory';
 import Sidebar from './tray_library/Sidebar';
-import { IDocumentManager } from '@jupyterlab/docmanager';
+import { IDocumentManager, renameDialog } from '@jupyterlab/docmanager';
 import { ITranslator } from '@jupyterlab/translation';
 import { Log, logPlugin } from './log/LogPlugin';
 import { requestAPI } from './server/handler';
@@ -351,6 +351,44 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       execute: args => {
         widgetFactory.toggleAllLinkAnimationSignal.emit(args);
       }
+    });
+
+    app.commands.addCommand(commandIDs.copyXircuitsToRoot, {
+      execute: async () => {
+        const selectedItems = Array.from(browserFactory.tracker.currentWidget.selectedItems());
+    
+        for (const xircuitsFile of selectedItems) {
+          const path = xircuitsFile.path;
+          const fileName = path.split('/').pop();
+          const rootPath = `/${fileName}`;
+    
+          try {
+            await app.serviceManager.contents.copy(path, rootPath);
+            await app.commands.execute('filebrowser:go-to-path', { path: '/' });
+    
+            // Open the file if needed, then prompt for renaming
+            const openedWidget = await app.commands.execute(commandIDs.openDocManager, { path: rootPath, factory: FACTORY });
+            const fileContext = docmanager.contextForWidget(openedWidget);
+            if (fileContext) {
+              await renameDialog(docmanager, fileContext);
+            }
+          } catch (err) {
+            if (err.response && err.response.status === 400) {
+              alert(`Error: The file '${fileName}' already exists in the root directory.`);
+            } else {
+              alert(`Error copying file '${fileName}': ${err.message || err}`);
+            }
+          }
+        }
+      },
+      label: 'Copy To Root Directory',
+      isVisible: () => [...browserFactory.tracker.currentWidget.selectedItems()].length > 0,
+      icon: xircuitsIcon
+    });
+
+    app.contextMenu.addItem({
+      command: commandIDs.copyXircuitsToRoot,
+      selector: '.jp-DirListing-item[data-file-type="xircuits"]',
     });
 
     // Add a launcher item if the launcher is available.
