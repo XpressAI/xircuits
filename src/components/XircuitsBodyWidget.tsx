@@ -685,9 +685,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		  return;
 		}
 
+		await app.commands.execute(commandIDs.refreshComponentList);
 		let allNodes = xircuitsApp.getDiagramEngine().getModel().getNodes();
 		allNodes.forEach(node => node.setSelected(true));
-
 		const reloadPromise = app.commands.execute(commandIDs.reloadNode);
 	
 		// Trigger loading animation
