@@ -1,4 +1,5 @@
-import { DefaultLinkFactory } from '@projectstorm/react-diagrams';
+import { DefaultLinkFactory, DefaultLinkWidget } from "@projectstorm/react-diagrams";
+import {  LinkWidget } from '@projectstorm/react-diagrams-core';
 import * as React from 'react';
 import { ParameterLinkModel, TriangleLinkModel } from './CustomLinkModel';
 import styled from '@emotion/styled';
@@ -46,7 +47,97 @@ function removeHover(model: TriangleLinkModel | ParameterLinkModel){
 				}
 }
 
-export class ParameterLinkFactory extends DefaultLinkFactory {
+class SelectOnClickLinkWidget extends DefaultLinkWidget {
+	constructor(type) {
+		super(type);
+		console.log(type)
+	}
+	addPointToLink(event: React.MouseEvent, index: number) {
+		if (
+			event.ctrlKey &&
+			!this.props.link.isLocked() &&
+			this.props.link.getPoints().length - 1 <= this.props.diagramEngine.getMaxNumberPointsPerLink()
+		) {
+			event.stopPropagation();
+
+			const position = this.props.diagramEngine.getRelativeMousePoint(event);
+			const point = this.props.link.point(position.x, position.y, index);
+			event.persist();
+			this.forceUpdate(() => {
+				this.props.diagramEngine.getActionEventBus().fireAction({
+					event,
+					model: point
+				});
+			});
+		}
+	}
+
+	render() {
+		//ensure id is present for all points on the path
+		var points = this.props.link.getPoints();
+		var paths = [];
+		this.refPaths = [];
+
+		if (points.length === 2) {
+			paths.push(
+				this.generateLink(
+					this.props.link.getSVGPath(),
+					{
+						onMouseDown: (event) => {
+							this.props.selected?.(event);
+							this.addPointToLink(event, 1);
+						}
+					},
+					'0'
+				)
+			);
+
+			// draw the link as dangeling
+			if (this.props.link.getTargetPort() == null) {
+				paths.push(this.generatePoint(points[1]));
+			}
+		} else {
+			//draw the multiple anchors and complex line instead
+			for (let j = 0; j < points.length - 1; j++) {
+				paths.push(
+					this.generateLink(
+						LinkWidget.generateLinePath(points[j], points[j + 1]),
+						{
+							'data-linkid': this.props.link.getID(),
+							'data-point': j,
+							onMouseDown: (event) => {
+								this.props.selected?.(event);
+								this.addPointToLink(event, j + 1);
+							}
+						},
+						j
+					)
+				);
+			}
+
+			if (this.renderPoints()) {
+				//render the circles
+				for (let i = 1; i < points.length - 1; i++) {
+					paths.push(this.generatePoint(points[i]));
+				}
+
+				if (this.props.link.getTargetPort() == null) {
+					paths.push(this.generatePoint(points[points.length - 1]));
+				}
+			}
+		}
+
+		return <g data-default-link-test={this.props.link.getOptions().testName}>{paths}</g>;
+	}
+}
+
+class SelectOnClickLinkFactory extends DefaultLinkFactory {
+	generateReactWidget(event: any): JSX.Element {
+		return <SelectOnClickLinkWidget link={event.model} diagramEngine={this.engine} />;
+	}
+}
+
+export class ParameterLinkFactory extends SelectOnClickLinkFactory {
 	constructor() {
 		super('parameter-link');
 	}
@@ -69,7 +160,7 @@ export class ParameterLinkFactory extends DefaultLinkFactory {
 	}
 }
 
-export class TriangleLinkFactory extends DefaultLinkFactory {
+export class TriangleLinkFactory extends SelectOnClickLinkFactory {
 	constructor() {
 		super('triangle-link');
 	}
