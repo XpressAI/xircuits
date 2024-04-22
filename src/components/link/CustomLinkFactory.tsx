@@ -50,7 +50,6 @@ function removeHover(model: TriangleLinkModel | ParameterLinkModel){
 class SelectOnClickLinkWidget extends DefaultLinkWidget {
 	constructor(type) {
 		super(type);
-		console.log(type)
 	}
 	addPointToLink(event: React.MouseEvent, index: number) {
 		if (
