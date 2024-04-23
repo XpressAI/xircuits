@@ -23,6 +23,7 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
         let visibility = getMenuOptionsVisibility(models);
 
         const handleReloadNode = async () => {
+            await this.props.app.commands.execute(commandIDs.refreshComponentList);
             let loadPromise = await this.props.app.commands.execute(commandIDs.reloadNode);
             await this.props.app.commands.execute(commandIDs.triggerLoadingAnimation, { loadPromise,
                 loadingMessage: 'Reloading node...', loadingDisplayDuration: 10000, showLoadingAfter: 10 
