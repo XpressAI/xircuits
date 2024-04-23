@@ -1098,6 +1098,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		hidePanel();
 	};
 
+	useEffect(() => {
+		const canvas = xircuitsApp.getDiagramEngine().getCanvas()
+		canvas.addEventListener('wheel', preventDefault);
+		return () => {
+			canvas.removeEventListener('wheel', preventDefault);
+		}
+	}, [xircuitsApp.getDiagramEngine().getCanvas()])
+
 	return (
 		<Body>
 			<Content>

@@ -1,7 +1,6 @@
 import * as SRD from '@projectstorm/react-diagrams';
 import { CustomNodeFactory } from "./node/CustomNodeFactory";
 import { CustomNodeModel } from './node/CustomNodeModel';
-import { ZoomCanvasAction } from '@projectstorm/react-canvas-core';
 import { CustomActionEvent } from '../commands/CustomActionEvent';
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { CustomDiagramState } from './state/CustomDiagramState'
@@ -10,6 +9,7 @@ import { ParameterLinkFactory, TriangleLinkFactory } from './link/CustomLinkFact
 import { PointModel } from '@projectstorm/react-diagrams';
 import { Point } from '@projectstorm/geometry';
 import { BaseComponentLibrary } from '../tray_library/BaseComponentLib';
+import { CustomPanAndZoomCanvasAction } from "./actions/CustomPanAndZoomCanvasAction";
 
 export class XircuitsApplication {
 
@@ -24,7 +24,7 @@ export class XircuitsApplication {
                 this.diagramEngine.getNodeFactories().registerFactory(new CustomNodeFactory(app, shell));
                 this.diagramEngine.getLinkFactories().registerFactory(new ParameterLinkFactory());
                 this.diagramEngine.getLinkFactories().registerFactory(new TriangleLinkFactory());
-                this.diagramEngine.getActionEventBus().registerAction(new ZoomCanvasAction({ inverseZoom: true }))
+                this.diagramEngine.getActionEventBus().registerAction(new CustomPanAndZoomCanvasAction())
                 this.diagramEngine.getActionEventBus().registerAction(new CustomActionEvent({ app }));
                 this.diagramEngine.getStateMachine().pushState(new CustomDiagramState());
                 
