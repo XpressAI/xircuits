@@ -1,6 +1,7 @@
 import { Action, ActionEvent, InputType } from '@projectstorm/react-canvas-core';
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import { commandIDs } from '../components/XircuitsBodyWidget';
+
+import { commandIDs } from "./CommandIDs";
 
 interface CustomActionEventOptions {
     app: JupyterFrontEnd;

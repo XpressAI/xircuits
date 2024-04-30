@@ -5,7 +5,6 @@ import {
   ILayoutRestorer
 } from '@jupyterlab/application';
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
-import { commandIDs } from './components/XircuitsBodyWidget';
 import {
   WidgetTracker,
   ReactWidget,
@@ -30,6 +29,7 @@ import { xircuitsIcon, componentLibIcon, changeFavicon, xircuitsFaviconLink } fr
 import { createInitXircuits } from './helpers/CanvasInitializer';
 import type { CommandRegistry } from "@lumino/commands/src";
 import type { Signal } from "@lumino/signaling";
+import { commandIDs } from "./commands/CommandIDs";
 
 
 const FACTORY = 'Xircuits editor';

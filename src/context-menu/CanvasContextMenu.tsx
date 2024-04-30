@@ -2,9 +2,9 @@ import * as React from 'react';
 
 import { JupyterFrontEnd } from '@jupyterlab/application';
 import { DiagramEngine, NodeModel, LinkModel } from '@projectstorm/react-diagrams';
-import { commandIDs } from '../components/XircuitsBodyWidget';
 
 import '../../style/ContextMenu.css'
+import { commandIDs } from "../commands/CommandIDs";
 
 export interface CanvasContextMenuProps {
 	app: JupyterFrontEnd;

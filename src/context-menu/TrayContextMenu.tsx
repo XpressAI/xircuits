@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { requestAPI } from '../server/handler';
-import { commandIDs } from '../components/XircuitsBodyWidget';
 import { startRunOutputStr } from '../components/runner/RunOutput';
 import '../../style/ContextMenu.css';
 import { buildLocalFilePath, fetchLibraryConfig } from '../tray_library/ComponentLibraryConfig';
+import { commandIDs } from "../commands/CommandIDs";
 
 export interface TrayContextMenuProps {
     app: any;

@@ -1,6 +1,5 @@
 import * as SRD from '@projectstorm/react-diagrams';
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import { commandIDs } from '../components/XircuitsBodyWidget';
 import { ITranslator } from '@jupyterlab/translation';
 import { IXircuitsDocTracker } from '../index';
 import * as _ from 'lodash';
@@ -25,6 +24,7 @@ import { handleLiteralInput } from '../tray_library/GeneralComponentLib';
 import { CustomDynaPortModel } from '../components/port/CustomDynaPortModel';
 import { fetchComponents } from '../tray_library/Component';
 import { BaseComponentLibrary } from '../tray_library/BaseComponentLib';
+import { commandIDs } from "./CommandIDs";
 
 /**
  * Add the commands for node actions.

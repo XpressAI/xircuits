@@ -1,34 +1,38 @@
-import React, { FC, useState, useCallback, useEffect, useRef } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 
-import { CanvasWidget } from '@projectstorm/react-canvas-core';
-import { LinkModel } from '@projectstorm/react-diagrams';
-import { NodeModel } from "@projectstorm/react-diagrams";
+import { CanvasWidget } from "@projectstorm/react-canvas-core";
+import { LinkModel, NodeModel } from "@projectstorm/react-diagrams";
 
-import { Dialog, showDialog, showErrorMessage } from '@jupyterlab/apputils';
-import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
-import { DocumentRegistry } from '@jupyterlab/docregistry';
-import { ServiceManager } from '@jupyterlab/services';
-import { Signal } from '@lumino/signaling';
+import { Dialog, showDialog, showErrorMessage } from "@jupyterlab/apputils";
+import { ILabShell, JupyterFrontEnd } from "@jupyterlab/application";
+import { DocumentRegistry } from "@jupyterlab/docregistry";
+import { ServiceManager } from "@jupyterlab/services";
+import { Signal } from "@lumino/signaling";
 
-import { XircuitsPanel } 			from '../XircuitsWidget';
-import { XircuitsApplication } 	from './XircuitsApp';
-import { XircuitsCanvasWidget } 	from '../helpers/XircuitsCanvasWidget';
-import { Log } 					from '../log/LogPlugin';
-import { formDialogWidget } 	from '../dialog/formDialogwidget';
-import { showFormDialog } 		from '../dialog/FormDialog';
-import { inputDialog } 			from '../dialog/LiteralInputDialog';
-import { getItsLiteralType } 	from '../dialog/input-dialogues/VariableInput';
-import { RunDialog } 			from '../dialog/RunDialog';
-import { requestAPI } 			from '../server/handler';
-import ComponentsPanel 			from '../context-menu/ComponentsPanel';
-import { CanvasContextMenu, countVisibleMenuOptions, getMenuOptionsVisibility } 	from '../context-menu/CanvasContextMenu';
-import { cancelDialog, GeneralComponentLibrary } 		from '../tray_library/GeneralComponentLib';
-import { AdvancedComponentLibrary, fetchNodeByName } 	from '../tray_library/AdvanceComponentLib';
-import { lowPowerMode, setLowPowerMode } from './state/powerModeState';
-import { startRunOutputStr } from './runner/RunOutput';
-import { doRemoteRun } from './runner/RemoteRun';
+import { XircuitsPanel } from "../XircuitsWidget";
+import { XircuitsApplication } from "./XircuitsApp";
+import { XircuitsCanvasWidget } from "../helpers/XircuitsCanvasWidget";
+import { Log } from "../log/LogPlugin";
+import { formDialogWidget } from "../dialog/formDialogwidget";
+import { showFormDialog } from "../dialog/FormDialog";
+import { inputDialog } from "../dialog/LiteralInputDialog";
+import { getItsLiteralType } from "../dialog/input-dialogues/VariableInput";
+import { RunDialog } from "../dialog/RunDialog";
+import { requestAPI } from "../server/handler";
+import ComponentsPanel from "../context-menu/ComponentsPanel";
+import {
+	CanvasContextMenu,
+	countVisibleMenuOptions,
+	getMenuOptionsVisibility
+} from "../context-menu/CanvasContextMenu";
+import { cancelDialog, GeneralComponentLibrary } from "../tray_library/GeneralComponentLib";
+import { AdvancedComponentLibrary, fetchNodeByName } from "../tray_library/AdvanceComponentLib";
+import { lowPowerMode, setLowPowerMode } from "./state/powerModeState";
+import { startRunOutputStr } from "./runner/RunOutput";
+import { doRemoteRun } from "./runner/RemoteRun";
 
-import styled from '@emotion/styled';
+import styled from "@emotion/styled";
+import { commandIDs } from "../commands/CommandIDs";
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -66,41 +70,6 @@ export const Layer = styled.div`
 		position: relative;
 		flex-grow: 1;
 	`;
-
-export const commandIDs = {
-	openDocManager: 'docmanager:open',
-	newDocManager: 'docmanager:new-untitled',
-	saveDocManager: 'docmanager:save',
-	reloadDocManager: 'docmanager:reload',
-	createNewXircuit: 'Xircuit-editor:create-new',
-	copyXircuitsToRoot: 'Xircuit-editor:copy-to-root',
-	saveXircuit: 'Xircuit-editor:save-node',
-	compileXircuit: 'Xircuit-editor:compile-node',
-	runXircuit: 'Xircuit-editor:run-node',
-	lockXircuit: 'Xircuit-editor:lock-node',
-	openScript: 'Xircuit-editor:open-node-script',
-	undo: 'Xircuit-editor:undo',
-	redo: 'Xircuit-editor:redo',
-	cutNode: 'Xircuit-editor:cut-node',
-	copyNode: 'Xircuit-editor:copy-node',
-	pasteNode: 'Xircuit-editor:paste-node',
-	triggerLoadingAnimation: 'Xircuit-editor:trigger-loading-animation',
-	reloadNode: 'Xircuit-editor:reload-node',
-	reloadAllNodes: 'Xircuit-editor:reload-all-nodes',
-	toggleAllLinkAnimation: 'Xircuit-editor:toggle-all-link-animation',
-	editNode: 'Xircuit-editor:edit-node',
-	deleteEntity: 'Xircuit-editor:delete-entities',
-	addNodeGivenPosition: 'Xircuit-editor:add-node', 
-	connectNodeByLink: 'Xircuit-editor:connect-node',
-	connectLinkToObviousPorts: 'Xircuit-editor:connect-obvious-link',
-	addCommentNode: 'Xircuit-editor:add-comment-node',
-	compileFile: 'Xircuit-editor:compile-file',
-	nextNode: 'Xircuit-editor:next-node',
-	outputMsg: 'Xircuit-log:logOutputMessage',
-	executeToOutputPanel: 'Xircuit-output-panel:execute',
-	createNewComponentLibrary: 'Xircuit-editor:new-component-library',
-	refreshComponentList: 'xircuits-sidebar:refresh-component-list'
-};
 
 
 export const BodyWidget: FC<BodyWidgetProps> = ({

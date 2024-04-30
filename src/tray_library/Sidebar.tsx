@@ -18,7 +18,6 @@ import TrayContextMenu from '../context-menu/TrayContextMenu';
 
 import '../../style/ContextMenu.css'
 import { ComponentLibraryConfig, refreshComponentLibraryConfigCache } from './ComponentLibraryConfig';
-import { commandIDs } from '../components/XircuitsBodyWidget';
 
 export const Body = styled.div`
   flex-grow: 1;

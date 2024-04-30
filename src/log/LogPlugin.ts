@@ -21,9 +21,9 @@ import {
   ITextLog,
   IOutputLog,
 } from '@jupyterlab/logconsole';
-import { commandIDs } from '../components/XircuitsBodyWidget';
 import { requestAPI } from '../server/handler';
 import { DockLayout } from '@lumino/widgets';
+import { commandIDs } from "../commands/CommandIDs";
 
 /**
  * The command IDs used by the log plugin.

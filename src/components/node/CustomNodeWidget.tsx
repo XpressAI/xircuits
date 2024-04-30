@@ -5,7 +5,6 @@ import { DefaultNodeModel } from '@projectstorm/react-diagrams';
 import styled from '@emotion/styled';
 import Toggle from 'react-toggle'
 import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
-import { commandIDs } from '../XircuitsBodyWidget';
 import { CustomPortLabel } from '../port/CustomPortLabel';
 import { Dialog } from '@jupyterlab/apputils';
 import { formDialogWidget } from '../../dialog/formDialogwidget';
@@ -14,6 +13,7 @@ import { CommentDialog } from '../../dialog/CommentDialog';
 import ReactTooltip from "react-tooltip"
 import { marked } from 'marked';
 import Color from 'colorjs.io';
+import { commandIDs } from "../../commands/CommandIDs";
 
 var S;
 (function (S) {

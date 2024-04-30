@@ -3,7 +3,8 @@ import * as React from 'react';
 import styled from '@emotion/styled';
 
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import { commandIDs } from '../components/XircuitsBodyWidget';
+
+import { commandIDs } from "../commands/CommandIDs";
 
 export interface TrayItemWidgetProps {
 	model: any;
