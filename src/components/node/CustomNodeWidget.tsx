@@ -155,24 +155,23 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         this.props.app.commands.execute(commandIDs.editNode)
     }
 
-    dialogOptions: Partial<Dialog.IOptions<any>> = {
-        body: formDialogWidget(
-                <CommentDialog commentInput={this.state.commentInput}/>
-        ),
-        buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Submit') })],
-	focusNodeSelector: 'textarea'
-    };
-
     /**
      * Allow to edit Comment Component
      */
     async handleEditComment(){
-        let dialogResult = await showFormDialog(this.dialogOptions)
+        let dialogResult = await showFormDialog({
+            body: formDialogWidget(
+                    <CommentDialog commentInput={this.state.commentInput}/>
+            ),
+            buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Submit') })],
+            focusNodeSelector: 'textarea'
+        })
 
         if (dialogResult["button"]["label"] == 'Cancel') {
-			// When Cancel is clicked on the dialog, just return
-			return false;
-		}
+          // When Cancel is clicked on the dialog, just return
+          return false;
+		    }
+
         const newVal = dialogResult["value"]['']
         //  update value both in internal component state
         this.setState({ commentInput: newVal });
