@@ -2,6 +2,7 @@ import { DefaultNodeModel } from '@projectstorm/react-diagrams';
 import { BaseModelOptions, DeserializeEvent} from '@projectstorm/react-canvas-core';
 import { CustomPortModel } from "../port/CustomPortModel";
 import { CustomDynaPortModel, DYNAMIC_PARAMETER_NODE_TYPES, DynaPortRef } from "../port/CustomDynaPortModel";
+import type { Point } from "@projectstorm/geometry";
 
 
 export interface CustomNodeModelOptions extends BaseModelOptions {
@@ -42,10 +43,9 @@ export class CustomNodeModel extends DefaultNodeModel {
         this.extras=event.data.extras;
     }
 
-    addOutPortEnhance({ label, name, order = null, id, dataType}: 
-        { label: string, name: string, order?: number, id?: string, dataType?: string}): CustomPortModel {
+    addOutPortEnhance({ label, name, order = null, id, dataType, position = null}:
+        { label: string, name: string, order?: number, id?: string, dataType?: string, position?: Point}): CustomPortModel {
 
-                
         //check if portID is passed, if not SR will generate a new port ID
         const p = (id) ? new CustomPortModel({in: false, name: name, label: label, id:id, dataType: dataType}) : 
                          new CustomPortModel({in: false, name: name, label: label, dataType: dataType});
@@ -53,12 +53,15 @@ export class CustomNodeModel extends DefaultNodeModel {
         if (order !== null) {
             this.portsOut.splice(order, 0, p);
         }
+        if (position !== null){
+            p.setPosition(position);
+        }
 
         return this.addPort(p);
     }
 
-    addInPortEnhance({ label, name, varName = label, order = null, id, dataType, dynaPortOrder = 0, dynaPortRef = { previous: null, next: null } }: 
-        { label: string, name: string, varName?: string, order?: number, id?: string, dataType?: string, dynaPortOrder?: number, dynaPortRef?: DynaPortRef}): CustomPortModel {
+    addInPortEnhance({ label, name, varName = label, order = null, id, dataType, dynaPortOrder = 0, dynaPortRef = { previous: null, next: null }, position = null }:
+        { label: string, name: string, varName?: string, order?: number, id?: string, dataType?: string, dynaPortOrder?: number, dynaPortRef?: DynaPortRef, position?: Point}): CustomPortModel {
                 
         // // Check if portID is passed, if not SR will generate a new port ID
         let p: CustomPortModel;
@@ -76,7 +79,11 @@ export class CustomNodeModel extends DefaultNodeModel {
         if (order !== null) {
                 this.portsIn.splice(order, 0, p);
         }
-    
+
+        if (position !== null){
+            p.setPosition(position);
+        }
+
         return this.addPort(p);
         
     }

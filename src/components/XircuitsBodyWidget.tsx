@@ -116,7 +116,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			if (contextRef.current.isReady) {
 				let currentModel = xircuitsApp.getDiagramEngine().getModel().serialize();
 				contextRef.current.model.fromString(
-					JSON.stringify(currentModel, replacer, 4)
+					JSON.stringify(currentModel, null, 4)
 				);
 				setSaved(false);
 			}
