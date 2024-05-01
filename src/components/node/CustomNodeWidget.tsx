@@ -251,12 +251,43 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         }
         else if (this.props.node.getOptions()["name"] !== 'Start' && this.props.node.getOptions()["name"] !== 'Finish') {
             return (
-                <>
+                <div style={{position: "relative"}}>
+                    {/** Description Tooltip */}
+                    {this.state.showDescription && <div className="description-tooltip">
+                        <div data-no-drag style={{ cursor: "default" }}>
+                            <button
+                              type="button"
+                              className="close"
+                              data-dismiss="modal"
+                              aria-label="Close"
+                              onClick={() => {
+                                  this.setState({ showDescription: false });
+                              }}>
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <S.DescriptionName color={this.props.node.getOptions().color}>{this.props.node.getOptions()["name"]}</S.DescriptionName>
+                            <div className="scrollable"
+                                 onWheel={(e) => {
+                                  e.stopPropagation();
+                                  e.currentTarget.scrollBy(e.deltaX, e.deltaY);
+                                }}
+                            >
+                                <p className="description-title">Description:</p>
+                                <div
+                                  className="description-container">
+                                    <div className="markdown-body"
+                                         dangerouslySetInnerHTML={this.renderText(this.state.descriptionStr)} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>}
                     <S.Node
-                        onMouseEnter={this.showTooltip.bind(this)}
-                        onMouseLeave={this.hideTooltip.bind(this)}
-                        ref={(element) => { this.element = element }}
-                        data-tip data-for={this.props.node.getOptions().id} // Data for tooltip
+                      onMouseEnter={this.showTooltip.bind(this)}
+                      onMouseLeave={this.hideTooltip.bind(this)}
+                      ref={(element) => {
+                          this.element = element;
+                      }}
+                      data-tip data-for={this.props.node.getOptions().id} // Data for tooltip
                         borderColor={this.props.node.getOptions().extras["borderColor"]}
                         data-default-node-name={this.props.node.getOptions().name}
                         selected={this.props.node.isSelected()}
@@ -285,92 +316,26 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                             <S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
                         </S.Ports>
                     </S.Node>
-                    {/** Description Tooltip */}
-                    {this.state.showDescription && <ReactTooltip
-                        id={this.props.node.getOptions().id}
-                        className='description-tooltip'
-                        arrowColor='rgb(255, 255, 255)'
-                        clickable
-                        afterShow={() => { this.setState({ showDescription: true }) }}
-                        afterHide={() => { this.setState({ showDescription: false }) }}
-                        delayHide={60000}
-                        delayUpdate={5000}
-                        getContent={() =>
-                            <div data-no-drag style={{ cursor: 'default' }}>
-                                <button
-                                    type="button"
-                                    className="close"
-                                    data-dismiss="modal"
-                                    aria-label="Close"
-                                    onClick={() => { this.setState({ showDescription: false }); }}>
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                                <S.DescriptionName color={this.props.node.getOptions().color}>{this.props.node.getOptions()["name"]}</S.DescriptionName>
-                                <p className='description-title'>Description:</p>
-                                <div 
-                                    onWheel={(e) => e.stopPropagation()}
-                                    className='description-container'>
-                                    <div className='markdown-body' dangerouslySetInnerHTML={this.renderText(this.state.descriptionStr)} />
-                                </div>
-                            </div>}
-                        overridePosition={(
-                            { left, top },
-                            currentEvent, currentTarget, node, refNode) => {
-                            const currentNode = this.props.node;
-                            const nodeDimension = { x: currentNode.width, y: currentNode.height };
-                            const nodePosition = { x: currentNode.getX(), y: currentNode.getY() };
-                            let newPositionX = nodePosition.x;
-                            let newPositionY = nodePosition.y;
-                            let offset = 0;
-
-                            if (!this.props.shell.leftCollapsed) {
-                                // Some weird offset happened when left sidebar opened, need to add this
-                                let leftSidebar = document.getElementById('jp-left-stack');
-                                offset = leftSidebar.clientWidth + 2;
-                            }
-
-                            if (refNode == 'top') {
-                                newPositionX = newPositionX - 208 + offset + (nodeDimension.x / 2);
-                                newPositionY = newPositionY - 220;
-                            }
-                            else if (refNode == 'bottom') {
-                                newPositionX = newPositionX - 208 + offset + (nodeDimension.x / 2);
-                                newPositionY = newPositionY + 85 + nodeDimension.y;
-                            }
-                            else if (refNode == 'right') {
-                                newPositionX = newPositionX + 40 + offset + nodeDimension.x;
-                                newPositionY = newPositionY - 66 + (nodeDimension.y / 2);
-                            }
-                            else if (refNode == 'left') {
-                                newPositionX = newPositionX - 450 + offset;
-                                newPositionY = newPositionY - 66 + (nodeDimension.y / 2);
-                            }
-                            const tooltipPosition = this.props.engine.getRelativePoint(newPositionX, newPositionY);
-
-                            left = tooltipPosition.x;
-                            top = tooltipPosition.y;
-                            return { top, left }
-                        }}
-                    />}
                     {/** Error Tooltip */}
                     {(this.props.node.getOptions().extras["tip"] != undefined && this.props.node.getOptions().extras["tip"] != "") ?
-                        <ReactTooltip
-                            id={this.props.node.getOptions().id}
-                            clickable
-                            place='bottom'
-                            className='error-tooltip'
-                            arrowColor='rgba(255, 0, 0, .9)'
-                            delayHide={100}
-                            delayUpdate={50}
-                            getContent={() =>
-                                <div data-no-drag className='error-container'>
-                                    <p className='error-title'>Error</p>
-                                    <div className='markdown-body' dangerouslySetInnerHTML={this.renderText(this.props.node.getOptions().extras["tip"])} />
-                                    <button
-                                        type="button"
-                                        className="close"
-                                        data-dismiss="modal"
-                                        aria-label="Close"
+                      <ReactTooltip
+                        id={this.props.node.getOptions().id}
+                        clickable
+                        place="bottom"
+                        className="error-tooltip"
+                        arrowColor="rgba(255, 0, 0, .9)"
+                        delayHide={100}
+                        delayUpdate={50}
+                        getContent={() =>
+                          <div data-no-drag className="error-container">
+                              <p className="error-title">Error</p>
+                              <div className="markdown-body"
+                                   dangerouslySetInnerHTML={this.renderText(this.props.node.getOptions().extras["tip"])} />
+                              <button
+                                type="button"
+                                className="close"
+                                data-dismiss="modal"
+                                aria-label="Close"
                                         onClick={this.hideErrorTooltip.bind(this)}>
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -401,7 +366,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                             }}
                         />
                         : null}
-                </>
+                </div>
             );
         }
         return (

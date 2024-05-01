@@ -2,16 +2,26 @@
     background-color: rgb(255, 255, 255) !important;
     box-shadow: 5px 5px 3px rgba(0,0,0,.5) !important;
     border: 2px solid rgba(0, 253, 232, .5) !important;
-    border-radius: 10 !important;
+    border-radius: 1px !important;
     opacity: 0.99 !important;
-}
-
-.description-container{
     width: 450px;
+    position: absolute;
+    top: calc(-250px - 2.5rem);
+    left: -50%;
+    z-index: 999;
+    padding: 0.5rem;
+}
+.description-tooltip .close {
+    right: 4px;
+    margin-right: -0.25rem;
+}
+.description-tooltip .scrollable {
     height: 250px;
     overflow: auto;
+    margin-top: 0.5rem;
+    margin-right: -0.5rem;
+    margin-bottom: -0.5rem;
 }
-
 .description-title{
     text-align: justify;
     font-family: 'Roboto', sans-serif;
