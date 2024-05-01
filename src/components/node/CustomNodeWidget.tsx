@@ -106,31 +106,11 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
     };
     element:Object;
     state = {
-
-        isTooltipActive: false,
         nodeDeletable: false,
         commentInput: this.props.node['extras']['commentInput'],
         showDescription: false,
         descriptionStr: "",
 
-    };
-
-    showTooltip() {
-        this.setState({isTooltipActive: true})
-    }
-    hideTooltip() {
-        this.setState({isTooltipActive: false})
-    }
-    handleClose() {
-        this.hideTooltip();
-    };
-
-    /**
-     * load more data from server when page changed
-     * @param e
-     */
-    onPageChanged = e => {
-        console.log(e.currentPage);
     };
 
     handleDeletableNode(key, event) {
@@ -282,8 +262,6 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
                         </div>
                     </div>}
                     <S.Node
-                      onMouseEnter={this.showTooltip.bind(this)}
-                      onMouseLeave={this.hideTooltip.bind(this)}
                       ref={(element) => {
                           this.element = element;
                       }}
