@@ -71,6 +71,8 @@ $ xircuits install <component library name>
 | ---- | ----------- | ------- |
 | [SQLite](https://github.com/XpressAI/xai-sqlite) | Components for interfacing with SQLite databases. | - |
 | [Flask](https://github.com/XpressAI/xai-flask) | Components for developing Flask applications. | - |
+| [MongoDB](https://github.com/XpressAI/xai-mongoDB) | Components that connects with your MongoDB! | - |
+
 
 ### 🌍 Cloud Services
 | Name | Description | Version |
