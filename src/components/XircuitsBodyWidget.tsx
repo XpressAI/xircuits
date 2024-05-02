@@ -1056,8 +1056,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 	};
 
-	const handleClick = (event) => {
-		if (event.ctrlKey || event.metaKey) {
+	const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+		if ((event.ctrlKey || event.metaKey) && event.target['tagName'] != 'g') {
 			showComponentPanel(event);
 			return;
 		}
