@@ -1,5 +1,4 @@
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import { commandIDs } from '../components/XircuitsBodyWidget';
 import { ITranslator } from '@jupyterlab/translation';
 import { IXircuitsDocTracker } from '../index';
 import * as _ from 'lodash';
@@ -10,6 +9,7 @@ import { newLibraryInputDialog } from '../dialog/NewLibraryDialog';
 import { requestAPI } from '../server/handler';
 import { checkInput } from '../helpers/InputSanitizer';
 import { XircuitsFactory } from '../XircuitsFactory';
+import { commandIDs } from "./CommandIDs";
 
 /**
  * Add the commands for node actions.

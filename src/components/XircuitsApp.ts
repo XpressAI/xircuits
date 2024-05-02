@@ -6,7 +6,13 @@ import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { CustomDiagramState } from './state/CustomDiagramState'
 import { ParameterLinkModel, TriangleLinkModel } from './link/CustomLinkModel';
 import { ParameterLinkFactory, TriangleLinkFactory } from './link/CustomLinkFactory';
-import { PointModel } from '@projectstorm/react-diagrams';
+import {
+        DefaultLabelFactory, DefaultLinkFactory, DefaultPortFactory,
+        LinkLayerFactory,
+        NodeLayerFactory,
+        PointModel,
+        SelectionBoxLayerFactory
+} from "@projectstorm/react-diagrams";
 import { Point } from '@projectstorm/geometry';
 import { BaseComponentLibrary } from '../tray_library/BaseComponentLib';
 import { CustomPanAndZoomCanvasAction } from "./actions/CustomPanAndZoomCanvasAction";
@@ -18,21 +24,32 @@ export class XircuitsApplication {
         protected diagramEngine: SRD.DiagramEngine;
 
         constructor(app: JupyterFrontEnd, shell: ILabShell) {
+                this.diagramEngine = new SRD.DiagramEngine({ registerDefaultZoomCanvasAction: false, registerDefaultDeleteItemsAction: false });
 
-                this.diagramEngine = SRD.default({ registerDefaultZoomCanvasAction: false, registerDefaultDeleteItemsAction: false });
-                this.activeModel = new SRD.DiagramModel();
+                // Default Factories
+                this.diagramEngine.getLayerFactories().registerFactory(new NodeLayerFactory());
+	              this.diagramEngine.getLayerFactories().registerFactory(new LinkLayerFactory());
+	              this.diagramEngine.getLayerFactories().registerFactory(new SelectionBoxLayerFactory());
+	              this.diagramEngine.getLabelFactories().registerFactory(new DefaultLabelFactory());
+                this.diagramEngine.getLinkFactories().registerFactory(new DefaultLinkFactory());
+	              this.diagramEngine.getPortFactories().registerFactory(new DefaultPortFactory());
+
+                // Custom Factories, Actions & State
                 this.diagramEngine.getNodeFactories().registerFactory(new CustomNodeFactory(app, shell));
                 this.diagramEngine.getLinkFactories().registerFactory(new ParameterLinkFactory());
                 this.diagramEngine.getLinkFactories().registerFactory(new TriangleLinkFactory());
                 this.diagramEngine.getActionEventBus().registerAction(new CustomPanAndZoomCanvasAction())
                 this.diagramEngine.getActionEventBus().registerAction(new CustomActionEvent({ app }));
                 this.diagramEngine.getStateMachine().pushState(new CustomDiagramState());
+
+
                 
                 let startNode = BaseComponentLibrary('Start')
                 startNode.setPosition(100, 100);
                 let finishNode = BaseComponentLibrary('Finish')
                 finishNode.setPosition(700, 100);
 
+                this.activeModel = new SRD.DiagramModel();
                 this.activeModel.addAll(startNode, finishNode);
                 this.diagramEngine.setModel(this.activeModel);
         }
@@ -71,11 +88,13 @@ export class XircuitsApplication {
 
                         for (let portID of node.portsInOrder) {
                                 const port = node.ports.find(p => p.id === portID);
-                                newNode.addInPortEnhance({label: port.label, name: port.name, varName: port.varName, id: port.id, dataType: port.dataType, dynaPortOrder: port.dynaPortOrder, dynaPortRef: port.dynaPortRef});
+                                const position = new Point(port.x, port.y);
+                                newNode.addInPortEnhance({label: port.label, name: port.name, varName: port.varName, id: port.id, dataType: port.dataType, dynaPortOrder: port.dynaPortOrder, dynaPortRef: port.dynaPortRef, position});
                         }
                         for (let portID of node.portsOutOrder) {
                                 const port = node.ports.find(p => p.id === portID);
-                                newNode.addOutPortEnhance({label: port.label, name: port.name, id: port.id});
+                                const position = new Point(port.x, port.y);
+                                newNode.addOutPortEnhance({label: port.label, name: port.name, id: port.id, position});
                         }
                         tempModel.addNode(newNode);
                 }

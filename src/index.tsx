@@ -5,7 +5,6 @@ import {
   ILayoutRestorer
 } from '@jupyterlab/application';
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
-import { commandIDs } from './components/XircuitsBodyWidget';
 import {
   WidgetTracker,
   ReactWidget,
@@ -28,6 +27,9 @@ import { Token } from '@lumino/coreutils';
 import { DockLayout } from '@lumino/widgets';
 import { xircuitsIcon, componentLibIcon, changeFavicon, xircuitsFaviconLink } from './ui-components/icons';
 import { createInitXircuits } from './helpers/CanvasInitializer';
+import type { CommandRegistry } from "@lumino/commands/src";
+import type { Signal } from "@lumino/signaling";
+import { commandIDs } from "./commands/CommandIDs";
 
 
 const FACTORY = 'Xircuits editor';
@@ -156,6 +158,27 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     // Additional commands for chat actions
     addLibraryActionCommands(app, tracker, translator, widgetFactory);
 
+    // Commands to emit WidgetFactory signals
+    const emitSignal = (signal: Signal<unknown, unknown>) =>  (args: unknown) => signal.emit(args);
+    const signalConnections: [string, CommandRegistry.ICommandOptions][] = [
+      [commandIDs.saveXircuit,
+        {label: "Save", icon: saveIcon, execute: emitSignal(widgetFactory.saveXircuitSignal)}],
+      [commandIDs.runXircuit,
+        {label: "Run Xircuits", icon: runIcon, execute: emitSignal(widgetFactory.runXircuitSignal)}],
+      [commandIDs.compileXircuit,
+        {execute: emitSignal(widgetFactory.compileXircuitSignal)}],
+      [commandIDs.lockXircuit,
+        {execute: emitSignal(widgetFactory.lockNodeSignal)}],
+      [commandIDs.triggerLoadingAnimation,
+        {execute: emitSignal(widgetFactory.triggerLoadingAnimationSignal)}],
+      [commandIDs.reloadAllNodes,
+        {execute: emitSignal(widgetFactory.reloadAllNodesSignal)}],
+      [commandIDs.toggleAllLinkAnimation,
+        {execute: emitSignal(widgetFactory.toggleAllLinkAnimationSignal)}],
+    ]
+    signalConnections.forEach(([cmdId, def]) => app.commands.addCommand(cmdId, def))
+
+
     // Add a command for creating a new xircuits file.
     app.commands.addCommand(commandIDs.createNewXircuit, {
       label: (args) => (args['isLauncher'] ? 'Xircuits File' : 'Create New Xircuits'),
@@ -265,23 +288,6 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       outputPanel.dispose();
     });
 
-    async function requestToSparkSubmit(path: string, addCommand: string) {
-      const dataToSend = { "currentPath": path, "addArgs": addCommand };
-
-      try {
-        const server_reply = await requestAPI<any>('spark/submit', {
-          body: JSON.stringify(dataToSend),
-          method: 'POST',
-        });
-
-        return server_reply;
-      } catch (reason) {
-        console.error(
-          `Error on POST /xircuits/spark/submit ${dataToSend}.\n${reason}`
-        );
-      }
-    };
-
     // Execute command and display at output panel
     app.commands.addCommand(commandIDs.executeToOutputPanel, {
       execute: async args => {
@@ -299,61 +305,10 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       },
     });
 
-    // Add command signal to save xircuits
-    app.commands.addCommand(commandIDs.saveXircuit, {
-      label: "Save",
-      icon: saveIcon,
-      execute: args => {
-        widgetFactory.saveXircuitSignal.emit(args);
-      }
-    });
-
-    // Add command signal to compile xircuits
-    app.commands.addCommand(commandIDs.compileXircuit, {
-      execute: args => {
-        widgetFactory.compileXircuitSignal.emit(args);
-      }
-    });
-
-    // Add command signal to run xircuits
-    app.commands.addCommand(commandIDs.runXircuit, {
-      label: "Run Xircuits",
-      icon: runIcon,
-      execute: args => {
-        widgetFactory.runXircuitSignal.emit(args);
-      }
-    });
-
-    // Add command signal to lock xircuits
-    app.commands.addCommand(commandIDs.lockXircuit, {
-      execute: args => {
-        widgetFactory.lockNodeSignal.emit(args);
-      }
-    });
-
-    // Add command signal to triggerLoadingAnimation
-    app.commands.addCommand(commandIDs.triggerLoadingAnimation, {
-      execute: args => {
-        console.log("loading animation triggered!");
-        widgetFactory.triggerLoadingAnimationSignal.emit(args);
-      }
-    });
-
-    // Add command signal to reloadAllNodes
-    app.commands.addCommand(commandIDs.reloadAllNodes, {
-      execute: args => {
-        widgetFactory.reloadAllNodesSignal.emit(args);
-      }
-    });
-
-    // Add command signal to toggle all link animations.
-    app.commands.addCommand(commandIDs.toggleAllLinkAnimation, {
-      execute: args => {
-        widgetFactory.toggleAllLinkAnimationSignal.emit(args);
-      }
-    });
-
     app.commands.addCommand(commandIDs.copyXircuitsToRoot, {
+      label: 'Copy To Root Directory',
+      isVisible: () => [...browserFactory.tracker.currentWidget.selectedItems()].length > 0,
+      icon: xircuitsIcon,
       execute: async () => {
         const selectedItems = Array.from(browserFactory.tracker.currentWidget.selectedItems());
     
@@ -380,10 +335,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
             }
           }
         }
-      },
-      label: 'Copy To Root Directory',
-      isVisible: () => [...browserFactory.tracker.currentWidget.selectedItems()].length > 0,
-      icon: xircuitsIcon
+      }
     });
 
     app.contextMenu.addItem({

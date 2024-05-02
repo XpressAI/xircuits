@@ -6,8 +6,8 @@ import { JupyterFrontEnd } from '@jupyterlab/application';
 import { DefaultLinkModel, DiagramEngine } from '@projectstorm/react-diagrams';
 import { CustomNodeModel } from '../components/node/CustomNodeModel';
 import { GeneralComponentLibrary } from '../tray_library/GeneralComponentLib';
-import { commandIDs } from '../components/XircuitsBodyWidget';
 import { AdvancedComponentLibrary } from '../tray_library/AdvanceComponentLib';
+import { commandIDs } from "../commands/CommandIDs";
 
 export interface TrayItemWidgetProps {
 	currentNode: any;

@@ -10,25 +10,24 @@ import {
 import { Signal } from '@lumino/signaling';
 import { XircuitsPanel } from './XircuitsWidget';
 import {
-  bugIcon,
   checkIcon,
   copyIcon,
   cutIcon,
-  editIcon,
   listIcon,
   pasteIcon,
   redoIcon,
   refreshIcon,
   runIcon,
   saveIcon,
-  undoIcon
-} from '@jupyterlab/ui-components';
+  undoIcon,
+  type LabIcon
+} from "@jupyterlab/ui-components";
 import { ToolbarButton } from '@jupyterlab/apputils';
-import { commandIDs } from './components/XircuitsBodyWidget';
 import { LoggerCommandIDs } from './log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
 import { RunSwitcher } from './components/runner/RunSwitcher';
 import { lockIcon, reloadAllIcon, xircuitsIcon, toggleAnimationIcon } from './ui-components/icons';
+import { commandIDs } from "./commands/CommandIDs";
 const XIRCUITS_CLASS = 'xircuits-editor';
 
 export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
@@ -92,160 +91,26 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.addClass(XIRCUITS_CLASS);
     widget.title.icon = xircuitsIcon;
 
-    /**
-     * Create a save button toolbar item.
-     */
-    let saveButton = new ToolbarButton({
-      icon: saveIcon,
-      tooltip: 'Save (Ctrl+S)',
-      onClick: (): void => {
-        this.commands.execute(commandIDs.saveXircuit);
+    const CommandButton = (commandId: string, icon: LabIcon, tooltip: string) => new ToolbarButton({
+      icon, tooltip,
+      onClick: () => {
+        this.commands.execute(commandId)
       }
-    });
+    })
 
-    /**
-     * Create a undo button toolbar item.
-     */
-    let undoButton = new ToolbarButton({
-      icon: undoIcon,
-      tooltip: 'Undo (Ctrl+Z)',
-      onClick: (): void => {
-        this.commands.execute(commandIDs.undo);
-      }
-    });
-
-    /**
-     * Create a redo button toolbar item.
-     */
-    let redoButton = new ToolbarButton({
-      icon: redoIcon,
-      tooltip: 'Redo (Ctrl+Y)',
-      onClick: (): void => {
-        this.commands.execute(commandIDs.redo);
-      }
-    });
-
-    /**
-     * Create a reload button toolbar item.
-     */
-    let reloadButton = new ToolbarButton({
-      icon: refreshIcon,
-      tooltip: 'Reload Xircuits from Disk',
-      onClick: (): void => {
-        this.commands.execute(commandIDs.reloadDocManager);
-      }
-    });
-
-    /**
-     * Create a cut button toolbar item.
-     */
-    let cutButton = new ToolbarButton({
-      icon: cutIcon,
-      tooltip: 'Cut selected nodes',
-      onClick: (): void => {
-        this.commands.execute(commandIDs.cutNode);
-      }
-    });
-
-    /**
-     * Create a copy button toolbar item.
-     */
-    let copyButton = new ToolbarButton({
-      icon: copyIcon,
-      tooltip: 'Copy selected nodes',
-      onClick: (): void => {
-        this.commands.execute(commandIDs.copyNode);
-      }
-    });
-
-    /**
-     * Create a paste button toolbar item.
-     */
-    let pasteButton = new ToolbarButton({
-      icon: pasteIcon,
-      tooltip: 'Paste nodes from the clipboard',
-      onClick: (): void => {
-        this.commands.execute(commandIDs.pasteNode);
-      }
-    });
-
-    /**
-     * Create a debug button toolbar item.
-     */
-    let debugButton = new ToolbarButton({
-      icon:bugIcon,
-      tooltip: 'Open Xircuits Debugger and enable Image Viewer',
-      onClick: (): void => {
-        this.commands.execute('Xircuit-editor:new-component-library'
-        , {"componentCode": 'from xai_components.base import OutArg, InCompArg, Component\nimport pandas as pd\n\n@xai_component\nclass NewExample(Component):\n    file_path: InCompArg[str]\n    output_data: OutArg[pd.DataFrame]\n\n    def execute(self, ctx) -> None:\n        file_path = self.file_path.value\n        data = pd.read_csv(file_path)\n        self.output_data.value = data\n'});
-      }
-    });
-
-    /**
-     * Create a lock button toolbar item.
-     */
-    let lockButton = new ToolbarButton({
-      icon: lockIcon,
-      tooltip: "Lock all non-general nodes connected from start node",
-      onClick: (): void => {
-        this.commands.execute(commandIDs.lockXircuit);
-      }
-    });
-
-    /**
-     * Create a log button toolbar item.
-     */
-    let logButton = new ToolbarButton({
-      icon: listIcon,
-      tooltip: 'Open log',
-      onClick: (): void => {
-        this.commands.execute(LoggerCommandIDs.openLog);
-      }
-    });
-
-    /**
-     * Create a reload all button toolbar item.
-     */
-    let reloadAllNodesButton = new ToolbarButton({
-      icon: reloadAllIcon,
-      tooltip: 'Reload all nodes',
-      onClick: (): void => {
-        this.commands.execute(commandIDs.reloadAllNodes);
-      }
-    });
-
-    /**
-     * Create a button to toggle all link animation toolbar item.
-     */
-    let toggleAllLinkAnimationButton = new ToolbarButton({
-      icon: toggleAnimationIcon,
-      tooltip: 'Toggle low power mode by disabling link animation',
-      onClick: (): void => {
-        this.commands.execute(commandIDs.toggleAllLinkAnimation);
-      }
-    });
-    
-    /**
-     * Create a compile button toolbar item.
-     */
-    let compileButton = new ToolbarButton({
-      icon: checkIcon,
-      tooltip: 'Compile Xircuits',
-      onClick: (): void => {
-        this.commands.execute(commandIDs.compileXircuit);
-      }
-    });
-
-    /**
-     * Create a compile and run button toolbar item.
-     */
-    let compileAndRunButton = new ToolbarButton({
-      icon: runIcon,
-      tooltip: 'Compile and Run Xircuits',
-      onClick: (): void => {
-        this.commands.execute(commandIDs.runXircuit);
-      }
-    });
+    let saveButton = CommandButton(commandIDs.saveXircuit, saveIcon, 'Save (Ctrl+S)');
+    let undoButton = CommandButton(commandIDs.undo, undoIcon, 'Undo (Ctrl+Z)');
+    let redoButton = CommandButton(commandIDs.redo, redoIcon, 'Redo (Ctrl+Y)');
+    let reloadButton = CommandButton(commandIDs.reloadDocManager, refreshIcon, 'Reload Xircuits from Disk');
+    let cutButton = CommandButton(commandIDs.cutNode, cutIcon, 'Cut selected nodes');
+    let copyButton = CommandButton(commandIDs.copyNode, copyIcon, 'Copy selected nodes');
+    let pasteButton = CommandButton(commandIDs.pasteNode, pasteIcon, 'Paste nodes from the clipboard');
+    let lockButton = CommandButton(commandIDs.lockXircuit, lockIcon, "Lock all non-general nodes connected from start node");
+    let logButton = CommandButton(LoggerCommandIDs.openLog, listIcon, 'Open log');
+    let reloadAllNodesButton = CommandButton(commandIDs.reloadAllNodes, reloadAllIcon, 'Reload all nodes');
+    let toggleAllLinkAnimationButton = CommandButton(commandIDs.toggleAllLinkAnimation, toggleAnimationIcon, 'Toggle low power mode by disabling link animation');
+    let compileButton = CommandButton(commandIDs.compileXircuit, checkIcon, 'Compile Xircuits');
+    let compileAndRunButton = CommandButton(commandIDs.runXircuit, runIcon,'Compile and Run Xircuits');
 
     widget.toolbar.insertItem(0, 'xircuits-add-undo', undoButton);
     widget.toolbar.insertItem(1, 'xircuits-add-redo', redoButton);
@@ -261,11 +126,7 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.insertItem(11, 'xircuits-add-compile', compileButton);
     widget.toolbar.insertItem(12, 'xircuits-add-run', compileAndRunButton);
     widget.toolbar.insertItem(13, 'xircuits-run-type', new RunSwitcher(this));
-    // widget.toolbar.insertItem(14, 'xircuits-new-library', debugButton)
-    // TODO: Fix debugger
-    // widget.toolbar.insertItem(5,'xircuits-add-debug', debugButton);
     
-
     return widget;
   }
 }
