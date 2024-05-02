@@ -85,3 +85,6 @@
 [submodule "xai_components/xai_google_gemini"]
 	path = xai_components/xai_google_gemini
 	url = https://github.com/XpressAI/xai-google-gemini
+[submodule "xai_components/xai_mongodb"]
+	path = xai_components/xai_mongodb
+	url = https://github.com/XpressAI/xai-mongodb
