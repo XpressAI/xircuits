@@ -88,3 +88,6 @@
 [submodule "xai_components/xai_mongodb"]
 	path = xai_components/xai_mongodb
 	url = https://github.com/XpressAI/xai-mongodb
+[submodule "xai_components/xai_multion"]
+	path = xai_components/xai_multion
+	url = https://github.com/XpressAI/xai-multion
