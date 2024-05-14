@@ -112,9 +112,9 @@ const literalTypeMapping = {
     "Literal String": { titleName: "Update string", inputType: 'textarea' },
     "Literal Integer": { titleName: "Update int", inputType: 'input' },
     "Literal Float": { titleName: "Update float", inputType: 'input' },
-    "Literal List": { titleName: "Update list", inputType: 'input' },
-    "Literal Tuple": { titleName: "Update tuple", inputType: 'input' },
-    "Literal Dict": { titleName: "Update dict", inputType: 'input' },
+    "Literal List": { titleName: "Update list", inputType: 'textarea' },
+    "Literal Tuple": { titleName: "Update tuple", inputType: 'textarea' },
+    "Literal Dict": { titleName: "Update dict", inputType: 'textarea' },
     "Literal Secret": { titleName: "Update secret", inputType: 'input' },
     "Literal Boolean": { titleName: "Update boolean" },
 };
