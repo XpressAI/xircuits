@@ -386,8 +386,9 @@ pprint.pprint(flow.%s.value)
     def _generate_trailer(self):
         code = """
 if __name__ == '__main__':
-    main(parser.parse_args())
-    print("\\nFinished Executing")        
+    args, _ = parser.parse_known_args()
+    main(args)
+    print("\\nFinished Executing")
         """
         body = ast.parse(code).body[0]
         arg_parsing = self._generate_argument_parsing()
