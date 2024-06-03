@@ -1,8 +1,7 @@
 import os
-import urllib
 import urllib.parse
-import pkg_resources
 import shutil
+import importlib_resources
 
 def is_empty(directory):
     # will return true for uninitialized submodules
@@ -14,10 +13,14 @@ def is_valid_url(url):
         return all([result.scheme, result.netloc])
     except ValueError:
         return False
-    
+
 def copy_from_installed_wheel(package_name, resource="", dest_path=None):
     if dest_path is None:
         dest_path = package_name
 
-    resource_path = pkg_resources.resource_filename(package_name, resource)
-    shutil.copytree(resource_path, dest_path)
+    # Get the resource reference
+    ref = importlib_resources.files(package_name) / resource
+
+    # Create the temporary file context
+    with importlib_resources.as_file(ref) as resource_path:
+        shutil.copytree(resource_path, dest_path)
