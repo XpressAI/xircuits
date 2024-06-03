@@ -1,8 +1,8 @@
 import os
 import urllib
 import urllib.parse
-import pkg_resources
 import shutil
+from importlib import resources
 
 def is_empty(directory):
     # will return true for uninitialized submodules
@@ -19,5 +19,5 @@ def copy_from_installed_wheel(package_name, resource="", dest_path=None):
     if dest_path is None:
         dest_path = package_name
 
-    resource_path = pkg_resources.resource_filename(package_name, resource)
-    shutil.copytree(resource_path, dest_path)
+    with resources.path(package_name, resource) as resource_path:
+        shutil.copytree(resource_path, dest_path)
