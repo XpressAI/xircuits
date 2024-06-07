@@ -94,8 +94,24 @@ export function addNodeActionCommands(
     //Add command to open sub xircuits
     commands.addCommand(commandIDs.openSubXircuits, {
         execute: async (args) => {
-            let node, nodePath, nodeName, nodeLineNo;
-            console.log("called!")
+            let node, nodePath;
+
+            // call getLastSelectedNode() if opened from Xircuits canvas
+            if (args['nodePath'] === undefined && args['nodeName'] === undefined && args['nodeLineNo'] === undefined) {
+                node = getLastSelectedNode();
+            }
+    
+            // Assign values based on whether args were provided or derived from getLastSelectedNode()
+            nodePath = args['nodePath'] ?? node?.extras.path;
+            let subXircuitsPath = nodePath.replace(/\.py$/, '.xircuits');
+
+            try {
+                await app.commands.execute('docmanager:open', { path: subXircuitsPath });
+                await app.commands.execute('filebrowser:activate', { path: subXircuitsPath });
+                await app.commands.execute('filebrowser:go-to-path', { path: subXircuitsPath });
+            } catch (error) {
+                alert('Failed to Open SubXircuits: ' + error);
+            }
         }
     });
 
