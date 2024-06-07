@@ -88,7 +88,7 @@ from xai_components.base import SubGraphExecutor, InArg, OutArg, Component, xai_
 
     def _generate_flows(self, flow_name):
         mainFlowCls = ast.parse("""
-@xai_component        
+@xai_component(type="subxircuits")
 class %s(Component):
     def __init__(self):
         super().__init__()

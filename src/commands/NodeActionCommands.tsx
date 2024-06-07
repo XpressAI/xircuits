@@ -91,6 +91,14 @@ export function addNodeActionCommands(
         }
     });
 
+    //Add command to open sub xircuits
+    commands.addCommand(commandIDs.openSubXircuits, {
+        execute: async (args) => {
+            let node, nodePath, nodeName, nodeLineNo;
+            console.log("called!")
+        }
+    });
+
     //Add command to undo
     commands.addCommand(commandIDs.undo, {
         execute: () => {
