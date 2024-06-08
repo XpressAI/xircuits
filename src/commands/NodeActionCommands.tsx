@@ -92,7 +92,7 @@ export function addNodeActionCommands(
     });
 
     //Add command to open sub xircuits
-    commands.addCommand(commandIDs.openSubXircuits, {
+    commands.addCommand(commandIDs.openXircuitsWorkflow, {
         execute: async (args) => {
             let node, nodePath;
 
@@ -103,14 +103,12 @@ export function addNodeActionCommands(
     
             // Assign values based on whether args were provided or derived from getLastSelectedNode()
             nodePath = args['nodePath'] ?? node?.extras.path;
-            let subXircuitsPath = nodePath.replace(/\.py$/, '.xircuits');
+            let xircuitsPath = nodePath.replace(/\.py$/, '.xircuits');
 
             try {
-                await app.commands.execute('docmanager:open', { path: subXircuitsPath });
-                await app.commands.execute('filebrowser:activate', { path: subXircuitsPath });
-                await app.commands.execute('filebrowser:go-to-path', { path: subXircuitsPath });
+                await app.commands.execute('docmanager:open', { path: xircuitsPath });
             } catch (error) {
-                alert('Failed to Open SubXircuits: ' + error);
+                alert('Failed to Open Xircuits Workflow: ' + error);
             }
         }
     });

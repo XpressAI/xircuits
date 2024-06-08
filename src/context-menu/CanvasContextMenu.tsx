@@ -48,8 +48,8 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
                 {visibility.showOpenScript && (
                     <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.openScript)}>Open Script</div>
                 )}
-                {visibility.showOpenSubXircuits && (
-                    <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.openSubXircuits)}>Open SubXircuits</div>
+                {visibility.showopenXircuitsWorkflow && (
+                    <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.openXircuitsWorkflow)}>Open Workflow</div>
                 )}
                 {visibility.showDelete && (
                     <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.deleteEntity)}>Delete</div>
@@ -82,8 +82,8 @@ export function getMenuOptionsVisibility(models) {
         return !isLiteralNode(node) && !isArgumentNode(node);
     }
 
-    function isSubXircuits(node) {
-        return node.getOptions()?.extras?.type == 'subxircuits' ?? false;
+    function isXircuitsWorkflow(node) {
+        return node.getOptions()?.extras?.type == 'xircuits_workflow' ?? false;
     }
 
     let isNodeSelected = models.some(model => model instanceof NodeModel);
@@ -93,14 +93,14 @@ export function getMenuOptionsVisibility(models) {
     let isSingleLiteralNodeSelected = literalNodes.length === 1;
     let isSingleComponentNodeSelected = componentNodes.length === 1;
     let showReloadNode = isNodeSelected && componentNodes.length > 0;
-    let showOpenSubXircuits = isSingleComponentNodeSelected && models.some(model => isSubXircuits(model))
+    let showopenXircuitsWorkflow = isSingleComponentNodeSelected && models.some(model => isXircuitsWorkflow(model))
 
     return {
         showCutCopyPaste: !models.length || isNodeSelected || isLinkSelected,
         showReloadNode: showReloadNode,
         showEdit: isSingleLiteralNodeSelected,
         showOpenScript: isSingleComponentNodeSelected,
-        showOpenSubXircuits: showOpenSubXircuits,
+        showopenXircuitsWorkflow: showopenXircuitsWorkflow,
         showDelete: isNodeSelected || isLinkSelected || literalNodes.length > 0,
         showUndoRedo: !models.length,
         showAddComment: !models.length
