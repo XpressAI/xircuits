@@ -10,7 +10,7 @@ import {PortModel} from "@projectstorm/react-diagrams-core";
 
 export const PARAMETER_NODE_TYPES = [
     'boolean', 'int', 'float', 'string', 'list', 'tuple', 
-    'dict', 'secret', 'chat'
+    'dict', 'secret', 'chat', 'any'
 ];
 
 export interface CustomPortModelOptions extends DefaultPortModelOptions {

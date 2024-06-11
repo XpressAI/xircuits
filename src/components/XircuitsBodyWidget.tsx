@@ -100,6 +100,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [intNodes, setIntNodes] = useState<string[]>([]);
 	const [floatNodes, setFloatNodes] = useState<string[]>([]);
 	const [boolNodes, setBoolNodes] = useState<string[]>([]);
+	const [anyNodes, setAnyNodes] = useState<string[]>([]);
 	const [componentList, setComponentList] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [loadingMessage, setLoadingMessage] = useState('Xircuits loading...');
@@ -720,7 +721,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				'string': setStringNodes,
 				'int': setIntNodes,
 				'float': setFloatNodes,
-				'boolean': setBoolNodes
+				'boolean': setBoolNodes,
+				'any': setAnyNodes
 			}
 
 
