@@ -123,6 +123,9 @@ class %s(Component):
         }
 
 
+        connect_args = lambda target, source: ast.parse("setattr(%s, '_getter', lambda x: %s.value)" % (target, source))
+        set_value = lambda target, v: ast.parse("%s.value = %s" % (target, v))
+
         # Set up component argument links
         for node in component_nodes:
             # Handle argument connections
@@ -141,7 +144,7 @@ class %s(Component):
                     port.targetLabel
                 )
                 assignment_source = "self.%s" % arg_name
-                tpl = ast.parse("%s = %s" % (assignment_target, assignment_source))
+                tpl = connect_args(assignment_target, assignment_source)
                 init_code.append(tpl)
                 if arg_name not in existing_args:
                     in_arg_def = ast.parse("%s: InArg[%s]" % (arg_name, arg_type)).body[0]
@@ -157,10 +160,8 @@ class %s(Component):
                 )
 
                 if port.source.id not in named_nodes:
-
                     # Literal
-                    assignment_target += ".value"
-                    tpl = ast.parse("%s = 1" % (assignment_target))
+                    tpl = set_value(assignment_target, '1')
                     if port.source.type == "string":
                         value = port.sourceLabel
                     elif port.source.type == "list":
@@ -187,7 +188,7 @@ class %s(Component):
                         named_nodes[port.source.id],
                         port.sourceLabel
                     )
-                    tpl = ast.parse("%s = %s" % (assignment_target, assignment_source))
+                    tpl = connect_args(assignment_target, assignment_source)
                 init_code.append(tpl)
 
             # Handle dynamic connections
@@ -231,8 +232,6 @@ class %s(Component):
                         value = "%s.%s" % (named_nodes[port.source.id], port.sourceLabel)  # Variable reference
                         dynaport_values.append(RefOrValue(value, True))
 
-                assignment_target = "%s.%s.value" % (named_nodes[ports[0].target.id], ports[0].varName)
-
                 if ports[0].dataType == 'dynatuple':
                     tuple_elements = [item.value if item.is_ref else repr(item.value) for item in dynaport_values]
                     if len(tuple_elements) == 1:
@@ -243,7 +242,8 @@ class %s(Component):
                     list_elements = [item.value if item.is_ref else repr(item.value) for item in dynaport_values]
                     assignment_value = '[' + ', '.join(list_elements) + ']'
 
-                tpl = ast.parse("%s = %s" % (assignment_target, assignment_value))
+                assignment_target = "%s.%s" % (named_nodes[ports[0].target.id], ports[0].varName)
+                tpl = set_value(assignment_target, assignment_value)
                 init_code.append(tpl)
 
         # Handle output connections
@@ -255,8 +255,7 @@ class %s(Component):
             assignment_target = "self.%s" % port_name
             if port.source.id not in named_nodes:
                 # Literal
-                assignment_target += ".value"
-                tpl = ast.parse("%s = 1" % (assignment_target))
+                tpl = set_value(assignment_target, '1')
                 if port.source.type == "string":
                     value = port.sourceLabel
                 elif port.source.type == "list":
@@ -282,11 +281,9 @@ class %s(Component):
                     named_nodes[port.source.id],
                     port.sourceLabel
                 )
-                tpl = ast.parse("%s = %s" % (assignment_target, assignment_source))
+                tpl = connect_args(assignment_target, assignment_source)
             args_code.append(ast.parse("%s: OutArg[%s]" % (port_name, port_type)).body[0])
             init_code.append(tpl)
-
-
 
         # Set up control flow
         for node in component_nodes:
