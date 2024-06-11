@@ -108,6 +108,8 @@ class %s(Component):
         exec_code = []
         args_code = []
 
+        existing_args = set()
+
         # Instantiate all components
         init_code.extend([
             ast.parse("%s = %s()" % (named_nodes[n.id], n.name)) for n in component_nodes
@@ -141,7 +143,10 @@ class %s(Component):
                 assignment_source = "self.%s" % arg_name
                 tpl = ast.parse("%s = %s" % (assignment_target, assignment_source))
                 init_code.append(tpl)
-                args_code.append(ast.parse("%s: InArg[%s]" % (arg_name, arg_type)).body[0])
+                if arg_name not in existing_args:
+                    in_arg_def = ast.parse("%s: InArg[%s]" % (arg_name, arg_type)).body[0]
+                    args_code.append(in_arg_def)
+                    existing_args.add(arg_name)
 
             # Handle regular connections
             for port in (p for p in node.ports if
