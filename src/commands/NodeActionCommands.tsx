@@ -91,6 +91,28 @@ export function addNodeActionCommands(
         }
     });
 
+    //Add command to open sub xircuits
+    commands.addCommand(commandIDs.openXircuitsWorkflow, {
+        execute: async (args) => {
+            let node, nodePath;
+
+            // call getLastSelectedNode() if opened from Xircuits canvas
+            if (args['nodePath'] === undefined && args['nodeName'] === undefined && args['nodeLineNo'] === undefined) {
+                node = getLastSelectedNode();
+            }
+    
+            // Assign values based on whether args were provided or derived from getLastSelectedNode()
+            nodePath = args['nodePath'] ?? node?.extras.path;
+            let xircuitsPath = nodePath.replace(/\.py$/, '.xircuits');
+
+            try {
+                await app.commands.execute('docmanager:open', { path: xircuitsPath });
+            } catch (error) {
+                alert('Failed to Open Xircuits Workflow: ' + error);
+            }
+        }
+    });
+
     //Add command to undo
     commands.addCommand(commandIDs.undo, {
         execute: () => {
