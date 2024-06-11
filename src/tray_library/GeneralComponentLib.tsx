@@ -17,7 +17,7 @@ export function cancelDialog(dialogResult) {
 }
 
 const TYPE_LITERALS = ['string', 'int', 'float', 'boolean', 'list', 'tuple', 'dict', 'secret', 'chat'];
-const TYPE_ARGUMENTS = ['string', 'int', 'float', 'boolean'];
+const TYPE_ARGUMENTS = ['string', 'int', 'float', 'boolean', 'any'];
 const SPECIAL_LITERALS = ['chat'];
 
 export async function handleLiteralInput(nodeName, nodeData, inputValue = "", type, title = "New Literal Input") {
