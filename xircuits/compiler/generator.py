@@ -163,14 +163,12 @@ class %s(Component):
                 if port.source.id not in named_nodes:
                     # Literal
                     tpl = set_value(assignment_target, '1')
-                    if port.source.type == "string":
+                    if port.source.type == "string" or port.source.type == "secret":
                         value = port.sourceLabel
                     elif port.source.type == "list":
                         value = json.loads("[" + port.sourceLabel + "]")
                     elif port.source.type == "dict":
                         value = json.loads("{" + port.sourceLabel + "}")
-                    elif port.source.type == "secret":
-                        value = port.sourceLabel
                     elif port.source.type == "chat":
                         value = json.loads(port.sourceLabel)
                     elif port.source.type == "tuple":
@@ -211,7 +209,7 @@ class %s(Component):
                 for port in ports:
                     if port.source.id not in named_nodes:
                         # Handle Literals
-                        if port.source.type == "string":
+                        if port.source.type == "string" or port.source.type == "secret":
                             value = port.sourceLabel
                         elif port.source.type == "list":
                             value = json.loads("[" + port.sourceLabel + "]")
@@ -257,14 +255,12 @@ class %s(Component):
             if port.source.id not in named_nodes:
                 # Literal
                 tpl = set_value(assignment_target, '1')
-                if port.source.type == "string":
+                if port.source.type == "string" or port.source.type == "secret":
                     value = port.sourceLabel
                 elif port.source.type == "list":
                     value = json.loads("[" + port.sourceLabel + "]")
                 elif port.source.type == "dict":
                     value = json.loads("{" + port.sourceLabel + "}")
-                elif port.source.type == "secret":
-                    value = port.sourceLabel
                 elif port.source.type == "chat":
                     value = json.loads(port.sourceLabel)
                 elif port.source.type == "tuple":
