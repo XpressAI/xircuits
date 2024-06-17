@@ -145,8 +145,9 @@ class %s(Component):
             "any": "any"
         }
 
+        def connect_args(target, source):
+            return ast.parse("%s.connect(%s)" % (target, source))
 
-        connect_args = lambda target, source: ast.parse("setattr(%s, '_getter', lambda x: %s.value)" % (target, source))
         set_value = lambda target, v: ast.parse("%s.value = %s" % (target, v))
 
         # Set up component argument links
