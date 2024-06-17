@@ -20,6 +20,28 @@ else:
         return f.getvalue()
 
 
+def _get_value_from_literal_port(port):
+    if port.source.type == "string" or port.source.type == "secret":
+        value = port.sourceLabel
+    elif port.source.type == "list":
+        value = json.loads("[" + port.sourceLabel + "]")
+    elif port.source.type == "dict":
+        value = json.loads("{" + port.sourceLabel + "}")
+    elif port.source.type == "chat":
+        value = json.loads(port.sourceLabel)
+    elif port.source.type == "tuple":
+        if port.sourceLabel == "":
+            value = ()
+        else:
+            value = eval(port.sourceLabel)
+            if not isinstance(value, tuple):
+                # Handler for single entry tuple
+                value = (value,)
+    else:
+        value = eval(port.sourceLabel)
+
+    return value
+
 class CodeGenerator:
     def __init__(self, graph, component_python_paths):
         self.graph = graph
@@ -163,27 +185,7 @@ class %s(Component):
                 if port.source.id not in named_nodes:
                     # Literal
                     tpl = set_value(assignment_target, '1')
-                    if port.source.type == "string":
-                        value = port.sourceLabel
-                    elif port.source.type == "list":
-                        value = json.loads("[" + port.sourceLabel + "]")
-                    elif port.source.type == "dict":
-                        value = json.loads("{" + port.sourceLabel + "}")
-                    elif port.source.type == "secret":
-                        value = port.sourceLabel
-                    elif port.source.type == "chat":
-                        value = json.loads(port.sourceLabel)
-                    elif port.source.type == "tuple":
-                        if port.sourceLabel == "":
-                            value = ()
-                        else:
-                            value = eval(port.sourceLabel)
-                            if not isinstance(value, tuple):
-                                # Handler for single entry tuple
-                                value = (value,)
-                    else:
-                        value = eval(port.sourceLabel)
-                    tpl.body[0].value.value = value
+                    tpl.body[0].value.value = _get_value_from_literal_port(port)
                 else:
                     assignment_source = "%s.%s" % (
                         named_nodes[port.source.id],
@@ -210,23 +212,7 @@ class %s(Component):
 
                 for port in ports:
                     if port.source.id not in named_nodes:
-                        # Handle Literals
-                        if port.source.type == "string":
-                            value = port.sourceLabel
-                        elif port.source.type == "list":
-                            value = json.loads("[" + port.sourceLabel + "]")
-                        elif port.source.type == "dict":
-                            value = json.loads("{" + port.sourceLabel + "}")
-                        elif port.source.type == "tuple":
-                            if port.sourceLabel == "":
-                                value = ()
-                            else:
-                                value = eval(port.sourceLabel)
-                                if not isinstance(value, tuple):
-                                    # Handler for single entry tuple
-                                    value = (value,)
-                        else:
-                            value = eval(port.sourceLabel)
+                        value = _get_value_from_literal_port(port)
                         dynaport_values.append(RefOrValue(value, False))
                     else:
                         # Handle named node references
@@ -257,23 +243,7 @@ class %s(Component):
             if port.source.id not in named_nodes:
                 # Literal
                 tpl = set_value(assignment_target, '1')
-                if port.source.type == "string":
-                    value = port.sourceLabel
-                elif port.source.type == "list":
-                    value = json.loads("[" + port.sourceLabel + "]")
-                elif port.source.type == "dict":
-                    value = json.loads("{" + port.sourceLabel + "}")
-                elif port.source.type == "secret":
-                    value = port.sourceLabel
-                elif port.source.type == "chat":
-                    value = json.loads(port.sourceLabel)
-                elif port.source.type == "tuple":
-                    value = eval(port.sourceLabel)
-                    if not isinstance(value, tuple):
-                        # handler for single entry tuple
-                        value = (value,)
-                else:
-                    value = eval(port.sourceLabel)
+                value = _get_value_from_literal_port(port)
                 tpl.body[0].value.value = value
                 port_type = type(value).__name__
             else:
