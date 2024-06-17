@@ -6,7 +6,7 @@ T = TypeVar('T')
 
 class OutArg(Generic[T]):
     def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
-        self.value = value
+        self._value = value
         self._getter = getter
 
     @property
@@ -65,7 +65,7 @@ class InArg(Generic[T]):
 
 class InCompArg(Generic[T]):
     def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
-        self.value = value
+        self._value = value
         self._getter = getter
 
     @property
