@@ -17,6 +17,10 @@ class OutArg(Generic[T]):
     def value(self, value: T):
         self._value = value
 
+    def connect(self, ref: 'OutArg[T]'):
+        self._value = ref
+        self._getter = lambda x: x.value
+
     def __copy__(self):
         return type(self)(self._value, self._getter)
 
