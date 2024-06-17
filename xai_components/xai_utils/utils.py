@@ -1,4 +1,4 @@
-from xai_components.base import InArg, OutArg, InCompArg, Component, xai_component, dynalist, dynatuple
+from xai_components.base import InArg, OutArg, InCompArg, Component, xai_component, dynalist, dynatuple, BaseComponent, SubGraphExecutor
 
 import os
 import sys
@@ -707,3 +707,40 @@ class GetRandomNumber(Component):
     def execute(self, ctx) -> None:
         self.value.value = random.randint(self.greater_than.value, self.less_than.value)
     
+
+@xai_component(color='blue')
+class RunParallelThread(Component):
+    """
+    Executes a given body in a separate thread using a thread pool executor.
+
+    **Important Note**: Context changes done in the body are not propagated! 
+    This includes things like setting variable values.
+    
+    
+    ##### inPorts:
+    - n_workers: The number of worker threads to use for executing the body in parallel.
+    
+    ##### outPorts:
+    - None
+    """
+    n_workers: InArg[int]
+    body: BaseComponent
+
+    def __init__(self):
+        super().__init__()
+        self.executor = None
+    
+    def execute(self, ctx) -> None:
+        from concurrent.futures import ThreadPoolExecutor
+        from copy import deepcopy
+        
+        if self.executor is None:
+            self.executor = ThreadPoolExecutor(max_workers=self.n_workers.value)
+
+        def execute_body(body, ctx):
+            SubGraphExecutor(body).do(ctx)
+        
+        x = self.executor.submit(execute_body, deepcopy(self.body), deepcopy(ctx))
+
+        # Enforce that any exceptions are logged
+        x.add_done_callback(lambda x: x.result())
