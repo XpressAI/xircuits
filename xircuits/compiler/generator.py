@@ -123,11 +123,8 @@ class %s(Component):
             "any": "any"
         }
 
-
         def connect_args(target, source):
-            # setattr(self.c_0.foo, '_value', self.c_1.bar)
-            # setattr(self.c_0.foo, '_getter', lambda ref: ref.value)
-            return ast.parse("setattr(%s, '_value', %s); setattr(%s, '_getter', lambda x: x.value)" % (target, source, target))
+            return ast.parse("%s.connect(%s)" % (target, source))
 
         set_value = lambda target, v: ast.parse("%s.value = %s" % (target, v))
 

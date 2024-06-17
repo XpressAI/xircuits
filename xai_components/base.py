@@ -1,20 +1,8 @@
 from argparse import Namespace
 from typing import TypeVar, Generic, Tuple, NamedTuple, Callable, List
+from copy import deepcopy
 
 T = TypeVar('T')
-
-class InArg(Generic[T]):
-    def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
-        self._value = value
-        self._getter = getter
-
-    @property
-    def value(self):
-        return self._getter(self._value)
-
-    @value.setter
-    def value(self, value: T):
-        self._value = value
 
 class OutArg(Generic[T]):
     def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
@@ -29,6 +17,52 @@ class OutArg(Generic[T]):
     def value(self, value: T):
         self._value = value
 
+    def __copy__(self):
+        return type(self)(self._value, self._getter)
+
+    def __deepcopy__(self, memo):
+        id_self = id(self)
+        _copy = memo.get(id_self)
+        if _copy is None:
+            _copy = type(self)(
+                deepcopy(self._value, memo),
+                deepcopy(self._getter, memo)
+            )
+            memo[id_self] = _copy
+        return _copy
+
+
+class InArg(Generic[T]):
+    def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
+        self._value = value
+        self._getter = getter
+
+    @property
+    def value(self):
+        return self._getter(self._value)
+
+    @value.setter
+    def value(self, value: T):
+        self._value = value
+
+    def connect(self, ref: OutArg[T]):
+        self._value = ref
+        self._getter = lambda x: x.value
+
+    def __copy__(self):
+        return type(self)(self._value, self._getter)
+
+    def __deepcopy__(self, memo):
+        id_self = id(self)
+        _copy = memo.get(id_self)
+        if _copy is None:
+            _copy = type(self)(
+                deepcopy(self._value, memo),
+                deepcopy(self._getter, memo)
+            )
+            memo[id_self] = _copy
+        return _copy
+
 class InCompArg(Generic[T]):
     def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
         self.value = value
@@ -41,6 +75,24 @@ class InCompArg(Generic[T]):
     @value.setter
     def value(self, value: T):
         self._value = value
+
+    def connect(self, ref: OutArg[T]):
+        self._value = ref
+        self._getter = lambda x: x.value
+
+    def __copy__(self):
+        return type(self)(self._value, self._getter)
+
+    def __deepcopy__(self, memo):
+        id_self = id(self)
+        _copy = memo.get(id_self)
+        if _copy is None:
+            _copy = type(self)(
+                deepcopy(self._value, memo),
+                deepcopy(self._getter, memo)
+            )
+            memo[id_self] = _copy
+        return _copy
 
 def xai_component(*args, **kwargs):
     # Passthrough element without any changes.
@@ -92,6 +144,22 @@ class BaseComponent:
 
     def do(self, ctx) -> 'BaseComponent':
         pass
+
+    def __copy__(self):
+        _copy = type(self)()
+        for key, type_arg in self.__dict__.items():
+            setattr(_copy, key, getattr(self, key))
+        return _copy
+
+    def __deepcopy__(self, memo):
+        id_self = id(self)
+        _copy = memo.get(id_self)
+        if _copy is None:
+            _copy = type(self)()
+            memo[id_self] = _copy
+            for key, type_arg in self.__dict__.items():
+                setattr(_copy, key, deepcopy(getattr(self, key), memo))
+        return _copy
 
 class Component(BaseComponent):
     next: BaseComponent
