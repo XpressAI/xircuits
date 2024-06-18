@@ -713,22 +713,27 @@ class RunParallelThread(Component):
     """
     Executes a given body in a separate thread using a thread pool executor.
 
-    **Important Note**: Context changes done in the body are not propagated! 
-    This includes things like setting variable values.
-    
+    **Important Note**: Changes done in the body are not propagated!
+    This includes things like setting variable values, modifying the context, or
+    even setting output arguments. This means, you can't pull the result of a
+    component that is run on a separate thread.
     
     ##### inPorts:
     - n_workers: The number of worker threads to use for executing the body in parallel.
     
     ##### outPorts:
-    - None
+    - futures: All futures created by this component
+    - future: The last future created by this component
     """
     n_workers: InArg[int]
+    futures: OutArg[list]
+    future: OutArg[any]
     body: BaseComponent
 
     def __init__(self):
         super().__init__()
         self.executor = None
+        self.futures.value = []
     
     def execute(self, ctx) -> None:
         from concurrent.futures import ThreadPoolExecutor
@@ -744,3 +749,14 @@ class RunParallelThread(Component):
 
         # Enforce that any exceptions are logged
         x.add_done_callback(lambda x: x.result())
+
+        self.futures.value.append(x)
+
+
+@xai_component(color='blue')
+class AwaitFutures(Component):
+    futures: InCompArg[list]
+
+    def execute(self, ctx) -> None:
+        from concurrent.futures import wait
+        wait(self.futures.value)
