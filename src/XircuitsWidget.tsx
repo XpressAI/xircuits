@@ -46,7 +46,7 @@ export class XircuitsPanel extends ReactWidget {
     this.triggerLoadingAnimationSignal = options.triggerLoadingAnimationSignal;
     this.reloadAllNodesSignal = options.reloadAllNodesSignal;
     this.toggleAllLinkAnimationSignal = options.toggleAllLinkAnimationSignal;
-    this.xircuitsApp = new XircuitsApplication(this.app, this.shell);
+    this.xircuitsApp = new XircuitsApplication(this.app, this.shell, () => this.parent?.id);
   }
 
   handleEvent(event: Event): void {

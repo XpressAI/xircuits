@@ -5,6 +5,7 @@ import { commandIDs } from "./CommandIDs";
 
 interface CustomActionEventOptions {
     app: JupyterFrontEnd;
+    getWidgetId: () => string;
 }
 
 export class CustomActionEvent extends Action {
@@ -14,19 +15,19 @@ export class CustomActionEvent extends Action {
             type: InputType.KEY_DOWN,
             fire: (event: ActionEvent<React.KeyboardEvent>) => {
                 const app = options.app;
-                const keyCode = event.event.key;
-                const ctrlKey = event.event.ctrlKey;
-                
-                const executeIf = (condition, command) => {
-                    if(condition){
-                        // @ts-ignore
-                        event.event.stopImmediatePropagation();
-                        app.commands.execute(command)
-                    }
-                }
-
                 // @ts-ignore
-                if (app.shell._tracker._activeWidget && app.shell._tracker._activeWidget.node.contains(event.event.target)){
+                if(app.shell._tracker._activeWidget && options.getWidgetId() === app.shell._tracker._activeWidget.id){
+                    const keyCode = event.event.key;
+                    const ctrlKey = event.event.ctrlKey;
+
+                    const executeIf = (condition, command) => {
+                        if(condition){
+                            // @ts-ignore
+                            event.event.stopImmediatePropagation();
+                            app.commands.execute(command)
+                        }
+                    }
+
                     executeIf(ctrlKey && keyCode === 'z', commandIDs.undo);
                     executeIf(ctrlKey && keyCode === 'y', commandIDs.redo);
                     executeIf(ctrlKey && keyCode === 's', commandIDs.saveXircuit);
@@ -36,7 +37,6 @@ export class CustomActionEvent extends Action {
                     executeIf(keyCode == 'Delete' || keyCode == 'Backspace', commandIDs.deleteEntity);
                 }
             }
-
         });
     }
 }
