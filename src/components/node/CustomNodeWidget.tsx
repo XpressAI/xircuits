@@ -130,43 +130,54 @@ const ParameterNode = ({ node, engine, handleEditLiteral }) => (
 
 );
 
-const WorkflowNode = ({ node, engine, handleEditLiteral, handleDescription, showDescription, descriptionStr }) => (
-    <div style={{ position: "relative" }}>
-        {showDescription && <div className="description-tooltip">
-            <div data-no-drag style={{ cursor: "default" }}>
-                <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={handleDescription}>
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <S.DescriptionName color={node.getOptions().color}>{node.getOptions().name}</S.DescriptionName>
-                <div className="scrollable" onWheel={(e) => { e.stopPropagation(); e.currentTarget.scrollBy(e.deltaX, e.deltaY); }}>
-                    <p className="description-title">Description:</p>
-                    <div className="description-container">
-                        <div className="markdown-body" dangerouslySetInnerHTML={{ __html: marked(descriptionStr ?? '') }} />
-                    </div>
-                </div>
-            </div>
-        </div>}
-        <S.WorkflowNode
-            borderColor={node.getOptions().extras["borderColor"]}
-            data-default-node-name={node.getOptions().name}
-            selected={node.isSelected()}
-            background={node.getOptions().color}
-            onDoubleClick={handleEditLiteral}
-        >
-            <S.Title>
-                <S.TitleName>{node.getOptions().name}</S.TitleName>
-                <label data-no-drag>
-                    <Toggle className='lock' checked={node.isLocked()} onChange={() => handleDescription('nodeDeletable')} />
-                    <Toggle className='description' name='Description' checked={showDescription} onChange={handleDescription} />
-                </label>
-            </S.Title>
-            <S.Ports>
-                <S.PortsContainer>{_.map(node.getInPorts(), port => <CustomPortLabel engine={engine} port={port} key={port.getID()} node={node} />)}</S.PortsContainer>
-                <S.PortsContainer>{_.map(node.getOutPorts(), port => <CustomPortLabel engine={engine} port={port} key={port.getID()} node={node} />)}</S.PortsContainer>
-            </S.Ports>
-        </S.WorkflowNode>
-    </div>
+const StartFinishNode = ({ node, engine, handleDeletableNode }) => (
+    <S.Node
+        borderColor={node.getOptions().extras["borderColor"]}
+        data-default-node-name={node.getOptions().name}
+        selected={node.isSelected()}
+        background={node.getOptions().color}
+    >
+        <S.Title>
+            <S.TitleName>{node.getOptions().name}</S.TitleName>
+            <label data-no-drag>
+                <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
+            </label>
+        </S.Title>
+        <S.Ports>
+            <S.PortsContainer>{_.map(node.getInPorts(), port => <CustomPortLabel engine={engine} port={port} key={port.getID()} node={node} />)}</S.PortsContainer>
+            <S.PortsContainer>{_.map(node.getOutPorts(), port => <CustomPortLabel engine={engine} port={port} key={port.getID()} node={node} />)}</S.PortsContainer>
+        </S.Ports>
+    </S.Node>
 );
+
+const WorkflowNode = ({ node, engine, handleEditLiteral, handleDeletableNode }) => {
+    const elementRef = React.useRef<HTMLElement>(null);
+
+    return (
+        <div style={{ position: "relative" }}>
+            <S.WorkflowNode
+                ref={elementRef}
+                data-tip data-for={node.getOptions().id}
+                borderColor={node.getOptions().extras["borderColor"]}
+                data-default-node-name={node.getOptions().name}
+                selected={node.isSelected()}
+                background={node.getOptions().color}
+                onDoubleClick={handleEditLiteral}
+            >
+                <S.Title>
+                    <S.TitleName>{node.getOptions().name}</S.TitleName>
+                    <label data-no-drag>
+                        <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
+                    </label>
+                </S.Title>
+                <S.Ports>
+                    <S.PortsContainer>{_.map(node.getInPorts(), port => <CustomPortLabel engine={engine} port={port} key={port.getID()} node={node} />)}</S.PortsContainer>
+                    <S.PortsContainer>{_.map(node.getOutPorts(), port => <CustomPortLabel engine={engine} port={port} key={port.getID()} node={node} />)}</S.PortsContainer>
+                </S.Ports>
+            </S.WorkflowNode>
+        </div>
+    );
+};
 
 const ComponentLibraryNode = ({ node, engine, shell, handleEditLiteral, handleDescription, showDescription, descriptionStr, handleDeletableNode, hideErrorTooltip }) => {
     const elementRef = React.useRef<HTMLElement>(null);
@@ -199,8 +210,8 @@ const ComponentLibraryNode = ({ node, engine, shell, handleEditLiteral, handleDe
                 <S.Title>
                     <S.TitleName>{node.getOptions().name}</S.TitleName>
                     <label data-no-drag>
-                        <Toggle className='lock' checked={node.isLocked()} onChange={handleDeletableNode} />
-                        <Toggle className='description' name='Description' checked={showDescription} onChange={handleDescription} />
+                        <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
+                        <Toggle className='description' name='Description' checked={showDescription ?? false} onChange={event => handleDescription('description', event)} />
                     </label>
                 </S.Title>
                 <S.Ports>
@@ -333,9 +344,32 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
         }
 
         if (node['extras']['type'] === 'xircuits_workflow') {
-            return <WorkflowNode node={node} engine={engine} handleEditLiteral={this.handleEditLiteral} handleDescription={this.handleDescription} showDescription={showDescription} descriptionStr={descriptionStr} />;
+            return <WorkflowNode 
+                node={node} 
+                engine={engine} 
+                handleEditLiteral={this.handleEditLiteral} 
+                handleDeletableNode={this.handleDeletableNode} 
+            />;
         }
 
-        return <ComponentLibraryNode node={node} engine={engine} shell={shell} handleEditLiteral={this.handleEditLiteral} handleDescription={this.handleDescription} showDescription={showDescription} descriptionStr={descriptionStr} handleDeletableNode={this.handleDeletableNode} hideErrorTooltip={this.hideErrorTooltip} />;
+        if (node.getOptions()["name"] === 'Start' || node.getOptions()["name"] === 'Finish') {
+            return <StartFinishNode 
+                node={node} 
+                engine={engine} 
+                handleDeletableNode={this.handleDeletableNode} 
+            />;
+        }
+        
+        return <ComponentLibraryNode 
+            node={node} 
+            engine={engine} 
+            shell={shell} 
+            handleEditLiteral={this.handleEditLiteral} 
+            handleDescription={this.handleDescription} 
+            showDescription={showDescription} 
+            descriptionStr={descriptionStr} 
+            handleDeletableNode={this.handleDeletableNode} 
+            hideErrorTooltip={this.hideErrorTooltip} 
+        />;
     }
 }
