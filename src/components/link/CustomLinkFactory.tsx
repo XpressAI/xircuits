@@ -15,13 +15,18 @@ namespace S {
 		}
 	`;
 
-	const selected = css`
+	const triangleLink = css`
 		stroke-dasharray: 10, 2;
 		animation: ${Keyframes} 1s steps(24) infinite;
 	`;
 
-	export const Path = styled.path<{ selected: boolean }>`
-		${(p) => p.selected && selected};
+	const selected = css`
+		stroke: yellow;
+	`;
+
+	export const Path = styled.path<{ selected: boolean, isRegularLink: boolean }>`
+		${(p) => p.selected && selected }
+		${(p) => !p.isRegularLink && triangleLink }
 
 		fill: none;
 		pointer-events: auto;
@@ -151,9 +156,10 @@ export class ParameterLinkFactory extends SelectOnClickLinkFactory {
 				onMouseOver={addHover(model)}
 				onMouseOut={removeHover(model)}
 				selected={selected}
-				stroke={selected ? 'yellow' : model.getOptions().color}
+				stroke={model.getOptions().color}
 				strokeWidth={model.getOptions().width}
 				d={path}
+				isRegularLink={true}
 			/>
 		);
 	}
@@ -169,12 +175,14 @@ export class TriangleLinkFactory extends SelectOnClickLinkFactory {
 	}
 
 	generateLinkSegment(model: TriangleLinkModel, selected: boolean, path: string) {
+		const isRegularLink = model.getOptions()['__sub-type__'] === 'argument';
 		return (
 			<S.Path
 				onMouseOver={addHover(model)}
 				onMouseOut={removeHover(model)}
-				selected={!selected}
-				stroke={!selected ? model.getOptions().selectedColor : 'yellow'}
+				isRegularLink={isRegularLink}
+				selected={selected}
+				stroke={isRegularLink ? model.getOptions().color :  model.getOptions().selectedColor}
 				strokeWidth={model.getOptions().width}
 				d={path}
 			/>
