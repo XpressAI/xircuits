@@ -127,7 +127,7 @@ export class XircuitsApplication {
                                         continue
                                 }
                                 const sourcePortLabel = sourcePortOptions['label'];
-                                if (sourcePortLabel == '▶' || sourcePortName.includes('out-flow')) {
+                                if (!sourceNode['name'].startsWith("Argument ") && (sourcePortLabel == '▶' || sourcePortName.includes('out-flow'))) {
                                         // When source port is '▶', use triangle animation link
                                         // Also, use triangle animation link when the source port is a flowport
                                         newLink = newTriangleLink;
