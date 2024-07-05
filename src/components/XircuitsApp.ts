@@ -131,6 +131,9 @@ export class XircuitsApplication {
                                         // When source port is '▶', use triangle animation link
                                         // Also, use triangle animation link when the source port is a flowport
                                         newLink = newTriangleLink;
+                                        if(sourceNode['name'].startsWith("Argument ")){
+                                                newLink.getOptions()['__sub-type__'] = 'argument';
+                                        }
                                 }
 
                                 const targetPort = targetNode.getPortFromID(link.targetPort);
