@@ -23,7 +23,7 @@ export class XircuitsApplication {
 
         protected diagramEngine: SRD.DiagramEngine;
 
-        constructor(app: JupyterFrontEnd, shell: ILabShell) {
+        constructor(app: JupyterFrontEnd, shell: ILabShell, getWidgetId: () => string) {
                 this.diagramEngine = new SRD.DiagramEngine({ registerDefaultZoomCanvasAction: false, registerDefaultDeleteItemsAction: false });
 
                 // Default Factories
@@ -39,7 +39,7 @@ export class XircuitsApplication {
                 this.diagramEngine.getLinkFactories().registerFactory(new ParameterLinkFactory());
                 this.diagramEngine.getLinkFactories().registerFactory(new TriangleLinkFactory());
                 this.diagramEngine.getActionEventBus().registerAction(new CustomPanAndZoomCanvasAction())
-                this.diagramEngine.getActionEventBus().registerAction(new CustomActionEvent({ app }));
+                this.diagramEngine.getActionEventBus().registerAction(new CustomActionEvent({ app, getWidgetId }));
                 this.diagramEngine.getStateMachine().pushState(new CustomDiagramState());
 
 
