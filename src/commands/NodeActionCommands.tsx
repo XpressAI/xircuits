@@ -754,7 +754,9 @@ export function addNodeActionCommands(
                     let link = links[linkID];
                     if (link["sourcePort"] && link["targetPort"]) {
                         let newLink = new DefaultLinkModel();
-                        let sourcePort = updatedNode.getPorts()["out-0"];
+                        
+                        // a parameter node will have only 1 outPort
+                        let sourcePort = Object.values(updatedNode.getPorts())[0] as CustomPortModel;
                         newLink.setSourcePort(sourcePort);
     
                         // This to make sure the new link came from the same literal node as previous link
