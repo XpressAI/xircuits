@@ -161,7 +161,7 @@ export  class CustomPortModel extends DefaultPortModel  {
 
     isTypeCompatible(thisNodeModelType, dataType) {
         // Check for direct compatibility or 'any' type
-        if (thisNodeModelType === dataType || dataType === 'any') {
+        if (thisNodeModelType === dataType || thisNodeModelType === 'any' || dataType === 'any') {
             return true;
         }
 
