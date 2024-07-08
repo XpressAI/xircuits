@@ -4,7 +4,7 @@ import { ITranslator } from '@jupyterlab/translation';
 import { IXircuitsDocTracker } from '../index';
 import * as _ from 'lodash';
 import { NodeModel } from '@projectstorm/react-diagrams';
-import { CustomNodeModel } from '../components/node/CustomNodeModel';
+import { CustomNodeModel, CustomNodeModelOptions } from '../components/node/CustomNodeModel';
 import { LinkModel } from '@projectstorm/react-diagrams';
 import { XircuitsPanel } from '../XircuitsWidget';
 import { Dialog, showDialog } from '@jupyterlab/apputils';
@@ -20,7 +20,7 @@ import { CustomPortModel } from '../components/port/CustomPortModel';
 import { CustomLinkModel, ParameterLinkModel, TriangleLinkModel } from '../components/link/CustomLinkModel';
 import { PointModel } from '@projectstorm/react-diagrams';
 import { Point } from '@projectstorm/geometry';
-import { handleLiteralInput } from '../tray_library/GeneralComponentLib';
+import { handleArgumentInput, handleLiteralInput } from '../tray_library/GeneralComponentLib';
 import { CustomDynaPortModel } from '../components/port/CustomDynaPortModel';
 import { fetchComponents } from '../tray_library/Component';
 import { BaseComponentLibrary } from '../tray_library/BaseComponentLib';
@@ -198,7 +198,7 @@ export function addNodeActionCommands(
 
     //Add command to edit literal component
     commands.addCommand(commandIDs.editNode, {
-        execute: editLiteral,
+        execute: editParameter,
         label: trans.__('Edit'),
         isEnabled: () => {
             let isNodeSelected: boolean;
@@ -722,72 +722,110 @@ export function addNodeActionCommands(
     }
     
 
-    async function editLiteral(): Promise<void> {
+    async function editParameter(): Promise<void> {
         const widget = tracker.currentWidget?.content as XircuitsPanel;
 
         if (widget) {
             const selected_node = getLastSelectedNode();
-
-            if (!selected_node.getOptions()["name"].startsWith("Literal")) {
+            const nodeType = selected_node.getOptions()["name"];
+            let updatedNode = null;
+    
+            if (nodeType.startsWith("Literal")) {
+                updatedNode = await editLiteral(widget, selected_node);
+            } else if (nodeType.startsWith("Argument")) {
+                updatedNode = await editArgument(widget, selected_node);
+            } else {
                 showDialog({
-                    title: 'Only Literal Node can be edited',
+                    title: 'Only Literal or Argument Node can be edited',
                     buttons: [Dialog.warnButton({ label: 'OK' })]
-                })
-                return
-            }
-
-            let node = null;
-            const links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
-            const literalType = selected_node["extras"]["type"];
-            let oldValue = selected_node.getPorts()["out-0"].getOptions()["label"];
-            
-            if (literalType == "chat"){
-                oldValue = JSON.parse(oldValue);
-            }
-            
-            const updateTitle = `Update ${literalType}`;
-            
-            let updatedContent = await handleLiteralInput(selected_node["name"], {color: selected_node["color"], type: selected_node["extras"]["type"]}, oldValue, literalType, updateTitle);
-            
-            if (!updatedContent) {
-                // handle case where Cancel was clicked or an error occurred
+                });
                 return;
             }
             
-            node = updatedContent;
-            
-            // Set new node to old node position
-            let position = selected_node.getPosition();
-            node.setPosition(position);
-            widget.xircuitsApp.getDiagramEngine().getModel().addNode(node);
-
-            // Update the links
-            for (let linkID in links) {
-
-                let link = links[linkID];
-
-                if (link["sourcePort"] && link["targetPort"]) {
-
-                    let newLink = new DefaultLinkModel();
-
-                    let sourcePort = node.getPorts()["out-0"];
-                    newLink.setSourcePort(sourcePort);
-
-                    // This to make sure the new link came from the same literal node as previous link
-                    let sourceLinkNodeId = link["sourcePort"].getParent().getID()
-                    let sourceNodeId = selected_node.getOptions()["id"]
-                    if (sourceLinkNodeId == sourceNodeId) {
-                        newLink.setTargetPort(link["targetPort"]);
+            if (updatedNode) {
+                // Set new node to old node position
+                let position = selected_node.getPosition();
+                updatedNode.setPosition(position);
+                widget.xircuitsApp.getDiagramEngine().getModel().addNode(updatedNode);
+    
+                // Update the links
+                const links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
+                for (let linkID in links) {
+                    let link = links[linkID];
+                    if (link["sourcePort"] && link["targetPort"]) {
+                        let newLink = new DefaultLinkModel();
+                        
+                        // a parameter node will have only 1 outPort
+                        let sourcePort = Object.values(updatedNode.getPorts())[0] as CustomPortModel;
+                        newLink.setSourcePort(sourcePort);
+    
+                        // This to make sure the new link came from the same literal node as previous link
+                        let sourceLinkNodeId = link["sourcePort"].getParent().getID();
+                        let sourceNodeId = selected_node.getOptions()["id"];
+                        if (sourceLinkNodeId == sourceNodeId) {
+                            newLink.setTargetPort(link["targetPort"]);
+                        }
+    
+                        widget.xircuitsApp.getDiagramEngine().getModel().addLink(newLink);
                     }
-
-                    widget.xircuitsApp.getDiagramEngine().getModel().addLink(newLink)
                 }
-            }
 
-            // Remove old node
-            selected_node.remove();
-            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+                // Remove old node
+                selected_node.remove();
+                widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+            }
         }
+    }
+    
+    async function editLiteral(widget: XircuitsPanel, selected_node: any): Promise<any> {
+        if (!selected_node.getOptions()["name"].startsWith("Literal")) {
+            showDialog({
+                title: 'Only Literal Node can be edited',
+                buttons: [Dialog.warnButton({ label: 'OK' })]
+            });
+            return null;
+        }
+    
+        const literalType = selected_node["extras"]["type"];
+        let oldValue = selected_node.getPorts()["out-0"].getOptions()["label"];
+        
+        if (literalType == "chat") {
+            oldValue = JSON.parse(oldValue);
+        }
+        
+        const updateTitle = `Update ${literalType}`;
+        let nodeData: CustomNodeModelOptions = {color: selected_node["color"], type: selected_node["extras"]["type"]}
+        let updatedContent = await handleLiteralInput(selected_node["name"], nodeData, oldValue, literalType, updateTitle);
+        
+        if (!updatedContent) {
+            // handle case where Cancel was clicked or an error occurred
+            return null;
+        }
+        
+        return updatedContent;
+    }
+    
+    async function editArgument(widget: XircuitsPanel, selected_node: any): Promise<any> {
+        if (!selected_node.getOptions()["name"].startsWith("Argument")) {
+            showDialog({
+                title: 'Only Argument Node can be edited',
+                buttons: [Dialog.warnButton({ label: 'OK' })]
+            });
+            return null;
+        }
+        // Expected Format: Argument (datatype): ArgumentVarName
+        let oldValue = selected_node.name.split(':')[1].trim();;
+
+        const updateTitle = `Update Argument`;
+        let nodeData: CustomNodeModelOptions = {color: selected_node["color"], type: selected_node["extras"]["type"]}
+        let updatedContent = await handleArgumentInput(nodeData, updateTitle, oldValue);
+        
+        if (!updatedContent) {
+            // handle case where Cancel was clicked or an error occurred
+            return null;
+        }
+        
+        return updatedContent;
     }
 
     function deleteEntity(): void {
