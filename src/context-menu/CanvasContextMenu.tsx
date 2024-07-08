@@ -88,9 +88,9 @@ export function getMenuOptionsVisibility(models) {
 
     let isNodeSelected = models.some(model => model instanceof NodeModel);
     let isLinkSelected = models.some(model => model instanceof LinkModel);
-    let literalNodes = models.filter(model => isLiteralNode(model));
+    let parameterNodes = models.filter(model => !isComponentNode(model));
     let componentNodes = models.filter(model => isComponentNode(model));
-    let isSingleLiteralNodeSelected = literalNodes.length === 1;
+    let isSingleParameterNodeSelected = parameterNodes.length === 1;
     let isSingleComponentNodeSelected = componentNodes.length === 1;
     let showReloadNode = isNodeSelected && componentNodes.length > 0;
     let showopenXircuitsWorkflow = isSingleComponentNodeSelected && models.some(model => isXircuitsWorkflow(model))
@@ -98,10 +98,10 @@ export function getMenuOptionsVisibility(models) {
     return {
         showCutCopyPaste: !models.length || isNodeSelected || isLinkSelected,
         showReloadNode: showReloadNode,
-        showEdit: isSingleLiteralNodeSelected,
+        showEdit: isSingleParameterNodeSelected,
         showOpenScript: isSingleComponentNodeSelected,
         showopenXircuitsWorkflow: showopenXircuitsWorkflow,
-        showDelete: isNodeSelected || isLinkSelected || literalNodes.length > 0,
+        showDelete: isNodeSelected || isLinkSelected || parameterNodes.length > 0,
         showUndoRedo: !models.length,
         showAddComment: !models.length
     };
