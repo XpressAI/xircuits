@@ -132,20 +132,22 @@ export  class CustomPortModel extends DefaultPortModel  {
                 targetPort.getNode().setSelected(true);
                 return false;
             }
-
-            let dataType = targetPort.dataType;
-
-            if(!targetPort.isTypeCompatible(thisNodeModelType, dataType)) {
-                // if a list of types is provided for the port, parse it a bit to display it nicer
-                if (dataType.includes(',')) {
-                    dataType = this.parsePortType(dataType);
-                }
-                targetPort.getNode().getOptions().extras["borderColor"] = "red";
-                targetPort.getNode().getOptions().extras["tip"] = `Incorrect data type. Port ${thisLabel} is of type ` + "*`" + dataType + "`*.";
-                targetPort.getNode().setSelected(true);
-                return false;
-            }
         }
+
+        let sourceDataType = thisPort.dataType;
+        let targetDataType = targetPort.dataType;
+
+        if(!targetPort.isTypeCompatible(sourceDataType, targetDataType)) {
+            // if a list of types is provided for the port, parse it a bit to display it nicer
+            if (targetDataType.includes(',')) {
+                targetDataType = this.parsePortType(targetDataType);
+            }
+            targetPort.getNode().getOptions().extras["borderColor"] = "red";
+            targetPort.getNode().getOptions().extras["tip"] = `Incorrect data type. Port ${thisLabel} is of type *\`${targetDataType}\`*. You have provided type *\`${sourceDataType}\`*.`;
+            targetPort.getNode().setSelected(true);
+            return false;
+        }
+        
         this.removeErrorTooltip(this, targetPort);
         return true;
     }
@@ -159,25 +161,25 @@ export  class CustomPortModel extends DefaultPortModel  {
         "secret": ["string", "int", "float"],
     };
 
-    isTypeCompatible(thisNodeModelType, dataType) {
+    isTypeCompatible(sourceDataType, targetDataType) {
         // Check for direct compatibility or 'any' type
-        if (thisNodeModelType === dataType || thisNodeModelType === 'any' || dataType === 'any') {
+        if (sourceDataType === targetDataType || sourceDataType === 'any' || targetDataType === 'any') {
             return true;
         }
 
-        // Check if the thisNodeModelType exists in the compatibility map
-        if (CustomPortModel.typeCompatibilityMap.hasOwnProperty(thisNodeModelType)) {
-            // Get the array of compatible data types for thisNodeModelType
-            const compatibleDataTypes = CustomPortModel.typeCompatibilityMap[thisNodeModelType];
+        // Check if the sourceDataType exists in the compatibility map
+        if (CustomPortModel.typeCompatibilityMap.hasOwnProperty(sourceDataType)) {
+            // Get the array of compatible data types for sourceDataType
+            const compatibleDataTypes = CustomPortModel.typeCompatibilityMap[sourceDataType];
 
-            // Check if dataType is in the array of compatible types
-            if (compatibleDataTypes.includes(dataType)) {
+            // Check if targetDataType is in the array of compatible types
+            if (compatibleDataTypes.includes(targetDataType)) {
                 return true;
             }
         }
 
         // If multiple types are accepted by target node port, check if source port type is among them
-        if (dataType.includes(thisNodeModelType)) {
+        if (targetDataType.includes(sourceDataType)) {
             return true;
         }
 
