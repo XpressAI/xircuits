@@ -132,8 +132,9 @@ const CommentNode = ({ node }) => {
 };
 
 const ParameterNode = ({ node, engine, app }) => {
-    const handleEditLiteral = () => {
-        if (!node.getOptions()["name"].startsWith("Literal")) {
+    const handleEditParameter = () => {
+        const nodeName = node.getOptions()["name"];
+        if (!nodeName.startsWith("Literal") && !nodeName.startsWith("Argument")) {
             return;
         }
         app.commands.execute(commandIDs.editNode);
@@ -145,7 +146,7 @@ const ParameterNode = ({ node, engine, app }) => {
             data-default-node-name={node.getOptions().name}
             selected={node.isSelected()}
             background={node.getOptions().color}
-            onDoubleClick={handleEditLiteral}
+            onDoubleClick={handleEditParameter}
         >
             <S.Title>
                 <S.TitleName>{node.getOptions().name}</S.TitleName>
