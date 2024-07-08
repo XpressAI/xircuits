@@ -86,11 +86,11 @@ var S;
         }
     `;
     S.WorkflowNode = styled(S.Node)`
-        outline: 2px solid rgba(255, 255, 255, 0.5);
+        outline: 2px solid rgba(255, 255, 255, 0.2);
         outline-offset: 8px; // Space between the main node and the outline
 
         ${(p) => p.selected && `
-            outline: 2px solid rgba(0, 192, 255, 0.5); // blue
+            outline: 2px solid rgba(0, 192, 255, 0.2); // blue
         `}
     `;
 })(S || (S = {}));
