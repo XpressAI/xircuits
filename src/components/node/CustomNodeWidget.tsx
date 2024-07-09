@@ -120,6 +120,7 @@ export interface DefaultNodeProps {
 
 const getNodeIcon = (type) => {
     switch (type) {
+        case 'Start':
         case 'startFinish':
             return <startFinishComponentIcon.react />;
         case 'workflow':
@@ -288,7 +289,7 @@ const ComponentLibraryNode = ({ node, engine, shell, handleDeletableNode }) => {
                 background={node.getOptions().color}
             >
                 <S.Title>
-                    <S.IconContainer>{getNodeIcon('library_component')}</S.IconContainer>
+                    <S.IconContainer>{getNodeIcon(node['extras']['type'])}</S.IconContainer>
                     <S.TitleName>{node.getOptions().name}</S.TitleName>
                     <label data-no-drag>
                         <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
