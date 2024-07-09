@@ -1,6 +1,6 @@
 from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component, dynalist
 
-@xai_component
+@xai_component(type='branch')
 class BranchComponent(Component):
     when_true: BaseComponent
     when_false: BaseComponent
@@ -20,7 +20,7 @@ class BranchComponent(Component):
         if hasattr(self, 'next') and self.next:
             return self.next
     
-@xai_component
+@xai_component(type='branch')
 class LoopComponent(Component):
     body: BaseComponent
 
@@ -35,7 +35,7 @@ class LoopComponent(Component):
         if hasattr(self, 'next') and self.next:
             return self.next
 
-@xai_component
+@xai_component(type='branch')
 class ReverseForEach(Component):
     body: BaseComponent
     
@@ -56,7 +56,7 @@ class ReverseForEach(Component):
             return self.next
 
 
-@xai_component
+@xai_component(type='branch')
 class ForEach(Component):
     body: BaseComponent
     

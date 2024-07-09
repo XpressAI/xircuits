@@ -49,7 +49,7 @@ var S;
     `;
 
     S.IconContainer = styled.div`
-        padding: 5px;
+        padding: 5px 5px 5px 5px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -127,6 +127,8 @@ const getNodeIcon = (type) => {
             return <workflowComponentIcon.react />;
         case 'branch':
             return <branchComponentIcon.react />;
+        // component libraries were typed as 'debug'. To be removed in the future.
+        case 'debug':
         case 'library_component':
             return <componentLibIcon.react />;
         default:
