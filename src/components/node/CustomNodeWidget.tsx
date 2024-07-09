@@ -10,13 +10,15 @@ import { Dialog } from '@jupyterlab/apputils';
 import { formDialogWidget } from '../../dialog/formDialogwidget';
 import { showFormDialog } from '../../dialog/FormDialog';
 import { CommentDialog } from '../../dialog/CommentDialog';
-import ReactTooltip from "react-tooltip";
+import ReactTooltip from 'react-tooltip';
 import { marked } from 'marked';
 import Color from 'colorjs.io';
-import { commandIDs } from "../../commands/CommandIDs";
+import { commandIDs } from '../../commands/CommandIDs';
+import { componentLibIcon, branchComponentIcon, workflowComponentIcon, startFinishComponentIcon } from '../../ui-components/icons';
 
 var S;
 (function (S) {
+
     S.Node = styled.div<{ borderColor: string, background: string; selected: boolean; }>`
         background-color: ${(p) => {
             const color = new Color(p.background);
@@ -43,7 +45,20 @@ var S;
 
     S.TitleName = styled.div`
         flex-grow: 1;
-        padding: 5px 5px;
+        padding: 5px 5px 5px 5px;
+    `;
+
+    S.IconContainer = styled.div`
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 15px;
+        height: 15px;
+        svg {
+            width: 100%;
+            height: 100%;
+        }
     `;
 
     S.CommentContainer = styled.div<{ selected: boolean; }>`
@@ -85,6 +100,7 @@ var S;
             margin-right: 0px;
         }
     `;
+
     S.WorkflowNode = styled(S.Node)`
         outline: 2px solid rgba(255, 255, 255, 0.2);
         outline-offset: 8px; // Space between the main node and the outline
@@ -101,6 +117,21 @@ export interface DefaultNodeProps {
     app: JupyterFrontEnd;
     shell: ILabShell;
 }
+
+const getNodeIcon = (type) => {
+    switch (type) {
+        case 'startFinish':
+            return <startFinishComponentIcon.react />;
+        case 'workflow':
+            return <workflowComponentIcon.react />;
+        case 'branch':
+            return <branchComponentIcon.react />;
+        case 'library_component':
+            return <componentLibIcon.react />;
+        default:
+            return null;
+    }
+};
 
 const CommentNode = ({ node }) => {
     const [commentInput, setCommentInput] = React.useState(node['extras']['commentInput']);
@@ -149,6 +180,7 @@ const ParameterNode = ({ node, engine, app }) => {
             onDoubleClick={handleEditParameter}
         >
             <S.Title>
+                {/* <S.IconContainer>{getNodeIcon('parameter')}</S.IconContainer> */}
                 <S.TitleName>{node.getOptions().name}</S.TitleName>
             </S.Title>
             <S.Ports>
@@ -167,6 +199,7 @@ const StartFinishNode = ({ node, engine, handleDeletableNode }) => (
         background={node.getOptions().color}
     >
         <S.Title>
+            <S.IconContainer>{getNodeIcon('startFinish')}</S.IconContainer>
             <S.TitleName>{node.getOptions().name}</S.TitleName>
             <label data-no-drag>
                 <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
@@ -181,7 +214,6 @@ const StartFinishNode = ({ node, engine, handleDeletableNode }) => (
 
 const WorkflowNode = ({ node, engine, handleDeletableNode }) => {
     const elementRef = React.useRef<HTMLElement>(null);
-
     return (
         <div style={{ position: "relative" }}>
             <S.WorkflowNode
@@ -193,6 +225,7 @@ const WorkflowNode = ({ node, engine, handleDeletableNode }) => {
                 background={node.getOptions().color}
             >
                 <S.Title>
+                    <S.IconContainer>{getNodeIcon('workflow')}</S.IconContainer>
                     <S.TitleName>{node.getOptions().name}</S.TitleName>
                     <label data-no-drag>
                         <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
@@ -255,6 +288,7 @@ const ComponentLibraryNode = ({ node, engine, shell, handleDeletableNode }) => {
                 background={node.getOptions().color}
             >
                 <S.Title>
+                    <S.IconContainer>{getNodeIcon('library_component')}</S.IconContainer>
                     <S.TitleName>{node.getOptions().name}</S.TitleName>
                     <label data-no-drag>
                         <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />

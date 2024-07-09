@@ -8,6 +8,9 @@ import revertSvg from '../../style/icons/revert.svg';
 import componentLibSvg from '../../style/icons/component-library.svg';
 import reloadAllSvg from '../../style/icons/reload-all.svg';
 import toggleAnimationSvg from '../../style/icons/low-power.svg';
+import BranchComponentSvg from '../../style/icons/branch-component.svg';
+import WorkflowComponentSvg from '../../style/icons/workflow-component.svg';
+import startFinishComponentSvg from '../../style/icons/start-finish-component.svg';
 
 export const xircuitsFaviconLink = 'https://raw.githubusercontent.com/XpressAI/xircuits/master/style/icons/xpress-logo.ico';
 export const xircuitsIcon = new LabIcon({ name: 'xircuits:xircuits', svgstr: xircuitsSvg });
@@ -16,9 +19,12 @@ export const lockIcon = new LabIcon({ name: 'xircuits:lockIcon', svgstr: lockSvg
 export const breakpointIcon = new LabIcon({ name: 'xircuits:breakpointIcon', svgstr: breakpointSvg });
 export const nextIcon = new LabIcon({ name: 'xircuits:nextIcon', svgstr: nextSvg });
 export const revertIcon = new LabIcon({ name: 'xircuits:revertIcon', svgstr: revertSvg });
-export const componentLibIcon = new LabIcon({ name: 'xircuits:componentLibIcon', svgstr: componentLibSvg });
 export const reloadAllIcon = new LabIcon({ name: 'xircuits:reloadAllIcon', svgstr: reloadAllSvg });
 export const toggleAnimationIcon = new LabIcon({ name: 'xircuits:toggleAnimationIcon', svgstr: toggleAnimationSvg });
+export const componentLibIcon = new LabIcon({ name: 'xircuits:componentLibIcon', svgstr: componentLibSvg });
+export const branchComponentIcon = new LabIcon({ name: 'xircuits:BranchComponentIcon', svgstr: BranchComponentSvg });
+export const workflowComponentIcon = new LabIcon({ name: 'xircuits:workflowComponentIcon', svgstr: WorkflowComponentSvg });
+export const startFinishComponentIcon = new LabIcon({ name: 'xircuits:startFinishComponentIcon', svgstr: startFinishComponentSvg });
 
 export function changeFavicon(src: string) {
     let head = document.head || document.getElementsByTagName('head')[0];
