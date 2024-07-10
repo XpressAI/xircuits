@@ -111,11 +111,11 @@ var S;
     `;
 
     S.WorkflowNode = styled(S.Node)`
-        outline: 2px solid rgba(255, 255, 255, 0.2);
-        outline-offset: 8px; // Space between the main node and the outline
+        outline: 1px solid oklch(75% 0 0 / 0.2);
+        outline-offset: 4px; // Space between the main node and the outline
 
         ${(p) => p.selected && `
-            outline: 2px solid rgba(0, 192, 255, 0.2); // blue
+            outline: 2px solid rgba(0, 192, 255, 0.1); // blue
         `}
     `;
 })(S || (S = {}));
@@ -240,6 +240,7 @@ const WorkflowNode = ({ node, engine, handleDeletableNode }) => {
                 data-default-node-name={node.getOptions().name}
                 selected={node.isSelected()}
                 background={node.getOptions().color}
+                className="workflow-node"
             >
                 <S.Title background={node.getOptions().color}
 >
