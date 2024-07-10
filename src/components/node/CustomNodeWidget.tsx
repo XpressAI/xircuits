@@ -83,7 +83,7 @@ var S;
 
     S.Ports = styled.div`
         display: flex;
-        background-image: linear-gradient(rgba(128, 128, 128, 0.1), rgba(128, 128, 128, 0.2));
+        background-image: linear-gradient(rgba(50, 50, 50, 0.5), rgba(50, 50, 50, 0.8));
         border-bottom-left-radius: 5px;
         border-bottom-right-radius: 5px;
     `;
@@ -127,6 +127,7 @@ const getNodeIcon = (type) => {
         case 'startFinish':
             return <startFinishComponentIcon.react />;
         case 'workflow':
+        case 'xircuits_workflow':
             return <workflowComponentIcon.react />;
         case 'branch':
             return <branchComponentIcon.react />;
