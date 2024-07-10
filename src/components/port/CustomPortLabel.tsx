@@ -156,18 +156,45 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 		
 		const nodeType = this.props.node.getOptions().name
 
+		function addHover(port: DefaultPortModel) {
+			return (() => {
+				for (let linksKey in port.getLinks()) {
+					document.querySelector(`g[data-linkid='${linksKey}']`).classList.add("hover");
+					const model = port.getLinks()[linksKey]
+					if(model.getSourcePort() != null)
+						document.querySelector(`div.port[data-nodeid="${model.getSourcePort().getNode().getID()}"][data-name='${model.getSourcePort().getName()}']>div>div`).classList.add("hover");
+					if(model.getTargetPort() != null)
+						document.querySelector(`div.port[data-nodeid="${model.getTargetPort().getNode().getID()}"][data-name='${model.getTargetPort().getName()}']>div>div`).classList.add("hover");
+				}
+			});
+		}
+
+		function removeHover(port: DefaultPortModel) {
+			return () => {
+				for (let linksKey in port.getLinks()) {
+					document.querySelector(`g[data-linkid='${linksKey}']`).classList.remove("hover");
+					const model = port.getLinks()[linksKey]
+					if(model.getSourcePort() != null)
+						document.querySelector(`div.port[data-nodeid="${model.getSourcePort().getNode().getID()}"][data-name='${model.getSourcePort().getName()}']>div>div`).classList.remove("hover");
+					if(model.getTargetPort() != null)
+						document.querySelector(`div.port[data-nodeid="${model.getTargetPort().getNode().getID()}"][data-name='${model.getTargetPort().getName()}']>div>div`).classList.remove("hover");
+				}
+			};
+		}
+
 		const label = (
 			<S.Label style={{ textAlign: (!this.props.port.getOptions().in && this.props.port.getOptions().label === '▶') ? 'right' : 'left' }}>
 				{nodeType === "Literal Secret" ? "*****" : this.props.port.getOptions().label.replace('▶', '').trim()}
 			</S.Label>);
 
-		console.log(this.props);
-
 		return (
 			<S.PortLabel>
 				{this.props.port.getOptions().in ? null : label}
 				<PortWidget engine={this.props.engine} port={this.props.port}>
-					{symbolLabel == null ? port : symbol}
+					<div onMouseOver={addHover(this.props.port)}
+							 onMouseOut={removeHover(this.props.port)}>
+						{symbolLabel == null ? port : symbol}
+					</div>
 				</PortWidget>
 				{this.props.port.getOptions().in ? label : null}
 			</S.PortLabel>

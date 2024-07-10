@@ -36,19 +36,25 @@ namespace S {
 			animation: none !important;
 		}
 	`;
+
+	export const G = styled.g`
+		g.hover & path {
+			stroke: rgb(192, 255, 0);
+		}
+	`;
 }
 
 function addHover(model: TriangleLinkModel | ParameterLinkModel){
 	return (() => {
-					document.querySelector(`div.port[data-nodeid='${model.getSourcePort().getNode().getID()}'][data-name='${model.getSourcePort().getName()}']>div`).classList.add("hover");
-					document.querySelector(`div.port[data-nodeid="${model.getTargetPort().getNode().getID()}"][data-name='${model.getTargetPort().getName()}']>div`).classList.add("hover");
+					document.querySelector(`div.port[data-nodeid='${model.getSourcePort().getNode().getID()}'][data-name='${model.getSourcePort().getName()}']>div>div`).classList.add("hover");
+					document.querySelector(`div.port[data-nodeid="${model.getTargetPort().getNode().getID()}"][data-name='${model.getTargetPort().getName()}']>div>div`).classList.add("hover");
 				});
 }
 
 function removeHover(model: TriangleLinkModel | ParameterLinkModel){
 	return () => {
-					document.querySelector(`div.port[data-nodeid='${model.getSourcePort().getNode().getID()}'][data-name='${model.getSourcePort().getName()}']>div`).classList.remove("hover");
-					document.querySelector(`div.port[data-nodeid="${model.getTargetPort().getNode().getID()}"][data-name='${model.getTargetPort().getName()}']>div`).classList.remove("hover");
+					document.querySelector(`div.port[data-nodeid='${model.getSourcePort().getNode().getID()}'][data-name='${model.getSourcePort().getName()}']>div>div`).classList.remove("hover");
+					document.querySelector(`div.port[data-nodeid="${model.getTargetPort().getNode().getID()}"][data-name='${model.getTargetPort().getName()}']>div>div`).classList.remove("hover");
 				}
 }
 
@@ -131,7 +137,7 @@ class SelectOnClickLinkWidget extends DefaultLinkWidget {
 			}
 		}
 
-		return <g data-default-link-test={this.props.link.getOptions().testName}>{paths}</g>;
+		return <S.G data-default-link-test={this.props.link.getOptions().testName}>{paths}</S.G>;
 	}
 }
 
