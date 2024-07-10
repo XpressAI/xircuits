@@ -30,12 +30,18 @@ var S;
     `;
 
     S.Title = styled.div<{ background: string; }>`
-        background-color: ${(p) => {
+        background-image: ${(p) => {
             const color = new Color(p.background);
             color.alpha = 0.75;
             color.oklch.c *= 1.2;
-            return color.to('oklch').toString();
+            const color1 = color.to('oklch').toString()
+            color.oklch.c *= 1.2;
+            color.oklch.l /= 2;
+            const color2 = color.to('oklch').toString()
+            return `linear-gradient(${color1}, ${color2})`
         }};
+        font-weight: 500;
+        letter-spacing: 0.025rem;
         display: flex;
         white-space: nowrap;
         justify-items: center;
@@ -83,7 +89,7 @@ var S;
 
     S.Ports = styled.div`
         display: flex;
-        background-image: linear-gradient(rgba(50, 50, 50, 0.5), rgba(50, 50, 50, 0.8));
+        background-image: linear-gradient(oklch(10% 0 0 / 0.7), oklch(10% 0 0 / 0.9));
         border-bottom-left-radius: 5px;
         border-bottom-right-radius: 5px;
     `;

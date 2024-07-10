@@ -27,7 +27,7 @@ namespace S {
 	export const SymbolContainer = styled.div<{ symbolType: string; selected: boolean; isOutPort: boolean }>`
 		width: 15px;
 		height: 15px;
-		background: ${(p) => (p.selected ? 'oklch(1 0 0 / 0.5)' : 'rgba(0, 0, 0, 0.2)')};
+		background: ${(p) => (p.selected ? 'oklch(1 0 0 / 0.5)' : 'oklch(50% 0 0 / 0.2)')};
 		border-radius: ${(p) => (p.isOutPort ? '20px 0px 0px 20px' : '0px 20px 20px 0px')} ;
 		display: ${(p) => p.symbolType == null ? 'none' : 'visible'};
 		text-align: center;
@@ -41,8 +41,8 @@ namespace S {
 		}
 	`;
 
-	export const Symbol = styled.div<{ isOutPort: boolean }>`
-		color: black;
+	export const Symbol = styled.div<{ selected: boolean; isOutPort: boolean }>`
+		color: ${(p) => (p.selected ? 'black' : 'grey')};
 		font-weight: bold;
 		font-size: 9px;
 		font-family: Helvetica, Arial, sans-serif;
@@ -52,8 +52,8 @@ namespace S {
 	export const Port = styled.div<{ isOutPort: boolean, hasLinks: boolean }>`
 		width: 15px;
 		height: 15px;
-		background: ${(p) => p.hasLinks ? 'oklch(1 0 0 / 0.5)' : 'oklch(0 0 0 / 0.2)'};
-		color: ${(p) => p.hasLinks ? 'oklch(0 0 0 / 0.8)' : 'oklch(1 0 0 / 0.8)'};
+		background: ${(p) => p.hasLinks ? 'oklch(1 0 0 / 0.5)' : 'oklch(50% 0 0 / 0.2)'};
+		color: ${(p) => p.hasLinks ? 'oklch(0% 0 0 / 0.8)' : 'oklch(1 0 0 / 0.8)'};
 		border: 1px solid oklch(0 0 0 / 0.2);
 		border-radius: ${(p) => (p.isOutPort ? '20px 0px 0px 20px' : '0px 20px 20px 0px')} ;
 		box-shadow: ${(p) => p.hasLinks ? '' : 'inset'}  0 2px 4px ${(p) => (p.hasLinks ? 'rgb(0 0 0 / 0.1)' : 'rgb(0 0 0 / 0.05)')} ;
@@ -149,7 +149,7 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 
 		const symbol = (
 			<S.SymbolContainer symbolType={symbolLabel} selected={portHasLink} isOutPort={isOutPort}>
-				<S.Symbol isOutPort={isOutPort}>
+				<S.Symbol isOutPort={isOutPort} selected={portHasLink}>
 					{symbolLabel}
 				</S.Symbol>
 			</S.SymbolContainer>);
@@ -160,6 +160,8 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 			<S.Label style={{ textAlign: (!this.props.port.getOptions().in && this.props.port.getOptions().label === '▶') ? 'right' : 'left' }}>
 				{nodeType === "Literal Secret" ? "*****" : this.props.port.getOptions().label.replace('▶', '').trim()}
 			</S.Label>);
+
+		console.log(this.props);
 
 		return (
 			<S.PortLabel>
