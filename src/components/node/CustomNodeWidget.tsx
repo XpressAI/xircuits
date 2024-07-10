@@ -92,6 +92,10 @@ var S;
         background-image: linear-gradient(oklch(10% 0 0 / 0.7), oklch(10% 0 0 / 0.9));
         border-bottom-left-radius: 5px;
         border-bottom-right-radius: 5px;
+        
+        .workflow-node & {
+        {/* Background pattern for Workflow Node goes here */}
+        }
     `;
 
     S.PortsContainer = styled.div`
