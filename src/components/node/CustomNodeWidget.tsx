@@ -174,7 +174,7 @@ const CommentNode = ({ node }) => {
 const ParameterNode = ({ node, engine, app }) => {
     const handleEditParameter = () => {
         const nodeName = node.getOptions()["name"];
-        if (!nodeName.startsWith("Literal") && !nodeName.startsWith("Argument")) {
+        if (!nodeName.startsWith("Literal ") && !nodeName.startsWith("Argument ")) {
             return;
         }
         app.commands.execute(commandIDs.editNode);

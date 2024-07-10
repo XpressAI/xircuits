@@ -71,11 +71,11 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
 export function getMenuOptionsVisibility(models) {
 
     function isLiteralNode(node) {
-        return node.getOptions()?.name?.startsWith("Literal") ?? false;
+        return node.getOptions()?.name?.startsWith("Literal ") ?? false;
     }
 
     function isArgumentNode(node) {
-        return node.getOptions()?.name?.startsWith("Argument") ?? false;
+        return node.getOptions()?.name?.startsWith("Argument ") ?? false;
     }
 
     function isComponentNode(node) {

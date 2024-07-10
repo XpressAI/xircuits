@@ -70,7 +70,7 @@ export function addNodeActionCommands(
             nodeName = args['nodeName'] ?? node?.name;
             nodeLineNo = args['nodeLineNo'] ?? node?.extras.lineNo;
     
-            if (nodeName.startsWith('Literal') || nodeName.startsWith('Argument')) {
+            if (nodeName.startsWith('Literal ') || nodeName.startsWith('Argument ')) {
                 showDialog({
                     title: `${node.name} don't have its own script`,
                     buttons: [Dialog.warnButton({ label: 'OK' })]
@@ -203,7 +203,7 @@ export function addNodeActionCommands(
         isEnabled: () => {
             let isNodeSelected: boolean;
             const node = getLastSelectedNode();
-            if (node.getOptions()["name"].startsWith("Literal")) {
+            if (node.getOptions()["name"].startsWith("Literal ")) {
                 isNodeSelected = true;
             }
             return isNodeSelected ?? false;
@@ -243,9 +243,9 @@ export function addNodeActionCommands(
             for (let selected_node of selected_nodes) {
 
                 if (
-                    selected_node.name.startsWith("Literal") || 
-                    selected_node.name.startsWith("Argument") ||
-                    selected_node.name.startsWith("Start")
+                    selected_node.name.startsWith("Literal ") ||
+                    selected_node.name.startsWith("Argument ") ||
+                    selected_node.name == "Start"
                 ) {
                     console.info(selected_node.name + " cannot be reloaded.");
                     continue;
@@ -253,7 +253,7 @@ export function addNodeActionCommands(
             
                 let node;
             
-                if (selected_node.name.startsWith("Finish")) {
+                if (selected_node.name == "Finish") {
                     node = BaseComponentLibrary('Finish');
                 } else {
                     // For other nodes, fetch from AdvancedComponentLibrary
@@ -727,12 +727,12 @@ export function addNodeActionCommands(
 
         if (widget) {
             const selected_node = getLastSelectedNode();
-            const nodeType = selected_node.getOptions()["name"];
+            const nodeName = selected_node.getOptions()["name"];
             let updatedNode = null;
     
-            if (nodeType.startsWith("Literal")) {
+            if (nodeName.startsWith("Literal ")) {
                 updatedNode = await editLiteral(widget, selected_node);
-            } else if (nodeType.startsWith("Argument")) {
+            } else if (nodeName.startsWith("Argument ")) {
                 updatedNode = await editArgument(widget, selected_node);
             } else {
                 showDialog({
@@ -778,7 +778,7 @@ export function addNodeActionCommands(
     }
     
     async function editLiteral(widget: XircuitsPanel, selected_node: any): Promise<any> {
-        if (!selected_node.getOptions()["name"].startsWith("Literal")) {
+        if (!selected_node.getOptions()["name"].startsWith("Literal ")) {
             showDialog({
                 title: 'Only Literal Node can be edited',
                 buttons: [Dialog.warnButton({ label: 'OK' })]
@@ -806,7 +806,7 @@ export function addNodeActionCommands(
     }
     
     async function editArgument(widget: XircuitsPanel, selected_node: any): Promise<any> {
-        if (!selected_node.getOptions()["name"].startsWith("Argument")) {
+        if (!selected_node.getOptions()["name"].startsWith("Argument ")) {
             showDialog({
                 title: 'Only Argument Node can be edited',
                 buttons: [Dialog.warnButton({ label: 'OK' })]
