@@ -14,18 +14,12 @@ import ReactTooltip from 'react-tooltip';
 import { marked } from 'marked';
 import Color from 'colorjs.io';
 import { commandIDs } from '../../commands/CommandIDs';
-import { componentLibIcon, branchComponentIcon, workflowComponentIcon, startFinishComponentIcon } from '../../ui-components/icons';
+import { componentLibIcon, branchComponentIcon, workflowComponentIcon, functionComponentIcon, startFinishComponentIcon } from '../../ui-components/icons';
 
 var S;
 (function (S) {
 
     S.Node = styled.div<{ borderColor: string, background: string; selected: boolean; }>`
-        background-color: ${(p) => {
-            const color = new Color(p.background);
-            color.alpha = 0.75;
-            color.oklch.c *= 1.2;
-            return color.to('oklch').toString();
-        }};
         box-shadow: 1px 1px 10px ${(p) => p.selected ? '3px rgb(0 192 255 / 0.5)' : '0px rgb(0 0 0 / 0.5)'};
         border-radius: 5px;
         font-family: sans-serif;
@@ -35,12 +29,19 @@ var S;
         border: solid 1px ${(p) => (p.selected ? (p.borderColor == undefined ? 'rgb(0,192,255)' : p.borderColor) : 'black')};
     `;
 
-    S.Title = styled.div`
-        background: rgba(0, 0, 0, 0.3);
+    S.Title = styled.div<{ background: string; }>`
+        background-color: ${(p) => {
+            const color = new Color(p.background);
+            color.alpha = 0.75;
+            color.oklch.c *= 1.2;
+            return color.to('oklch').toString();
+        }};
         display: flex;
         white-space: nowrap;
         justify-items: center;
         box-shadow: inset 0 -2px 4px 0 rgb(0 0 0 / 0.05);
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
     `;
 
     S.TitleName = styled.div`
@@ -82,7 +83,9 @@ var S;
 
     S.Ports = styled.div`
         display: flex;
-        background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
+        background-image: linear-gradient(rgba(128, 128, 128, 0.1), rgba(128, 128, 128, 0.2));
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
     `;
 
     S.PortsContainer = styled.div`
@@ -127,7 +130,9 @@ const getNodeIcon = (type) => {
             return <workflowComponentIcon.react />;
         case 'branch':
             return <branchComponentIcon.react />;
-        // component libraries were typed as 'debug'. To be removed in the future.
+        case 'function':
+            return <functionComponentIcon.react />;
+        // component libraries were typed as 'debug' before v1.12.
         case 'debug':
         case 'library_component':
             return <componentLibIcon.react />;
@@ -182,7 +187,8 @@ const ParameterNode = ({ node, engine, app }) => {
             background={node.getOptions().color}
             onDoubleClick={handleEditParameter}
         >
-            <S.Title>
+            <S.Title background={node.getOptions().color}
+>
                 {/* <S.IconContainer>{getNodeIcon('parameter')}</S.IconContainer> */}
                 <S.TitleName>{node.getOptions().name}</S.TitleName>
             </S.Title>
@@ -201,7 +207,8 @@ const StartFinishNode = ({ node, engine, handleDeletableNode }) => (
         selected={node.isSelected()}
         background={node.getOptions().color}
     >
-        <S.Title>
+        <S.Title background={node.getOptions().color}
+>
             <S.IconContainer>{getNodeIcon('startFinish')}</S.IconContainer>
             <S.TitleName>{node.getOptions().name}</S.TitleName>
             <label data-no-drag>
@@ -227,7 +234,8 @@ const WorkflowNode = ({ node, engine, handleDeletableNode }) => {
                 selected={node.isSelected()}
                 background={node.getOptions().color}
             >
-                <S.Title>
+                <S.Title background={node.getOptions().color}
+>
                     <S.IconContainer>{getNodeIcon('workflow')}</S.IconContainer>
                     <S.TitleName>{node.getOptions().name}</S.TitleName>
                     <label data-no-drag>
@@ -290,7 +298,8 @@ const ComponentLibraryNode = ({ node, engine, shell, handleDeletableNode }) => {
                 selected={node.isSelected()}
                 background={node.getOptions().color}
             >
-                <S.Title>
+                <S.Title background={node.getOptions().color}
+>
                     <S.IconContainer>{getNodeIcon(node['extras']['type'])}</S.IconContainer>
                     <S.TitleName>{node.getOptions().name}</S.TitleName>
                     <label data-no-drag>

@@ -11,6 +11,7 @@ import toggleAnimationSvg from '../../style/icons/low-power.svg';
 import BranchComponentSvg from '../../style/icons/branch-component.svg';
 import WorkflowComponentSvg from '../../style/icons/workflow-component.svg';
 import startFinishComponentSvg from '../../style/icons/start-finish-component.svg';
+import functionComponentSvg from '../../style/icons/function-component.svg';
 
 export const xircuitsFaviconLink = 'https://raw.githubusercontent.com/XpressAI/xircuits/master/style/icons/xpress-logo.ico';
 export const xircuitsIcon = new LabIcon({ name: 'xircuits:xircuits', svgstr: xircuitsSvg });
@@ -25,6 +26,7 @@ export const componentLibIcon = new LabIcon({ name: 'xircuits:componentLibIcon',
 export const branchComponentIcon = new LabIcon({ name: 'xircuits:BranchComponentIcon', svgstr: BranchComponentSvg });
 export const workflowComponentIcon = new LabIcon({ name: 'xircuits:workflowComponentIcon', svgstr: WorkflowComponentSvg });
 export const startFinishComponentIcon = new LabIcon({ name: 'xircuits:startFinishComponentIcon', svgstr: startFinishComponentSvg });
+export const functionComponentIcon = new LabIcon({ name: 'xircuits:functionComponentIcon', svgstr: functionComponentSvg });
 
 export function changeFavicon(src: string) {
     let head = document.head || document.getElementsByTagName('head')[0];
