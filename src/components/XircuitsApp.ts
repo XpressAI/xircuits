@@ -94,7 +94,7 @@ export class XircuitsApplication {
                         for (let portID of node.portsOutOrder) {
                                 const port = node.ports.find(p => p.id === portID);
                                 const position = new Point(port.x, port.y);
-                                newNode.addOutPortEnhance({label: port.label, name: port.name, id: port.id, position});
+                                newNode.addOutPortEnhance({label: port.label, name: port.name, id: port.id, position, dataType: port.dataType});
                         }
                         tempModel.addNode(newNode);
                 }
