@@ -1,10 +1,17 @@
 import * as React from 'react';
-
 import styled from '@emotion/styled';
-
 import { JupyterFrontEnd } from '@jupyterlab/application';
-
 import { commandIDs } from "../commands/CommandIDs";
+
+import { 
+    componentLibIcon, 
+    branchComponentIcon, 
+    workflowComponentIcon, 
+    functionComponentIcon, 
+    startFinishComponentIcon, 
+    variableComponentIcon, 
+    setVariableComponentIcon, 
+    getVariableComponentIcon } from "../ui-components/icons";
 
 export interface TrayItemWidgetProps {
 	model: any;
@@ -21,7 +28,7 @@ interface TrayStyledProps {
 
 export const Tray = styled.div<TrayStyledProps>`
 	color: black;
-	font-family: Helvetica, Arial;
+	font-family: Helvetica, Arial, sans-serif;
 	padding: 7px;
 	width: auto;
 	margin: 7px;
@@ -29,10 +36,46 @@ export const Tray = styled.div<TrayStyledProps>`
 	border-radius: 5px;
 	margin-bottom: 2px;
 	cursor: pointer;
+	display: flex;
+	gap: 0.5em;
+	overflow: hidden;
+	align-items: center;
+	
+	& svg {
+		height: 16px;
+		width: 16px;
+	}
 `;
 
 export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 	render() {
+		const getNodeIcon = (type) => {
+			switch (type) {
+				case 'Start':
+				case 'startFinish':
+					return <startFinishComponentIcon.react />;
+				case 'workflow':
+				case 'xircuits_workflow':
+					return <workflowComponentIcon.react />;
+				case 'branch':
+					return <branchComponentIcon.react />;
+				case 'function':
+					return <functionComponentIcon.react />;
+				case 'context_set':
+					return <setVariableComponentIcon.react />;
+				case 'context_get':
+					return <getVariableComponentIcon.react />;
+				case 'variable':
+					return <variableComponentIcon.react />;
+				// component libraries were typed as 'debug' before v1.12.
+				case 'debug':
+				case 'library_component':
+					return <componentLibIcon.react />;
+				default:
+					return null;
+			}
+		};
+
 		return (
 			<Tray
 				color={this.props.color || "white"}
@@ -65,6 +108,7 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 					this.forceUpdate();
 				}}
 				className="tray-item">
+				{getNodeIcon(this.props.model.type)}
 				{this.props.name}
 			</Tray>
 		);

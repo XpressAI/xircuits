@@ -1,6 +1,6 @@
 from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component, dynalist
 
-@xai_component
+@xai_component(type='branch')
 class BranchComponent(Component):
     when_true: BaseComponent
     when_false: BaseComponent
@@ -20,7 +20,7 @@ class BranchComponent(Component):
         if hasattr(self, 'next') and self.next:
             return self.next
     
-@xai_component
+@xai_component(type='branch')
 class LoopComponent(Component):
     body: BaseComponent
 
@@ -35,7 +35,7 @@ class LoopComponent(Component):
         if hasattr(self, 'next') and self.next:
             return self.next
 
-@xai_component
+@xai_component(type='branch')
 class ReverseForEach(Component):
     body: BaseComponent
     
@@ -56,7 +56,7 @@ class ReverseForEach(Component):
             return self.next
 
 
-@xai_component
+@xai_component(type='branch')
 class ForEach(Component):
     body: BaseComponent
     
@@ -122,7 +122,7 @@ class MutableVariable:
         return self._fn()
     
     
-@xai_component
+@xai_component(type='context_get')
 class GetVariableComponent(Component):
     name: InArg[str]
     value: OutArg[any]
@@ -135,7 +135,7 @@ class GetVariableComponent(Component):
         self.value.set_fn(lambda: ctx[self.name.value])
 
 
-@xai_component
+@xai_component(type='context_set')
 class SetVariableComponent(Component):
     name: InArg[str]
     value: InArg[any]
@@ -144,7 +144,7 @@ class SetVariableComponent(Component):
         ctx[self.name.value] = self.value.value
 
 
-@xai_component
+@xai_component(type='variable')
 class DefineVariableComponent(Component):
     name: InArg[str]
     value: InArg[any]

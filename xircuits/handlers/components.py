@@ -220,7 +220,7 @@ class ComponentsRouteHandler(APIHandler):
             "task": name,
             "header": GROUP_ADVANCED,
             "category": category,
-            "type": "debug",
+            "type": "library_component",
             "variables": variables,
             "docstring": docstring,
             "lineno" : lineno

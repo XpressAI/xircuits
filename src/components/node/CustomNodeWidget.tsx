@@ -10,20 +10,27 @@ import { Dialog } from '@jupyterlab/apputils';
 import { formDialogWidget } from '../../dialog/formDialogwidget';
 import { showFormDialog } from '../../dialog/FormDialog';
 import { CommentDialog } from '../../dialog/CommentDialog';
-import ReactTooltip from "react-tooltip";
+import ReactTooltip from 'react-tooltip';
 import { marked } from 'marked';
 import Color from 'colorjs.io';
-import { commandIDs } from "../../commands/CommandIDs";
+import { commandIDs } from '../../commands/CommandIDs';
+import { 
+    componentLibIcon, 
+    branchComponentIcon, 
+    workflowComponentIcon, 
+    functionComponentIcon, 
+    startFinishComponentIcon, 
+    variableComponentIcon, 
+    setVariableComponentIcon, 
+    getVariableComponentIcon } from '../../ui-components/icons';
+import  circuitBoardSvg from '../../../style/icons/circuit-board-bg.svg';
+
+
 
 var S;
 (function (S) {
+
     S.Node = styled.div<{ borderColor: string, background: string; selected: boolean; }>`
-        background-color: ${(p) => {
-            const color = new Color(p.background);
-            color.alpha = 0.75;
-            color.oklch.c *= 1.2;
-            return color.to('oklch').toString();
-        }};
         box-shadow: 1px 1px 10px ${(p) => p.selected ? '3px rgb(0 192 255 / 0.5)' : '0px rgb(0 0 0 / 0.5)'};
         border-radius: 5px;
         font-family: sans-serif;
@@ -33,17 +40,43 @@ var S;
         border: solid 1px ${(p) => (p.selected ? (p.borderColor == undefined ? 'rgb(0,192,255)' : p.borderColor) : 'black')};
     `;
 
-    S.Title = styled.div`
-        background: rgba(0, 0, 0, 0.3);
+    S.Title = styled.div<{ background: string; }>`
+        background-image: ${(p) => {
+            const color = new Color(p.background);
+            color.alpha = 0.75;
+            color.oklch.c *= 1.2;
+            const color1 = color.to('oklch').toString()
+            color.oklch.c *= 1.2;
+            color.oklch.l /= 2;
+            const color2 = color.to('oklch').toString()
+            return `linear-gradient(${color1}, ${color2})`
+        }};
+        font-weight: 500;
+        letter-spacing: 0.025rem;
         display: flex;
         white-space: nowrap;
         justify-items: center;
         box-shadow: inset 0 -2px 4px 0 rgb(0 0 0 / 0.05);
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
     `;
 
     S.TitleName = styled.div`
         flex-grow: 1;
-        padding: 5px 5px;
+        padding: 5px 5px 5px 5px;
+    `;
+
+    S.IconContainer = styled.div`
+        padding: 5px 5px 5px 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 15px;
+        height: 15px;
+        svg {
+            width: 100%;
+            height: 100%;
+        }
     `;
 
     S.CommentContainer = styled.div<{ selected: boolean; }>`
@@ -67,7 +100,13 @@ var S;
 
     S.Ports = styled.div`
         display: flex;
-        background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
+        background-image: linear-gradient(oklch(10% 0 0 / 0.7), oklch(10% 0 0 / 0.9));
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        
+        .workflow-node & {
+            background: linear-gradient(oklch(10% 0 0 / 0.7), oklch(10% 0 0 / 0.9)), url("data:image/svg+xml;base64,${btoa(circuitBoardSvg)}") no-repeat right 10px;
+        }
     `;
 
     S.PortsContainer = styled.div`
@@ -85,13 +124,8 @@ var S;
             margin-right: 0px;
         }
     `;
-    S.WorkflowNode = styled(S.Node)`
-        outline: 2px solid rgba(255, 255, 255, 0.2);
-        outline-offset: 8px; // Space between the main node and the outline
 
-        ${(p) => p.selected && `
-            outline: 2px solid rgba(0, 192, 255, 0.2); // blue
-        `}
+    S.WorkflowNode = styled(S.Node)`
     `;
 })(S || (S = {}));
 
@@ -101,6 +135,33 @@ export interface DefaultNodeProps {
     app: JupyterFrontEnd;
     shell: ILabShell;
 }
+
+const getNodeIcon = (type) => {
+    switch (type) {
+        case 'Start':
+        case 'startFinish':
+            return <startFinishComponentIcon.react />;
+        case 'workflow':
+        case 'xircuits_workflow':
+            return <workflowComponentIcon.react />;
+        case 'branch':
+            return <branchComponentIcon.react />;
+        case 'function':
+            return <functionComponentIcon.react />;
+        case 'context_set':
+            return <setVariableComponentIcon.react />;
+        case 'context_get':
+            return <getVariableComponentIcon.react />;
+        case 'variable':
+            return <variableComponentIcon.react />;
+        // component libraries were typed as 'debug' before v1.12.
+        case 'debug':
+        case 'library_component':
+            return <componentLibIcon.react />;
+        default:
+            return null;
+    }
+};
 
 const CommentNode = ({ node }) => {
     const [commentInput, setCommentInput] = React.useState(node['extras']['commentInput']);
@@ -134,7 +195,7 @@ const CommentNode = ({ node }) => {
 const ParameterNode = ({ node, engine, app }) => {
     const handleEditParameter = () => {
         const nodeName = node.getOptions()["name"];
-        if (!nodeName.startsWith("Literal") && !nodeName.startsWith("Argument")) {
+        if (!nodeName.startsWith("Literal ") && !nodeName.startsWith("Argument ")) {
             return;
         }
         app.commands.execute(commandIDs.editNode);
@@ -148,7 +209,9 @@ const ParameterNode = ({ node, engine, app }) => {
             background={node.getOptions().color}
             onDoubleClick={handleEditParameter}
         >
-            <S.Title>
+            <S.Title background={node.getOptions().color}
+>
+                {/* <S.IconContainer>{getNodeIcon('parameter')}</S.IconContainer> */}
                 <S.TitleName>{node.getOptions().name}</S.TitleName>
             </S.Title>
             <S.Ports>
@@ -166,7 +229,9 @@ const StartFinishNode = ({ node, engine, handleDeletableNode }) => (
         selected={node.isSelected()}
         background={node.getOptions().color}
     >
-        <S.Title>
+        <S.Title background={node.getOptions().color}
+>
+            <S.IconContainer>{getNodeIcon('startFinish')}</S.IconContainer>
             <S.TitleName>{node.getOptions().name}</S.TitleName>
             <label data-no-drag>
                 <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
@@ -181,7 +246,6 @@ const StartFinishNode = ({ node, engine, handleDeletableNode }) => (
 
 const WorkflowNode = ({ node, engine, handleDeletableNode }) => {
     const elementRef = React.useRef<HTMLElement>(null);
-
     return (
         <div style={{ position: "relative" }}>
             <S.WorkflowNode
@@ -191,8 +255,11 @@ const WorkflowNode = ({ node, engine, handleDeletableNode }) => {
                 data-default-node-name={node.getOptions().name}
                 selected={node.isSelected()}
                 background={node.getOptions().color}
+                className="workflow-node"
             >
-                <S.Title>
+                <S.Title background={node.getOptions().color}
+>
+                    <S.IconContainer>{getNodeIcon('workflow')}</S.IconContainer>
                     <S.TitleName>{node.getOptions().name}</S.TitleName>
                     <label data-no-drag>
                         <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
@@ -254,7 +321,9 @@ const ComponentLibraryNode = ({ node, engine, shell, handleDeletableNode }) => {
                 selected={node.isSelected()}
                 background={node.getOptions().color}
             >
-                <S.Title>
+                <S.Title background={node.getOptions().color}
+>
+                    <S.IconContainer>{getNodeIcon(node['extras']['type'])}</S.IconContainer>
                     <S.TitleName>{node.getOptions().name}</S.TitleName>
                     <label data-no-drag>
                         <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
