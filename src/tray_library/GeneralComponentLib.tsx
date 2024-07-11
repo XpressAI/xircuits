@@ -21,8 +21,10 @@ const TYPE_ARGUMENTS = ['string', 'int', 'float', 'boolean', 'any'];
 const SPECIAL_LITERALS = ['chat'];
 
 export async function handleLiteralInput(nodeName, nodeData, inputValue = "", type, title = "New Literal Input") {
+    let attached = false;
+
     do {
-        let dialogOptions = inputDialog({ title, oldValue: inputValue, type });
+        let dialogOptions = inputDialog({ title, oldValue: inputValue, type, attached: nodeData['extras']['attached'] || false });
         let dialogResult = await showFormDialog(dialogOptions);
         if (cancelDialog(dialogResult)) return;
 
@@ -32,13 +34,17 @@ export async function handleLiteralInput(nodeName, nodeData, inputValue = "", ty
         } else {
             inputValue = dialogResult["value"][title];
         }
+        if(dialogResult.value.hasOwnProperty('attachNode')){
+            attached = dialogResult.value.attachNode == 'on';
+        }
 
     } while (!checkInput(inputValue, type))
 
     if (SPECIAL_LITERALS.includes(type)) inputValue = JSON.stringify(inputValue);
     if (nodeName === 'Literal True' || nodeName === 'Literal False') nodeName = 'Literal Boolean';
-    
-    const node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras: { "type": nodeData.type } });
+
+    const extras = { "type": nodeData.type, attached}
+    const node = new CustomNodeModel({ name: nodeName, color: nodeData.color, extras });
     node.addOutPortEnhance({label: inputValue, name: 'out-0', dataType: nodeData.type});
     return node;
 }

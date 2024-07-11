@@ -794,7 +794,7 @@ export function addNodeActionCommands(
         }
         
         const updateTitle = `Update ${literalType}`;
-        let nodeData: CustomNodeModelOptions = {color: selected_node["color"], type: selected_node["extras"]["type"]}
+        let nodeData: CustomNodeModelOptions = {color: selected_node["color"], type: selected_node["extras"]["type"], extras: {attached: selected_node["extras"]["attached"]}}
         let updatedContent = await handleLiteralInput(selected_node["name"], nodeData, oldValue, literalType, updateTitle);
         
         if (!updatedContent) {

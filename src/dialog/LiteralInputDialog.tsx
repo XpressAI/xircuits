@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from "react";
 import { formDialogWidget } from "./formDialogwidget";
 import { Dialog } from '@jupyterlab/apputils';
 import { BooleanInput } from './input-dialogues/BooleanInput';
@@ -18,9 +18,10 @@ export interface InputDialogueProps {
 	oldValue: any;
 	type: string;
 	inputType?: string;
-  }
+	attached?: boolean;
+}
   
-export function inputDialog({ title, oldValue, type, inputType }: InputDialogueProps) {
+export function inputDialog({ title, oldValue, type, inputType, attached }: InputDialogueProps) {
 	const dialogOptions: Partial<Dialog.IOptions<any>> = {
 		title,
 		body: formDialogWidget(
@@ -28,7 +29,9 @@ export function inputDialog({ title, oldValue, type, inputType }: InputDialogueP
 				title={title}
 				oldValue={oldValue}
 				type={type}
-				inputType={inputType} />
+				inputType={inputType}
+				attached={attached}
+			/>
 		),
 		buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Submit') })],
 		defaultButton: 1,
@@ -37,7 +40,7 @@ export function inputDialog({ title, oldValue, type, inputType }: InputDialogueP
 	return dialogOptions;
 }
 
-export const LiteralInputDialog = ({ title, oldValue, type, inputType }): JSX.Element => {
+export const LiteralInputDialog = ({ title, oldValue, type, inputType, attached }): JSX.Element => {
 
 	const inputComponents = {
 		textarea: TextAreaInput,
@@ -56,12 +59,16 @@ export const LiteralInputDialog = ({ title, oldValue, type, inputType }): JSX.El
 	};
 
 	const InputValueDialog = () => {
+		const [attach, setAttach] = useState(attached || false)
 		const InputComponent = inputComponents[inputType === 'textarea' ? inputType.toLowerCase() : type.toLowerCase()];
 		
 		// The `type` prop is now passed to all components
 		const extraProps = { type, inputType };
 
-		return InputComponent ? <InputComponent title={title} oldValue={oldValue} {...extraProps} /> : null;
+		return InputComponent ? (<form style={{display: 'flex', flexDirection: "column", gap: "1em"}}>
+			<InputComponent title={title} oldValue={oldValue} {...extraProps} />
+			{InputComponent === ArgumentInput ? null : <label><input type="checkbox" name="attachNode" checked={attach} value={attach ? "on" : "off"} onChange={() => setAttach(!attach)} /> Attach Node?</label>}
+		</form>) : null;
 	}
 
 	return <InputValueDialog />;
