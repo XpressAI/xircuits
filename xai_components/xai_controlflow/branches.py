@@ -122,7 +122,7 @@ class MutableVariable:
         return self._fn()
     
     
-@xai_component
+@xai_component(type='context_get')
 class GetVariableComponent(Component):
     name: InArg[str]
     value: OutArg[any]
@@ -135,7 +135,7 @@ class GetVariableComponent(Component):
         self.value.set_fn(lambda: ctx[self.name.value])
 
 
-@xai_component
+@xai_component(type='context_set')
 class SetVariableComponent(Component):
     name: InArg[str]
     value: InArg[any]
@@ -144,7 +144,7 @@ class SetVariableComponent(Component):
         ctx[self.name.value] = self.value.value
 
 
-@xai_component
+@xai_component(type='variable')
 class DefineVariableComponent(Component):
     name: InArg[str]
     value: InArg[any]

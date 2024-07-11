@@ -1,16 +1,17 @@
 import * as React from 'react';
-
 import styled from '@emotion/styled';
-
 import { JupyterFrontEnd } from '@jupyterlab/application';
-
 import { commandIDs } from "../commands/CommandIDs";
-import {
-	branchComponentIcon, componentLibIcon,
-	functionComponentIcon,
-	startFinishComponentIcon,
-	workflowComponentIcon
-} from "../ui-components/icons";
+
+import { 
+    componentLibIcon, 
+    branchComponentIcon, 
+    workflowComponentIcon, 
+    functionComponentIcon, 
+    startFinishComponentIcon, 
+    variableComponentIcon, 
+    setVariableComponentIcon, 
+    getVariableComponentIcon } from "../ui-components/icons";
 
 export interface TrayItemWidgetProps {
 	model: any;
@@ -50,22 +51,28 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 	render() {
 		const getNodeIcon = (type) => {
 			switch (type) {
-					case 'Start':
-					case 'startFinish':
-							return <startFinishComponentIcon.react />;
-					case 'workflow':
-					case 'xircuits_workflow':
-							return <workflowComponentIcon.react />;
-					case 'branch':
-							return <branchComponentIcon.react />;
-					case 'function':
-							return <functionComponentIcon.react />;
-					// component libraries were typed as 'debug' before v1.12.
-					case 'debug':
-					case 'library_component':
-							return <componentLibIcon.react />;
-					default:
-							return null;
+				case 'Start':
+				case 'startFinish':
+					return <startFinishComponentIcon.react />;
+				case 'workflow':
+				case 'xircuits_workflow':
+					return <workflowComponentIcon.react />;
+				case 'branch':
+					return <branchComponentIcon.react />;
+				case 'function':
+					return <functionComponentIcon.react />;
+				case 'context_set':
+					return <setVariableComponentIcon.react />;
+				case 'context_get':
+					return <getVariableComponentIcon.react />;
+				case 'variable':
+					return <variableComponentIcon.react />;
+				// component libraries were typed as 'debug' before v1.12.
+				case 'debug':
+				case 'library_component':
+					return <componentLibIcon.react />;
+				default:
+					return null;
 			}
 		};
 

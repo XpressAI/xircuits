@@ -14,7 +14,15 @@ import ReactTooltip from 'react-tooltip';
 import { marked } from 'marked';
 import Color from 'colorjs.io';
 import { commandIDs } from '../../commands/CommandIDs';
-import { componentLibIcon, branchComponentIcon, workflowComponentIcon, functionComponentIcon, startFinishComponentIcon } from '../../ui-components/icons';
+import { 
+    componentLibIcon, 
+    branchComponentIcon, 
+    workflowComponentIcon, 
+    functionComponentIcon, 
+    startFinishComponentIcon, 
+    variableComponentIcon, 
+    setVariableComponentIcon, 
+    getVariableComponentIcon } from '../../ui-components/icons';
 import  circuitBoardSvg from '../../../style/icons/circuit-board-bg.svg';
 
 
@@ -140,6 +148,12 @@ const getNodeIcon = (type) => {
             return <branchComponentIcon.react />;
         case 'function':
             return <functionComponentIcon.react />;
+        case 'context_set':
+            return <setVariableComponentIcon.react />;
+        case 'context_get':
+            return <getVariableComponentIcon.react />;
+        case 'variable':
+            return <variableComponentIcon.react />;
         // component libraries were typed as 'debug' before v1.12.
         case 'debug':
         case 'library_component':
