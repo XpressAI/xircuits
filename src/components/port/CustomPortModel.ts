@@ -58,6 +58,9 @@ export  class CustomPortModel extends DefaultPortModel  {
     }
 
     canLinkToPort(port: CustomPortModel): boolean {
+        // No self connections allowed
+        if(port === this) return false;
+
         if (port instanceof DefaultPortModel) {
             if(this.options.in === port.getOptions().in){
                 port.getNode().getOptions().extras["borderColor"]="red";

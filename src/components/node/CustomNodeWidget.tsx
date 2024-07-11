@@ -192,6 +192,18 @@ const CommentNode = ({ node }) => {
     );
 };
 
+const PortsComponent = ({node, engine, app}) => {
+  const renderPort = (port) => {
+    return <CustomPortLabel engine={engine} port={port} key={port.getID()} node={node} app={app}  />
+  };
+  return (
+    <S.Ports>
+      <S.PortsContainer>{_.map(node.getInPorts(), renderPort)}</S.PortsContainer>
+      <S.PortsContainer>{_.map(node.getOutPorts(), renderPort)}</S.PortsContainer>
+    </S.Ports>
+  )
+}
+
 const ParameterNode = ({ node, engine, app }) => {
     const handleEditParameter = () => {
         const nodeName = node.getOptions()["name"];
@@ -200,6 +212,10 @@ const ParameterNode = ({ node, engine, app }) => {
         }
         app.commands.execute(commandIDs.editNode);
     };
+
+    if(node.getOptions().extras['attached']){
+      return <></>;
+    }
 
     return (
         <S.Node
@@ -214,15 +230,12 @@ const ParameterNode = ({ node, engine, app }) => {
                 {/* <S.IconContainer>{getNodeIcon('parameter')}</S.IconContainer> */}
                 <S.TitleName>{node.getOptions().name}</S.TitleName>
             </S.Title>
-            <S.Ports>
-                <S.PortsContainer>{_.map(node.getInPorts(), port => <CustomPortLabel engine={engine} port={port} key={port.getID()} node={node} />)}</S.PortsContainer>
-                <S.PortsContainer>{_.map(node.getOutPorts(), port => <CustomPortLabel engine={engine} port={port} key={port.getID()} node={node} />)}</S.PortsContainer>
-            </S.Ports>
+            <PortsComponent node={node} engine={engine} app={app}/>
         </S.Node>
     );
 };
 
-const StartFinishNode = ({ node, engine, handleDeletableNode }) => (
+const StartFinishNode = ({ node, engine, handleDeletableNode, app }) => (
     <S.Node
         borderColor={node.getOptions().extras["borderColor"]}
         data-default-node-name={node.getOptions().name}
@@ -237,14 +250,11 @@ const StartFinishNode = ({ node, engine, handleDeletableNode }) => (
                 <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
             </label>
         </S.Title>
-        <S.Ports>
-            <S.PortsContainer>{_.map(node.getInPorts(), port => <CustomPortLabel engine={engine} port={port} key={port.getID()} node={node} />)}</S.PortsContainer>
-            <S.PortsContainer>{_.map(node.getOutPorts(), port => <CustomPortLabel engine={engine} port={port} key={port.getID()} node={node} />)}</S.PortsContainer>
-        </S.Ports>
+        <PortsComponent node={node} engine={engine} app={app}/>
     </S.Node>
 );
 
-const WorkflowNode = ({ node, engine, handleDeletableNode }) => {
+const WorkflowNode = ({ node, engine, app, handleDeletableNode }) => {
     const elementRef = React.useRef<HTMLElement>(null);
     return (
         <div style={{ position: "relative" }}>
@@ -265,16 +275,13 @@ const WorkflowNode = ({ node, engine, handleDeletableNode }) => {
                         <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
                     </label>
                 </S.Title>
-                <S.Ports>
-                    <S.PortsContainer>{_.map(node.getInPorts(), port => <CustomPortLabel engine={engine} port={port} key={port.getID()} node={node} />)}</S.PortsContainer>
-                    <S.PortsContainer>{_.map(node.getOutPorts(), port => <CustomPortLabel engine={engine} port={port} key={port.getID()} node={node} />)}</S.PortsContainer>
-                </S.Ports>
+                <PortsComponent node={node} engine={engine}  app={app}/>
             </S.WorkflowNode>
         </div>
     );
 };
 
-const ComponentLibraryNode = ({ node, engine, shell, handleDeletableNode }) => {
+const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode }) => {
     const [showDescription, setShowDescription] = React.useState(false);
     const [descriptionStr, setDescriptionStr] = React.useState("");
     const elementRef = React.useRef<HTMLElement>(null);
@@ -330,10 +337,7 @@ const ComponentLibraryNode = ({ node, engine, shell, handleDeletableNode }) => {
                         <Toggle className='description' name='Description' checked={showDescription ?? false} onChange={handleDescription} />
                     </label>
                 </S.Title>
-                <S.Ports>
-                    <S.PortsContainer>{_.map(node.getInPorts(), port => <CustomPortLabel engine={engine} port={port} key={port.getID()} node={node} />)}</S.PortsContainer>
-                    <S.PortsContainer>{_.map(node.getOutPorts(), port => <CustomPortLabel engine={engine} port={port} key={port.getID()} node={node} />)}</S.PortsContainer>
-                </S.Ports>
+                <PortsComponent node={node} engine={engine} app={app}/>
             </S.Node>
             {(node.getOptions().extras["tip"] != undefined && node.getOptions().extras["tip"] != "") ?
                 <ReactTooltip
@@ -407,6 +411,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
             return <WorkflowNode
                 node={node}
                 engine={engine}
+                app={app}
                 handleDeletableNode={this.handleDeletableNode}
             />;
         }
@@ -415,6 +420,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
             return <StartFinishNode
                 node={node}
                 engine={engine}
+                app={app}
                 handleDeletableNode={this.handleDeletableNode}
             />;
         }
@@ -423,6 +429,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
             node={node}
             engine={engine}
             shell={shell}
+            app={app}
             handleDeletableNode={this.handleDeletableNode}
         />;
     }

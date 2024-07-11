@@ -24,7 +24,8 @@ export async function handleLiteralInput(nodeName, nodeData, inputValue = "", ty
     let attached = false;
 
     do {
-        let dialogOptions = inputDialog({ title, oldValue: inputValue, type, attached: nodeData['extras']['attached'] || false });
+        const isCreatingNewNode = "New Literal Input" === title;
+        let dialogOptions = inputDialog({ title, oldValue: inputValue, type, attached: isCreatingNewNode ? null : (nodeData.extras?.attached || false )});
         let dialogResult = await showFormDialog(dialogOptions);
         if (cancelDialog(dialogResult)) return;
 

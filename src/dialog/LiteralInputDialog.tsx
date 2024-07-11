@@ -61,13 +61,13 @@ export const LiteralInputDialog = ({ title, oldValue, type, inputType, attached 
 	const InputValueDialog = () => {
 		const [attach, setAttach] = useState(attached || false)
 		const InputComponent = inputComponents[inputType === 'textarea' ? inputType.toLowerCase() : type.toLowerCase()];
-		
+
 		// The `type` prop is now passed to all components
 		const extraProps = { type, inputType };
 
 		return InputComponent ? (<form style={{display: 'flex', flexDirection: "column", gap: "1em"}}>
 			<InputComponent title={title} oldValue={oldValue} {...extraProps} />
-			{InputComponent === ArgumentInput ? null : <label><input type="checkbox" name="attachNode" checked={attach} value={attach ? "on" : "off"} onChange={() => setAttach(!attach)} /> Attach Node?</label>}
+			{InputComponent === ArgumentInput || attached === null ? null : <label><input type="checkbox" name="attachNode" checked={attach} value={attach ? "on" : "off"} onChange={() => setAttach(!attach)} /> Attach Node?</label>}
 		</form>) : null;
 	}
 
