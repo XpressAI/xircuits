@@ -15,6 +15,9 @@ import { marked } from 'marked';
 import Color from 'colorjs.io';
 import { commandIDs } from '../../commands/CommandIDs';
 import { componentLibIcon, branchComponentIcon, workflowComponentIcon, functionComponentIcon, startFinishComponentIcon } from '../../ui-components/icons';
+import  circuitBoardSvg from '../../../style/icons/circuit-board-bg.svg';
+
+
 
 var S;
 (function (S) {
@@ -94,7 +97,7 @@ var S;
         border-bottom-right-radius: 5px;
         
         .workflow-node & {
-        {/* Background pattern for Workflow Node goes here */}
+            background: linear-gradient(oklch(10% 0 0 / 0.7), oklch(10% 0 0 / 0.9)), url("data:image/svg+xml;base64,${btoa(circuitBoardSvg)}") no-repeat right 10px;
         }
     `;
 
@@ -115,12 +118,6 @@ var S;
     `;
 
     S.WorkflowNode = styled(S.Node)`
-        outline: 1px solid oklch(75% 0 0 / 0.2);
-        outline-offset: 4px; // Space between the main node and the outline
-
-        ${(p) => p.selected && `
-            outline: 2px solid rgba(0, 192, 255, 0.1); // blue
-        `}
     `;
 })(S || (S = {}));
 
