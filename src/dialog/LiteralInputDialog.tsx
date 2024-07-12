@@ -19,9 +19,10 @@ export interface InputDialogueProps {
 	type: string;
 	inputType?: string;
 	attached?: boolean;
+	showAttachOption?: boolean;
 }
   
-export function inputDialog({ title, oldValue, type, inputType, attached }: InputDialogueProps) {
+export function inputDialog({ title, oldValue, type, inputType, attached, showAttachOption }: InputDialogueProps) {
 	const dialogOptions: Partial<Dialog.IOptions<any>> = {
 		title,
 		body: formDialogWidget(
@@ -31,6 +32,7 @@ export function inputDialog({ title, oldValue, type, inputType, attached }: Inpu
 				type={type}
 				inputType={inputType}
 				attached={attached}
+				showAttachOption={showAttachOption}
 			/>
 		),
 		buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Submit') })],
@@ -40,7 +42,7 @@ export function inputDialog({ title, oldValue, type, inputType, attached }: Inpu
 	return dialogOptions;
 }
 
-export const LiteralInputDialog = ({ title, oldValue, type, inputType, attached }): JSX.Element => {
+export const LiteralInputDialog = ({ title, oldValue, type, inputType, attached, showAttachOption }): JSX.Element => {
 
 	const inputComponents = {
 		textarea: TextAreaInput,
@@ -61,13 +63,17 @@ export const LiteralInputDialog = ({ title, oldValue, type, inputType, attached 
 	const InputValueDialog = () => {
 		const [attach, setAttach] = useState(attached || false)
 		const InputComponent = inputComponents[inputType === 'textarea' ? inputType.toLowerCase() : type.toLowerCase()];
+		console.log("me seeks", InputComponent, showAttachOption);
 
 		// The `type` prop is now passed to all components
 		const extraProps = { type, inputType };
 
 		return InputComponent ? (<form style={{display: 'flex', flexDirection: "column", gap: "1em"}}>
 			<InputComponent title={title} oldValue={oldValue} {...extraProps} />
-			{InputComponent === ArgumentInput || attached === null ? null : <label><input type="checkbox" name="attachNode" checked={attach} value={attach ? "on" : "off"} onChange={() => setAttach(!attach)} /> Attach Node?</label>}
+			{InputComponent === ArgumentInput || !showAttachOption ? null : (<label>
+				<input type="checkbox" name="attachNode" checked={attach} value={attach ? "on" : "off"} onChange={() => setAttach(!attach)} />
+				Attach Node?
+			</label>)}
 		</form>) : null;
 	}
 

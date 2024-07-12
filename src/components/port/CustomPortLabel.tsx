@@ -246,7 +246,8 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 						if(model.getSourcePort() != null){
 							Object.values(model.getSourcePort().getNode().getPorts()).forEach(p => {
 								Object.values(p.getLinks()).forEach(l => {
-									document.querySelector(`div.port[data-nodeid="${l.getTargetPort().getNode().getID()}"][data-name='${l.getTargetPort().getName()}']>div>div`)?.classList.add("hover");
+									if(model.getTargetPort() != null)
+										document.querySelector(`div.port[data-nodeid="${l.getTargetPort().getNode().getID()}"][data-name='${l.getTargetPort().getName()}']>div>div`)?.classList.add("hover");
 								})
 							})
 						}
@@ -268,7 +269,8 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 						if(model.getSourcePort() != null){
 							Object.values(model.getSourcePort().getNode().getPorts()).forEach(p => {
 								Object.values(p.getLinks()).forEach(l => {
-									document.querySelector(`div.port[data-nodeid="${l.getTargetPort().getNode().getID()}"][data-name='${l.getTargetPort().getName()}']>div>div`)?.classList.remove("hover");
+									if(model.getTargetPort() != null)
+										document.querySelector(`div.port[data-nodeid="${l.getTargetPort().getNode().getID()}"][data-name='${l.getTargetPort().getName()}']>div>div`)?.classList.remove("hover");
 								})
 							})
 						}
