@@ -36,8 +36,13 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
             await this.props.app.commands.execute(commandIDs.reloadNode);
         };
 
-        const handleDetachNode = async () => {
-            this.props.app.commands.execute(commandIDs.detachNode);
+        const handleAllAttachNodes = async () => {
+            this.props.app.commands.execute(commandIDs.attachAllNodes);
+            await this.props.app.commands.execute(commandIDs.reloadNode);
+        };
+
+        const handleDetachAllNodes = async () => {
+            this.props.app.commands.execute(commandIDs.detachAllNodes);
             await this.props.app.commands.execute(commandIDs.reloadNode);
         };
 
@@ -53,8 +58,11 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
                 {visibility.showAttachNode && (
                     <div className="context-menu-option" onClick={handleAttachNode}>Attach</div>
                 )}
-                {visibility.showDetachNode && (
-                    <div className="context-menu-option" onClick={handleDetachNode}>Detach</div>
+                {visibility.showAttachAllNodes && (
+                    <div className="context-menu-option" onClick={handleAllAttachNodes}>Attach Literals</div>
+                )}
+                {visibility.showDetachAllNodes && (
+                    <div className="context-menu-option" onClick={handleDetachAllNodes}>Detach Literals</div>
                 )}
                 {visibility.showReloadNode && (
                 <div className="context-menu-option" onClick={handleReloadNode}>Reload Node</div>
@@ -99,7 +107,15 @@ export function getMenuOptionsVisibility(models) {
         return !isLiteralNode(node) && !isArgumentNode(node);
     }
 
-    function canDetachNode(node) {
+    function canAttachAllNodes(node) {
+        let ports = node.getInPorts();
+        return ports.some((port) => {
+            let sourceNode = port.getSourceNodes()[0];
+            return sourceNode?.getOptions()?.extras?.attached === false;
+        });
+    }
+
+    function canDetachAllNodes(node) {
         let ports = node.getInPorts();
         return ports.some((port) => {
             let sourceNode = port.getSourceNodes()[0];
@@ -120,7 +136,8 @@ export function getMenuOptionsVisibility(models) {
     let showReloadNode = isNodeSelected && componentNodes.length > 0;
     let showopenXircuitsWorkflow = isSingleComponentNodeSelected && models.some(model => isXircuitsWorkflow(model));
     let showAttachNode = isNodeSelected && parameterNodes.length > 0;
-    let showDetachNode = componentNodes.some(model => canDetachNode(model));
+    let showAttachAllNodes = componentNodes.some(model => canAttachAllNodes(model));
+    let showDetachAllNodes = componentNodes.some(model => canDetachAllNodes(model));
 
     return {
         showCutCopyPaste: !models.length || isNodeSelected || isLinkSelected,
@@ -132,7 +149,8 @@ export function getMenuOptionsVisibility(models) {
         showUndoRedo: !models.length,
         showAddComment: !models.length,
         showAttachNode: showAttachNode,
-        showDetachNode: showDetachNode
+        showAttachAllNodes: showAttachAllNodes,
+        showDetachAllNodes: showDetachAllNodes
     };
 }
 

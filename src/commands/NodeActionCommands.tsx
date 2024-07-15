@@ -948,10 +948,43 @@ export function addNodeActionCommands(
         },
         label: trans.__('attach node')
     });
-    
 
-    // Add command to detach parameter node
-    commands.addCommand(commandIDs.detachNode, {
+    // Add command to attach all parameter nodes
+    commands.addCommand(commandIDs.attachAllNodes, {
+        execute: async () => {
+
+            const widget = tracker.currentWidget?.content as XircuitsPanel;
+            const model = widget.xircuitsApp.getDiagramEngine().getModel();
+            const selected_entities = model.getSelectedEntities();
+
+            const literal_nodes = [];
+            const selected_nodes = selected_entities.filter(entity => entity instanceof NodeModel) as CustomNodeModel[];
+            selected_nodes.forEach(node => {
+                node.getOptions().selected = false;
+                let inPorts = node.getInPorts();
+                Object.values(inPorts).forEach((port: CustomPortModel) => {
+                    let sourceNode = port.getSourceNodes()[0] as CustomNodeModel;
+                    if (sourceNode && sourceNode['name'].startsWith('Literal ') && !sourceNode['extras']['attached']) {
+                        sourceNode.getOptions().extras.attached = true;
+                        sourceNode.getOptions().selected = true;
+                        literal_nodes.push(sourceNode);
+                    }
+                })
+            });
+
+            literal_nodes.forEach(node => {
+                let parameterOutPort = node.getOutPorts()[0] as CustomPortModel;
+                let connectedNodes = parameterOutPort.getTargetNodes();
+                connectedNodes.forEach((node: CustomNodeModel) => node.getOptions().selected = true)
+            });
+
+            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+        },
+        label: trans.__('attach all nodes')
+    });
+
+    // Add command to detach all parameter nodes
+    commands.addCommand(commandIDs.detachAllNodes, {
         execute: async () => {
 
             const widget = tracker.currentWidget?.content as XircuitsPanel;
@@ -981,7 +1014,7 @@ export function addNodeActionCommands(
 
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         },
-        label: trans.__('detach node')
+        label: trans.__('detach all nodes')
     });
     
 }
