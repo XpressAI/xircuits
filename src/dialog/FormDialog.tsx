@@ -106,9 +106,9 @@ const preventDefaultDialogHandler = (
         event.stopPropagation();
         event.preventDefault();
       }
-      // When 'Enter' key is pressed while on input dialog and the input isn't Literal Chat, force focus to submit button
+      // When 'Enter' key is pressed while on input dialog and the input isn't Literal Chat or the attached checkbox, force focus to submit button
       const dialogInput = dialog.node.getElementsByTagName('input')[0];
-      if (dialogInput && dialogInput.name !== 'messages') {
+      if (dialogInput && !['messages', 'attachNode'].includes(dialogInput.name)) {
         await defaultButton.focus();
       }
     } else {
