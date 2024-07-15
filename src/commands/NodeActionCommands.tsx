@@ -512,13 +512,33 @@ export function addNodeActionCommands(
         label: trans.__('Add Comment')
     });
 
+    function selectAllRelevantNodes(widget: XircuitsPanel){
+        widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities().forEach(entity => {
+            if(entity.getType() === 'custom-node'){
+                const node = (entity as CustomNodeModel);
+                // Find links to attached node and copy them too
+                Object.values(node.getPorts()).forEach(port => {
+                    Object.values(port.getLinks()).forEach(link => {
+                        const parentNode = link.getSourcePort().getParent();
+                        if(parentNode.getOptions()?.extras?.attached){
+                            parentNode.setSelected(true);
+                            link.setSelected(true);
+                        }
+                    })
+                })
+            }
+        });
+
+        return widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
+    }
+
     function cutNode(): void {
         const widget = tracker.currentWidget?.content as XircuitsPanel;
 
         if (!widget) return;
 
         const engine = widget.xircuitsApp.getDiagramEngine();
-        const selected = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities()
+        const selected = selectAllRelevantNodes(widget);
         const copies = selected.map(entity =>
             entity.serialize()
         );
@@ -536,9 +556,7 @@ export function addNodeActionCommands(
 
         if (!widget) return;
 
-        const copies = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities().map(entity =>
-            entity.serialize(),
-        );
+        const copies = selectAllRelevantNodes(widget).map(entity => entity.serialize());
 
         localStorage.setItem('clipboard', JSON.stringify(copies));
     }
@@ -658,7 +676,7 @@ export function addNodeActionCommands(
         clipboardLinks.forEach(serializedLink => {
             const newSourceID = idMap[serializedLink.sourcePort];
             const newTargetID = idMap[serializedLink.targetPort];
-    
+
             if (newSourceID && newTargetID) {
                 const { sourcePort, targetPort } = getSourceAndTargetPorts(model, newSourceID, newTargetID);
                 if(sourcePort && targetPort) recreateLink(engine, model, serializedLink, sourcePort, targetPort, mousePosition, centerX, centerY);
