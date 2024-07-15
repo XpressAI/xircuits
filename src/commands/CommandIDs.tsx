@@ -16,6 +16,7 @@ export const commandIDs = {
   cutNode: "Xircuit-editor:cut-node",
   copyNode: "Xircuit-editor:copy-node",
   pasteNode: "Xircuit-editor:paste-node",
+  attachNode: "Xircuit-editor:attach-node",
   triggerLoadingAnimation: "Xircuit-editor:trigger-loading-animation",
   reloadNode: "Xircuit-editor:reload-node",
   reloadAllNodes: "Xircuit-editor:reload-all-nodes",

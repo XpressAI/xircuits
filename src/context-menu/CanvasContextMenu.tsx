@@ -30,6 +30,11 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
             });
         };
 
+        const handleAttachNode = async () => {
+            this.props.app.commands.execute(commandIDs.attachNode);
+            await this.props.app.commands.execute(commandIDs.reloadNode);
+        };
+
         return (
             <div className="context-menu" onClick={this.hideCanvasContextMenu.bind(this)}>
                 {visibility.showCutCopyPaste && (
@@ -44,6 +49,9 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
                 )}
                 {visibility.showEdit && (
                     <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.editNode)}>Edit</div>
+                )}
+                {visibility.showAttachNode && (
+                    <div className="context-menu-option" onClick={handleAttachNode}>Attach</div>
                 )}
                 {visibility.showOpenScript && (
                     <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.openScript)}>Open Script</div>
@@ -93,7 +101,8 @@ export function getMenuOptionsVisibility(models) {
     let isSingleParameterNodeSelected = parameterNodes.length === 1;
     let isSingleComponentNodeSelected = componentNodes.length === 1;
     let showReloadNode = isNodeSelected && componentNodes.length > 0;
-    let showopenXircuitsWorkflow = isSingleComponentNodeSelected && models.some(model => isXircuitsWorkflow(model))
+    let showopenXircuitsWorkflow = isSingleComponentNodeSelected && models.some(model => isXircuitsWorkflow(model));
+    let showAttachNode = isNodeSelected && parameterNodes.length > 0;
 
     return {
         showCutCopyPaste: !models.length || isNodeSelected || isLinkSelected,
@@ -103,7 +112,8 @@ export function getMenuOptionsVisibility(models) {
         showopenXircuitsWorkflow: showopenXircuitsWorkflow,
         showDelete: isNodeSelected || isLinkSelected || parameterNodes.length > 0,
         showUndoRedo: !models.length,
-        showAddComment: !models.length
+        showAddComment: !models.length,
+        showAttachNode: showAttachNode
     };
 }
 

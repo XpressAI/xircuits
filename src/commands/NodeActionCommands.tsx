@@ -928,4 +928,27 @@ export function addNodeActionCommands(
         
         }
     }
+
+    // Add command to attach selected node
+    commands.addCommand(commandIDs.attachNode, {
+        execute: async () => {
+
+            await fetchComponents();
+
+            const widget = tracker.currentWidget?.content as XircuitsPanel;
+            const model = widget.xircuitsApp.getDiagramEngine().getModel();
+            const selected_entities = model.getSelectedEntities();
+            const selected_nodes = selected_entities.filter(entity => entity instanceof NodeModel) as CustomNodeModel[];
+            selected_nodes.forEach(node => {
+                node.getOptions().selected = false
+                node.getOptions().extras.attached = true;
+                let parameterOutPort = node.getOutPorts()[0] as CustomPortModel;
+                let connectedNodes = parameterOutPort.getTargetNodes();
+                connectedNodes.forEach((node: CustomNodeModel) => node.getOptions().selected = true)
+            });
+            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+        },
+        label: trans.__('attach node')
+    });
+    
 }
