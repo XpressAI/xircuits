@@ -63,7 +63,6 @@ export const LiteralInputDialog = ({ title, oldValue, type, inputType, attached,
 	const InputValueDialog = () => {
 		const [attach, setAttach] = useState(attached || false)
 		const InputComponent = inputComponents[inputType === 'textarea' ? inputType.toLowerCase() : type.toLowerCase()];
-		console.log("me seeks", InputComponent, showAttachOption);
 
 		// The `type` prop is now passed to all components
 		const extraProps = { type, inputType };
