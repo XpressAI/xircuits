@@ -376,6 +376,16 @@ export  class CustomPortModel extends DefaultPortModel  {
         return Object.values(port.getLinks()).map((link:CustomLinkModel) => link.getTargetPort().getNode());
     }
 
+    getSourcePorts = () => {
+        let port: any = this;
+        return Object.values(port.getLinks()).map((link:CustomLinkModel) => link.getSourcePort());
+    }
+
+    getSourceNodes = () => {
+        let port: any = this;
+        return Object.values(port.getLinks()).map((link:CustomLinkModel) => link.getSourcePort().getNode());
+    }
+
     getCustomProps() {
         const { name, varName, portType, dataType } = this;
         const id = this.getID();

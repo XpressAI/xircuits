@@ -5,6 +5,7 @@ import { DiagramEngine, NodeModel, LinkModel } from '@projectstorm/react-diagram
 
 import '../../style/ContextMenu.css'
 import { commandIDs } from "../commands/CommandIDs";
+import { CustomPortModel } from '../components/port/CustomPortModel';
 
 export interface CanvasContextMenuProps {
 	app: JupyterFrontEnd;
@@ -35,6 +36,11 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
             await this.props.app.commands.execute(commandIDs.reloadNode);
         };
 
+        const handleDetachNode = async () => {
+            this.props.app.commands.execute(commandIDs.detachNode);
+            await this.props.app.commands.execute(commandIDs.reloadNode);
+        };
+
         return (
             <div className="context-menu" onClick={this.hideCanvasContextMenu.bind(this)}>
                 {visibility.showCutCopyPaste && (
@@ -44,14 +50,17 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
                         <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.pasteNode)}>Paste</div>
                     </>
                 )}
+                {visibility.showAttachNode && (
+                    <div className="context-menu-option" onClick={handleAttachNode}>Attach</div>
+                )}
+                {visibility.showDetachNode && (
+                    <div className="context-menu-option" onClick={handleDetachNode}>Detach</div>
+                )}
                 {visibility.showReloadNode && (
                 <div className="context-menu-option" onClick={handleReloadNode}>Reload Node</div>
                 )}
                 {visibility.showEdit && (
                     <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.editNode)}>Edit</div>
-                )}
-                {visibility.showAttachNode && (
-                    <div className="context-menu-option" onClick={handleAttachNode}>Attach</div>
                 )}
                 {visibility.showOpenScript && (
                     <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.openScript)}>Open Script</div>
@@ -90,6 +99,14 @@ export function getMenuOptionsVisibility(models) {
         return !isLiteralNode(node) && !isArgumentNode(node);
     }
 
+    function canDetachNode(node) {
+        let ports = node.getInPorts();
+        return ports.some((port) => {
+            let sourceNode = port.getSourceNodes()[0];
+            return sourceNode?.getOptions()?.extras?.attached === true;
+        });
+    }
+
     function isXircuitsWorkflow(node) {
         return node.getOptions()?.extras?.type == 'xircuits_workflow' ?? false;
     }
@@ -103,6 +120,7 @@ export function getMenuOptionsVisibility(models) {
     let showReloadNode = isNodeSelected && componentNodes.length > 0;
     let showopenXircuitsWorkflow = isSingleComponentNodeSelected && models.some(model => isXircuitsWorkflow(model));
     let showAttachNode = isNodeSelected && parameterNodes.length > 0;
+    let showDetachNode = componentNodes.some(model => canDetachNode(model));
 
     return {
         showCutCopyPaste: !models.length || isNodeSelected || isLinkSelected,
@@ -113,7 +131,8 @@ export function getMenuOptionsVisibility(models) {
         showDelete: isNodeSelected || isLinkSelected || parameterNodes.length > 0,
         showUndoRedo: !models.length,
         showAddComment: !models.length,
-        showAttachNode: showAttachNode
+        showAttachNode: showAttachNode,
+        showDetachNode: showDetachNode
     };
 }
 

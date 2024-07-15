@@ -933,8 +933,6 @@ export function addNodeActionCommands(
     commands.addCommand(commandIDs.attachNode, {
         execute: async () => {
 
-            await fetchComponents();
-
             const widget = tracker.currentWidget?.content as XircuitsPanel;
             const model = widget.xircuitsApp.getDiagramEngine().getModel();
             const selected_entities = model.getSelectedEntities();
@@ -949,6 +947,41 @@ export function addNodeActionCommands(
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         },
         label: trans.__('attach node')
+    });
+    
+
+    // Add command to detach parameter node
+    commands.addCommand(commandIDs.detachNode, {
+        execute: async () => {
+
+            const widget = tracker.currentWidget?.content as XircuitsPanel;
+            const model = widget.xircuitsApp.getDiagramEngine().getModel();
+            const selected_entities = model.getSelectedEntities();
+
+            const literal_nodes = [];
+            const selected_nodes = selected_entities.filter(entity => entity instanceof NodeModel) as CustomNodeModel[];
+            selected_nodes.forEach(node => {
+                node.getOptions().selected = false;
+                let inPorts = node.getInPorts();
+                Object.values(inPorts).forEach((port: CustomPortModel) => {
+                    let sourceNode = port.getSourceNodes()[0] as CustomNodeModel;
+                    if (sourceNode && sourceNode['name'].startsWith('Literal ') && sourceNode['extras']['attached']) {
+                        sourceNode.getOptions().extras.attached = false;
+                        sourceNode.getOptions().selected = true;
+                        literal_nodes.push(sourceNode);
+                    }
+                })
+            });
+
+            literal_nodes.forEach(node => {
+                let parameterOutPort = node.getOutPorts()[0] as CustomPortModel;
+                let connectedNodes = parameterOutPort.getTargetNodes();
+                connectedNodes.forEach((node: CustomNodeModel) => node.getOptions().selected = true)
+            });
+
+            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+        },
+        label: trans.__('detach node')
     });
     
 }
