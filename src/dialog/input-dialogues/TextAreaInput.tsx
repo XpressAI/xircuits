@@ -62,7 +62,7 @@ export const TextAreaInput = ({ title, oldValue, type, inputType }): JSX.Element
     
 
 	return (
-        <form>
+        <>
             {getHeaderContent(type)}
             <div>
                 <TextareaAutosize
@@ -72,6 +72,6 @@ export const TextAreaInput = ({ title, oldValue, type, inputType }): JSX.Element
                     style={{ width: 400, height: 200, fontSize: 12 }}
                     ref={textAreaRef} />
             </div>
-        </form>
+        </>
     );
 }

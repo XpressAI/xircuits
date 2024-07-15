@@ -6,7 +6,7 @@ import { cancelDialog } from '../../tray_library/GeneralComponentLib';
 
 export const VariableInput = ({ title, oldValue }): JSX.Element => {
 	return (
-        <form>
+        <>
 			<h5 style={{ marginTop: 0, marginBottom: 5 }}>
 						<p>Determine your variable type by inserting the first char as below: </p>
 						<li> " : String</li>
@@ -22,7 +22,7 @@ export const VariableInput = ({ title, oldValue }): JSX.Element => {
 				name={title}
 				style={{ width: 350 }}
 				defaultValue={oldValue} />
-		</form>
+		</>
 	);
 }
 

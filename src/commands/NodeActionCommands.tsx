@@ -785,7 +785,11 @@ export function addNodeActionCommands(
             });
             return null;
         }
-    
+
+        const connections = Object.values(selected_node.ports)
+          .map((p: CustomPortModel) => Object.keys(p.links).length)
+          .reduce((a, b) => a+b);
+
         const literalType = selected_node["extras"]["type"];
         let oldValue = selected_node.getPorts()["out-0"].getOptions()["label"];
         
@@ -794,8 +798,8 @@ export function addNodeActionCommands(
         }
         
         const updateTitle = `Update ${literalType}`;
-        let nodeData: CustomNodeModelOptions = {color: selected_node["color"], type: selected_node["extras"]["type"]}
-        let updatedContent = await handleLiteralInput(selected_node["name"], nodeData, oldValue, literalType, updateTitle);
+        let nodeData: CustomNodeModelOptions = {color: selected_node["color"], type: selected_node["extras"]["type"], extras: {attached: selected_node["extras"]["attached"]}}
+        let updatedContent = await handleLiteralInput(selected_node["name"], nodeData, oldValue, literalType, updateTitle, connections);
         
         if (!updatedContent) {
             // handle case where Cancel was clicked or an error occurred

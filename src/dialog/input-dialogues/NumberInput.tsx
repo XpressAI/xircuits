@@ -2,7 +2,7 @@ import React from 'react';
 
 export const NumberInput = ({ title, oldValue, type }): JSX.Element => {
 	return (
-		<form>
+		<>
             <h3 style={{ marginTop: 0, marginBottom: 5 }}>
 				Enter {type == 'float' ? "Float" : "Integer"} Value:
             </h3>
@@ -13,6 +13,6 @@ export const NumberInput = ({ title, oldValue, type }): JSX.Element => {
 				placeholder={type == 'float' ? "0.00" : "0"}
 				style={{ width: 350 }}
 				defaultValue={oldValue} />
-		</form>
+		</>
 	);
 }

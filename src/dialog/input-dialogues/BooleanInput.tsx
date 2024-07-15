@@ -11,7 +11,7 @@ export const BooleanInput = ({ title, oldValue }): JSX.Element => {
 	};
 
 	return (
-		<form>
+		<>
 			<div style={{ paddingLeft: 5, paddingTop: 5 }}>
 				<Switch
 					checked={checked}
@@ -28,6 +28,6 @@ export const BooleanInput = ({ title, oldValue }): JSX.Element => {
                     value={checked ? 'True' : 'False'}
                 />
 			</div>
-		</form>
+		</>
 	);
 }

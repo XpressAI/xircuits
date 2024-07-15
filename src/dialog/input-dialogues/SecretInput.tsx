@@ -2,7 +2,7 @@ import React from 'react';
 
 export const SecretInput = ({ title, oldValue }): JSX.Element => {
     return (
-        <form>
+        <>
             <h3 style={{ marginTop: 0, marginBottom: 5 }}>
                 Enter Secret Value (Without Quotes):
             </h3>
@@ -15,7 +15,7 @@ export const SecretInput = ({ title, oldValue }): JSX.Element => {
                 type="password"
                 style={{ width: 480 }}
                 defaultValue={oldValue} />
-        </form>
+        </>
 
     );
 }

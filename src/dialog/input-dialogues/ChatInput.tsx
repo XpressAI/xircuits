@@ -45,7 +45,7 @@ export const ChatInput = ({ title, oldValue = [], onSubmit }: { title: string, o
     };
 
     return (
-        <form>
+        <>
             <div style={gridContainer} className="jp-mod-styled">
                 <label>Messages</label>
                 {messages.map((message, index) => (
@@ -77,6 +77,6 @@ export const ChatInput = ({ title, oldValue = [], onSubmit }: { title: string, o
                 <button type="button" onClick={addMessage} style={{gridColumn: 'span 1'}} className="jp-mod-styled">Add Message</button>
             </div>
             <input type="hidden" name="messages" value={hiddenMessagesValue} />
-        </form>
+        </>
     );
 }
