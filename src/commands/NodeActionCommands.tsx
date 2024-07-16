@@ -936,13 +936,16 @@ export function addNodeActionCommands(
             const widget = tracker.currentWidget?.content as XircuitsPanel;
             const model = widget.xircuitsApp.getDiagramEngine().getModel();
             const selected_entities = model.getSelectedEntities();
-            const selected_nodes = selected_entities.filter(entity => entity instanceof NodeModel) as CustomNodeModel[];
-            selected_nodes.forEach(node => {
-                node.getOptions().selected = false
+            const selected_literals = selected_entities.filter((entity): entity is CustomNodeModel => {
+                return entity instanceof NodeModel && entity.getOptions().name.startsWith("Literal ");
+            });
+
+            selected_literals.forEach(node => {
+                node.setSelected(false);
                 node.getOptions().extras.attached = true;
                 let parameterOutPort = node.getOutPorts()[0] as CustomPortModel;
                 let connectedNodes = parameterOutPort.getTargetNodes();
-                connectedNodes.forEach((node: CustomNodeModel) => node.getOptions().selected = true)
+                connectedNodes.forEach((node: CustomNodeModel) => node.setSelected(true))
             });
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         },
@@ -960,13 +963,13 @@ export function addNodeActionCommands(
             const literal_nodes = [];
             const selected_nodes = selected_entities.filter(entity => entity instanceof NodeModel) as CustomNodeModel[];
             selected_nodes.forEach(node => {
-                node.getOptions().selected = false;
+                node.setSelected(false);
                 let inPorts = node.getInPorts();
                 Object.values(inPorts).forEach((port: CustomPortModel) => {
                     let sourceNode = port.getSourceNodes()[0] as CustomNodeModel;
                     if (sourceNode && sourceNode['name'].startsWith('Literal ') && !sourceNode['extras']['attached']) {
                         sourceNode.getOptions().extras.attached = true;
-                        sourceNode.getOptions().selected = true;
+                        sourceNode.setSelected(true);
                         literal_nodes.push(sourceNode);
                     }
                 })
@@ -975,7 +978,7 @@ export function addNodeActionCommands(
             literal_nodes.forEach(node => {
                 let parameterOutPort = node.getOutPorts()[0] as CustomPortModel;
                 let connectedNodes = parameterOutPort.getTargetNodes();
-                connectedNodes.forEach((node: CustomNodeModel) => node.getOptions().selected = true)
+                connectedNodes.forEach((node: CustomNodeModel) => node.setSelected(true))
             });
 
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();
@@ -994,13 +997,13 @@ export function addNodeActionCommands(
             const literal_nodes = [];
             const selected_nodes = selected_entities.filter(entity => entity instanceof NodeModel) as CustomNodeModel[];
             selected_nodes.forEach(node => {
-                node.getOptions().selected = false;
+                node.setSelected(false);
                 let inPorts = node.getInPorts();
                 Object.values(inPorts).forEach((port: CustomPortModel) => {
                     let sourceNode = port.getSourceNodes()[0] as CustomNodeModel;
                     if (sourceNode && sourceNode['name'].startsWith('Literal ') && sourceNode['extras']['attached']) {
                         sourceNode.getOptions().extras.attached = false;
-                        sourceNode.getOptions().selected = true;
+                        sourceNode.setSelected(true);
                         literal_nodes.push(sourceNode);
                     }
                 })
@@ -1009,7 +1012,7 @@ export function addNodeActionCommands(
             literal_nodes.forEach(node => {
                 let parameterOutPort = node.getOutPorts()[0] as CustomPortModel;
                 let connectedNodes = parameterOutPort.getTargetNodes();
-                connectedNodes.forEach((node: CustomNodeModel) => node.getOptions().selected = true)
+                connectedNodes.forEach((node: CustomNodeModel) => node.setSelected(true))
             });
 
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();

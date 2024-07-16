@@ -32,17 +32,17 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
         };
 
         const handleAttachNode = async () => {
-            this.props.app.commands.execute(commandIDs.attachNode);
+            await this.props.app.commands.execute(commandIDs.attachNode);
             await this.props.app.commands.execute(commandIDs.reloadNode);
         };
 
         const handleAllAttachNodes = async () => {
-            this.props.app.commands.execute(commandIDs.attachAllNodes);
+            await this.props.app.commands.execute(commandIDs.attachAllNodes);
             await this.props.app.commands.execute(commandIDs.reloadNode);
         };
 
         const handleDetachAllNodes = async () => {
-            this.props.app.commands.execute(commandIDs.detachAllNodes);
+            await this.props.app.commands.execute(commandIDs.detachAllNodes);
             await this.props.app.commands.execute(commandIDs.reloadNode);
         };
 
@@ -104,7 +104,7 @@ export function getMenuOptionsVisibility(models) {
     }
 
     function isComponentNode(node) {
-        return !isLiteralNode(node) && !isArgumentNode(node);
+        return node instanceof NodeModel && !isLiteralNode(node) && !isArgumentNode(node);
     }
 
     function canAttachAllNodes(node) {
