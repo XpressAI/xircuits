@@ -18,6 +18,8 @@ import TrayContextMenu from '../context-menu/TrayContextMenu';
 
 import '../../style/ContextMenu.css'
 import { ComponentLibraryConfig, refreshComponentLibraryConfigCache } from './ComponentLibraryConfig';
+import ReactTooltip from "react-tooltip";
+import { marked } from 'marked';
 
 export const Body = styled.div`
   flex-grow: 1;
@@ -168,6 +170,10 @@ export default function Sidebar(props: SidebarProps) {
         return () => clearInterval(intervalId);
     },[componentList, handleRefreshOnClick]);
 
+    useEffect(() => {
+        ReactTooltip.rebuild();
+    }, [componentList])
+
     // Function to map components
     const mapComponents = (components, searchTerm) => {
         return components.filter((componentVal) => {
@@ -291,6 +297,16 @@ export default function Sidebar(props: SidebarProps) {
                 status={contextMenuState.status}
                 refreshTrigger={handleRefreshOnClick}
                 onClose={closeContextMenu}
+            />
+            <ReactTooltip id="sidebar-tooltip" clickable type="dark" place="top" effect="solid"
+                          overridePosition={(position, currentEvent, currentTarget, refNode, place, desiredPlace, effect, offset) => {
+                              return {
+                                  left: 0,
+                                  //@ts-ignore
+                                  top: Math.max(0, position.top - currentTarget.parentNode.clientHeight),
+                              };
+                          }}
+                          getContent={toolTipStr => toolTipStr ? <div dangerouslySetInnerHTML={{__html: marked(toolTipStr)}} /> : null}
             />
         </Body>
     )

@@ -11,7 +11,9 @@ import {
     startFinishComponentIcon, 
     variableComponentIcon, 
     setVariableComponentIcon, 
-    getVariableComponentIcon } from "../ui-components/icons";
+    getVariableComponentIcon,
+		infoIcon
+} from "../ui-components/icons";
 
 export interface TrayItemWidgetProps {
 	model: any;
@@ -44,6 +46,20 @@ export const Tray = styled.div<TrayStyledProps>`
 	& svg {
 		height: 16px;
 		width: 16px;
+	}
+	& > span {
+		flex-grow: 1;
+	}
+	& > i {
+		border: 1px solid ${(p) => p.color};
+		border-radius: 999px;
+		display: block;
+		overflow: hidden;
+		height: 16px;
+		width: 16px;
+		&:hover {
+			background-color: ${(p) => p.color};
+		}
 	}
 `;
 
@@ -109,7 +125,12 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 				}}
 				className="tray-item">
 				{getNodeIcon(this.props.model.type)}
-				{this.props.name}
+				<span>{this.props.name}</span>
+				{!this.props.model.docstring ? null :
+					<i data-for="sidebar-tooltip" data-tip={this.props.model.docstring}>
+						<infoIcon.react />
+					</i>
+				}
 			</Tray>
 		);
 	}

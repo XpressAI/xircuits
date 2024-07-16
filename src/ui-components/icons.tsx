@@ -15,6 +15,7 @@ import functionComponentSvg from '../../style/icons/function-component.svg';
 import setVariableComponentSvg from '../../style/icons/set-variable-component.svg';
 import getVariableComponentSvg from '../../style/icons/get-variable-component.svg';
 import variableComponentSvg from '../../style/icons/variable-component.svg';
+import infoSvg from '../../style/icons/info.svg';
 
 
 export const xircuitsFaviconLink = 'https://raw.githubusercontent.com/XpressAI/xircuits/master/style/icons/xpress-logo.ico';
@@ -34,6 +35,7 @@ export const functionComponentIcon = new LabIcon({ name: 'xircuits:functionCompo
 export const setVariableComponentIcon = new LabIcon({ name: 'xircuits:setVariableComponentIcon', svgstr: setVariableComponentSvg });
 export const getVariableComponentIcon = new LabIcon({ name: 'xircuits:getVariableComponentIcon', svgstr: getVariableComponentSvg });
 export const variableComponentIcon = new LabIcon({ name: 'xircuits:variableComponentIcon', svgstr: variableComponentSvg });
+export const infoIcon = new LabIcon({ name: 'xircuits:infoIcon', svgstr: infoSvg });
 
 export function changeFavicon(src: string) {
     let head = document.head || document.getElementsByTagName('head')[0];
