@@ -1,6 +1,7 @@
 import { DefaultPortModel, DefaultPortModelOptions } from "@projectstorm/react-diagrams";
 import { DeserializeEvent} from '@projectstorm/react-canvas-core';
 import {PortModel} from "@projectstorm/react-diagrams-core";
+import { CustomLinkModel } from "../link/CustomLinkModel";
 
 /**
  * @author wenfeng xu
@@ -363,6 +364,26 @@ export  class CustomPortModel extends DefaultPortModel  {
         const portId = this.getID();
         return inPorts.findIndex(p => p.options.id === portId);
 
+    }
+
+    getTargetPorts = () => {
+        let port: any = this;
+        return Object.values(port.getLinks()).map((link:CustomLinkModel) => link.getTargetPort());
+    }
+
+    getTargetNodes = () => {
+        let port: any = this;
+        return Object.values(port.getLinks()).map((link:CustomLinkModel) => link.getTargetPort().getNode());
+    }
+
+    getSourcePorts = () => {
+        let port: any = this;
+        return Object.values(port.getLinks()).map((link:CustomLinkModel) => link.getSourcePort());
+    }
+
+    getSourceNodes = () => {
+        let port: any = this;
+        return Object.values(port.getLinks()).map((link:CustomLinkModel) => link.getSourcePort().getNode());
     }
 
     getCustomProps() {

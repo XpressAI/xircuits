@@ -5,6 +5,7 @@ import { DiagramEngine, NodeModel, LinkModel } from '@projectstorm/react-diagram
 
 import '../../style/ContextMenu.css'
 import { commandIDs } from "../commands/CommandIDs";
+import { CustomPortModel } from '../components/port/CustomPortModel';
 
 export interface CanvasContextMenuProps {
 	app: JupyterFrontEnd;
@@ -30,6 +31,21 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
             });
         };
 
+        const handleAttachNode = async () => {
+            await this.props.app.commands.execute(commandIDs.attachNode);
+            await this.props.app.commands.execute(commandIDs.reloadNode);
+        };
+
+        const handleAllAttachNodes = async () => {
+            await this.props.app.commands.execute(commandIDs.attachAllNodes);
+            await this.props.app.commands.execute(commandIDs.reloadNode);
+        };
+
+        const handleDetachAllNodes = async () => {
+            await this.props.app.commands.execute(commandIDs.detachAllNodes);
+            await this.props.app.commands.execute(commandIDs.reloadNode);
+        };
+
         return (
             <div className="context-menu" onClick={this.hideCanvasContextMenu.bind(this)}>
                 {visibility.showCutCopyPaste && (
@@ -38,6 +54,15 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
                         <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.copyNode)}>Copy</div>
                         <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.pasteNode)}>Paste</div>
                     </>
+                )}
+                {visibility.showAttachNode && (
+                    <div className="context-menu-option" onClick={handleAttachNode}>Attach</div>
+                )}
+                {visibility.showAttachAllNodes && (
+                    <div className="context-menu-option" onClick={handleAllAttachNodes}>Attach Literals</div>
+                )}
+                {visibility.showDetachAllNodes && (
+                    <div className="context-menu-option" onClick={handleDetachAllNodes}>Detach Literals</div>
                 )}
                 {visibility.showReloadNode && (
                 <div className="context-menu-option" onClick={handleReloadNode}>Reload Node</div>
@@ -79,7 +104,30 @@ export function getMenuOptionsVisibility(models) {
     }
 
     function isComponentNode(node) {
-        return !isLiteralNode(node) && !isArgumentNode(node);
+        return node instanceof NodeModel && !isLiteralNode(node) && !isArgumentNode(node);
+    }
+
+    function isConnected(node): boolean {
+        let outPorts = node.getOutPorts();
+        let inPorts = node.getInPorts();
+        return outPorts.some(port => Object.keys(port.getLinks()).length > 0) || 
+               inPorts.some(port => Object.keys(port.getLinks()).length > 0);
+    }
+    
+    function canAttachAllNodes(node) {
+        let ports = node.getInPorts();
+        return ports.some((port) => {
+            let sourceNode = port.getSourceNodes()[0];
+            return sourceNode?.getOptions()?.extras?.attached === false;
+        });
+    }
+
+    function canDetachAllNodes(node) {
+        let ports = node.getInPorts();
+        return ports.some((port) => {
+            let sourceNode = port.getSourceNodes()[0];
+            return sourceNode?.getOptions()?.extras?.attached === true;
+        });
     }
 
     function isXircuitsWorkflow(node) {
@@ -88,12 +136,16 @@ export function getMenuOptionsVisibility(models) {
 
     let isNodeSelected = models.some(model => model instanceof NodeModel);
     let isLinkSelected = models.some(model => model instanceof LinkModel);
+    let literalNodes = models.filter(model => isLiteralNode(model));
     let parameterNodes = models.filter(model => !isComponentNode(model));
     let componentNodes = models.filter(model => isComponentNode(model));
     let isSingleParameterNodeSelected = parameterNodes.length === 1;
     let isSingleComponentNodeSelected = componentNodes.length === 1;
     let showReloadNode = isNodeSelected && componentNodes.length > 0;
-    let showopenXircuitsWorkflow = isSingleComponentNodeSelected && models.some(model => isXircuitsWorkflow(model))
+    let showopenXircuitsWorkflow = isSingleComponentNodeSelected && models.some(model => isXircuitsWorkflow(model));
+    let showAttachNode = literalNodes.length > 0 && literalNodes.some(model => isConnected(model));
+    let showAttachAllNodes = componentNodes.some(model => canAttachAllNodes(model));
+    let showDetachAllNodes = componentNodes.some(model => canDetachAllNodes(model));
 
     return {
         showCutCopyPaste: !models.length || isNodeSelected || isLinkSelected,
@@ -103,7 +155,10 @@ export function getMenuOptionsVisibility(models) {
         showopenXircuitsWorkflow: showopenXircuitsWorkflow,
         showDelete: isNodeSelected || isLinkSelected || parameterNodes.length > 0,
         showUndoRedo: !models.length,
-        showAddComment: !models.length
+        showAddComment: !models.length,
+        showAttachNode: showAttachNode,
+        showAttachAllNodes: showAttachAllNodes,
+        showDetachAllNodes: showDetachAllNodes
     };
 }
 
