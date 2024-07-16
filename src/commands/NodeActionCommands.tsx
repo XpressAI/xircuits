@@ -936,11 +936,13 @@ export function addNodeActionCommands(
             const widget = tracker.currentWidget?.content as XircuitsPanel;
             const model = widget.xircuitsApp.getDiagramEngine().getModel();
             const selected_entities = model.getSelectedEntities();
-            const selected_literals = selected_entities.filter((entity): entity is CustomNodeModel => {
-                return entity instanceof NodeModel && entity.getOptions().name.startsWith("Literal ");
+            const connected_literals = selected_entities.filter((entity): entity is CustomNodeModel => {
+                return entity instanceof CustomNodeModel &&
+                       entity.getOptions().name.startsWith("Literal ") &&
+                       Object.keys(entity.getOutPorts()[0].getLinks()).length > 0;
             });
 
-            selected_literals.forEach(node => {
+            connected_literals.forEach(node => {
                 node.setSelected(false);
                 node.getOptions().extras.attached = true;
                 let parameterOutPort = node.getOutPorts()[0] as CustomPortModel;

@@ -107,6 +107,13 @@ export function getMenuOptionsVisibility(models) {
         return node instanceof NodeModel && !isLiteralNode(node) && !isArgumentNode(node);
     }
 
+    function isConnected(node): boolean {
+        let outPorts = node.getOutPorts();
+        let inPorts = node.getInPorts();
+        return outPorts.some(port => Object.keys(port.getLinks()).length > 0) || 
+               inPorts.some(port => Object.keys(port.getLinks()).length > 0);
+    }
+    
     function canAttachAllNodes(node) {
         let ports = node.getInPorts();
         return ports.some((port) => {
@@ -129,13 +136,14 @@ export function getMenuOptionsVisibility(models) {
 
     let isNodeSelected = models.some(model => model instanceof NodeModel);
     let isLinkSelected = models.some(model => model instanceof LinkModel);
+    let literalNodes = models.filter(model => isLiteralNode(model));
     let parameterNodes = models.filter(model => !isComponentNode(model));
     let componentNodes = models.filter(model => isComponentNode(model));
     let isSingleParameterNodeSelected = parameterNodes.length === 1;
     let isSingleComponentNodeSelected = componentNodes.length === 1;
     let showReloadNode = isNodeSelected && componentNodes.length > 0;
     let showopenXircuitsWorkflow = isSingleComponentNodeSelected && models.some(model => isXircuitsWorkflow(model));
-    let showAttachNode = isNodeSelected && parameterNodes.length > 0;
+    let showAttachNode = literalNodes.length > 0 && literalNodes.some(model => isConnected(model));
     let showAttachAllNodes = componentNodes.some(model => canAttachAllNodes(model));
     let showDetachAllNodes = componentNodes.some(model => canDetachAllNodes(model));
 
