@@ -168,7 +168,7 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
                         </div>
                         {
                             allowableComponents.filter((val) => {
-                                if (searchTerm != "" && val.task.toLowerCase().includes(searchTerm.toLowerCase())) {
+                                if (searchTerm != "" && (val.task.toLowerCase().includes(searchTerm.toLowerCase()) || (val.docstring && val.docstring.toLowerCase().includes(searchTerm.toLowerCase())))) {
                                     return val
                                 }
                             }).map((val, i) => {

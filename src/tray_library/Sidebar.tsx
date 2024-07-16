@@ -173,7 +173,7 @@ export default function Sidebar(props: SidebarProps) {
         return components.filter((componentVal) => {
             if (searchTerm === "") {
                 return componentVal;
-            } else if (componentVal.task.toLowerCase().includes(searchTerm.toLowerCase())) {
+            } else if (componentVal.task.toLowerCase().includes(searchTerm.toLowerCase()) || (componentVal.docstring && componentVal.docstring.toLowerCase().includes(searchTerm.toLowerCase()))) {
                 return componentVal;
             }
         }).map((componentVal, i) => (
