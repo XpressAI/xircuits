@@ -30,7 +30,7 @@ import { createInitXircuits } from './helpers/CanvasInitializer';
 import type { CommandRegistry } from "@lumino/commands/src";
 import type { Signal } from "@lumino/signaling";
 import { commandIDs } from "./commands/CommandIDs";
-
+import { IEditorTracker } from '@jupyterlab/fileeditor';
 
 const FACTORY = 'Xircuits editor';
 
@@ -57,7 +57,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     ILayoutRestorer,
     IRenderMimeRegistry,
     IDocumentManager,
-    ITranslator
+    ITranslator,
+    IEditorTracker
   ],
   provides: IXircuitsDocTracker,
   activate: async (
@@ -67,7 +68,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     restorer: ILayoutRestorer,
     rendermime: IRenderMimeRegistry,
     docmanager: IDocumentManager,
-    translator?: ITranslator
+    translator?: ITranslator,
+    editorTracker?: IEditorTracker,
   ) => {
 
     console.log('Xircuits is activated!');
@@ -157,6 +159,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     // Additional commands for chat actions
     addLibraryActionCommands(app, tracker, translator, widgetFactory);
+
 
     // Commands to emit WidgetFactory signals
     const emitSignal = (signal: Signal<unknown, unknown>) =>  (args: unknown) => signal.emit(args);
@@ -252,13 +255,32 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         if (request["message"] == "completed") {
           const model_path = path.split(".xircuits")[0] + ".py";
           docmanager.closeFile(model_path);
+
           if (showOutput) {
             alert(`${model_path} successfully compiled!`);
+          }
+          if(model_path.startsWith("xai_components/")){
+             console.info(`File ${model_path} changed. Reloading components...`);
+             await app.commands.execute(commandIDs.refreshComponentList);
           }
         } else {
           console.log(request["message"])
           alert("Failed to generate compiled code. Please check console logs for more details.");
         }
+      }
+    });
+
+    // Auto-reload components when a component file changes
+    editorTracker.widgetAdded.connect((sender, widget) => {
+      const context = widget.context;
+
+      if (context.path.endsWith('.py')) {
+        context.fileChanged.connect(async () => {
+          if(context.path.startsWith("xai_components/")){
+            console.info(`File ${context.path} changed. Reloading components...`);
+            await app.commands.execute(commandIDs.refreshComponentList);
+          }
+        });
       }
     });
 
