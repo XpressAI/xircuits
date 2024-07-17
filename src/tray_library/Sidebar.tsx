@@ -342,6 +342,7 @@ export default function Sidebar(props: SidebarProps) {
             onClose={closeContextMenu}
           />
           <ReactTooltip id="sidebar-tooltip" clickable type="dark" place="top" effect="solid"
+                        delayShow={300}
                         overridePosition={(position, currentEvent, currentTarget, refNode, place, desiredPlace, effect, offset) => {
                             return {
                                 left: 0,
