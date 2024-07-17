@@ -324,7 +324,9 @@ export default function Sidebar(props: SidebarProps) {
                             </Accordion>
                         </>
                       ) : (
-                        mapComponents(componentList, searchTerm)
+                        <div style={{margin: "10px"}}>
+                            {mapComponents(componentList, searchTerm)}
+                        </div>
                       )}
                   </div>
               </TrayWidget>
