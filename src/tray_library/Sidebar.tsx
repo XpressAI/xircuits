@@ -20,6 +20,8 @@ import '../../style/ContextMenu.css'
 import { ComponentLibraryConfig, refreshComponentLibraryConfigCache } from './ComponentLibraryConfig';
 import ReactTooltip from "react-tooltip";
 import { marked } from 'marked';
+import { S as NodeStyle, getNodeIcon } from "../components/node/CustomNodeWidget";
+import { S as PortStyle, symbolMap} from "../components/port/CustomPortLabel";
 
 export const Body = styled.div`
   flex-grow: 1;
@@ -82,6 +84,89 @@ async function fetchComponent(componentList) {
     }
 
     return displayHeaderList;
+}
+
+function NodePreview(props: {model: any}){
+    const {model} = props;
+    let icon = getNodeIcon(model.type === 'xircuits_workflow' ? "workflow" : model.type)
+    const PortComponent = (props) => {
+        const isInPort = props.direction === "in";
+        const isOutPort = props.direction === "out";
+
+        const label = <PortStyle.Label style={{textAlign: isInPort ? "left": "right"}}>
+            {props.port.name}
+        </PortStyle.Label>;
+
+        let port = null;
+        let symbolLabel = null;
+        if(["BaseComponent", "OutFlow"].includes(props.port.kind)) {
+            port = <PortStyle.Port isOutPort={isOutPort} hasLinks={false}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M9 12h12" />
+                    <path d="M17 16l4 -4l-4 -4" />
+                    <path d="M12 3a9 9 0 1 0 0 18" />
+                </svg>
+            </PortStyle.Port>;
+        } else if(props.port.kind === "InFlow"){
+            port = <PortStyle.Port isOutPort={isOutPort} hasLinks={false}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M3 12h12" />
+                    <path d="M11 8l4 4l-4 4" />
+                    <path d="M12 21a9 9 0 0 0 0 -18" />
+                </svg>
+            </PortStyle.Port>
+        }else{
+            // TODO: Get rid of the remapping by using compatible type names everywhere
+            let type_name_remappings = {
+                "bool": "boolean",
+                "str": "string"
+            }
+             symbolLabel = symbolMap[type_name_remappings[props.port.type] || props.port.type] || '◎';
+        }
+
+        const symbol = <PortStyle.SymbolContainer symbolType={symbolLabel} selected={false} isOutPort={isOutPort}>
+            <PortStyle.Symbol isOutPort={isOutPort} selected={false}>
+                {symbolLabel}
+            </PortStyle.Symbol>
+        </PortStyle.SymbolContainer>
+
+        return <PortStyle.PortLabel>
+            {isOutPort ? label : null}
+            <div>{port == null ? symbol : port}</div>
+            {isInPort ? label : null}
+        </PortStyle.PortLabel>;
+    }
+    const PortsComponent = () => {
+        const inPorts = model.variables.filter(v => ['InArg', 'InCompArg'].includes(v.kind))
+        const outPorts = model.variables.filter(v => !['InArg', 'InCompArg'].includes(v.kind))
+
+        outPorts.unshift({ name: "", kind: "OutFlow" })
+        if(model.type !== "Start"){
+            inPorts.unshift({ name: "", kind: "InFlow" });
+        }
+
+        return <NodeStyle.Ports>
+            <NodeStyle.PortsContainer>{inPorts.map(p => <PortComponent port={p} direction="in" key={p.name}/>)}</NodeStyle.PortsContainer>
+            <NodeStyle.PortsContainer>{outPorts.map(p => <PortComponent port={p} direction="out" key={p.name}/>)}</NodeStyle.PortsContainer>
+        </NodeStyle.Ports>
+    }
+
+
+    return <NodeStyle.Node
+            borderColor={model.color}
+            selected={false}
+            background={null}
+            className={model.type === 'xircuits_workflow' ? "workflow-node" : null}
+            style={{backgroundColor: 'black'}}
+        >
+            <NodeStyle.Title background={model.color}>
+                <NodeStyle.IconContainer>{icon}</NodeStyle.IconContainer>
+                <NodeStyle.TitleName>{model.name}</NodeStyle.TitleName>
+            </NodeStyle.Title>
+            <PortsComponent />
+        </NodeStyle.Node>
 }
 
 export default function Sidebar(props: SidebarProps) {
@@ -172,7 +257,7 @@ export default function Sidebar(props: SidebarProps) {
 
     useEffect(() => {
         ReactTooltip.rebuild();
-    }, [componentList])
+    }, [componentList, searchTerm])
 
     // Function to map components
     const mapComponents = (components, searchTerm) => {
@@ -191,7 +276,8 @@ export default function Sidebar(props: SidebarProps) {
                         color: componentVal.color,
                         path: componentVal.file_path,
                         docstring: componentVal.docstring,
-                        lineNo: componentVal.lineno
+                        lineNo: componentVal.lineno,
+                        variables: componentVal.variables
                     }}
                     name={componentVal.task}
                     color={componentVal.color}
@@ -306,7 +392,15 @@ export default function Sidebar(props: SidebarProps) {
                                   top: Math.max(0, position.top - currentTarget.parentNode.clientHeight),
                               };
                           }}
-                          getContent={toolTipStr => toolTipStr ? <div dangerouslySetInnerHTML={{__html: marked(toolTipStr)}} /> : null}
+                          getContent={toolTipStr => {
+                              if (toolTipStr) {
+                                  const model = JSON.parse(toolTipStr).model;
+                                  return <div style={{marginBottom: '5px'}}>
+                                      {model.docstring ? <div dangerouslySetInnerHTML={{ __html: marked(model.docstring) }} /> : null }
+                                      <NodePreview model={model} />
+                                  </div>;
+                              }
+                          }}
             />
         </Body>
     )

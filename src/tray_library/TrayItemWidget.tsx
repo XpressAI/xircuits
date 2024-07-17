@@ -92,6 +92,14 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 			}
 		};
 
+		let toolTip = {}
+		if(!(this.props.model.name.startsWith("Literal ") || this.props.model.name.startsWith("Get Argument "))) {
+			toolTip = {
+				"data-for": "sidebar-tooltip",
+				"data-tip": JSON.stringify({ model: this.props.model })
+			}
+		}
+
 		return (
 			<Tray
 				color={this.props.color || "white"}
@@ -123,14 +131,11 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 					}
 					this.forceUpdate();
 				}}
-				className="tray-item">
+				className="tray-item"
+				{...toolTip}
+			>
 				{getNodeIcon(this.props.model.type)}
 				<span>{this.props.name}</span>
-				{!this.props.model.docstring ? null :
-					<i data-for="sidebar-tooltip" data-tip={this.props.model.docstring}>
-						<infoIcon.react />
-					</i>
-				}
 			</Tray>
 		);
 	}

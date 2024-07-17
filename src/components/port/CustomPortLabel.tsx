@@ -13,7 +13,7 @@ export interface CustomPortLabelProps {
 	app: JupyterFrontEnd;
 }
 
-namespace S {
+export namespace S {
 	export const PortLabel = styled.div`
 		display: flex;
 		margin-top: 1px;
@@ -125,23 +125,7 @@ const PortLabel = ({nodeType, port}) => {
 	);
 }
 
-export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
-	render() {
-		let portName = this.props.port.getOptions().name;
-		let portType;
-		let symbolLabel;
-		let isOutPort;
-		if(portName.includes('parameter-out')){
-			portType = portName.split("-")[2];
-			isOutPort = true;
-		} else {
-			portType = portName.split("-")[1];
-		}
-		if (portType.includes(',')) {
-			portType = 'union';
-		}
-
-		const symbolMap = {
+export const symbolMap = {
 			"string": '" "',
 			"int": ' 1',
 			"float": '1.0',
@@ -159,6 +143,22 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 			"0": null,
 			"flow": null
 		};
+
+export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
+	render() {
+		let portName = this.props.port.getOptions().name;
+		let portType;
+		let symbolLabel;
+		let isOutPort;
+		if(portName.includes('parameter-out')){
+			portType = portName.split("-")[2];
+			isOutPort = true;
+		} else {
+			portType = portName.split("-")[1];
+		}
+		if (portType.includes(',')) {
+			portType = 'union';
+		}
 		
 		if (portType in symbolMap) {
 			symbolLabel = symbolMap[portType];

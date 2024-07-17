@@ -2,6 +2,8 @@ from xai_components.base import InArg, OutArg, InCompArg, Component, BaseCompone
 
 @xai_component(type='branch')
 class BranchComponent(Component):
+    """ This is a Branch Component
+    """
     when_true: BaseComponent
     when_false: BaseComponent
 
@@ -78,6 +80,7 @@ class ForEach(Component):
 
 @xai_component
 class CounterComponent(Component):
+    "This is a counter component"
     start_number: InArg[int]
     step: InArg[int]
     out_number: OutArg[int]

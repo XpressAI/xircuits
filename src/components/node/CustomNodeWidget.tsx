@@ -134,7 +134,7 @@ export interface DefaultNodeProps {
     shell: ILabShell;
 }
 
-const getNodeIcon = (type) => {
+export const getNodeIcon = (type) => {
     switch (type) {
         case 'Start':
         case 'startFinish':
