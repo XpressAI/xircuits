@@ -1,5 +1,5 @@
 import { ComponentList, refreshComponentListCache } from "./Component";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { TrayItemWidget } from "./TrayItemWidget";
 import { TrayWidget } from "./TrayWidget";
@@ -192,7 +192,6 @@ export default function Sidebar(props: SidebarProps) {
 
     useEffect(() => {
         ReactTooltip.rebuild();
-
     }, [componentList, searchTerm, {displayNodesInLibrary}])
 
     const menu = new MenuSvg({ commands: app.commands });
@@ -205,6 +204,15 @@ export default function Sidebar(props: SidebarProps) {
       menu.open(bbox.x, bbox.bottom);
     }
 
+
+    const tooltipRef = useRef(null)
+    useEffect(() => {
+        console.log("ref", tooltipRef.current);
+        app.shell.node.appendChild(tooltipRef.current);
+        return () => {
+            app.shell.node.removeChild(tooltipRef.current);
+        }
+    }, []);
 
     // Function to map components
     const mapComponents = (components, searchTerm) => {
@@ -342,21 +350,15 @@ export default function Sidebar(props: SidebarProps) {
             refreshTrigger={handleRefreshOnClick}
             onClose={closeContextMenu}
           />
-          <ReactTooltip id="sidebar-tooltip" clickable type="dark" place="top" effect="solid"
+          <div ref={tooltipRef}>
+              <ReactTooltip id="sidebar-tooltip" clickable type="dark" place="top" effect="solid"
                         delayShow={300}
-                        overridePosition={(position, currentEvent, currentTarget, refNode, place, desiredPlace, effect, offset) => {
-                            return {
-                                left: 0,
-                                //@ts-ignore
-                                top: Math.max(0, position.top - 20),
-                            };
-                        }}
                         getContent={toolTipStr => {
                             if (toolTipStr) {
                                 const model = JSON.parse(toolTipStr).model;
                                 if(!model.docstring && displayNodesInLibrary) return null;
 
-                                return <div style={{ marginBottom: '5px' }}>
+                                return <div style={{ maxWidth: "50vw", marginBottom: "20px" }}>
                                     {model.docstring ?
                                       <div dangerouslySetInnerHTML={{ __html: marked(model.docstring) }} /> : null}
                                     {displayNodesInLibrary ? null : <NodePreview model={model} />}
@@ -364,6 +366,7 @@ export default function Sidebar(props: SidebarProps) {
                             }
                         }}
           />
+          </div>
       </Body>
     )
 };

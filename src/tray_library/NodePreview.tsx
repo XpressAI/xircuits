@@ -76,7 +76,8 @@ export function NodePreview(props: { model: any }) {
   };
 
 
-  return <NodeStyle.Node
+  return <div style={{maxWidth: "300px"}}>
+    <NodeStyle.Node
     borderColor={model.color}
     selected={false}
     background={null}
@@ -88,5 +89,6 @@ export function NodePreview(props: { model: any }) {
       <NodeStyle.TitleName>{model.name}</NodeStyle.TitleName>
     </NodeStyle.Title>
     <PortsComponent />
-  </NodeStyle.Node>;
+  </NodeStyle.Node>
+  </div>;
 }
