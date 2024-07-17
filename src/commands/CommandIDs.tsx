@@ -34,5 +34,6 @@ export const commandIDs = {
   outputMsg: "Xircuit-log:logOutputMessage",
   executeToOutputPanel: "Xircuit-output-panel:execute",
   createNewComponentLibrary: "Xircuit-editor:new-component-library",
-  refreshComponentList: "xircuits-sidebar:refresh-component-list"
+  refreshComponentList: "xircuits-sidebar:refresh-component-list",
+  toggleDisplayNodesInLibrary: "xircuits-sidebar:toggle-display-nodes-in-library"
 };

@@ -1,27 +1,28 @@
-import { ComponentList, refreshComponentListCache } from './Component';
-import React, { useEffect, useState } from 'react';
-import styled from '@emotion/styled';
-import { TrayItemWidget } from './TrayItemWidget';
-import { TrayWidget } from './TrayWidget';
-import { JupyterFrontEnd } from '@jupyterlab/application';
+import { ComponentList, refreshComponentListCache } from "./Component";
+import React, { useEffect, useState } from "react";
+import styled from "@emotion/styled";
+import { TrayItemWidget } from "./TrayItemWidget";
+import { TrayWidget } from "./TrayWidget";
+import { JupyterFrontEnd } from "@jupyterlab/application";
 
 import {
     Accordion,
     AccordionItem,
-    AccordionItemHeading,
     AccordionItemButton,
+    AccordionItemHeading,
     AccordionItemPanel
 } from "react-accessible-accordion";
 
-import { XircuitsFactory } from '../XircuitsFactory';
-import TrayContextMenu from '../context-menu/TrayContextMenu';
+import { XircuitsFactory } from "../XircuitsFactory";
+import TrayContextMenu from "../context-menu/TrayContextMenu";
 
-import '../../style/ContextMenu.css'
-import { ComponentLibraryConfig, refreshComponentLibraryConfigCache } from './ComponentLibraryConfig';
+import "../../style/ContextMenu.css";
+import { ComponentLibraryConfig, refreshComponentLibraryConfigCache } from "./ComponentLibraryConfig";
 import ReactTooltip from "react-tooltip";
-import { marked } from 'marked';
-import { S as NodeStyle, getNodeIcon } from "../components/node/CustomNodeWidget";
-import { S as PortStyle, symbolMap} from "../components/port/CustomPortLabel";
+import { marked } from "marked";
+import { MenuSvg } from "@jupyterlab/ui-components";
+import { commandIDs } from "../commands/CommandIDs";
+import { NodePreview } from "./NodePreview";
 
 export const Body = styled.div`
   flex-grow: 1;
@@ -86,91 +87,7 @@ async function fetchComponent(componentList) {
     return displayHeaderList;
 }
 
-function NodePreview(props: {model: any}){
-    const {model} = props;
-    let icon = getNodeIcon(model.type === 'xircuits_workflow' ? "workflow" : model.type)
-    const PortComponent = (props) => {
-        const isInPort = props.direction === "in";
-        const isOutPort = props.direction === "out";
-
-        const label = <PortStyle.Label style={{textAlign: isInPort ? "left": "right"}}>
-            {props.port.name}
-        </PortStyle.Label>;
-
-        let port = null;
-        let symbolLabel = null;
-        if(["BaseComponent", "OutFlow"].includes(props.port.kind)) {
-            port = <PortStyle.Port isOutPort={isOutPort} hasLinks={false}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M9 12h12" />
-                    <path d="M17 16l4 -4l-4 -4" />
-                    <path d="M12 3a9 9 0 1 0 0 18" />
-                </svg>
-            </PortStyle.Port>;
-        } else if(props.port.kind === "InFlow"){
-            port = <PortStyle.Port isOutPort={isOutPort} hasLinks={false}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M3 12h12" />
-                    <path d="M11 8l4 4l-4 4" />
-                    <path d="M12 21a9 9 0 0 0 0 -18" />
-                </svg>
-            </PortStyle.Port>
-        }else{
-            // TODO: Get rid of the remapping by using compatible type names everywhere
-            let type_name_remappings = {
-                "bool": "boolean",
-                "str": "string"
-            }
-             symbolLabel = symbolMap[type_name_remappings[props.port.type] || props.port.type] || '◎';
-        }
-
-        const symbol = <PortStyle.SymbolContainer symbolType={symbolLabel} selected={false} isOutPort={isOutPort}>
-            <PortStyle.Symbol isOutPort={isOutPort} selected={false}>
-                {symbolLabel}
-            </PortStyle.Symbol>
-        </PortStyle.SymbolContainer>
-
-        return <PortStyle.PortLabel>
-            {isOutPort ? label : null}
-            <div>{port == null ? symbol : port}</div>
-            {isInPort ? label : null}
-        </PortStyle.PortLabel>;
-    }
-    const PortsComponent = () => {
-        const inPorts = model.variables.filter(v => ['InArg', 'InCompArg'].includes(v.kind))
-        const outPorts = model.variables.filter(v => !['InArg', 'InCompArg'].includes(v.kind))
-
-        outPorts.unshift({ name: "", kind: "OutFlow" })
-        if(model.type !== "Start"){
-            inPorts.unshift({ name: "", kind: "InFlow" });
-        }
-
-        return <NodeStyle.Ports>
-            <NodeStyle.PortsContainer>{inPorts.map(p => <PortComponent port={p} direction="in" key={p.name}/>)}</NodeStyle.PortsContainer>
-            <NodeStyle.PortsContainer>{outPorts.map(p => <PortComponent port={p} direction="out" key={p.name}/>)}</NodeStyle.PortsContainer>
-        </NodeStyle.Ports>
-    }
-
-
-    return <NodeStyle.Node
-            borderColor={model.color}
-            selected={false}
-            background={null}
-            className={model.type === 'xircuits_workflow' ? "workflow-node" : null}
-            style={{backgroundColor: 'black'}}
-        >
-            <NodeStyle.Title background={model.color}>
-                <NodeStyle.IconContainer>{icon}</NodeStyle.IconContainer>
-                <NodeStyle.TitleName>{model.name}</NodeStyle.TitleName>
-            </NodeStyle.Title>
-            <PortsComponent />
-        </NodeStyle.Node>
-}
-
 export default function Sidebar(props: SidebarProps) {
-    
     const app = props.app
     const factory = props.factory
 
@@ -179,6 +96,14 @@ export default function Sidebar(props: SidebarProps) {
     const [remoteLibList, setRemoteLibList] = React.useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [runOnce, setRunOnce] = useState(false);
+    const [displayNodesInLibrary, setDisplayNodesInLibrary] = React.useState(() => {
+        const initial = localStorage.getItem("displayNodesInLibrary");
+        if(initial){
+            return JSON.parse(initial);
+        }else{
+            return false;
+        }
+    });
 
     let handleOnChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setSearchTerm("");
@@ -234,9 +159,19 @@ export default function Sidebar(props: SidebarProps) {
 
         factory.refreshComponentsSignal.connect(refreshComponents);
 
+        const toggleDisplayNodes = () => {
+            setDisplayNodesInLibrary((prevState) => {
+                const newState = !prevState;
+                localStorage.setItem("displayNodesInLibrary", JSON.stringify(newState));
+                return newState;
+            })
+        }
+        factory.toggleDisplayNodesInLibrary.connect(toggleDisplayNodes);
+
         // Return a cleanup function to unsubscribe
         return () => {
             factory.refreshComponentsSignal.disconnect(refreshComponents);
+            factory.toggleDisplayNodesInLibrary.disconnect(toggleDisplayNodes);
         };
     }, []);
 
@@ -257,7 +192,18 @@ export default function Sidebar(props: SidebarProps) {
 
     useEffect(() => {
         ReactTooltip.rebuild();
-    }, [componentList, searchTerm])
+    }, [componentList, searchTerm, {displayNodesInLibrary}])
+
+    const menu = new MenuSvg({ commands: app.commands });
+    // Add commands to the menu
+    menu.addItem({ command: commandIDs.refreshComponentList });
+    menu.addItem({ command: commandIDs.toggleDisplayNodesInLibrary });
+
+    function showMenu(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
+      const bbox = e.currentTarget.getBoundingClientRect();
+      menu.open(bbox.x, bbox.bottom);
+    }
+
 
     // Function to map components
     const mapComponents = (components, searchTerm) => {
@@ -283,7 +229,9 @@ export default function Sidebar(props: SidebarProps) {
                     color={componentVal.color}
                     app={props.app}
                     path={componentVal.file_path}
-                    lineNo= {componentVal.lineno} />
+                    lineNo={componentVal.lineno}
+                    displayNode={displayNodesInLibrary}
+                />
             </div>
         ));
     }
@@ -347,61 +295,71 @@ export default function Sidebar(props: SidebarProps) {
     };
 
     return (
-        <Body>
-            <Content>
-                <TrayWidget>
-                    <div>
-                        <div className="search-input">
-                        <input type="text" name="" value={searchTerm} placeholder="SEARCH" className="search-input__text-input" style={{ width: "75%" }} onChange={handleOnChange} />
-                            <a onClick={handleSearchOnClick} className="search-input__button"><i className="fa fa-search "></i></a>
-                            <a onClick={handleRefreshOnClick} className="search-input__button"><i className="fa fa-refresh "></i></a>
-                         </div>
-                        {searchTerm === "" ? (
-                            <>
-                                <Accordion allowMultipleExpanded={true} allowZeroExpanded={true}>
-                                    {mapCategories(category, componentList)}
-                                </Accordion>
-                                
-                                <hr style={{ marginTop: '10px', marginBottom: '10px' }} />
-                                <h6 style={{ paddingLeft: '10px', margin: '0px', marginBottom: '8px' }}>AVAILABLE FOR INSTALLATION</h6>
-                                <Accordion>
-                                    {mapRemoteLibraries()}
-                                </Accordion>
-                            </>
-                        ) : (
-                            mapComponents(componentList, searchTerm)
-                        )}
-                    </div>
-                </TrayWidget>
-            </Content>
-            <TrayContextMenu
-                app={app}
-                x={contextMenuState.x}
-                y={contextMenuState.y}
-                visible={contextMenuState.visible}
-                libraryName={contextMenuState.libraryName}
-                status={contextMenuState.status}
-                refreshTrigger={handleRefreshOnClick}
-                onClose={closeContextMenu}
-            />
-            <ReactTooltip id="sidebar-tooltip" clickable type="dark" place="top" effect="solid"
-                          overridePosition={(position, currentEvent, currentTarget, refNode, place, desiredPlace, effect, offset) => {
-                              return {
-                                  left: 0,
-                                  //@ts-ignore
-                                  top: Math.max(0, position.top - currentTarget.parentNode.clientHeight),
-                              };
-                          }}
-                          getContent={toolTipStr => {
-                              if (toolTipStr) {
-                                  const model = JSON.parse(toolTipStr).model;
-                                  return <div style={{marginBottom: '5px'}}>
-                                      {model.docstring ? <div dangerouslySetInnerHTML={{ __html: marked(model.docstring) }} /> : null }
-                                      <NodePreview model={model} />
-                                  </div>;
-                              }
-                          }}
-            />
-        </Body>
+      <Body>
+          <Content>
+              <TrayWidget>
+                  <div>
+                      <div className="sidebar-header">
+                          <div className="search-input">
+                              <a onClick={handleSearchOnClick} className="search-input__button"><i
+                                className="fa fa-search "></i></a>
+                              <input type="text" name="" value={searchTerm} placeholder="SEARCH"
+                                     className="search-input__text-input" style={{ width: "75%" }}
+                                     onChange={handleOnChange} />
+                          </div>
+                          <a onClick={showMenu} className="button" title="Options"><i
+                            className="fa fa-ellipsis-h "></i></a>
+                      </div>
+                      {searchTerm === "" ? (
+                        <>
+                            <Accordion allowMultipleExpanded={true} allowZeroExpanded={true}>
+                                {mapCategories(category, componentList)}
+                            </Accordion>
+
+                            <hr style={{ marginTop: "10px", marginBottom: "10px" }} />
+                            <h6 style={{ paddingLeft: "10px", margin: "0px", marginBottom: "8px" }}>AVAILABLE FOR
+                                INSTALLATION</h6>
+                            <Accordion>
+                                {mapRemoteLibraries()}
+                            </Accordion>
+                        </>
+                      ) : (
+                        mapComponents(componentList, searchTerm)
+                      )}
+                  </div>
+              </TrayWidget>
+          </Content>
+          <TrayContextMenu
+            app={app}
+            x={contextMenuState.x}
+            y={contextMenuState.y}
+            visible={contextMenuState.visible}
+            libraryName={contextMenuState.libraryName}
+            status={contextMenuState.status}
+            refreshTrigger={handleRefreshOnClick}
+            onClose={closeContextMenu}
+          />
+          <ReactTooltip id="sidebar-tooltip" clickable type="dark" place="top" effect="solid"
+                        overridePosition={(position, currentEvent, currentTarget, refNode, place, desiredPlace, effect, offset) => {
+                            return {
+                                left: 0,
+                                //@ts-ignore
+                                top: Math.max(0, position.top - 20),
+                            };
+                        }}
+                        getContent={toolTipStr => {
+                            if (toolTipStr) {
+                                const model = JSON.parse(toolTipStr).model;
+                                if(!model.docstring && displayNodesInLibrary) return null;
+
+                                return <div style={{ marginBottom: '5px' }}>
+                                    {model.docstring ?
+                                      <div dangerouslySetInnerHTML={{ __html: marked(model.docstring) }} /> : null}
+                                    {displayNodesInLibrary ? null : <NodePreview model={model} />}
+                                </div>;
+                            }
+                        }}
+          />
+      </Body>
     )
 };

@@ -93,13 +93,12 @@
     border-radius: 7px;
     padding: 10px;
     background: #e5eaf1;
-    margin: 10px 10px 30px;
   }
   .search-input__button {
     border-radius: 7px;
     background: #e5eaf1;
     color: rgb(30, 69, 131);
-    float: right;
+    float: left;
     width: 40px;
     height: 40px;
     justify-content: center;
@@ -131,4 +130,26 @@
     width: 20px;
     height: 20px;
   }
-  
+
+ .sidebar-header {
+   display: flex;
+   gap: 0.25em;
+   align-items: stretch;
+   margin: 10px 10px 30px;
+ }
+
+ .sidebar-header > a.button {
+   cursor: pointer;
+   padding: 3px;
+   display: flex;
+   align-items: center;
+ }
+
+ .sidebar-header > a.button:hover {
+   background-color: oklch(0 0 0 / 0.1);
+ }
+
+ #sidebar-tooltip.show {
+   opacity: 1;
+   right: 0;
+ }

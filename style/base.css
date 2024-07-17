@@ -85,8 +85,3 @@ input[type=number]::-webkit-inner-spin-button {
   font-size: 18px;
   font-weight: bold;
 }
-
-#sidebar-tooltip.show {
-  opacity: 1;
-  right: 0;
-}

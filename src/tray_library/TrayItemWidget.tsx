@@ -14,6 +14,7 @@ import {
     getVariableComponentIcon,
 		infoIcon
 } from "../ui-components/icons";
+import { NodePreview } from "./NodePreview";
 
 export interface TrayItemWidgetProps {
 	model: any;
@@ -22,6 +23,7 @@ export interface TrayItemWidgetProps {
 	path: string;
 	app: JupyterFrontEnd;
 	lineNo: number;
+	displayNode: boolean
 }
 
 interface TrayStyledProps {
@@ -52,6 +54,10 @@ export const Tray = styled.div<TrayStyledProps>`
 	}
 `;
 
+export const TrayNode = styled.div`
+	margin-bottom: 7px;
+`
+
 export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 	render() {
 		const getNodeIcon = (type) => {
@@ -81,16 +87,23 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 			}
 		};
 
+		const isComponent = !(this.props.model.name.startsWith("Literal ") || this.props.model.name.startsWith("Get Argument "));
 		let toolTip = {}
-		if(!(this.props.model.name.startsWith("Literal ") || this.props.model.name.startsWith("Get Argument "))) {
+
+		if(isComponent) {
 			toolTip = {
 				"data-for": "sidebar-tooltip",
 				"data-tip": JSON.stringify({ model: this.props.model })
 			}
 		}
 
+		let TrayComponent = Tray;
+		if(this.props.displayNode){
+			TrayComponent = TrayNode;
+		}
+
 		return (
-			<Tray
+			<TrayComponent
 				color={this.props.color || "white"}
 				draggable={true}
 				onDragStart={(event) => {
@@ -123,9 +136,11 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 				className="tray-item"
 				{...toolTip}
 			>
-				{getNodeIcon(this.props.model.type)}
-				<span>{this.props.name}</span>
-			</Tray>
+				{this.props.displayNode ? <NodePreview model={this.props.model} /> : <>
+					{getNodeIcon(this.props.model.type)}
+					<span>{this.props.name}</span>
+				</>}
+			</TrayComponent>
 		);
 	}
 }
