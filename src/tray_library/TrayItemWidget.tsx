@@ -50,17 +50,6 @@ export const Tray = styled.div<TrayStyledProps>`
 	& > span {
 		flex-grow: 1;
 	}
-	& > i {
-		border: 1px solid ${(p) => p.color};
-		border-radius: 999px;
-		display: block;
-		overflow: hidden;
-		height: 16px;
-		width: 16px;
-		&:hover {
-			background-color: ${(p) => p.color};
-		}
-	}
 `;
 
 export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
