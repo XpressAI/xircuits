@@ -25,6 +25,7 @@ export namespace S {
 		flex-grow: 1;
 		white-space: pre-wrap; // Preserve line breaks and wrap text to the next line
 		overflow:hidden;
+		text-overflow: ellipsis;
 		max-width: 40ch;
 	`;
 

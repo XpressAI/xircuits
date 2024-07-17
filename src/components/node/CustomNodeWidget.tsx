@@ -110,6 +110,7 @@ export namespace S {
 
     export const PortsContainer = styled.div`
         max-width: 640px;
+        min-width: 0;
         white-space: pre;
         flex-grow: 1;
         display: flex;
