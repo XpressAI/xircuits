@@ -351,7 +351,7 @@ export default function Sidebar(props: SidebarProps) {
             onClose={closeContextMenu}
           />
           <div ref={tooltipRef}>
-              <ReactTooltip id="sidebar-tooltip" clickable type="dark" place="right" effect="solid"
+              <ReactTooltip id="sidebar-tooltip" type="dark" place="right" effect="solid"
                         delayShow={300}
                         getContent={toolTipStr => {
                             if (toolTipStr) {

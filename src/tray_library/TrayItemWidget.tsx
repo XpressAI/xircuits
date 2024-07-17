@@ -15,6 +15,7 @@ import {
 		infoIcon
 } from "../ui-components/icons";
 import { NodePreview } from "./NodePreview";
+import ReactTooltip from "react-tooltip";
 
 export interface TrayItemWidgetProps {
 	model: any;
@@ -23,7 +24,7 @@ export interface TrayItemWidgetProps {
 	path: string;
 	app: JupyterFrontEnd;
 	lineNo: number;
-	displayNode: boolean
+	displayNode: boolean;
 }
 
 interface TrayStyledProps {
@@ -59,6 +60,8 @@ export const TrayNode = styled.div`
 `
 
 export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
+	ref: HTMLDivElement;
+
 	render() {
 		const getNodeIcon = (type) => {
 			switch (type) {
@@ -106,7 +109,9 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 			<TrayComponent
 				color={this.props.color || "white"}
 				draggable={true}
+				ref={ref => this.ref = ref}
 				onDragStart={(event) => {
+					ReactTooltip.hide(this.ref);
 					event.dataTransfer.setData('storm-diagram-node', JSON.stringify(this.props.model));
 					this.forceUpdate();
 				}}
