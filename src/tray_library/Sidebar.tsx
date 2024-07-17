@@ -101,7 +101,7 @@ export default function Sidebar(props: SidebarProps) {
         if(initial){
             return JSON.parse(initial);
         }else{
-            return false;
+            return true;
         }
     });
 
@@ -192,6 +192,7 @@ export default function Sidebar(props: SidebarProps) {
 
     useEffect(() => {
         ReactTooltip.rebuild();
+
     }, [componentList, searchTerm, {displayNodesInLibrary}])
 
     const menu = new MenuSvg({ commands: app.commands });
