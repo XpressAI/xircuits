@@ -76,7 +76,7 @@ export function NodePreview(props: { model: any }) {
   };
 
 
-  return <div style={{maxWidth: "300px"}}>
+  return <div style={{maxWidth: "300px", margin: "auto"}}>
     <NodeStyle.Node
     borderColor={model.color}
     selected={false}
