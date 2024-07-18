@@ -24,6 +24,8 @@ import { marked } from "marked";
 import { MenuSvg } from "@jupyterlab/ui-components";
 import { commandIDs } from "../commands/CommandIDs";
 import { NodePreview } from "./NodePreview";
+import { ellipsesIcon } from "@jupyterlab/ui-components";
+
 
 export const Body = styled.div`
   flex-grow: 1;
@@ -249,7 +251,7 @@ export default function Sidebar(props: SidebarProps) {
                           title="More actions..."
                           className="button"
                           onClick={(event) => showContextMenu(event, libraryName["task"], "installed")}>
-                            <i className="fa fa-ellipsis-h"></i>
+                            <ellipsesIcon.react />
                         </a>}
                     </AccordionItemButton>
                 </AccordionItemHeading>
@@ -271,7 +273,7 @@ export default function Sidebar(props: SidebarProps) {
                             <a className="button"
                                title="More actions..."
                                onClick={(event) => showContextMenu(event, lib.library_id, 'remote')}>
-                                <i className="fa fa-ellipsis-h"></i>
+                                <ellipsesIcon.react />
                             </a>
                     </AccordionItemButton>
                 </AccordionItemHeading>
@@ -323,8 +325,9 @@ export default function Sidebar(props: SidebarProps) {
                                      className="search-input__text-input" style={{ width: "75%" }}
                                      onChange={handleOnChange} />
                           </div>
-                          <a onClick={showMenu} className="button" title="More actions..."><i
-                            className="fa fa-ellipsis-h "></i></a>
+                          <a onClick={showMenu} className="button" title="More actions...">
+                              <ellipsesIcon.react />
+                          </a>
                       </div>
                       {searchTerm === "" ? (
                         <>
