@@ -24,22 +24,40 @@ docker-compose -f ../end-to-end-tests/docker-compose.yml --env-file ./ui-tests/.
 docker-compose -f ../end-to-end-tests/docker-compose.yml --env-file ./ui-tests/.env down
 ```
 
-## Test locally
 
-1. Compile the extension:
 
-```
-jlpm install
-jlpm run build:prod
-```
+## Test Xircuits locally
 
-2. Start JupyterLab _with the extension installed_ without any token or password
+1. Ensure that you have Xircuits installed. If you're developing core features, ensure that you've installed your changes.
 
 ```
-jupyter lab --ServerApp.token= --ServerApp.password=
+# Install package in development mode
+pip install -e .
+# Link your development version of the extension with JupyterLab
+jupyter labextension develop . --overwrite
+# Enable the server extension
+jupyter server extension enable xircuits
 ```
 
-3. Execute in another console the [Playwright](https://playwright.dev/docs/intro) tests:
+Otherwise a simple 
+```
+pip install xircuits
+```
+will suffice. 
+
+2. Install the Test Component Library
+
+```
+xircuits install tests
+```
+
+3. Start JupyterLab _with the extension installed_ without any token or password
+
+```
+jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset
+```
+
+4. Execute in another console the [Playwright](https://playwright.dev/docs/intro) tests:
 
 ```
 cd ui-tests
@@ -47,6 +65,7 @@ jlpm install
 npx playwright install
 npx playwright test
 ```
+
 
 # Create tests
 
