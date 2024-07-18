@@ -1,5 +1,6 @@
 import { ComponentList, refreshComponentListCache } from "./Component";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
+import ReactDOM from 'react-dom';
 import styled from "@emotion/styled";
 import { TrayItemWidget } from "./TrayItemWidget";
 import { TrayWidget } from "./TrayWidget";
@@ -206,15 +207,6 @@ export default function Sidebar(props: SidebarProps) {
       menu.open(bbox.x, bbox.bottom);
     }
 
-
-    const tooltipRef = useRef(null)
-    useEffect(() => {
-        app.shell.node.appendChild(tooltipRef.current);
-        return () => {
-            app.shell.node.removeChild(tooltipRef.current);
-        }
-    }, []);
-
     // Function to map components
     const mapComponents = (components, searchTerm) => {
         return components.filter((componentVal) => {
@@ -351,7 +343,7 @@ export default function Sidebar(props: SidebarProps) {
             refreshTrigger={handleRefreshOnClick}
             onClose={closeContextMenu}
           />
-          <div ref={tooltipRef}>
+          {ReactDOM.createPortal(
               <ReactTooltip id="sidebar-tooltip" type="dark" place="right" effect="solid"
                         delayShow={300}
                         getContent={toolTipStr => {
@@ -366,8 +358,9 @@ export default function Sidebar(props: SidebarProps) {
                                 </div>;
                             }
                         }}
-          />
-          </div>
+          />,
+            document.body
+          )}
       </Body>
     )
 };
