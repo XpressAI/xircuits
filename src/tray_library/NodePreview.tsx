@@ -59,7 +59,13 @@ export function NodePreview(props: { model: any }) {
     const outPorts = model.variables.filter(v => !["InArg", "InCompArg"].includes(v.kind));
 
     if(model.name.startsWith("Literal ") || model.name.startsWith("Get Argument ")){
-      outPorts.unshift({ name: "", kind: "OutArg" });
+      let type = null;
+      if(model.name.startsWith("Literal ")){
+        type = model.name.match(/^Literal (.+)$/)[1].toLowerCase()
+      }else{
+        type = model.name.match(/^Get Argument (.+) Name$/)[1].toLowerCase()
+      }
+      outPorts.unshift({ name: "", kind: "OutArg", type: type });
     }else{
       outPorts.unshift({ name: "", kind: "OutFlow" });
       if (model.type !== "Start") {
