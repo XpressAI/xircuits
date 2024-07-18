@@ -103,7 +103,7 @@ test('Test editing literal nodes', async ({ page, browserName }) => {
   await page.locator('div').filter({ hasText: /^Select a rolesystemuserassistantfunctionRemovedef$/ }).getByRole('button').click();
   await page.locator('select[name="role"]').selectOption('user');
   await page.locator('select[name="role"]').click();
-  await page.getByText('abc', { exact: true }).fill('updated user message');
+  await page.locator('textarea[name="content"]').filter({ hasText: 'abc' }).fill('updated user message');
   await page.getByRole('button', { name: 'Add Message' }).click();
   await page.getByRole('combobox').nth(2).selectOption('assistant');
   await page.getByRole('textbox').nth(2).click();

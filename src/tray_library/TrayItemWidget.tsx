@@ -11,7 +11,11 @@ import {
     startFinishComponentIcon, 
     variableComponentIcon, 
     setVariableComponentIcon, 
-    getVariableComponentIcon } from "../ui-components/icons";
+    getVariableComponentIcon,
+		infoIcon
+} from "../ui-components/icons";
+import { NodePreview } from "./NodePreview";
+import ReactTooltip from "react-tooltip";
 
 export interface TrayItemWidgetProps {
 	model: any;
@@ -20,6 +24,7 @@ export interface TrayItemWidgetProps {
 	path: string;
 	app: JupyterFrontEnd;
 	lineNo: number;
+	displayNode: boolean;
 }
 
 interface TrayStyledProps {
@@ -45,9 +50,18 @@ export const Tray = styled.div<TrayStyledProps>`
 		height: 16px;
 		width: 16px;
 	}
+	& > span {
+		flex-grow: 1;
+	}
 `;
 
+export const TrayNode = styled.div`
+	margin-bottom: 7px;
+`
+
 export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
+	ref: HTMLDivElement;
+
 	render() {
 		const getNodeIcon = (type) => {
 			switch (type) {
@@ -76,11 +90,28 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 			}
 		};
 
+		const isComponent = !(this.props.model.name.startsWith("Literal ") || this.props.model.name.startsWith("Get Argument "));
+		let toolTip = {}
+
+		if(isComponent) {
+			toolTip = {
+				"data-for": "sidebar-tooltip",
+				"data-tip": JSON.stringify({ model: this.props.model })
+			}
+		}
+
+		let TrayComponent = Tray;
+		if(this.props.displayNode){
+			TrayComponent = TrayNode;
+		}
+
 		return (
-			<Tray
+			<TrayComponent
 				color={this.props.color || "white"}
 				draggable={true}
+				ref={ref => this.ref = ref}
 				onDragStart={(event) => {
+					ReactTooltip.hide(this.ref);
 					event.dataTransfer.setData('storm-diagram-node', JSON.stringify(this.props.model));
 					this.forceUpdate();
 				}}
@@ -107,10 +138,14 @@ export class TrayItemWidget extends React.Component<TrayItemWidgetProps> {
 					}
 					this.forceUpdate();
 				}}
-				className="tray-item">
-				{getNodeIcon(this.props.model.type)}
-				{this.props.name}
-			</Tray>
+				className="tray-item"
+				{...toolTip}
+			>
+				{this.props.displayNode ? <NodePreview model={this.props.model} /> : <>
+					{getNodeIcon(this.props.model.type)}
+					<span>{this.props.name}</span>
+				</>}
+			</TrayComponent>
 		);
 	}
 }

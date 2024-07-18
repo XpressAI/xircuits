@@ -24,23 +24,26 @@ import {
     setVariableComponentIcon, 
     getVariableComponentIcon } from '../../ui-components/icons';
 import  circuitBoardSvg from '../../../style/icons/circuit-board-bg.svg';
+import { LegacyRef, MutableRefObject } from "react";
 
 
 
-var S;
-(function (S) {
-
-    S.Node = styled.div<{ borderColor: string, background: string; selected: boolean; }>`
+export namespace S {
+    export const Node = styled.div<{ borderColor: string, background: string; selected: boolean; }>`
         box-shadow: 1px 1px 10px ${(p) => p.selected ? '3px rgb(0 192 255 / 0.5)' : '0px rgb(0 0 0 / 0.5)'};
+        cursor: grab;
         border-radius: 5px;
         font-family: sans-serif;
         color: white;
         overflow: visible;
         font-size: 11px;
         border: solid 1px ${(p) => (p.selected ? (p.borderColor == undefined ? 'rgb(0,192,255)' : p.borderColor) : 'black')};
+        & .grabbing {
+            cursor: grabbing;
+        }
     `;
 
-    S.Title = styled.div<{ background: string; }>`
+    export const Title = styled.div<{ background: string; }>`
         background-image: ${(p) => {
             const color = new Color(p.background);
             color.alpha = 0.75;
@@ -61,12 +64,12 @@ var S;
         border-top-right-radius: 5px;
     `;
 
-    S.TitleName = styled.div`
+    export const TitleName = styled.div`
         flex-grow: 1;
         padding: 5px 5px 5px 5px;
     `;
 
-    S.IconContainer = styled.div`
+    export const IconContainer = styled.div`
         padding: 5px 5px 5px 5px;
         display: flex;
         align-items: center;
@@ -79,7 +82,7 @@ var S;
         }
     `;
 
-    S.CommentContainer = styled.div<{ selected: boolean; }>`
+    export const CommentContainer = styled.div<{ selected: boolean; }>`
         background: rgba(0, 0, 0, 0.3);
         border-radius: 5px;
         font-family: sans-serif;
@@ -90,7 +93,7 @@ var S;
         padding: 5px;
     `;
 
-    S.DescriptionName = styled.div<{ color: string }>`
+    export const DescriptionName = styled.div<{ color: string }>`
         color: ${(p) => p.color ?? 'rgb(0, 0, 0)'};
         text-align: justify;
         font-family: 'Roboto', sans-serif;
@@ -98,7 +101,7 @@ var S;
         font-size: 13px;
     `;
 
-    S.Ports = styled.div`
+    export const Ports = styled.div`
         display: flex;
         background-image: linear-gradient(oklch(10% 0 0 / 0.7), oklch(10% 0 0 / 0.9));
         border-bottom-left-radius: 5px;
@@ -109,8 +112,9 @@ var S;
         }
     `;
 
-    S.PortsContainer = styled.div`
+    export const PortsContainer = styled.div`
         max-width: 640px;
+        min-width: 0;
         white-space: pre;
         flex-grow: 1;
         display: flex;
@@ -125,10 +129,9 @@ var S;
         }
     `;
 
-    S.WorkflowNode = styled(S.Node)`
+    export const WorkflowNode = styled(S.Node)`
     `;
-})(S || (S = {}));
-
+}
 export interface DefaultNodeProps {
     node: DefaultNodeModel;
     engine: DiagramEngine;
@@ -136,7 +139,7 @@ export interface DefaultNodeProps {
     shell: ILabShell;
 }
 
-const getNodeIcon = (type) => {
+export const getNodeIcon = (type) => {
     switch (type) {
         case 'Start':
         case 'startFinish':
@@ -163,6 +166,14 @@ const getNodeIcon = (type) => {
     }
 };
 
+function addGrabbing(e){
+  e.target.classList.add('grabbing');
+}
+
+function removeGrabbing(e){
+  e.target.classList.remove('grabbing');
+}
+
 const CommentNode = ({ node }) => {
     const [commentInput, setCommentInput] = React.useState(node['extras']['commentInput']);
 
@@ -183,7 +194,7 @@ const CommentNode = ({ node }) => {
     };
 
     return (
-        <S.CommentContainer onDoubleClick={handleEditComment} selected={node.isSelected()}>
+        <S.CommentContainer onDoubleClick={handleEditComment} selected={node.isSelected()} onMouseDown={addGrabbing} onMouseUp={removeGrabbing}>
             <S.TitleName><b>{node.getOptions().name}</b></S.TitleName>
             <div className='comment-component-content'>
                 {commentInput}
@@ -219,6 +230,7 @@ const ParameterNode = ({ node, engine, app }) => {
 
     return (
         <S.Node
+            onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
             borderColor={node.getOptions().extras["borderColor"]}
             data-default-node-name={node.getOptions().name}
             selected={node.isSelected()}
@@ -237,6 +249,7 @@ const ParameterNode = ({ node, engine, app }) => {
 
 const StartFinishNode = ({ node, engine, handleDeletableNode, app }) => (
     <S.Node
+        onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
         borderColor={node.getOptions().extras["borderColor"]}
         data-default-node-name={node.getOptions().name}
         selected={node.isSelected()}
@@ -255,11 +268,10 @@ const StartFinishNode = ({ node, engine, handleDeletableNode, app }) => (
 );
 
 const WorkflowNode = ({ node, engine, app, handleDeletableNode }) => {
-    const elementRef = React.useRef<HTMLElement>(null);
     return (
         <div style={{ position: "relative" }}>
             <S.WorkflowNode
-                ref={elementRef}
+                onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
                 data-tip data-for={node.getOptions().id}
                 borderColor={node.getOptions().extras["borderColor"]}
                 data-default-node-name={node.getOptions().name}
@@ -321,7 +333,8 @@ const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode })
                 </div>
             </div>}
             <S.Node
-                ref={elementRef}
+                onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
+                ref={(elementRef as LegacyRef<HTMLDivElement>)}
                 data-tip data-for={node.getOptions().id}
                 borderColor={node.getOptions().extras["borderColor"]}
                 data-default-node-name={node.getOptions().name}

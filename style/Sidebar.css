@@ -14,18 +14,31 @@
   }
   
   .accordion__button {
-    background-color: rgb(30, 69, 131);
-    color: #fff;
     cursor: pointer;
     padding: 10px;
     width: auto;
     text-align: left;
-    margin: 0px 10px 0px;
-    border-radius: 7px;
+    border-bottom: 1px solid oklch(0 0 0 / 0.15);
+    font-weight: 600;
+    letter-spacing: 0.025em;
+
+    display: flex;
+    align-items: center;
   }
-  
+
+  .accordion__button[aria-expanded="true"],
+  .accordion__button[aria-selected="true"] {
+    box-shadow: 0px 5px 5px 0px oklch(0 0 0 / 0.3);
+  }
+
+  .accordion__button[aria-expanded="true"] > a.button,
+  .accordion__button[aria-selected="true"] > a.button {
+    display: block;
+  }
+
+
   .accordion__button:hover {
-    background-color: rgb(36, 64, 110);
+    background: oklch(0 0 0 / 0.05);
   }
   
   .accordion__button:before {
@@ -49,20 +62,48 @@
   }
   
   .accordion__panel {
-    padding: 15px;
+    padding: 10px 15px;
     animation: fadein 0.45s ease-in;
+    border-bottom: 1px solid oklch(0 0 0 / 0.5);
   }
   
   .accordion__button--remote {
     background-color: #fff;
     color: rgb(30, 69, 131);
-    outline: 2px solid rgb(30, 69, 131); 
-    outline-offset: -2px;
+    cursor: default;
   }
-  
+
+  .accordion__button--remote > a.button {
+    display: block !important;
+  }
+
+  .accordion__button--remote:before {
+    opacity: 0;
+  }
+
   .accordion__button--remote:hover {
-    background-color: rgba(255, 255, 255, 0.8);
-    outline-color: rgba(30, 69, 131, 0.8);
+    background: oklch(1 0 0);
+  }
+
+  .accordion__button--remote[aria-expanded="true"],
+  .accordion__button--remote[aria-selected="true"]{
+    box-shadow: 0 0 0;
+  }
+
+  .accordion__button > span {
+    flex-grow: 1;
+  }
+
+  .accordion__button > a.button {
+    padding: 7px 7px;
+    margin: -7px 0;
+    height: 100%;
+    display: none;
+    cursor: pointer;
+  }
+
+  .accordion__button > a.button:hover {
+    background: oklch(0 0 0 / 0.05);
   }
 
   /* -------------------------------------------------- */
@@ -93,13 +134,13 @@
     border-radius: 7px;
     padding: 10px;
     background: #e5eaf1;
-    margin: 10px 10px 30px;
+    flex-grow: 1;
   }
   .search-input__button {
     border-radius: 7px;
     background: #e5eaf1;
     color: rgb(30, 69, 131);
-    float: right;
+    float: left;
     width: 40px;
     height: 40px;
     justify-content: center;
@@ -127,11 +168,40 @@
   .search-input__text-input {
     line-height: 20px;
   }
-  .search-input {
-    height: 20px;
-  }
   .search-input__button {
     width: 20px;
     height: 20px;
   }
-  
+
+ .sidebar-header {
+   display: flex;
+   width: 100%;
+   gap: 0.25em;
+   align-items: stretch;
+   margin: 10px 10px 15px;
+ }
+
+ .sidebar-header > a.button {
+   cursor: pointer;
+   padding: 3px;
+   display: flex;
+   align-items: center;
+   min-width: 20px;
+   margin-right: 5px;
+ }
+
+ .sidebar-header > a.button:hover {
+   background-color: oklch(0 0 0 / 0.1);
+ }
+
+ #sidebar-tooltip.show {
+   opacity: 1;
+   box-shadow: 1px 1px 10px 0px rgb(0 0 0 / 0.5);
+ }
+ .sidebar-context-menu .lm-Menu-itemIcon div {
+   display: inline-flex;
+   vertical-align: middle;
+ }
+ .tray-item {
+   cursor: pointer;
+ }
