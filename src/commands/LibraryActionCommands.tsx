@@ -10,7 +10,7 @@ import { requestAPI } from '../server/handler';
 import { checkInput } from '../helpers/InputSanitizer';
 import { XircuitsFactory } from '../XircuitsFactory';
 import { commandIDs } from "./CommandIDs";
-import { listIcon, refreshIcon } from "@jupyterlab/ui-components";
+import { addIcon, listIcon, refreshIcon } from "@jupyterlab/ui-components";
 
 /**
  * Add the commands for node actions.
@@ -51,6 +51,8 @@ export function addLibraryActionCommands(
     })
 
     commands.addCommand(commandIDs.createNewComponentLibrary, {
+        label: "Create new Component Library",
+        icon: addIcon,
         execute: async (args) => {
 
             let componentCode = args['componentCode'] as any;

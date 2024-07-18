@@ -197,6 +197,8 @@ export default function Sidebar(props: SidebarProps) {
     const menu = new MenuSvg({ commands: app.commands });
     // Add commands to the menu
     menu.addItem({ command: commandIDs.refreshComponentList });
+    menu.addItem({ command: commandIDs.createNewComponentLibrary });
+    menu.addItem({ type: "separator" });
     menu.addItem({ command: commandIDs.toggleDisplayNodesInLibrary });
 
     function showMenu(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
