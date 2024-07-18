@@ -209,7 +209,6 @@ export default function Sidebar(props: SidebarProps) {
 
     const tooltipRef = useRef(null)
     useEffect(() => {
-        console.log("ref", tooltipRef.current);
         app.shell.node.appendChild(tooltipRef.current);
         return () => {
             app.shell.node.removeChild(tooltipRef.current);
