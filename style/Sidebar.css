@@ -21,11 +21,19 @@
     border-bottom: 1px solid oklch(0 0 0 / 0.15);
     font-weight: 600;
     letter-spacing: 0.025em;
+
+    display: flex;
+    align-items: center;
   }
 
   .accordion__button[aria-expanded="true"],
   .accordion__button[aria-selected="true"] {
     box-shadow: 0px 5px 5px 0px oklch(0 0 0 / 0.3);
+  }
+
+  .accordion__button[aria-expanded="true"] > a.button,
+  .accordion__button[aria-selected="true"] > a.button {
+    display: block;
   }
 
 
@@ -62,19 +70,40 @@
   .accordion__button--remote {
     background-color: #fff;
     color: rgb(30, 69, 131);
+    cursor: default;
+  }
+
+  .accordion__button--remote > a.button {
+    display: block !important;
   }
 
   .accordion__button--remote:before {
     opacity: 0;
   }
-  
+
   .accordion__button--remote:hover {
-    background: oklch(0 0 0 / 0.05);
+    background: oklch(1 0 0);
   }
 
   .accordion__button--remote[aria-expanded="true"],
   .accordion__button--remote[aria-selected="true"]{
     box-shadow: 0 0 0;
+  }
+
+  .accordion__button > span {
+    flex-grow: 1;
+  }
+
+  .accordion__button > a.button {
+    padding: 7px 7px;
+    margin: -7px 0;
+    height: 100%;
+    display: none;
+    cursor: pointer;
+  }
+
+  .accordion__button > a.button:hover {
+    background: oklch(0 0 0 / 0.05);
   }
 
   /* -------------------------------------------------- */

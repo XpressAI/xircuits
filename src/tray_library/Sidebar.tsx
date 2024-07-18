@@ -243,7 +243,12 @@ export default function Sidebar(props: SidebarProps) {
         return categories.map((libraryName, i) => (
             <AccordionItem key={`category-${i}`}>
                 <AccordionItemHeading>
-                    <AccordionItemButton onContextMenu={(event) => handleRightClick(event, libraryName["task"], 'installed')}>{libraryName["task"]}</AccordionItemButton>
+                    <AccordionItemButton>
+                        <span>{libraryName["task"]}</span>
+                        {libraryName['task'] !== 'GENERAL' && <a className="button" onClick={(event) => showContextMenu(event, libraryName["task"], "installed")}>
+                            <i className="fa fa-ellipsis-h"></i>
+                        </a>}
+                    </AccordionItemButton>
                 </AccordionItemHeading>
                 <AccordionItemPanel>
                     {mapComponents(components.filter(component => component["category"].toString().toUpperCase() === libraryName["task"].toString()), "")}
@@ -258,9 +263,12 @@ export default function Sidebar(props: SidebarProps) {
         return sortedRemoteLibList.map((lib, i) => (
             <AccordionItem key={`remote-lib-${i}`}>
                 <AccordionItemHeading>
-                    <AccordionItemButton 
-                        className="accordion__button accordion__button--remote"
-                        onContextMenu={(event) => handleRightClick(event, lib.library_id, 'remote')}>{lib.library_id}</AccordionItemButton>
+                    <AccordionItemButton className="accordion__button accordion__button--remote">
+                            <span>{lib.library_id}</span>
+                            <a className="button" onClick={(event) => showContextMenu(event, lib.library_id, 'remote')}>
+                                <i className="fa fa-ellipsis-h"></i>
+                            </a>
+                    </AccordionItemButton>
                 </AccordionItemHeading>
             </AccordionItem>
         ));
@@ -274,8 +282,9 @@ export default function Sidebar(props: SidebarProps) {
         status: 'installed'
     });
 
-    const handleRightClick = (e, libraryName, status) => {
+    const showContextMenu = (e, libraryName, status) => {
         e.preventDefault();
+        e.stopPropagation();
 
         // Prevent context menu from appearing for GENERAL component library
         if (libraryName === 'GENERAL') {
