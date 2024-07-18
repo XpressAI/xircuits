@@ -245,7 +245,10 @@ export default function Sidebar(props: SidebarProps) {
                 <AccordionItemHeading>
                     <AccordionItemButton>
                         <span>{libraryName["task"]}</span>
-                        {libraryName['task'] !== 'GENERAL' && <a className="button" onClick={(event) => showContextMenu(event, libraryName["task"], "installed")}>
+                        {libraryName['task'] !== 'GENERAL' && <a
+                          title="More actions..."
+                          className="button"
+                          onClick={(event) => showContextMenu(event, libraryName["task"], "installed")}>
                             <i className="fa fa-ellipsis-h"></i>
                         </a>}
                     </AccordionItemButton>
@@ -265,7 +268,9 @@ export default function Sidebar(props: SidebarProps) {
                 <AccordionItemHeading>
                     <AccordionItemButton className="accordion__button accordion__button--remote">
                             <span>{lib.library_id}</span>
-                            <a className="button" onClick={(event) => showContextMenu(event, lib.library_id, 'remote')}>
+                            <a className="button"
+                               title="More actions..."
+                               onClick={(event) => showContextMenu(event, lib.library_id, 'remote')}>
                                 <i className="fa fa-ellipsis-h"></i>
                             </a>
                     </AccordionItemButton>
@@ -318,7 +323,7 @@ export default function Sidebar(props: SidebarProps) {
                                      className="search-input__text-input" style={{ width: "75%" }}
                                      onChange={handleOnChange} />
                           </div>
-                          <a onClick={showMenu} className="button" title="Options"><i
+                          <a onClick={showMenu} className="button" title="More actions..."><i
                             className="fa fa-ellipsis-h "></i></a>
                       </div>
                       {searchTerm === "" ? (
