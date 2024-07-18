@@ -105,6 +105,7 @@
     border-radius: 7px;
     padding: 10px;
     background: #e5eaf1;
+    flex-grow: 1;
   }
   .search-input__button {
     border-radius: 7px;
@@ -145,6 +146,7 @@
 
  .sidebar-header {
    display: flex;
+   width: 100%;
    gap: 0.25em;
    align-items: stretch;
    margin: 10px 10px 15px;
@@ -155,6 +157,8 @@
    padding: 3px;
    display: flex;
    align-items: center;
+   min-width: 20px;
+   margin-right: 5px;
  }
 
  .sidebar-header > a.button:hover {
