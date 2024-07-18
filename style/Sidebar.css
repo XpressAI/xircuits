@@ -169,3 +169,7 @@
    opacity: 1;
    box-shadow: 1px 1px 10px 0px rgb(0 0 0 / 0.5);
  }
+ .sidebar-context-menu .lm-Menu-itemIcon div {
+   display: inline-flex;
+   vertical-align: middle;
+ }

@@ -5,6 +5,8 @@ import { startRunOutputStr } from '../components/runner/RunOutput';
 import '../../style/ContextMenu.css';
 import { buildLocalFilePath, fetchLibraryConfig } from '../tray_library/ComponentLibraryConfig';
 import { commandIDs } from "../commands/CommandIDs";
+import { downloadIcon, linkIcon, folderIcon, textEditorIcon, kernelIcon } from "@jupyterlab/ui-components";
+
 
 export interface TrayContextMenuProps {
     app: any;
@@ -18,7 +20,7 @@ export interface TrayContextMenuProps {
 }
 
 const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigger, onClose }: TrayContextMenuProps) => {
-    const trayContextMenuRef = useRef(null);
+    const trayContextMenuRef = useRef<HTMLDivElement>(null);
     const [validOptions, setValidOptions] = useState({
         showInFileBrowser: false,
         showReadme: false,
@@ -55,7 +57,7 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigg
     }, [libraryName, visible]);
 
     const handleClickOutside = (event) => {
-        if (event.target.className !== "context-menu-option") {
+        if (!trayContextMenuRef.current.contains(event.target)) {
             onClose();
         }
     };
@@ -151,31 +153,52 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigg
         return null;
     }
 
+    function addHoverClass(e){
+        e.currentTarget.classList.add("lm-mod-active");
+    }
+    function removeHoverClass(e){
+        e.currentTarget.classList.remove("lm-mod-active");
+    }
+
+    function Option(props) {
+        const {onClick, label, icon} = props;
+        const Icon = icon ? icon : 'span';
+        return <li className="lm-Menu-item" role="menuitem" onMouseEnter={addHoverClass} onMouseLeave={removeHoverClass}
+                   onClick={() => {onClick(); onClose();}}
+        >
+            <div className="lm-Menu-itemIcon"><Icon /></div>
+            <div className="lm-Menu-itemLabel">{label}</div>
+        </li>;
+    }
+
     return ReactDOM.createPortal(
-        <div className="context-menu" ref={trayContextMenuRef} style={{ position: 'absolute', left: `${x+5}px`, top: `${y}px`, zIndex: 1000 }}>
+      <div className="lm-Menu sidebar-context-menu" ref={trayContextMenuRef}
+           style={{ position: "absolute", left: `${x + 5}px`, top: `${y}px`, zIndex: 1000 }}>
+          <ul className="lm-Menu-content" role="menu">
             {status === 'remote' ? (
                 <>
-                    <div className="context-menu-option" onClick={() => { handleInstall(libraryName, refreshTrigger); onClose(); }}>Install</div>
+                    <Option icon={downloadIcon.react} label={`Install ${libraryName}`} onClick={() =>  handleInstall(libraryName, refreshTrigger)} />
                     {validOptions.showPageInNewTab && (
-                        <div className="context-menu-option" onClick={() => { handleShowPageInNewTab(libraryName); onClose(); }}>Open Repository</div>
+                      <Option icon={linkIcon.react} label="Open Repository" onClick={() => handleShowPageInNewTab(libraryName)} />
                     )}
                 </>
             ) : (
                 <>
                     {validOptions.showInFileBrowser && (
-                        <div className="context-menu-option" onClick={() => { handleShowInFileBrowser(libraryName); onClose(); }}>Show in File Explorer</div>
+                      <Option icon={folderIcon.react} label="Show in File Explorer" onClick={() => handleShowInFileBrowser(libraryName)} />
                     )}
                     {validOptions.showReadme && (
-                        <div className="context-menu-option" onClick={() => { handleShowReadme(libraryName); onClose(); }}>See Readme</div>
+                      <Option icon={textEditorIcon.react} label="See Readme" onClick={() => handleShowReadme(libraryName)} />
                     )}
                     {validOptions.showExample && (
-                        <div className="context-menu-option" onClick={() => { handleShowExample(libraryName); onClose(); }}>Show Example</div>
+                      <Option icon={kernelIcon.react} label="Show Example" onClick={() => handleShowExample(libraryName)} />
                     )}
                     {validOptions.showPageInNewTab && (
-                        <div className="context-menu-option" onClick={() => { handleShowPageInNewTab(libraryName); onClose(); }}>Open Repository</div>
+                      <Option icon={linkIcon.react} label="Open Repository" onClick={() => handleShowPageInNewTab(libraryName)} />
                     )}
                 </>
             )}
+          </ul>
         </div>,
         document.body
     );
