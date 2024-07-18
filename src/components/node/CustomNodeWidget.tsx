@@ -31,6 +31,7 @@ import { LegacyRef, MutableRefObject } from "react";
 export namespace S {
     export const Node = styled.div<{ borderColor: string, background: string; selected: boolean; }>`
         box-shadow: 1px 1px 10px ${(p) => p.selected ? '3px rgb(0 192 255 / 0.5)' : '0px rgb(0 0 0 / 0.5)'};
+        cursor: ${(p) => p.selected ? "grabbing" : "grab"};
         border-radius: 5px;
         font-family: sans-serif;
         color: white;
