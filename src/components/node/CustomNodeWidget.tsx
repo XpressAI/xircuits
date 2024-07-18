@@ -31,13 +31,16 @@ import { LegacyRef, MutableRefObject } from "react";
 export namespace S {
     export const Node = styled.div<{ borderColor: string, background: string; selected: boolean; }>`
         box-shadow: 1px 1px 10px ${(p) => p.selected ? '3px rgb(0 192 255 / 0.5)' : '0px rgb(0 0 0 / 0.5)'};
-        cursor: ${(p) => p.selected ? "grabbing" : "grab"};
+        cursor: grab;
         border-radius: 5px;
         font-family: sans-serif;
         color: white;
         overflow: visible;
         font-size: 11px;
         border: solid 1px ${(p) => (p.selected ? (p.borderColor == undefined ? 'rgb(0,192,255)' : p.borderColor) : 'black')};
+        & .grabbing {
+            cursor: grabbing;
+        }
     `;
 
     export const Title = styled.div<{ background: string; }>`
@@ -163,6 +166,14 @@ export const getNodeIcon = (type) => {
     }
 };
 
+function addGrabbing(e){
+  e.target.classList.add('grabbing');
+}
+
+function removeGrabbing(e){
+  e.target.classList.remove('grabbing');
+}
+
 const CommentNode = ({ node }) => {
     const [commentInput, setCommentInput] = React.useState(node['extras']['commentInput']);
 
@@ -183,7 +194,7 @@ const CommentNode = ({ node }) => {
     };
 
     return (
-        <S.CommentContainer onDoubleClick={handleEditComment} selected={node.isSelected()}>
+        <S.CommentContainer onDoubleClick={handleEditComment} selected={node.isSelected()} onMouseDown={addGrabbing} onMouseUp={removeGrabbing}>
             <S.TitleName><b>{node.getOptions().name}</b></S.TitleName>
             <div className='comment-component-content'>
                 {commentInput}
@@ -219,6 +230,7 @@ const ParameterNode = ({ node, engine, app }) => {
 
     return (
         <S.Node
+            onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
             borderColor={node.getOptions().extras["borderColor"]}
             data-default-node-name={node.getOptions().name}
             selected={node.isSelected()}
@@ -237,6 +249,7 @@ const ParameterNode = ({ node, engine, app }) => {
 
 const StartFinishNode = ({ node, engine, handleDeletableNode, app }) => (
     <S.Node
+        onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
         borderColor={node.getOptions().extras["borderColor"]}
         data-default-node-name={node.getOptions().name}
         selected={node.isSelected()}
@@ -258,6 +271,7 @@ const WorkflowNode = ({ node, engine, app, handleDeletableNode }) => {
     return (
         <div style={{ position: "relative" }}>
             <S.WorkflowNode
+                onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
                 data-tip data-for={node.getOptions().id}
                 borderColor={node.getOptions().extras["borderColor"]}
                 data-default-node-name={node.getOptions().name}
@@ -319,6 +333,7 @@ const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode })
                 </div>
             </div>}
             <S.Node
+                onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
                 ref={(elementRef as LegacyRef<HTMLDivElement>)}
                 data-tip data-for={node.getOptions().id}
                 borderColor={node.getOptions().extras["borderColor"]}
