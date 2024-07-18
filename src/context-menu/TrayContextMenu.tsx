@@ -57,7 +57,7 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigg
     }, [libraryName, visible]);
 
     const handleClickOutside = (event) => {
-        if (!trayContextMenuRef.current.contains(event.target)) {
+        if (trayContextMenuRef.current && !trayContextMenuRef.current.contains(event.target)) {
             onClose();
         }
     };
