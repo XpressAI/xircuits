@@ -1,5 +1,5 @@
 import { ComponentList, refreshComponentListCache } from "./Component";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from 'react-dom';
 import styled from "@emotion/styled";
 import { TrayItemWidget } from "./TrayItemWidget";
@@ -108,13 +108,18 @@ export default function Sidebar(props: SidebarProps) {
         }
     });
 
+    let searchDelay = useRef(null);
     let handleOnChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
-        setSearchTerm("");
-        setSearchTerm(event.target.value);
+        if(searchDelay.current != null){
+            clearTimeout(searchDelay.current);
+        }
+        searchDelay.current = setTimeout(() => {
+            searchDelay.current = null;
+            setSearchTerm(event.target.value);
+        }, 150)
     }
 
     function handleSearchOnClick() {
-        setSearchTerm("");
         setSearchTerm(searchTerm);
     }
 
@@ -321,7 +326,7 @@ export default function Sidebar(props: SidebarProps) {
                           <div className="search-input">
                               <a onClick={handleSearchOnClick} className="search-input__button"><i
                                 className="fa fa-search "></i></a>
-                              <input type="text" name="" value={searchTerm} placeholder="SEARCH"
+                              <input type="text" name="" placeholder="SEARCH"
                                      className="search-input__text-input" style={{ width: "75%" }}
                                      onChange={handleOnChange} />
                           </div>
