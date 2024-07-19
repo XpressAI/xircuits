@@ -214,15 +214,35 @@ export default function Sidebar(props: SidebarProps) {
       menu.open(bbox.x, bbox.bottom);
     }
 
+    function matchesHeader(componentVal, searchTerm){
+        return componentVal.task.toLowerCase().includes(searchTerm.toLowerCase());
+    }
+
+    function matchesDocString(componentVal, searchTerm){
+        return componentVal.docstring && componentVal.docstring.toLowerCase().includes(searchTerm.toLowerCase());
+    }
+
     // Function to map components
     const mapComponents = (components, searchTerm) => {
-        return components.filter((componentVal) => {
-            if (searchTerm === "") {
-                return componentVal;
-            } else if (componentVal.task.toLowerCase().includes(searchTerm.toLowerCase()) || (componentVal.docstring && componentVal.docstring.toLowerCase().includes(searchTerm.toLowerCase()))) {
-                return componentVal;
-            }
-        }).map((componentVal, i) => (
+        let found = components;
+        if(searchTerm !== ""){
+            found = components.filter((componentVal) => {
+                if (searchTerm === "") {
+                    return componentVal;
+                } else if (matchesHeader(componentVal, searchTerm) || matchesDocString(componentVal, searchTerm)) {
+                    return componentVal;
+                }
+            })
+            found.sort((a, b) => {
+                const aHeader = matchesHeader(a, searchTerm);
+                const bHeader = matchesHeader(b, searchTerm);
+                if(aHeader && bHeader){ return 0; }
+                if(aHeader){ return -1; }
+                if(bHeader){ return 1; }
+                return 0;
+            })
+        }
+        return found.map((componentVal, i) => (
             <div key={`component-${i}`}>
                 <TrayItemWidget
                     model={{ 
