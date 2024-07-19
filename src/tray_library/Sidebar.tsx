@@ -1,5 +1,5 @@
 import { ComponentList, refreshComponentListCache } from "./Component";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from 'react-dom';
 import styled from "@emotion/styled";
 import { TrayItemWidget } from "./TrayItemWidget";
@@ -108,13 +108,18 @@ export default function Sidebar(props: SidebarProps) {
         }
     });
 
+    let searchDelay = useRef(null);
     let handleOnChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
-        setSearchTerm("");
-        setSearchTerm(event.target.value);
+        if(searchDelay.current != null){
+            clearTimeout(searchDelay.current);
+        }
+        searchDelay.current = setTimeout(() => {
+            searchDelay.current = null;
+            setSearchTerm(event.target.value);
+        }, 150)
     }
 
     function handleSearchOnClick() {
-        setSearchTerm("");
         setSearchTerm(searchTerm);
     }
 
@@ -209,15 +214,35 @@ export default function Sidebar(props: SidebarProps) {
       menu.open(bbox.x, bbox.bottom);
     }
 
+    function matchesHeader(componentVal, searchTerm){
+        return componentVal.task.toLowerCase().includes(searchTerm.toLowerCase());
+    }
+
+    function matchesDocString(componentVal, searchTerm){
+        return componentVal.docstring && componentVal.docstring.toLowerCase().includes(searchTerm.toLowerCase());
+    }
+
     // Function to map components
     const mapComponents = (components, searchTerm) => {
-        return components.filter((componentVal) => {
-            if (searchTerm === "") {
-                return componentVal;
-            } else if (componentVal.task.toLowerCase().includes(searchTerm.toLowerCase()) || (componentVal.docstring && componentVal.docstring.toLowerCase().includes(searchTerm.toLowerCase()))) {
-                return componentVal;
-            }
-        }).map((componentVal, i) => (
+        let found = components;
+        if(searchTerm !== ""){
+            found = components.filter((componentVal) => {
+                if (searchTerm === "") {
+                    return componentVal;
+                } else if (matchesHeader(componentVal, searchTerm) || matchesDocString(componentVal, searchTerm)) {
+                    return componentVal;
+                }
+            })
+            found.sort((a, b) => {
+                const aHeader = matchesHeader(a, searchTerm);
+                const bHeader = matchesHeader(b, searchTerm);
+                if(aHeader && bHeader){ return 0; }
+                if(aHeader){ return -1; }
+                if(bHeader){ return 1; }
+                return 0;
+            })
+        }
+        return found.map((componentVal, i) => (
             <div key={`component-${i}`}>
                 <TrayItemWidget
                     model={{ 
@@ -321,7 +346,7 @@ export default function Sidebar(props: SidebarProps) {
                           <div className="search-input">
                               <a onClick={handleSearchOnClick} className="search-input__button"><i
                                 className="fa fa-search "></i></a>
-                              <input type="text" name="" value={searchTerm} placeholder="SEARCH"
+                              <input type="text" name="" placeholder="SEARCH"
                                      className="search-input__text-input" style={{ width: "75%" }}
                                      onChange={handleOnChange} />
                           </div>
