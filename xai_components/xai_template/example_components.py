@@ -1,13 +1,13 @@
 from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component, dynalist, dynatuple
-
 from typing import Union
+
 @xai_component(color="red")
 class HelloComponent(Component):
-    """The simplest component that greets the user. 
-    """
+    """The simplest component that greets the user."""
+    
     def execute(self, ctx) -> None:
         
-        #If the import is only exclusive to 1 component, it is a good practice to import inside execute()
+        # If the import is only exclusive to 1 component, it is a good practice to import inside execute()
         import os 
 
         creator_name = os.getlogin()
@@ -18,7 +18,7 @@ class HelloHyperparameter(Component):
     """A component that changes the print message depending on the supplied parameter.
 
     ##### inPorts:
-    - input_str: try connecting a Literal String or Hyperparameter String.
+    - input_str (str): Try connecting a Literal String or Hyperparameter String.
     """
     input_str: InArg[str]
 
@@ -32,13 +32,13 @@ class CompulsoryHyperparameter(Component):
      Users must fill all compulsory ports to compile and run the canvas.
 
     ##### inPorts:
-    - input_str: an optional String port.
-    - comp_str: a compulsory String port.
-    - comp_int: a compulsory Integer port.
+    - input_str (str): An optional String port.
+    - comp_str (str): A compulsory String port.
+    - comp_int (int): A compulsory Integer port.
     """
     input_str: InArg[str]
 
-    #if your component requires a certain parameter to be supplied, use In-Comp(ulsory)-Argument ports.
+    # if your component requires a certain parameter to be supplied, use In-Comp(ulsory)-Argument ports.
     comp_str: InCompArg[str]
     comp_int: InCompArg[int]
 
@@ -56,9 +56,9 @@ class HelloListTupleDict(Component):
     Useful for testing port type checks.
 
     ##### inPorts:
-    - input_list: a list port.
-    - input_tuple: a tuple port.
-    - input_dict: a dict port.
+    - input_list (list): A list port.
+    - input_tuple (tuple): A tuple port.
+    - input_dict (dict): A dict port.
     """
     input_list: InArg[list]
     input_tuple: InArg[tuple]
@@ -66,7 +66,7 @@ class HelloListTupleDict(Component):
 
     def execute(self, ctx) -> None:
 
-        #if you would like ports to have default values if user does not provide, try this way.
+        # if you would like ports to have default values if user does not provide, try this way.
         input_list = self.input_list.value if self.input_list.value else ""
         input_tuple = self.input_tuple.value if self.input_tuple.value else ""
         input_dict = self.input_dict.value if self.input_dict.value else ""
@@ -80,7 +80,11 @@ class HelloListTupleDict(Component):
 
 @xai_component
 class MultiType(Component):
-    """Component with in-port that accept multiple data types"""
+    """Component with in-port that accept multiple data types
+    
+    ##### inPorts:
+    - msg (Union[int, float, str]): A port that accepts int, float, or str data types.
+    """
     msg: InArg[Union[int, float, str]]
     
     def execute(self, ctx) -> None:
@@ -95,8 +99,7 @@ class HelloContext(Component):
     - [Xircuits Content](https://xircuits.io/docs/technical-concepts/xircuits-context)
 
     ##### inPorts:
-    - context_dict: a dict to add to the `ctx`.
-        Default: `{"new ctx": "Hello Xircuits!"}`
+    - context_dict (dict): A dict to add to the `ctx`. Default: `{"new ctx": "Hello Xircuits!"}`
     """
     context_dict: InArg[dict]
 
@@ -108,9 +111,19 @@ class HelloContext(Component):
         ctx.update(context_dict)
 
         print(f"After Adding Context:\n{ctx}")
-        
+
 @xai_component
 class MultiBranchComponent(BaseComponent):
+    """A component that executes different branches based on the value of `abc`.
+
+    ##### inPorts:
+    - abc (str): A string that determines which branch to execute.
+    
+    ##### Branches:
+    - if_A: Branch that executes if `abc` is "a".
+    - if_B: Branch that executes if `abc` is "b".
+    - if_C: Branch that executes if `abc` is "c".
+    """
     if_A: BaseComponent
     if_B: BaseComponent
     if_C: BaseComponent
@@ -133,19 +146,15 @@ class MultiBranchComponent(BaseComponent):
             return self.next
         except:
             return None
-        
-
 
 @xai_component
 class DynaPorts(Component):
     """A component showcasing dynamic ports: `dynalist` and `dynatuple`.
     
     ##### inPorts:
-    - dlist: A `dynalist` port. 
-    - dtuple: A `dynatuple` port.
-    
+    - dlist (dynalist): A `dynalist` port. 
+    - dtuple (dynatuple): A `dynatuple` port.
     """
-    
     dlist: InArg[dynalist]
     dtuple: InArg[dynatuple]
     

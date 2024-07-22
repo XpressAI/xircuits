@@ -2,6 +2,15 @@ from xai_components.base import InArg, OutArg, InCompArg, Component, BaseCompone
 
 @xai_component(type='branch')
 class BranchComponent(Component):
+    """A component that conditionally executes one of two branches based on a boolean condition.
+    
+    ##### inPorts:
+    - condition (bool): A boolean condition to evaluate.
+    
+    ##### Branches:
+    - when_true: Branch that executes if the condition is True.
+    - when_false: Branch that executes if the condition is False.
+    """
     when_true: BaseComponent
     when_false: BaseComponent
 
@@ -22,8 +31,15 @@ class BranchComponent(Component):
     
 @xai_component(type='branch')
 class LoopComponent(Component):
+    """A component that loops while the condition is True.
+    
+    ##### inPorts:
+    - condition (bool): Boolean that determines whether `body` branch is executed.
+    
+    ##### Branches:
+    - body: Branch that executes in each iteration of the loop.
+    """
     body: BaseComponent
-
     condition: InArg[bool]
     
     def do(self, ctx) -> BaseComponent:
@@ -37,10 +53,20 @@ class LoopComponent(Component):
 
 @xai_component(type='branch')
 class ReverseForEach(Component):
-    body: BaseComponent
+    """A component that iterates over a list in reverse order, executing body branches for each item.
     
+    ##### inPorts:
+    - items (list): The list of items to iterate over.
+    
+    ##### outPorts:
+    - current_item (any): The current item in the iteration.
+    - current_index (int): The index of the current item in the iteration.
+    
+    ##### Branches:
+    - body: Branch that executes for each item.
+    """
+    body: BaseComponent
     items: InCompArg[list]
-
     current_item: OutArg[any]
     current_index: OutArg[int]
     
@@ -55,13 +81,22 @@ class ReverseForEach(Component):
         if hasattr(self, 'next') and self.next:
             return self.next
 
-
 @xai_component(type='branch')
 class ForEach(Component):
-    body: BaseComponent
+    """A component that iterates over a list, executing body branches for each item.
     
+    ##### inPorts:
+    - items (list): The list of items to iterate over.
+    
+    ##### outPorts:
+    - current_item (any): The current item in the iteration.
+    - current_index (int): The index of the current item in the iteration.
+    
+    ##### Branches:
+    - body: Branch that executes for each item.
+    """
+    body: BaseComponent
     items: InCompArg[list]
-
     current_item: OutArg[any]
     current_index: OutArg[int]
     
@@ -78,10 +113,18 @@ class ForEach(Component):
 
 @xai_component
 class CounterComponent(Component):
+    """A component that maintains and increments a counter.
+    
+    ##### inPorts:
+    - start_number (int): The initial value of the counter.
+    - step (int): The increment step for the counter.
+    
+    ##### outPorts:
+    - out_number (int): The current value of the counter.
+    """
     start_number: InArg[int]
     step: InArg[int]
     out_number: OutArg[int]
-    
     state: any
     
     def __init__(self):
@@ -98,10 +141,19 @@ class CounterComponent(Component):
 
 @xai_component
 class ComparisonComponent(Component):
+    """A component that performs a comparison between two integers.
+    
+    ##### inPorts:
+    - a (int): The first integer.
+    - b (int): The second integer.
+    - op (str): The comparison operator (as a string).
+    
+    ##### outPorts:
+    - out (bool): The result of the comparison (boolean).
+    """
     a: InArg[int]
     b: InArg[int]
     op: InArg[str]
-    
     out: OutArg[bool]
 
     def execute(self, ctx) -> None:
@@ -124,6 +176,14 @@ class MutableVariable:
     
 @xai_component(type='context_get')
 class GetVariableComponent(Component):
+    """A component that retrieves a variable from the context.
+    
+    ##### inPorts:
+    - name (str): The name of the variable to retrieve.
+    
+    ##### outPorts:
+    - value (any): The value of the retrieved variable.
+    """
     name: InArg[str]
     value: OutArg[any]
     
@@ -137,6 +197,12 @@ class GetVariableComponent(Component):
 
 @xai_component(type='context_set')
 class SetVariableComponent(Component):
+    """A component that sets a variable in the context.
+    
+    ##### inPorts:
+    - name (str): The name of the variable to set.
+    - value (any): The value to set for the variable.
+    """
     name: InArg[str]
     value: InArg[any]
 
@@ -146,11 +212,19 @@ class SetVariableComponent(Component):
 
 @xai_component(type='variable')
 class DefineVariableComponent(Component):
+    """A component that defines a variable in the context and creates a reference to it.
+    
+    ##### inPorts:
+    - name (str): The name of the variable to define.
+    - value (any): The initial value of the variable.
+    
+    ##### outPorts:
+    - ref (any): A reference to the defined variable.
+    """
     name: InArg[str]
     value: InArg[any]
     ref: OutArg[any]
 
-    
     def __init__(self):
         super().__init__()
         self.ref = MutableVariable()
@@ -162,10 +236,17 @@ class DefineVariableComponent(Component):
 
 @xai_component
 class EvalBooleanExpression(Component):
+    """A component that evaluates a boolean expression.
+    
+    ##### inPorts:
+    - expression (str): The boolean expression to evaluate.
+    - args (dynalist): A list of arguments to use in the expression.
+    
+    ##### outPorts:
+    - out (bool): The result of the evaluated expression (boolean).
+    """
     expression: InCompArg[str]
-
     args: InArg[dynalist]
-
     out: OutArg[bool]
 
     def execute(self, ctx) -> None:
