@@ -51,7 +51,7 @@ export function addLibraryActionCommands(
     })
 
     commands.addCommand(commandIDs.createNewComponentLibrary, {
-        label: "Create new Component Library",
+        label: "Create New Component",
         icon: addIcon,
         execute: async (args) => {
 

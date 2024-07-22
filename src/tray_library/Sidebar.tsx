@@ -205,7 +205,10 @@ export default function Sidebar(props: SidebarProps) {
     const menu = new MenuSvg({ commands: app.commands });
     // Add commands to the menu
     menu.addItem({ command: commandIDs.refreshComponentList });
-    menu.addItem({ command: commandIDs.createNewComponentLibrary });
+    menu.addItem({
+        command: commandIDs.createNewComponentLibrary,
+        args: { componentCode: exampleComponent }
+    });
     menu.addItem({ type: "separator" });
     menu.addItem({ command: commandIDs.toggleDisplayNodesInLibrary });
 
@@ -406,3 +409,25 @@ export default function Sidebar(props: SidebarProps) {
       </Body>
     )
 };
+
+const exampleComponent = `from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component, dynalist
+
+@xai_component(color='blue')
+class ExampleComponent(Component):
+    """Brief description of the component.
+    
+    ##### inPorts:
+    - input_port (type): Description of input_port.
+
+    ##### outPorts:
+    - output_port (type): Description of output_port.
+
+    """
+    input_port: InArg[type]
+    output_port: OutArg[type]
+    
+    def execute(self, ctx) -> None:
+        input_port = self.input_port.value
+        print(f'The input_port value is {input_port}.')
+        self.output_port.value = input_port
+`
