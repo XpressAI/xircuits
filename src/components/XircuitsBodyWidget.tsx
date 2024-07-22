@@ -983,6 +983,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			if (linkName.includes("parameter-out")) {
 				return
 			}
+			// Don't allow linking to a literal if there is already an established connection
+			// checking for > 1 because the link we are connecting also counts
+			if(Object.keys(event.sourcePort.links).length > 1){
+				return;
+			}
 			// When loose link from type InPort, connect to its respective literal node
 			connectLinkToItsLiteral(linkName, event);
 			return;
