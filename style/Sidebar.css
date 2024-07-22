@@ -10,7 +10,7 @@
   }
   
   .accordion__item + .accordion__item {
-    border-top: 7px solid rgba(255, 255, 255, 0.1);
+    margin-top: 7px;
   }
   
   .accordion__button {
@@ -18,9 +18,12 @@
     padding: 10px;
     width: auto;
     text-align: left;
-    border-bottom: 1px solid oklch(0 0 0 / 0.15);
+    border-bottom: 1px solid var(--jp-border-color0);
     font-weight: 600;
     letter-spacing: 0.025em;
+
+    color: var(--jp-ui-font-color0);
+    background-color: var(--jp-layout-color0);
 
     display: flex;
     align-items: center;
@@ -68,8 +71,6 @@
   }
   
   .accordion__button--remote {
-    background-color: #fff;
-    color: rgb(30, 69, 131);
     cursor: default;
   }
 
@@ -82,7 +83,7 @@
   }
 
   .accordion__button--remote:hover {
-    background: oklch(1 0 0);
+    background: transparent;
   }
 
   .accordion__button--remote[aria-expanded="true"],
@@ -133,13 +134,12 @@
     height: 20px;
     border-radius: 7px;
     padding: 10px;
-    background: #e5eaf1;
+    background: oklch(0.781 0.112 276.768 / 0.2);
     flex-grow: 1;
   }
   .search-input__button {
     border-radius: 7px;
-    background: #e5eaf1;
-    color: rgb(30, 69, 131);
+    color: oklch(0.781 0.112 276.768 / 0.75);
     float: left;
     width: 40px;
     height: 40px;

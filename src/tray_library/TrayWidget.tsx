@@ -4,7 +4,8 @@ import styled from '@emotion/styled';
 
 export const Tray = styled.div`
 	min-width: 150px;
-	background: rgb(255, 255, 255);
+	background: var(--jp-layout-color0);
+	color: var(--jp-ui-font-color0);
 	flex-grow: 1;
 	width: 150px;
 	flex-shrink: 1;

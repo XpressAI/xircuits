@@ -32,7 +32,7 @@ interface TrayStyledProps {
 }
 
 export const Tray = styled.div<TrayStyledProps>`
-	color: black;
+	color: var(--jp-ui-font-color0);
 	font-family: Helvetica, Arial, sans-serif;
 	padding: 7px;
 	width: auto;
