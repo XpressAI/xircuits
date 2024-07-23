@@ -91,3 +91,6 @@
 [submodule "xai_components/xai_multion"]
 	path = xai_components/xai_multion
 	url = https://github.com/XpressAI/xai-multion
+[submodule "xai_components/xai_gradio"]
+	path = xai_components/xai_gradio
+	url = https://github.com/XpressAI/xai-gradio
