@@ -37,6 +37,7 @@ $ xircuits install <component library name>
 | [Pycaret](https://github.com/XpressAI/xai-pycaret) | Simplify your ML workflow with PyCaret's comprehensive and easy-to-use machine learning components. | 0.1.0 |
 | [RPA](https://github.com/yuenherny/xai-rpa) | Automate your routine tasks effortlessly with robust Robotic Process Automation components. | 0.2.1 |
 | [Streamlit](https://github.com/XpressAI/xai-streamlit) | Transform your ML models into interactive web apps with Streamlit's seamless integration. | 0.1.0 |
+| [Gradio](https://github.com/XpressAI/xai-gradio) | Create interactive machine learning demos effortlessly with Gradio Xircuits components. | - |
 
 ### 🤖 AI Agents
 | Name | Description | Version |
@@ -79,7 +80,8 @@ $ xircuits install <component library name>
 | ---- | ----------- | ------- |
 | [GDrive](https://github.com/XpressAI/xai-gdrive) | Components for interacting with Google Drive. | - |
 | [GSpread](https://github.com/XpressAI/xai-gspread) | Components for interfacing with Google Sheets. | - |
-
+| [BOTO3](https://github.com/XpressAI/xai-boto3) | Components for AWS. | - |
+| [MSGraph](https://github.com/XpressAI/xai-ms-graph) | Components that connects with the Microsoft Cloud using Graph API. | - |
 </div>
 
 Want your component library listed here? Just submit a PR to the Xircuits repository. For more information, refer to the [Xircuits component library documentation](https://xircuits.io/docs/component-library/).
