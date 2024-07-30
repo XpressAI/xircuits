@@ -417,7 +417,15 @@ export function addNodeActionCommands(
             }
             newLink.setSourcePort(sourcePort);
             newLink.setTargetPort(targetPort);
+
+            if (targetPort instanceof CustomDynaPortModel){
+                const newPort = targetPort.spawnDynamicPort({ offset: 1 });
+                newPort.previous = targetPort.getID();
+                targetPort.next = newPort.getID();
+                widget.xircuitsApp.getDiagramEngine().getModel().addNode(targetPort.getParent());
+            }
             widget.xircuitsApp.getDiagramEngine().getModel().addLink(newLink);
+            widget.xircuitsApp.getDiagramEngine().repaintCanvas();
         },
         label: trans.__('Link node')
     });
