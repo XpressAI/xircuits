@@ -866,6 +866,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				nodeType = boolValue === 'false' ? 'False' : 'True';
 				break;
 			case 'any':
+			case 'dynalist':
+			case 'dynatuple':
 				// When inPort is 'any' type, get the correct literal type based on the first character inputed
 				let portAnyType = await getItsLiteralType();
 				if (portAnyType == undefined) return;

@@ -88,6 +88,8 @@ export  class CustomDynaPortModel extends CustomPortModel {
             newDynamicPortName = `parameter-${port.dataType}-${port.varName}`;
             newDynamicPortLabel = `${port.varName}`;
         } else {
+            // strip compulsory notation [★] if not first dynaport
+            port.varName = port.varName.replace(/★/g, '');
             newDynamicPortName = `parameter-${port.dataType}-${port.varName}-${newDynamicPortOrder}`;
             newDynamicPortLabel = `${port.varName}[${newDynamicPortOrder}]`;
         }
