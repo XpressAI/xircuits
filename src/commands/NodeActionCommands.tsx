@@ -485,7 +485,7 @@ export function addNodeActionCommands(
                     }
     
                     // Check datatype compatibility
-                    if (outPortType !== inPortType) {
+                    if (outPortType !== inPortType && inPortType !== 'any') {
                         continue;
                     }
     
