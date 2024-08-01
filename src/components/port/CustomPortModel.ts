@@ -131,8 +131,8 @@ export  class CustomPortModel extends DefaultPortModel  {
         if (this.isParameterNode(thisNodeModelType) == true){
 
             if (!thisName.startsWith("parameter")){
-		        targetPort.getNode().getOptions().extras["borderColor"]="red";
-		        targetPort.getNode().getOptions().extras["tip"]= `Port ${thisLabel} linked is not a parameter, please link a non parameter node to it.`;
+                targetPort.getNode().getOptions().extras["borderColor"] = "red";
+                targetPort.getNode().getOptions().extras["tip"] = `Port ${thisLabel} linked is not a parameter, please link a non-parameter node to it.`;
                 targetPort.getNode().setSelected(true);
                 return false;
             }
@@ -164,26 +164,54 @@ export  class CustomPortModel extends DefaultPortModel  {
         "chat": ["list"],
         "secret": ["string", "int", "float"],
     };
-
+    
+    // Helper function to parse Union types
+    parseUnionType = (type: string): string[] => {
+        const unionMatch = type.match(/^Union\[(.*)\]$/);
+        if (unionMatch) {
+            return unionMatch[1].split('|').map(t => t.trim());
+        }
+        return [type];
+    }
+    
+    // Helper function to map common types
+    mapCommonTypes = (type: string): string => {
+        const typeMapping = {
+            "str": "string",
+            "bool": "boolean",
+            "int": "integer",
+        };
+        return typeMapping[type] || type;
+    }
     isTypeCompatible(sourceDataType, targetDataType) {
-        // Check for direct compatibility or 'any' type
-        if (sourceDataType === targetDataType || sourceDataType === 'any' || targetDataType === 'any') {
-            return true;
-        }
+        // Helper function to check type compatibility including Union types
+        const checkTypeCompatibility = (sourceDataTypes, targetDataTypes) => {
+            for (const sourceDataType of sourceDataTypes) {
+                for (const targetDataType of targetDataTypes) {
+                    if (sourceDataType === targetDataType || sourceDataType === 'any' || targetDataType === 'any') {
+                        return true;
+                    }
 
-        // Check if the sourceDataType exists in the compatibility map
-        if (CustomPortModel.typeCompatibilityMap.hasOwnProperty(sourceDataType)) {
-            // Get the array of compatible data types for sourceDataType
-            const compatibleDataTypes = CustomPortModel.typeCompatibilityMap[sourceDataType];
-
-            // Check if targetDataType is in the array of compatible types
-            if (compatibleDataTypes.includes(targetDataType)) {
-                return true;
+                    // Check if the sourceDataType exists in the compatibility map
+                    if (CustomPortModel.typeCompatibilityMap.hasOwnProperty(sourceDataType)) {
+                        // Get the array of compatible data types for sourceDataType
+                        const compatibleDataTypes = CustomPortModel.typeCompatibilityMap[sourceDataType];
+                        // Check if targetDataType is in the array of compatible types
+                        if (compatibleDataTypes.includes(targetDataType)) {
+                            return true;
+                        }
+                    }
+                }
             }
-        }
-
-        // If multiple types are accepted by target node port, check if source port type is among them
-        if (targetDataType.includes(sourceDataType)) {
+            return false;
+        };
+    
+        // Parse and map Union types
+        const sourceDataTypes = this.parseUnionType(sourceDataType).map(this.mapCommonTypes);
+        const targetDataTypes = this.parseUnionType(targetDataType).map(this.mapCommonTypes);
+    
+        // Check for direct compatibility or 'any' type
+        if (checkTypeCompatibility(sourceDataTypes, targetDataTypes)) {
             return true;
         }
 
