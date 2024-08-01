@@ -452,19 +452,29 @@ export function addNodeActionCommands(
                 // When node got no outputPort, just return
                 return;
             }
-
+    
+            // Helper function to parse Union types
+            const parseUnionType = (type: string): string[] => {
+                const unionMatch = type.match(/^Union\[(.*)\]$/);
+                if (unionMatch) {
+                    return unionMatch[1].split('|').map(t => t.trim());
+                }
+                return [type];
+            };
+    
             for (let outPortIndex in outPorts) {
                 const outPort = outPorts[outPortIndex];
                 const outPortName = outPort.getOptions()['name'];
                 const outPortLabel = outPort.getOptions()['label'];
                 const outPortType = outPort.getOptions()['dataType'];
                 const outPortLabelArr: string[] = outPortLabel.split('_');
+                const outPortTypes = parseUnionType(outPortType);
     
                 if (outPort.getOptions()['label'] == '▶') {
                     // Skip ▶ outPort
                     continue;
                 }
-
+    
                 // Check if there are existing links from the target port
                 if (Object.keys(outPort.getLinks()).length > 0) {
                     continue;
@@ -476,21 +486,25 @@ export function addNodeActionCommands(
                     const inPortLabel = inPort.getOptions()['label'];
                     const inPortType = inPort.getOptions()['dataType'];
                     const inPortLabelArr: string[] = inPortLabel.split('_');
+                    const inPortTypes = parseUnionType(inPortType);
                     // Compare if there is similarity for each word
                     const intersection = outPortLabelArr.filter(element => inPortLabelArr.includes(element));
-
+    
                     // Check if there are existing links from the source port
                     if (Object.keys(inPort.getLinks()).length > 0) {
                         continue;
                     }
     
                     // Check datatype compatibility
-                    if (outPortType !== inPortType && inPortType !== 'any') {
+                    const typesCompatible = outPortTypes.some(outType => 
+                        inPortTypes.includes(outType) || inPortTypes.includes('any')
+                    );
+                    if (!typesCompatible) {
                         continue;
                     }
     
                     // Check label compatibility or intersection
-                    if ((outPortLabel === inPortLabel && outPortType === inPortType) || intersection.length >= 1) {
+                    if ((outPortLabel === inPortLabel && typesCompatible) || intersection.length >= 1) {
                         const newLink = new DefaultLinkModel();
                         const sourcePort = sourceNode.getPorts()[outPortName];
                         newLink.setSourcePort(sourcePort);
