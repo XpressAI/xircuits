@@ -1,4 +1,4 @@
-from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component, dynalist
+from xai_components.base import InArg, OutArg, InCompArg, Component, BaseComponent, xai_component, dynalist, SubGraphExecutor
 
 @xai_component(type='branch')
 class BranchComponent(Component):
@@ -258,3 +258,62 @@ class EvalBooleanExpression(Component):
                 args.append(arg)
 
         exec('self.out.value = ( ' + self.expression.value + ')', globals(), locals())
+
+@xai_component
+class EvaluateExpressionWithVariables(Component):
+    """Evaluates a single mathematical or boolean expression with variables from a dictionary and context.
+
+    ##### inPorts:
+    - expression (str): A mathematical or boolean expression as a string with placeholders for variables.
+    - values_dict (dict): A dictionary containing variable values.
+
+    ##### outPorts:
+    - result (float): The result after evaluating the expression with the provided values.
+
+    ##### Description:
+    This component evaluates an expression using variables from both the provided dictionary and the context (`ctx`). The dictionary values take priority over the context values if there are any conflicts.
+
+    ##### Example:
+      - expression: "{a} + {b} * {c}"
+      - ctx: {"a": 1, "b": 2}
+      - values_dict: {"c": 3}
+    """
+    expression: InArg[str]
+    values_dict: InArg[dict]
+    result: OutArg[float]
+
+    def execute(self, ctx) -> None:
+        expression = self.expression.value
+        values_dict = self.values_dict.value if self.values_dict.value else {}
+
+        combined_dict = {**ctx, **values_dict}
+
+        formatted_expression = expression.format(**combined_dict)
+        print(f'Expression : {formatted_expression}')
+
+        result = eval(formatted_expression)
+        self.result.value = result
+        print("Evaluation Result:", result)
+
+@xai_component(color='blue')
+class ExceptionHandler(Component):
+    """Executes a body branch and handles any exceptions that occur.
+
+    ##### Branches:
+    - body: The main execution path of components to execute.
+    - handler: The execution path if an exception occurs.
+
+    ##### outPorts:
+    - exception (str): The exception message if an exception is caught.
+    """
+    body: BaseComponent
+    handler: BaseComponent
+    exception: OutArg[str]
+
+    def execute(self, ctx):
+        try:
+            SubGraphExecutor.do(self.body, ctx)
+        except Exception as e:
+            self.exception.value = str(e)
+            print(e)
+            SubGraphExecutor.do(self.handler, ctx)

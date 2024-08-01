@@ -667,14 +667,12 @@ class RunParallelThread(Component):
     
     ##### outPorts:
     - futures (list): All futures created by this component.
-    - future (any): The last future created by this component.
     
     ##### Branches:
     - body: The body to be executed in parallel.
     """
     n_workers: InArg[int]
     futures: OutArg[list]
-    future: OutArg[any]
     body: BaseComponent
 
     def __init__(self):
