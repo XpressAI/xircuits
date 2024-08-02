@@ -76,23 +76,21 @@ export  class CustomPortModel extends DefaultPortModel  {
         if (!port.canLinkToLinkedPort()) {
             return false;
         }
-
-        let canTriangleLinkToTriangle = this.canTriangleLinkToTriangle(this, port);
-
-        if (canTriangleLinkToTriangle == false){
-            port.getNode().getOptions().extras["borderColor"]="red";
-            port.getNode().getOptions().extras["tip"]="Triangle must be linked to triangle.";
-            port.getNode().setSelected(true);
-            console.log("triangle to triangle failed.");
-            //tested
-            return false;
-        }
-
-        let canParameterLinkToPort = this.canParameterLinkToPort(this, port);
-
-        if(canParameterLinkToPort == false){
-            console.log("Parameter Link To Port failed.");
-            return false;
+    
+        // Check if it's a triangle-to-triangle link
+        if (this.options.label.includes('▶') || port.getOptions().label.includes('▶')) {
+            if (!this.canTriangleLinkToTriangle(this, port)) {
+                port.getNode().getOptions().extras["borderColor"]="red";
+                port.getNode().getOptions().extras["tip"]="Triangle must be linked to triangle.";
+                port.getNode().setSelected(true);
+                console.log("triangle to triangle failed.");
+                return false;
+            }
+        } else {
+            // Then check if it's a parameter link
+            if (!this.canParameterLinkToPort(this, port)) {
+                return false;
+            }
         }
 
         let checkLinkDirection = this.checkLinkDirection(this, port);
@@ -132,7 +130,7 @@ export  class CustomPortModel extends DefaultPortModel  {
 
             if (!thisName.startsWith("parameter")){
                 targetPort.getNode().getOptions().extras["borderColor"] = "red";
-                targetPort.getNode().getOptions().extras["tip"] = `Port ${thisLabel} linked is not a parameter, please link a non-parameter node to it.`;
+                targetPort.getNode().getOptions().extras["tip"] = `Port ${thisLabel} linked is not a parameter, please link a ${thisLabel} node to it.`;
                 targetPort.getNode().setSelected(true);
                 return false;
             }
