@@ -144,8 +144,8 @@ export  class CustomPortModel extends DefaultPortModel  {
 
         if(!targetPort.isTypeCompatible(sourceDataType, targetDataType)) {
             // if a list of types is provided for the port, parse it a bit to display it nicer
-            if (targetDataType.includes(',')) {
-                targetDataType = this.parsePortType(targetDataType);
+            if (targetDataType.includes('Union')) {
+                targetDataType = this.parseUnionPortType(targetDataType);
             }
             targetPort.getNode().getOptions().extras["borderColor"] = "red";
             targetPort.getNode().getOptions().extras["tip"] = `Incorrect data type. Port ${thisLabel} is of type *\`${targetDataType}\`*. You have provided type *\`${sourceDataType}\`*.`;
@@ -170,7 +170,7 @@ export  class CustomPortModel extends DefaultPortModel  {
     parseUnionType = (type: string): string[] => {
         const unionMatch = type.match(/^Union\[(.*)\]$/);
         if (unionMatch) {
-            return unionMatch[1].split('|').map(t => t.trim());
+            return unionMatch[1].split(/[\|,]/).map(t => t.trim());
         }
         return [type];
     }
@@ -378,11 +378,11 @@ export  class CustomPortModel extends DefaultPortModel  {
      * Parsed type looks like: type1 or type2
      * @param portType - unparsed port type (looks like: "Union[type1, type2]")
      */
-    parsePortType = (portType: string) => {
+    parseUnionPortType = (portType: string) => {
         // port type is of form: Union[type1, type2]
         portType = portType.replace('Union', '');    // remove Union word
         portType = portType.replace(/[\[\]]/g, '');  // remove square brackets
-        portType = portType.replace(',', ' or ');
+        portType = portType.replace(/[,|]/g, ' or ');   // replace all commas and pipes with ' or '
         return portType;
     }
 

@@ -457,7 +457,7 @@ export function addNodeActionCommands(
             const parseUnionType = (type: string): string[] => {
                 const unionMatch = type.match(/^Union\[(.*)\]$/);
                 if (unionMatch) {
-                    return unionMatch[1].split('|').map(t => t.trim());
+                    return unionMatch[1].split(/[\|,]/).map(t => t.trim());
                 }
                 return [type];
             };
