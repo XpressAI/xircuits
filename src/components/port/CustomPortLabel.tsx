@@ -157,7 +157,7 @@ export class CustomPortLabel extends React.Component<CustomPortLabelProps> {
 		} else {
 			portType = portName.split("-")[1];
 		}
-		if (portType.includes(',')) {
+		if (portType.includes('Union')) {
 			portType = 'union';
 		}
 		
