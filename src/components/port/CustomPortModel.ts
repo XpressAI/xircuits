@@ -77,13 +77,6 @@ export  class CustomPortModel extends DefaultPortModel  {
             return false;
         }
 
-        let canParameterLinkToPort = this.canParameterLinkToPort(this, port);
-
-        if(canParameterLinkToPort == false){
-            console.log("Parameter Link To Port failed.");
-            return false;
-        }
-
         let canTriangleLinkToTriangle = this.canTriangleLinkToTriangle(this, port);
 
         if (canTriangleLinkToTriangle == false){
@@ -92,6 +85,13 @@ export  class CustomPortModel extends DefaultPortModel  {
             port.getNode().setSelected(true);
             console.log("triangle to triangle failed.");
             //tested
+            return false;
+        }
+
+        let canParameterLinkToPort = this.canParameterLinkToPort(this, port);
+
+        if(canParameterLinkToPort == false){
+            console.log("Parameter Link To Port failed.");
             return false;
         }
 
@@ -137,8 +137,9 @@ export  class CustomPortModel extends DefaultPortModel  {
                 return false;
             }
         }
-
-        let sourceDataType = thisPort.dataType;
+        
+        // Use thisNodeModelType if sourceDataType is an empty string due to old workflow
+        let sourceDataType = thisPort.dataType || thisNodeModelType;
         let targetDataType = targetPort.dataType;
 
         if(!targetPort.isTypeCompatible(sourceDataType, targetDataType)) {
