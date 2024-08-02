@@ -485,7 +485,7 @@ export function addNodeActionCommands(
                     const inPortName = inPort.getOptions()['name'];
                     // handler for compulsory [★] ports
                     const inPortLabel = inPort.getOptions()['label'].replace(/★/g, '');
-                    const inPortType = inPort.getOptions()['dataType'];
+                    const inPortType = inPort.getOptions()['dataType'] ?? '';
                     const inPortLabelArr: string[] = inPortLabel.split('_');
                     const inPortTypes = parseUnionType(inPortType);
                     // Compare if there is similarity for each word
