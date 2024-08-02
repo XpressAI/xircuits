@@ -483,7 +483,8 @@ export function addNodeActionCommands(
                 for (let inPortIndex in inPorts) {
                     const inPort = inPorts[inPortIndex];
                     const inPortName = inPort.getOptions()['name'];
-                    const inPortLabel = inPort.getOptions()['label'];
+                    // handler for compulsory [★] ports
+                    const inPortLabel = inPort.getOptions()['label'].replace(/★/g, '');
                     const inPortType = inPort.getOptions()['dataType'];
                     const inPortLabelArr: string[] = inPortLabel.split('_');
                     const inPortTypes = parseUnionType(inPortType);
