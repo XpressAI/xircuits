@@ -2,7 +2,10 @@ from argparse import Namespace
 from typing import TypeVar, Generic, Tuple, NamedTuple, Callable, List
 from copy import deepcopy
 
+from asgiref.sync import async_to_sync, sync_to_async
+
 T = TypeVar('T')
+
 
 class OutArg(Generic[T]):
     def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
@@ -67,6 +70,7 @@ class InArg(Generic[T]):
             memo[id_self] = _copy
         return _copy
 
+
 class InCompArg(Generic[T]):
     def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
         self._value = value
@@ -98,6 +102,7 @@ class InCompArg(Generic[T]):
             memo[id_self] = _copy
         return _copy
 
+
 def xai_component(*args, **kwargs):
     # Passthrough element without any changes.
     # This is used for parser metadata only.
@@ -108,13 +113,16 @@ def xai_component(*args, **kwargs):
         # @xai_components(...) form
         def passthrough(f):
             return f
+
         return passthrough
+
 
 class ExecutionContext:
     args: Namespace
 
     def __init__(self, args: Namespace):
         self.args = args
+
 
 class BaseComponent:
     def __init__(self):
@@ -165,11 +173,12 @@ class BaseComponent:
                 setattr(_copy, key, deepcopy(getattr(self, key), memo))
         return _copy
 
+
 class Component(BaseComponent):
     next: BaseComponent
 
     def do(self, ctx) -> BaseComponent:
-        print(f"\nExecuting: {self.__class__.__name__}")
+        print(f"\nExecuting: {self.__class__.__name__}", flush=True)
         self.execute(ctx)
 
         return self.next
@@ -178,17 +187,34 @@ class Component(BaseComponent):
         return "<h1>Component</h1>"
 
 
+class AsyncComponent(BaseComponent):
+    next: BaseComponent
+
+    @async_to_sync
+    async def do(self, ctx) -> BaseComponent:
+        print(f"\nExecuting: {self.__class__.__name__}", flush=True)
+        await self.execute(ctx)
+        return self.next
+
+    def debug_repr(self) -> str:
+        return "<h1>AsyncComponent</h1>"
+
+
 class SubGraphExecutor:
-    
+
     def __init__(self, component):
         self.comp = component
-        
+
     def do(self, ctx):
         comp = self.comp
-        
+
         while comp is not None:
             comp = comp.do(ctx)
         return None
+
+    @sync_to_async
+    def do_async(self, ctx):
+        return self.do(ctx)
 
 
 def execute_graph(args: Namespace, start: BaseComponent, ctx) -> None:
@@ -207,18 +233,21 @@ def execute_graph(args: Namespace, start: BaseComponent, ctx) -> None:
         next_component = start.do(ctx)
         while next_component:
             next_component = next_component.do(ctx)
-            
+
 
 class secret:
     pass
+
 
 class message(NamedTuple):
     role: str
     content: str
 
+
 class chat(NamedTuple):
     messages: List[message]
-    
+
+
 class dynalist(list):
     def __init__(self, *args):
         super().__init__(args)
@@ -229,15 +258,18 @@ class dynalist(list):
             return []
         return [item.value if isinstance(item, (InArg, OutArg)) else item for item in x]
 
+
 class dynatuple(tuple):
     def __init__(self, *args):
         super().__init__(args)
+
     @staticmethod
     def getter(x):
         if x is None:
             return tuple()
+
         def resolve(item):
-            if isinstance(item, (InArg, InCompArg,OutArg)):
+            if isinstance(item, (InArg, InCompArg, OutArg)):
                 return item.value
             else:
                 return item

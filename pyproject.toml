@@ -29,7 +29,8 @@ dependencies = [
     "pygithub",
     "tqdm",
     "toml",
-    "importlib_resources"
+    "importlib_resources",
+    "asgiref"
 ]
 dynamic = ["version", "description", "authors", "urls", "keywords"]
 
