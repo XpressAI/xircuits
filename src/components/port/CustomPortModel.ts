@@ -76,23 +76,21 @@ export  class CustomPortModel extends DefaultPortModel  {
         if (!port.canLinkToLinkedPort()) {
             return false;
         }
-
-        let canParameterLinkToPort = this.canParameterLinkToPort(this, port);
-
-        if(canParameterLinkToPort == false){
-            console.log("Parameter Link To Port failed.");
-            return false;
-        }
-
-        let canTriangleLinkToTriangle = this.canTriangleLinkToTriangle(this, port);
-
-        if (canTriangleLinkToTriangle == false){
-            port.getNode().getOptions().extras["borderColor"]="red";
-            port.getNode().getOptions().extras["tip"]="Triangle must be linked to triangle.";
-            port.getNode().setSelected(true);
-            console.log("triangle to triangle failed.");
-            //tested
-            return false;
+    
+        // Check if it's a triangle-to-triangle link
+        if (this.options.label.includes('▶') || port.getOptions().label.includes('▶')) {
+            if (!this.canTriangleLinkToTriangle(this, port)) {
+                port.getNode().getOptions().extras["borderColor"]="red";
+                port.getNode().getOptions().extras["tip"]="Triangle must be linked to triangle.";
+                port.getNode().setSelected(true);
+                console.log("triangle to triangle failed.");
+                return false;
+            }
+        } else {
+            // Then check if it's a parameter link
+            if (!this.canParameterLinkToPort(this, port)) {
+                return false;
+            }
         }
 
         let checkLinkDirection = this.checkLinkDirection(this, port);
@@ -131,20 +129,21 @@ export  class CustomPortModel extends DefaultPortModel  {
         if (this.isParameterNode(thisNodeModelType) == true){
 
             if (!thisName.startsWith("parameter")){
-		        targetPort.getNode().getOptions().extras["borderColor"]="red";
-		        targetPort.getNode().getOptions().extras["tip"]= `Port ${thisLabel} linked is not a parameter, please link a non parameter node to it.`;
+                targetPort.getNode().getOptions().extras["borderColor"] = "red";
+                targetPort.getNode().getOptions().extras["tip"] = `Port ${thisLabel} linked is not a parameter, please link a ${thisLabel} node to it.`;
                 targetPort.getNode().setSelected(true);
                 return false;
             }
         }
-
-        let sourceDataType = thisPort.dataType;
+        
+        // Use thisNodeModelType if sourceDataType is an empty string due to old workflow
+        let sourceDataType = thisPort.dataType || thisNodeModelType;
         let targetDataType = targetPort.dataType;
 
         if(!targetPort.isTypeCompatible(sourceDataType, targetDataType)) {
             // if a list of types is provided for the port, parse it a bit to display it nicer
-            if (targetDataType.includes(',')) {
-                targetDataType = this.parsePortType(targetDataType);
+            if (targetDataType.includes('Union')) {
+                targetDataType = this.parseUnionPortType(targetDataType);
             }
             targetPort.getNode().getOptions().extras["borderColor"] = "red";
             targetPort.getNode().getOptions().extras["tip"] = `Incorrect data type. Port ${thisLabel} is of type *\`${targetDataType}\`*. You have provided type *\`${sourceDataType}\`*.`;
@@ -164,26 +163,54 @@ export  class CustomPortModel extends DefaultPortModel  {
         "chat": ["list"],
         "secret": ["string", "int", "float"],
     };
-
+    
+    // Helper function to parse Union types
+    parseUnionType = (type: string): string[] => {
+        const unionMatch = type.match(/^Union\[(.*)\]$/);
+        if (unionMatch) {
+            return unionMatch[1].split(/[\|,]/).map(t => t.trim());
+        }
+        return [type];
+    }
+    
+    // Helper function to map common types
+    mapCommonTypes = (type: string): string => {
+        const typeMapping = {
+            "str": "string",
+            "bool": "boolean",
+            "int": "integer",
+        };
+        return typeMapping[type] || type;
+    }
     isTypeCompatible(sourceDataType, targetDataType) {
-        // Check for direct compatibility or 'any' type
-        if (sourceDataType === targetDataType || sourceDataType === 'any' || targetDataType === 'any') {
-            return true;
-        }
+        // Helper function to check type compatibility including Union types
+        const checkTypeCompatibility = (sourceDataTypes, targetDataTypes) => {
+            for (const sourceDataType of sourceDataTypes) {
+                for (const targetDataType of targetDataTypes) {
+                    if (sourceDataType === targetDataType || sourceDataType === 'any' || targetDataType === 'any') {
+                        return true;
+                    }
 
-        // Check if the sourceDataType exists in the compatibility map
-        if (CustomPortModel.typeCompatibilityMap.hasOwnProperty(sourceDataType)) {
-            // Get the array of compatible data types for sourceDataType
-            const compatibleDataTypes = CustomPortModel.typeCompatibilityMap[sourceDataType];
-
-            // Check if targetDataType is in the array of compatible types
-            if (compatibleDataTypes.includes(targetDataType)) {
-                return true;
+                    // Check if the sourceDataType exists in the compatibility map
+                    if (CustomPortModel.typeCompatibilityMap.hasOwnProperty(sourceDataType)) {
+                        // Get the array of compatible data types for sourceDataType
+                        const compatibleDataTypes = CustomPortModel.typeCompatibilityMap[sourceDataType];
+                        // Check if targetDataType is in the array of compatible types
+                        if (compatibleDataTypes.includes(targetDataType)) {
+                            return true;
+                        }
+                    }
+                }
             }
-        }
-
-        // If multiple types are accepted by target node port, check if source port type is among them
-        if (targetDataType.includes(sourceDataType)) {
+            return false;
+        };
+    
+        // Parse and map Union types
+        const sourceDataTypes = this.parseUnionType(sourceDataType).map(this.mapCommonTypes);
+        const targetDataTypes = this.parseUnionType(targetDataType).map(this.mapCommonTypes);
+    
+        // Check for direct compatibility or 'any' type
+        if (checkTypeCompatibility(sourceDataTypes, targetDataTypes)) {
             return true;
         }
 
@@ -349,11 +376,11 @@ export  class CustomPortModel extends DefaultPortModel  {
      * Parsed type looks like: type1 or type2
      * @param portType - unparsed port type (looks like: "Union[type1, type2]")
      */
-    parsePortType = (portType: string) => {
+    parseUnionPortType = (portType: string) => {
         // port type is of form: Union[type1, type2]
         portType = portType.replace('Union', '');    // remove Union word
         portType = portType.replace(/[\[\]]/g, '');  // remove square brackets
-        portType = portType.replace(',', ' or ');
+        portType = portType.replace(/[,|]/g, ' or ');   // replace all commas and pipes with ' or '
         return portType;
     }
 

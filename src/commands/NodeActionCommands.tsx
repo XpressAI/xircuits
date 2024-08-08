@@ -457,7 +457,7 @@ export function addNodeActionCommands(
             const parseUnionType = (type: string): string[] => {
                 const unionMatch = type.match(/^Union\[(.*)\]$/);
                 if (unionMatch) {
-                    return unionMatch[1].split('|').map(t => t.trim());
+                    return unionMatch[1].split(/[\|,]/).map(t => t.trim());
                 }
                 return [type];
             };
@@ -483,8 +483,9 @@ export function addNodeActionCommands(
                 for (let inPortIndex in inPorts) {
                     const inPort = inPorts[inPortIndex];
                     const inPortName = inPort.getOptions()['name'];
-                    const inPortLabel = inPort.getOptions()['label'];
-                    const inPortType = inPort.getOptions()['dataType'];
+                    // handler for compulsory [★] ports
+                    const inPortLabel = inPort.getOptions()['label'].replace(/★/g, '');
+                    const inPortType = inPort.getOptions()['dataType'] ?? '';
                     const inPortLabelArr: string[] = inPortLabel.split('_');
                     const inPortTypes = parseUnionType(inPortType);
                     // Compare if there is similarity for each word
