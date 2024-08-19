@@ -36,5 +36,5 @@ export const commandIDs = {
   createNewComponentLibrary: "Xircuit-editor:new-component-library",
   refreshComponentList: "xircuits-sidebar:refresh-component-list",
   toggleDisplayNodesInLibrary: "xircuits-sidebar:toggle-display-nodes-in-library",
-  helpOpenTutorials: "xircuits-help:open-tutorials"
+  helpOpenResource: "xircuits-help:open-resource"
 };

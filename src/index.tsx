@@ -27,6 +27,7 @@ import { Token } from '@lumino/coreutils';
 import { DockLayout } from '@lumino/widgets';
 import { xircuitsIcon, componentLibIcon, changeFavicon, xircuitsFaviconLink } from './ui-components/icons';
 import { createInitXircuits } from './helpers/CanvasInitializer';
+import { addHelpResources } from './helpers/HelpResources';
 import type { CommandRegistry } from "@lumino/commands/src";
 import type { Signal } from "@lumino/signaling";
 import { commandIDs } from "./commands/CommandIDs";
@@ -163,6 +164,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     // Additional commands for chat actions
     addLibraryActionCommands(app, tracker, translator, widgetFactory);
 
+    // Additional main menu options for help resources
+    addHelpResources(app, mainMenu, translator);
 
     // Commands to emit WidgetFactory signals
     const emitSignal = (signal: Signal<unknown, unknown>) =>  (args: unknown) => signal.emit(args);
@@ -366,21 +369,6 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     app.contextMenu.addItem({
       command: commandIDs.copyXircuitsToRoot,
       selector: '.jp-DirListing-item[data-file-type="xircuits"]',
-    });
-
-    // Help Items
-    app.commands.addCommand(commandIDs.helpOpenTutorials, {
-      label: 'Tutorials',
-      icon: xircuitsIcon,
-      execute: () => {
-        window.open('https://xircuits.io/docs/category/tutorials');
-      }
-    });
-
-    mainMenu.helpMenu.addItem({
-      command: commandIDs.helpOpenTutorials,
-      args: { url: 'https://xircuits.io/docs/category/tutorials',
-      },
     });
 
     // Add a launcher item if the launcher is available.
