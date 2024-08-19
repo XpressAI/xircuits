@@ -31,6 +31,7 @@ import type { CommandRegistry } from "@lumino/commands/src";
 import type { Signal } from "@lumino/signaling";
 import { commandIDs } from "./commands/CommandIDs";
 import { IEditorTracker } from '@jupyterlab/fileeditor';
+import { IMainMenu } from '@jupyterlab/mainmenu';
 
 const FACTORY = 'Xircuits editor';
 
@@ -57,8 +58,9 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     ILayoutRestorer,
     IRenderMimeRegistry,
     IDocumentManager,
+    IMainMenu,
     ITranslator,
-    IEditorTracker
+    IEditorTracker,
   ],
   provides: IXircuitsDocTracker,
   activate: async (
@@ -68,6 +70,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     restorer: ILayoutRestorer,
     rendermime: IRenderMimeRegistry,
     docmanager: IDocumentManager,
+    mainMenu?: IMainMenu,
     translator?: ITranslator,
     editorTracker?: IEditorTracker,
   ) => {
@@ -363,6 +366,21 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     app.contextMenu.addItem({
       command: commandIDs.copyXircuitsToRoot,
       selector: '.jp-DirListing-item[data-file-type="xircuits"]',
+    });
+
+    // Help Items
+    app.commands.addCommand(commandIDs.helpOpenTutorials, {
+      label: 'Tutorials',
+      icon: xircuitsIcon,
+      execute: () => {
+        window.open('https://xircuits.io/docs/category/tutorials');
+      }
+    });
+
+    mainMenu.helpMenu.addItem({
+      command: commandIDs.helpOpenTutorials,
+      args: { url: 'https://xircuits.io/docs/category/tutorials',
+      },
     });
 
     // Add a launcher item if the launcher is available.
