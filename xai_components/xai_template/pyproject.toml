@@ -11,3 +11,4 @@ keywords = ["xircuits", "example components"]
 # Xircuits-specific configurations
 [tool.xircuits]
 requirements_path = "requirements.txt"
+default_example_path = "HelloTutorial.xircuits"

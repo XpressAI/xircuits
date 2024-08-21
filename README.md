@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://xircuits.io/">Docs</a> •
-  <a href="https://xircuits.io/docs/Installation">Install</a> •
+  <a href="https://xircuits.io/docs/main/Installation">Install</a> •
   <a href="https://xircuits.io/docs/category/tutorials">Tutorials</a> •
   <a href="https://xircuits.io/docs/category/developer-guide">Developer Guides</a> •
   <a href="https://github.com/XpressAI/xircuits/blob/master/CONTRIBUTING.md">Contribute</a> •
@@ -12,7 +12,8 @@
   <a href="https://discord.com/invite/vgEg2ZtxCw">Discord</a>
 <br>
   <a href="https://github.com/XpressAI/xircuits/tree/master/xai_components#xircuits-component-library-list">Component Libraries</a> •
-  <a href="https://github.com/XpressAI/xircuits/tree/master/project-templates#xircuits-project-templates-list">Project Templates</a>
+  <a href="https://github.com/XpressAI/xircuits/tree/master/project-templates#xircuits-project-templates-list">Project Templates</a> •
+  <a href="https://xpress.ai/">Enterprise</a>
 </p>
 
 <p>
@@ -44,20 +45,18 @@ Xircuits is a Jupyterlab-based extension that enables visual, low-code, training
   <summary><b>Rich Xircuits Canvas Interface</b></summary>
   <br>
   <p align="center">Unreal Engine-like Chain Component Interface<br>
-  <img src=https://user-images.githubusercontent.com/68586800/165813394-3d81e135-1c40-42c6-b480-7cba48114c1c.gif
+  <img src=https://xircuits.io/img/docs/interface-chain.gif
  width="600"></p>
 
   <p align="center">Custom Nodes and Ports<br>
-  <img src=https://user-images.githubusercontent.com/84708008/161918620-34e20908-f32d-406b-8e47-104e91249472.gif width="600"></p>
+  <img src=https://xircuits.io/img/docs/interface-custom-ports.gif width="600"></p>
   
   <p align="center">Smart Link and Type Check Logic<br>
-  <img src=https://user-images.githubusercontent.com/84708008/165257379-77776d0e-8b20-4ef9-820b-40b9e80697e4.gif width="600"></p>
+  <img src=https://xircuits.io/img/docs/interface-smart-link.gif width="600"></p>
   
   <p align="center">Component Tooltips<br>
   <img src=https://user-images.githubusercontent.com/84708008/163518580-186d4298-3344-4280-a87a-67be90eec13f.gif width="600"></p>
 
-  <p align="center">Dynamic Ports<br>
-  <img src=https://user-images.githubusercontent.com/68586800/270856813-47c39215-6874-430c-b4c1-cad6c848818e.gif width="600"></p>
 </details>
 
 <details>
@@ -80,17 +79,6 @@ Xircuits is a Jupyterlab-based extension that enables visual, low-code, training
 Xircuits is built on top of the shoulders of giants. Perform ML and DL using Tensorflow or Pytorch, accelerate your big data processing via Spark, or perform autoML using Pycaret. We're constantly updating our Xircuits library, so stay tuned for more!
 
 Didn't find what you're looking for? Creating Xircuits components is very easy! If it's in python - it can be made into a component. Your creativity is the limit, create components that are easily extendable!
-
-</details>
-
-<details>
-<summary><b>Effortless Collaboration</b></summary>
-Created a cool Xircuits workflow? Just pass the .xircuits file to your fellow data scientist, they will be able to load your Xircuits canvas instantly.
-
-![collab](https://user-images.githubusercontent.com/68586800/165814749-bd782c59-f4d1-4452-a668-48543006d69e.gif)
-
-Created a cool component library? All your colleagues need to do is to drop your component library folder in theirs and they can immediately use your components.
-
 
 </details>
 
@@ -124,9 +112,8 @@ $ xircuits
 # Development
 Creating workflows and components in Xircuits is easy. We've provided extensive guides for you in our [documentation](https://xircuits.io/). Here are a few quick links to get you started:
 
-
-- **Tutorials**: [Your First Xircuits Worflow](https://xircuits.io/docs/main/tutorials/running-a-xircuits-workflow) | [Running a Xircuits Project Template](https://xircuits.io/docs/main/tutorials/running-a-xircuits-project-template)
-- **Component Development**: [Creating a Xircuits Component](https://xircuits.io/docs/main/developer-guide/creating-a-xircuits-component) | [Creating a Xircuits Component Library](https://xircuits.io/docs/main/developer-guide/creating-a-xircuits-component-library)
+- **Tutorials**: [Your First Xircuits Workflow](https://xircuits.io/docs/main/tutorials/getting-started-with-xircuits) | [Running a Xircuits Project Template](https://xircuits.io/docs/project-template/running-a-xircuits-project-template)
+- **Component Development**: [Creating a Xircuits Component](https://xircuits.io/docs/main/tutorials/integrating-python-code-with-xircuits) | [Creating a Xircuits Component Library](https://xircuits.io/docs/main/developer-guide/creating-a-xircuits-component-library)
 - **Advanced**: [Xircuits Core Development](https://xircuits.io/docs/main/developer-guide/developing-xircuits-core-features)
 
 # Use Cases
@@ -146,8 +133,10 @@ Creating workflows and components in Xircuits is easy. We've provided extensive 
 ### Anomaly Detection
 ![anomaly-detection](https://user-images.githubusercontent.com/68586800/161716353-87def49c-af93-4819-9455-687de0b283df.gif)
 
-### NLP
-![nlp](https://user-images.githubusercontent.com/68586800/161892702-fbe51b93-846d-410a-bb80-75255c1a9565.gif)
-
 ## Developers Discord
 Have any questions? Feel free to chat with the devs at our [Discord](https://discord.com/invite/vgEg2ZtxCw)!
+
+## Enterprise Support
+For organizations looking to scale their Xircuits deployments or requiring additional features and support - the XpressAI Platform offers enhanced capabilities and dedicated support to transform your workflows into robust, production-ready applications. It's ideal for teams and enterprises seeking to maximize the potential of their Xircuits projects.
+
+Ready to take your Xircuits experience to the next level? Sign up for the XpressAI Platform [here](https://xpress.ai/).
