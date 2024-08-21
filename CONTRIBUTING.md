@@ -10,28 +10,28 @@ Contributors are always welcome in any of the categories whether it's core featu
 
 ### 1. Xircuits Component Libraries
 
-Xircuits is built on top of famous Python libraries and frameworks, we're always looking to expand our library. Here's a [guide](https://xircuits.io/docs/developer-guide/creating-a-xircuits-component-library) to get you started, and you can submit a PR to add it [here](https://github.com/XpressAI/xircuits/tree/master/xai_components#xircuits-component-library-list).
+Xircuits is built on top of famous Python libraries and frameworks, we're always looking to expand our library. Here's a [guide](https://xircuits.io/docs/main/developer-guide/contributing/contributing-a-xircuits-component-library) to get you started, and you can submit a PR to add it [here](https://github.com/XpressAI/xircuits/tree/master/xai_components#xircuits-component-library-list).
 
 ### 2. Xircuits Project Templates
 
-Are you using Xircuits for your project and would like to share it to the world? Here's a [guide](https://xircuits.io/docs/developer-guide/creating-a-xircuits-project-template) to start, then add to our project list [here](https://github.com/XpressAI/xircuits/tree/master/project-templates#list-of-open-source-project-templates).
+Are you using Xircuits for your project and would like to share it to the world? Here's a [guide](https://xircuits.io/docs/main/developer-guide/contributing/contributing-a-xircuits-project-template) to start, then add to our project list [here](https://github.com/XpressAI/xircuits/tree/master/project-templates#list-of-open-source-project-templates).
 
 ### 3. Xircuits Core Features 
 
-We have a [long list of features](https://github.com/XpressAI/xircuits/projects/1) we'd love to have for Xircuits. If you have expertise in JS/TS, you're more than welcome to give it a try. Here's the [core development guide](https://xircuits.io/docs/developer-guide/developing-xircuits-core-features
+We have a [long list of features](https://github.com/XpressAI/xircuits/projects/1) we'd love to have for Xircuits. If you have expertise in JS/TS, you're more than welcome to give it a try. Here's the [core development guide](https://xircuits.io/docs/main/developer-guide/developing-xircuits-core-features
 ) to help you.
 
 ### 4. Tests and Validation
 Xircuits is using [Playwright](https://playwright.dev/) to validate the builds. As currently it only validates a few core features (compiling and running), we're always looking to expand the tests. 
 
 ### 5. Documentation Updates
-Currently the documentation is hosted at https://xircuits.io/docs/. If you spot an error or would like to contribute your own guides, feel free to make a PR.
+Currently the documentation is hosted at https://xircuits.io/. If you spot an error or would like to contribute your own guides, feel free to make a PR.
 
 # Other
 
 ### Feature Requests
 
-Xircuits is still very young in its age and we have a long list of features that we want to implement. Please check the project tab to see if we have that feature already in our road map, and if not then use the [feature request template](https://github.com/XpressAI/xircuits/issues/new?assignees=&labels=&template=feature-request.md&title=) to request that feature. 
+Xircuits has a long list of features that we want to implement. Please check the project tab to see if we have that feature already in our road map, and if not then use the [feature request template](https://github.com/XpressAI/xircuits/issues/new?assignees=&labels=&template=feature-request.md&title=) to request that feature. 
 
 ### Reporting Bugs
 
