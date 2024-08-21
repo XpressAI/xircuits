@@ -19,16 +19,16 @@ export function addHelpResources(
 
   const resources: HelpResource[] = [
     {
-      text: trans.__('Xircuits Documentation'),
-      url: 'https://xircuits.io/docs/main/'
-    },
-    {
-      text: trans.__('Tutorials'),
+      text: trans.__('Xircuits Tutorials'),
       url: 'https://xircuits.io/docs/category/tutorials'
     },
     {
-      text: trans.__('How-Tos'),
-      url: 'https://xircuits.io/docs/category/how-tos'
+      text: trans.__('Xircuits Concepts'),
+      url: 'https://xircuits.io/docs/category/explanations'
+    },
+    {
+      text: trans.__('More Xircuits Documentation'),
+      url: 'https://xircuits.io/docs/main/'
     },
   ];
 
