@@ -27,10 +27,12 @@ import { Token } from '@lumino/coreutils';
 import { DockLayout } from '@lumino/widgets';
 import { xircuitsIcon, componentLibIcon, changeFavicon, xircuitsFaviconLink } from './ui-components/icons';
 import { createInitXircuits } from './helpers/CanvasInitializer';
+import { addHelpResources } from './helpers/HelpResources';
 import type { CommandRegistry } from "@lumino/commands/src";
 import type { Signal } from "@lumino/signaling";
 import { commandIDs } from "./commands/CommandIDs";
 import { IEditorTracker } from '@jupyterlab/fileeditor';
+import { IMainMenu } from '@jupyterlab/mainmenu';
 
 const FACTORY = 'Xircuits editor';
 
@@ -57,8 +59,9 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     ILayoutRestorer,
     IRenderMimeRegistry,
     IDocumentManager,
+    IMainMenu,
     ITranslator,
-    IEditorTracker
+    IEditorTracker,
   ],
   provides: IXircuitsDocTracker,
   activate: async (
@@ -68,6 +71,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     restorer: ILayoutRestorer,
     rendermime: IRenderMimeRegistry,
     docmanager: IDocumentManager,
+    mainMenu?: IMainMenu,
     translator?: ITranslator,
     editorTracker?: IEditorTracker,
   ) => {
@@ -160,6 +164,8 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     // Additional commands for chat actions
     addLibraryActionCommands(app, tracker, translator, widgetFactory);
 
+    // Additional main menu options for help resources
+    addHelpResources(app, mainMenu, translator);
 
     // Commands to emit WidgetFactory signals
     const emitSignal = (signal: Signal<unknown, unknown>) =>  (args: unknown) => signal.emit(args);
