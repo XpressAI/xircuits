@@ -797,7 +797,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				.reduce((cmd, param) => {
 					xircuitLogger.info(param + ": " + dialogResult.value[param]);
 					let filteredParam = param.replace(/\s+/g, "_");
-					filteredParam = filteredParam.toLowerCase();
 					return `${cmd} --${filteredParam} ${dialogResult.value[param]}`;
 				}, s);
 		}, "");
