@@ -715,16 +715,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		} else {
 			setRunConfigs("")
 		}
+		
+		const setterByType = {
+			'string': setStringNodes,
+			'int': setIntNodes,
+			'float': setFloatNodes,
+			'boolean': setBoolNodes,
+			'any': setAnyNodes
+		}
+
+		Object.values(setterByType).forEach(set => set([]));
 
 		context.ready.then(() => {
-			const setterByType = {
-				'string': setStringNodes,
-				'int': setIntNodes,
-				'float': setFloatNodes,
-				'boolean': setBoolNodes,
-				'any': setAnyNodes
-			}
-
 
 			if (initialize) {
 				let allNodes = xircuitsApp.getDiagramEngine().getModel().getNodes();
@@ -739,9 +741,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						setterByType[result[1]](nodes => ([...nodes, nodeText[nodeText.length -1]].sort()));
 					}
 				}
-			}
-			else {
-				Object.values(setterByType).forEach(set => set([]));
 			}
 		})
 	}, [initialize, runType]);
