@@ -69,9 +69,9 @@ export const RunDialog = ({
 
 	return (
 		<form>
-			{childStringNodes.length > 0 ? <h3 style={{ marginTop: 0, marginBottom: 5 }}>Arguments:</h3> : null}
+			{childStringNodes.length > 0 ? <h3 style={runDialogStyle.form.subheader}>Arguments:</h3> : null}
 			<div>{runConfigs.length != 0 ?
-				<><h4 style={{ marginTop: 2, marginBottom: 0 }}>Remote Execution</h4>
+				<><h4 style={runDialogStyle.form.header}>Remote Execution</h4>
 					<div>Available Run Type:
 						<HTMLSelect
 							onChange={(e) => handleTypeChange(e)}
@@ -109,7 +109,7 @@ export const RunDialog = ({
 							value={command}
 							minRows={10}
 							name='command'
-							style={{ width: 350, fontSize: 12 }}
+							style={runDialogStyle.form.textarea}
 							readOnly />
 					</div></>
 				: null}
@@ -127,7 +127,7 @@ export const RunDialog = ({
 			<div>
 				{
 					childBoolNodes.length != 0 ?
-						<><br /><h4 style={{ marginTop: 2, marginBottom: 0 }}>Boolean</h4></> : null
+						<><br /><h4 style={runDialogStyle.form.header}>Boolean</h4></> : null
 				}
 			</div>
 			{childBoolNodes.map((boolNode, i) =>
@@ -146,7 +146,7 @@ export const RunDialog = ({
 			<div>
 				{
 					childIntNodes.length != 0 ?
-						<><br /><h4 style={{ marginTop: 2, marginBottom: 0 }}>Integer</h4></> : null
+						<><br /><h4 style={runDialogStyle.form.header}>Integer</h4></> : null
 				}
 			</div>
 			{childIntNodes.map((intNode, i) =>
@@ -160,43 +160,14 @@ export const RunDialog = ({
 							step={1}
 							precision={0}
 							mobile={true}
-							style={{
-								wrap: {
-									boxShadow: '0 0 1px 1px #fff inset, 1px 1px 5px -1px #000',
-									padding: '2px 2.26ex 2px 2px',
-									borderRadius: '6px 3px 3px 6px',
-									fontSize: 20,
-									width: '60%'
-								},
-								input: {
-									borderRadius: '6px 3px 3px 6px',
-									padding: '0.1ex 1ex',
-									border: '#ccc',
-									marginRight: 4,
-									display: 'block',
-									fontWeight: 100,
-									width: '100%'
-								},
-								plus: {
-									background: 'rgba(255, 255, 255, 100)'
-								},
-								minus: {
-									background: 'rgba(255, 255, 255, 100)'
-								},
-								btnDown: {
-									background: 'rgba(0, 0, 0)'
-								},
-								btnUp: {
-									background: 'rgba(0, 0, 0)'
-								}
-							}}
+							style={runDialogStyle.form}
 						/>
 					</div>
 				</div>)}
 			<div>
 				{
 					childFloatNodes.length != 0 ?
-						<><br /><h4 style={{ marginTop: 2, marginBottom: 0 }}>Float</h4></> : null
+						<><br /><h4 style={runDialogStyle.form.header}>Float</h4></> : null
 				}
 			</div>
 			{childFloatNodes.map((floatNode, i) =>
@@ -210,39 +181,55 @@ export const RunDialog = ({
 							step={0.1}
 							precision={2}
 							mobile={true}
-							style={{
-								wrap: {
-									boxShadow: '0 0 1px 1px #fff inset, 1px 1px 5px -1px #000',
-									padding: '2px 2.26ex 2px 2px',
-									borderRadius: '6px 3px 3px 6px',
-									fontSize: 20,
-									width: '60%'
-								},
-								input: {
-									borderRadius: '6px 3px 3px 6px',
-									padding: '0.1ex 1ex',
-									border: '#ccc',
-									marginRight: 4,
-									display: 'block',
-									fontWeight: 100,
-									width: '100%'
-								},
-								plus: {
-									background: 'rgba(255, 255, 255, 100)'
-								},
-								minus: {
-									background: 'rgba(255, 255, 255, 100)'
-								},
-								btnDown: {
-									background: 'rgba(0, 0, 0)'
-								},
-								btnUp: {
-									background: 'rgba(0, 0, 0)'
-								}
-							}}
+							style={runDialogStyle.form}
 						/>
 					</div>
 				</div>)}
 		</form>
 	);
 }
+
+const runDialogStyle = {
+	form: {
+		wrap: {
+			boxShadow: '0 0 1px 1px #fff inset, 1px 1px 5px -1px #000',
+			padding: '2px 2.26ex 2px 2px',
+			borderRadius: '6px 3px 3px 6px',
+			fontSize: 20,
+			width: '60%'
+		},
+		input: {
+			borderRadius: '6px 3px 3px 6px',
+			padding: '0.1ex 1ex',
+			border: '#ccc',
+			marginRight: 4,
+			display: 'block',
+			fontWeight: 100,
+			width: '100%'
+		},
+		plus: {
+			background: 'rgba(255, 255, 255, 100)'
+		},
+		minus: {
+			background: 'rgba(255, 255, 255, 100)'
+		},
+		btnDown: {
+			background: 'rgba(0, 0, 0)'
+		},
+		btnUp: {
+			background: 'rgba(0, 0, 0)'
+		},
+		textarea: {
+			width: 350,
+			fontSize: 12
+		},
+		header: {
+			marginTop: 2,
+			marginBottom: 0
+		},
+		subheader: {
+			marginTop: 0,
+			marginBottom: 5
+		}
+	}
+};
