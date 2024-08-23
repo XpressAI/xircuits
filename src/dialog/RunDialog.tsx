@@ -18,59 +18,95 @@ export const RunDialog = ({
 	const [runType, setRunType] = useState("");
 	const [runConfig, setRunConfig] = useState("");
 	const [command, setCommand] = useState("");
+	const [placeholders, setPlaceholders] = useState<string[]>([]);
+	const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
 
 	const handleChecked = (e, i) => {
 		let newChecked = [...checked];
 		newChecked[i] = e;
 		setChecked(newChecked);
-		console.log("Boolean change: ", checked)
+		console.log("Boolean change: ", checked);
 	};
 
-	/**
-	 * Handle `change` events for the HTMLSelect component of run type.
-	 */
 	const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
 		let type = event.target.value;
 		setRunType(type);
 		setRunConfig("-");
 		setCommand("");
+		setPlaceholders([]);
 	};
 
-	/**
-	 * Handle `change` events for the HTMLSelect component for run config.
-	 */
 	const handleConfigChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
 		let configName = event.target.value;
 		setRunConfig(configName);
-		if (configName == "-") {
+		if (configName === "-") {
 			setCommand("");
+			setPlaceholders([]);
 		}
 	};
 
 	useEffect(() => {
-		if (runTypes.length != 0) {
+		if (runTypes.length !== 0) {
 			setRunType(runTypes[0].run_type);
 		}
 
-		if (lastConfig.length != 0) {
+		if (lastConfig.length !== 0) {
 			setRunType(lastConfig.run_type);
 			setRunConfig(lastConfig.run_config_name);
 			setCommand(lastConfig.command);
+			extractPlaceholders(lastConfig.command);
 		}
-	}, [])
+	}, []);
 
 	useEffect(() => {
-		if (runConfigs.length != 0) {
+		if (runConfigs.length !== 0) {
 			runConfigs.map(c => {
-				if (c.run_config_name == runConfig) setCommand(c.command);
-			})
+				if (c.run_config_name === runConfig) {
+					setCommand(c.command);
+					extractPlaceholders(c.command);
+				}
+			});
 		}
-	}, [runConfig])
+	}, [runConfig]);
+
+	const extractPlaceholders = (cmd: string) => {
+		const matches = cmd.match(/{[^}]+}/g);
+		if (matches) {
+			const cleanedMatches = matches.map(match => match.replace(/[{}]/g, ''));
+			setPlaceholders(cleanedMatches);
+
+			// Initialize inputValues with empty strings for each placeholder
+			const initialValues = cleanedMatches.reduce((acc, placeholder) => {
+				acc[placeholder] = "";
+				return acc;
+			}, {});
+			setInputValues(initialValues);
+		}
+	};
+
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, placeholder: string) => {
+		const newInputValues = { ...inputValues, [placeholder]: e.target.value };
+		setInputValues(newInputValues);
+	};
+
+	const renderTemplateInputFields = () => {
+		return placeholders.map((placeholder, i) => (
+			<div key={`placeholder-${i}`}>
+				<label>{placeholder}</label>
+				<input
+					type="text"
+					name={placeholder}
+					value={inputValues[placeholder]}
+					onChange={(e) => handleInputChange(e, placeholder)}
+				/>
+			</div>
+		));
+	};
 
 	return (
 		<form>
 			{childStringNodes.length > 0 ? <h3 style={runDialogStyle.form.subheader}>Arguments:</h3> : null}
-			<div>{runConfigs.length != 0 ?
+			<div>{runConfigs.length !== 0 ?
 				<><h4 style={runDialogStyle.form.header}>Remote Execution</h4>
 					<div>Available Run Type:
 						<HTMLSelect
@@ -96,7 +132,7 @@ export const RunDialog = ({
 							name='runConfig'
 						>
 							<option value="-">-</option>
-							{runConfigs.map((c, i) => ((c.run_type == runType) ?
+							{runConfigs.map((c, i) => ((c.run_type === runType) ?
 								<option id={c.id} key={`index-config-${i}`} value={c.run_config_name}>
 									{(c.run_config_name)}
 								</option> : null
@@ -106,7 +142,7 @@ export const RunDialog = ({
 					Configuration:
 					<div>
 						<TextareaAutosize
-							value={command}
+							value={command}  // Display the raw command
 							minRows={10}
 							name='command'
 							style={runDialogStyle.form.textarea}
@@ -114,6 +150,7 @@ export const RunDialog = ({
 					</div></>
 				: null}
 			</div>
+			{renderTemplateInputFields()}
 			<div></div>
 			{childStringNodes.map((stringNode, i) =>
 				<div key={`index-${i}`}>{stringNode}
