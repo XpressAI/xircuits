@@ -93,12 +93,15 @@ export const RunDialog = ({
 		return placeholders.map((placeholder, i) => (
 			<div key={`placeholder-${i}`}>
 				<label>{placeholder}</label>
-				<input
-					type="text"
-					name={placeholder}
-					value={inputValues[placeholder]}
-					onChange={(e) => handleInputChange(e, placeholder)}
-				/>
+				<div>
+					<input
+						type="text"
+						name={placeholder}
+						value={inputValues[placeholder]}
+						onChange={(e) => handleInputChange(e, placeholder)}
+						style={runDialogStyle.form.input}
+					/>
+				</div>
 			</div>
 		));
 	};
@@ -142,7 +145,7 @@ export const RunDialog = ({
 					Configuration:
 					<div>
 						<TextareaAutosize
-							value={command}  // Display the raw command
+							value={command}
 							minRows={10}
 							name='command'
 							style={runDialogStyle.form.textarea}
@@ -158,6 +161,7 @@ export const RunDialog = ({
 						<input
 							type="text"
 							name={stringNode}
+							// style={runDialogStyle.form.input}
 						/>
 					</div>
 				</div>)}

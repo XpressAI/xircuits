@@ -1,7 +1,17 @@
-export function doRemoteRun(path: string, command: string, msg: string, url){
+export function doRemoteRun(path: string, command: string, msg: string, url) {
+  try {
 
-    try {
-      let command_str = command + " " + path;
+      const envVariables = {
+          '$PYTHON_PATH': path,
+          '$XIRCUITS_PATH': path
+      };
+
+      Object.keys(envVariables).forEach(key => {
+          command = command.replace(new RegExp(`\\${key}`, 'g'), envVariables[key]);
+      });
+
+      let command_str = command;
+
       let code_str = "\nfrom subprocess import Popen, PIPE\n\n";
 
       code_str += `command_str= "${command_str}"\n`;
@@ -17,6 +27,6 @@ export function doRemoteRun(path: string, command: string, msg: string, url){
 
       return code_str;
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
   }
