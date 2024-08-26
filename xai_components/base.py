@@ -242,3 +242,11 @@ class dynatuple(tuple):
             else:
                 return item
         return tuple(resolve(item) for item in x)
+
+def parse_bool(value):
+    if value is None:
+        return None
+    if value.lower() in ('true', 't', 'yes', 'y', '1'):
+        return True
+    elif value.lower() in ('false', 'f', 'no', 'n', '0'):
+        return False

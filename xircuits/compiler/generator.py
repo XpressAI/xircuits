@@ -87,7 +87,7 @@ import sys
     def _generate_fixed_imports(self):
         fixed_imports = """
 from argparse import ArgumentParser
-from xai_components.base import SubGraphExecutor, InArg, OutArg, Component, xai_component
+from xai_components.base import SubGraphExecutor, InArg, OutArg, Component, xai_component, parse_bool
 
 """
         return ast.parse(fixed_imports).body
@@ -377,7 +377,6 @@ if __name__ == '__main__':
         type_mapping = {
             "int": "int",
             "string": "str",
-            "boolean": "bool",
             "float": "float",
             "any": "any"
         }
@@ -392,7 +391,10 @@ parser = ArgumentParser()
         for arg in argument_nodes:
             m = pattern.match(arg.name)
             arg_name = m.group(1)
-            tpl = "parser.add_argument('--%s', type=%s)" % (arg_name, type_mapping[arg.type])
+            if arg.type == "boolean":
+                tpl = "parser.add_argument('--%s', type=parse_bool, default=None, nargs='?', const=True)" % arg_name
+            else:
+                tpl = "parser.add_argument('--%s', type=%s)" % (arg_name, type_mapping[arg.type])
             body.extend(ast.parse(tpl).body)
 
         return body
