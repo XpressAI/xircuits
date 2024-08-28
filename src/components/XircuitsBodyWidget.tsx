@@ -746,7 +746,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}, [initialize, runType]);
 
 	const handleRunDialog = async () => {
-		let title = 'Run';
+		let title = 'Execute Workflow';
 		const dialogOptions: Partial<Dialog.IOptions<any>> = {
 			title,
 			body: formDialogWidget(

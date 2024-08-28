@@ -49,10 +49,10 @@ export const RunDialog = ({
 		} else {
 			const selectedConfig = runConfigs.find(config => config.run_config_name === configName);
 			if (selectedConfig) {
-			setCommand(selectedConfig.command);
-			const extractedPlaceholders = extractPlaceholders(selectedConfig.command);
-			setPlaceholders(extractedPlaceholders);
-			setInputValues(prefillInputValues(selectedConfig, extractedPlaceholders));
+				setCommand(selectedConfig.command);
+				const extractedPlaceholders = extractPlaceholders(selectedConfig.command);
+				setPlaceholders(extractedPlaceholders);
+				setInputValues(prefillInputValues(selectedConfig, extractedPlaceholders));
 			}
 		}
 	};
@@ -113,6 +113,33 @@ export const RunDialog = ({
 	};
 
 	const { uniqueNames, nameTypeMap } = gatherAndFilterNames();
+
+	const renderInputFields = () => {
+		const argumentFields = uniqueNames
+			.filter(name => nameTypeMap.get(name) !== 'placeholder')
+			.map((name, index) => renderInputField(name, nameTypeMap.get(name), index));
+		
+		const placeholderFields = uniqueNames
+			.filter(name => nameTypeMap.get(name) === 'placeholder')
+			.map((name, index) => renderInputField(name, nameTypeMap.get(name), index));
+
+		return (
+			<>
+				{argumentFields.length > 0 && (
+					<>
+						<h3 style={runDialogStyle.form.subheader}>Arguments:</h3>
+						{argumentFields}
+					</>
+				)}
+				{placeholderFields.length > 0 && (
+					<>
+						<h3 style={runDialogStyle.form.subheader}>Placeholders:</h3>
+						{placeholderFields}
+					</>
+				)}
+			</>
+		);
+	};
 
 	const renderInputField = (name: string, type: string, index: number) => {
 		const defaultValue = inputValues[name] || '';
@@ -212,59 +239,57 @@ export const RunDialog = ({
 
 	return (
 		<form>
-			{uniqueNames.length > 0 && <h3 style={runDialogStyle.form.subheader}>Arguments:</h3>}
-			<div>
-				{runConfigs.length !== 0 && (
-					<>
-						<h4 style={runDialogStyle.form.header}>Remote Execution</h4>
-						<div>
-							Available Run Type:
-							<HTMLSelect
-								onChange={(e) => handleTypeChange(e)}
-								value={runType}
-								aria-label={'Available Run Types'}
-								title={'Select the run type'}
-								name='runType'
-							>
-								{runTypes.map((type, i) => (
-									<option id={type.id} key={`index-type-${i}`} value={type.run_type}>
+			{runConfigs.length !== 0 && (
+				<>
+					<h3 style={runDialogStyle.form.header}>Remote Run</h3>
+					<div>
+						Available Run Type:
+						<HTMLSelect
+							onChange={(e) => handleTypeChange(e)}
+							value={runType}
+							aria-label={'Available Run Types'}
+							title={'Select the run type'}
+							name='runType'
+						>
+							{runTypes.map((type, i) => (
+								<option id={type.id} key={`index-type-${i}`} value={type.run_type}>
 									{type.run_type}
+								</option>
+							))}
+						</HTMLSelect>
+					</div>
+					<div>Available Run Config:
+						<HTMLSelect
+							onChange={(e) => handleConfigChange(e)}
+							value={runConfig}
+							aria-label={'Run Configuration'}
+							title={'Select which config to run'}
+							name='runConfig'
+						>
+							<option value="-">-</option>
+							{runConfigs.map((c, i) => (
+								c.run_type === runType && (
+									<option id={c.id} key={`index-config-${i}`} value={c.run_config_name}>
+										{c.run_config_name}
 									</option>
-								))}
-							</HTMLSelect>
-						</div>
-						<div>Available Run Config:
-							<HTMLSelect
-								onChange={(e) => handleConfigChange(e)}
-								value={runConfig}
-								aria-label={'Run Configuration'}
-								title={'Select which config to run'}
-								name='runConfig'
-							>
-								<option value="-">-</option>
-								{runConfigs.map((c, i) => (
-									c.run_type === runType && (
-										<option id={c.id} key={`index-config-${i}`} value={c.run_config_name}>
-											{c.run_config_name}
-										</option>
-									)
-								))}
-							</HTMLSelect>
-						</div>
-						Configuration:
-						<div>
-							<TextareaAutosize
-								value={command}
-								minRows={10}
-								name='command'
-								style={runDialogStyle.form.textarea}
-								readOnly
-							/>
-						</div>
-					</>
-				)}
-			</div>
-			{uniqueNames.map((name, index) => renderInputField(name, nameTypeMap.get(name), index))}
+								)
+							))}
+						</HTMLSelect>
+					</div>
+					Configuration:
+					<div>
+						<TextareaAutosize
+							value={command}
+							minRows={10}
+							name='command'
+							style={runDialogStyle.form.textarea}
+							readOnly
+						/>
+					</div>
+				</>
+			)}
+			
+			{renderInputFields()}
 		</form>
 	);
 };
