@@ -31,58 +31,58 @@ export const RunDialog = ({
 	};
 
 	const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
-		let type = event.target.value;
+		const type = event.target.value;
 		setRunType(type);
 		setRunConfig("-");
 		setCommand("");
 		setPlaceholders([]);
+		setInputValues({});
 	};
 
 	const handleConfigChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
-		let configName = event.target.value;
+		const configName = event.target.value;
 		setRunConfig(configName);
 		if (configName === "-") {
 			setCommand("");
 			setPlaceholders([]);
+			setInputValues({});
+		} else {
+			const selectedConfig = runConfigs.find(config => config.run_config_name === configName);
+			if (selectedConfig) {
+			setCommand(selectedConfig.command);
+			const extractedPlaceholders = extractPlaceholders(selectedConfig.command);
+			setPlaceholders(extractedPlaceholders);
+			setInputValues(prefillInputValues(selectedConfig, extractedPlaceholders));
+			}
 		}
 	};
 
 	useEffect(() => {
-		if (runTypes.length !== 0) {
+		if (runTypes.length > 0) {
 			setRunType(runTypes[0].run_type);
 		}
 
-		if (lastConfig.length !== 0) {
+		if (lastConfig) {
 			setRunType(lastConfig.run_type);
 			setRunConfig(lastConfig.run_config_name);
 			setCommand(lastConfig.command);
-			extractPlaceholders(lastConfig.command);
+			const extractedPlaceholders = extractPlaceholders(lastConfig.command);
+			setPlaceholders(extractedPlaceholders);
+			setInputValues(prefillInputValues(lastConfig, extractedPlaceholders));
 		}
 	}, []);
 
-	useEffect(() => {
-		if (runConfigs.length !== 0) {
-			runConfigs.forEach(config => {
-				if (config.run_config_name === runConfig) {
-					setCommand(config.command);
-					extractPlaceholders(config.command);
-				}
-			});
-		}
-	}, [runConfig]);
+	const extractPlaceholders = (cmd: string): string[] => {
+		const matches = cmd.match(/{[^}]+}/g) || [];
+		return matches.map(match => match.replace(/[{}]/g, ''));
+	};
 
-	const extractPlaceholders = (cmd: string) => {
-		const matches = cmd.match(/{[^}]+}/g);
-		if (matches) {
-			const cleanedMatches = matches.map(match => match.replace(/[{}]/g, ''));
-			setPlaceholders(cleanedMatches);
-
-			const initialValues = cleanedMatches.reduce((acc, placeholder) => {
-				acc[placeholder] = "";
-				return acc;
-			}, {});
-			setInputValues(initialValues);
-		}
+	const prefillInputValues = (config: any, placeholders: string[]): { [key: string]: string } => {
+		const newInputValues: { [key: string]: string } = {};
+		placeholders.forEach(placeholder => {
+			newInputValues[placeholder] = config[placeholder] || "";
+		});
+		return newInputValues;
 	};
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, name: string) => {
@@ -115,6 +115,8 @@ export const RunDialog = ({
 	const { uniqueNames, nameTypeMap } = gatherAndFilterNames();
 
 	const renderInputField = (name: string, type: string, index: number) => {
+		const defaultValue = inputValues[name] || '';
+		
 		switch (type) {
 			case 'string':
 				return (
@@ -124,34 +126,34 @@ export const RunDialog = ({
 							<input
 								type="text"
 								name={name}
-								value={inputValues[name] || ''}
+								value={defaultValue}
 								onChange={(e) => handleInputChange(e, name)}
 								style={runDialogStyle.form.input}
 							/>
 						</div>
 					</div>
 				);
-				case 'bool':
-					return (
-						<div key={`index-bool-${index}`}>
-							{name}
-							<div>
-								<Switch
-									checked={checkedState[name] || false}
-									name={name}
-									onChange={() => handleChecked(name)}
-									handleDiameter={25}
-									height={20}
-									width={48}
-								/>
-								<input 
-									type="hidden" 
-									name={name} 
-									value={(checkedState[name] || false) ? 'True' : 'False'}
-								/>
-							</div>
+			case 'bool':
+				return (
+					<div key={`index-bool-${index}`}>
+						{name}
+						<div>
+							<Switch
+								checked={checkedState[name] || false}
+								name={name}
+								onChange={() => handleChecked(name)}
+								handleDiameter={25}
+								height={20}
+								width={48}
+							/>
+							<input 
+								type="hidden" 
+								name={name} 
+								value={(checkedState[name] || false) ? 'True' : 'False'}
+							/>
 						</div>
-					)
+					</div>
+				)
 			case 'int':
 				return (
 					<div key={`index-int-${index}`}>
@@ -160,7 +162,7 @@ export const RunDialog = ({
 							<NumericInput
 								className="form-control"
 								name={name}
-								value={inputValues[name] || '0'}
+								value={defaultValue || '0'}
 								min={0}
 								step={1}
 								precision={0}
@@ -179,7 +181,7 @@ export const RunDialog = ({
 							<NumericInput
 								className="form-control"
 								name={name}
-								value={inputValues[name] || '0.00'}
+								value={defaultValue || '0.00'}
 								min={0}
 								step={0.1}
 								precision={2}
@@ -198,7 +200,7 @@ export const RunDialog = ({
 							<input
 								type="text"
 								name={name}
-								value={inputValues[name] || ''}
+								value={defaultValue}
 								onChange={(e) => handleInputChange(e, name)}
 								style={runDialogStyle.form.input}
 							/>
@@ -226,7 +228,7 @@ export const RunDialog = ({
 							>
 								{runTypes.map((type, i) => (
 									<option id={type.id} key={`index-type-${i}`} value={type.run_type}>
-										{type.run_type}
+									{type.run_type}
 									</option>
 								))}
 							</HTMLSelect>
