@@ -94,7 +94,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [saved, setSaved] = useState(false);
 	const [compiled, setCompiled] = useState(false);
 	const [initialize, setInitialize] = useState(true);
-	const [runConfigs, setRunConfigs] = useState<any>("");
+	const [remoteRunConfigs, setRemoteRunConfigs] = useState<any>("");
 	const [lastConfig, setLastConfigs] = useState<any>("");
 	const [stringNodes, setStringNodes] = useState<string[]>([]);
 	const [intNodes, setIntNodes] = useState<string[]>([]);
@@ -107,7 +107,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const [runType, setRunType] = useState<string>("run");
-	const [runTypesCfg, setRunTypesCfg] = useState<string>("");
+	const [remoteRunTypesCfg, setRemoteRunTypesCfg] = useState<string>("");
 	const initialRender = useRef(true);
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
@@ -692,7 +692,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 	}
 
-	const getRunTypeFromConfig = async () => {
+	const getRemoteRunTypeFromConfig = async () => {
 		const configuration = await getRunTypesFromConfig("RUN_TYPES");
 		const error_msg = configuration["err_msg"];
 		if (error_msg) {
@@ -704,16 +704,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				buttons: [Dialog.warnButton({ label: 'OK' })]
 			});
 		}
-		setRunTypesCfg(configuration["run_types"])
-		setRunConfigs(configuration["run_types_config"]);
+		setRemoteRunTypesCfg(configuration["run_types"])
+		setRemoteRunConfigs(configuration["run_types_config"]);
 	}
 
 	useEffect(() => {
 		// Get run configuration when in 'Remote Run' mode only
 		if (runType == 'remote-run') {
-			getRunTypeFromConfig();
+			getRemoteRunTypeFromConfig();
 		} else {
-			setRunConfigs("")
+			setRemoteRunConfigs("")
 		}
 		
 		const setterByType = {
@@ -751,8 +751,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			title,
 			body: formDialogWidget(
 				<RunDialog
-					runTypes={runTypesCfg}
-					runConfigs={runConfigs}
+					runType={runType}
+					remoteRunTypes={remoteRunTypesCfg}
+					remoteRunConfigs={remoteRunConfigs}
 					lastConfig={lastConfig}
 					childStringNodes={stringNodes}
 					childBoolNodes={boolNodes}
@@ -773,11 +774,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		// Remember the last config chose and set the chosen config to output
 		let config;
-		let runType = dialogResult["value"]['runType'] ?? "";
-		let runConfig = dialogResult["value"]['runConfig'] ?? "";
-		if (runConfigs.length != 0) {
-			runConfigs.map(cfg => {
-				if (cfg.run_type == runType && cfg.run_config_name == runConfig) {
+		let remoteRunType = dialogResult["value"]['remoteRunType'] ?? "";
+		let runConfig = dialogResult["value"]['remoteRunConfig'] ?? "";
+		if (remoteRunConfigs.length != 0) {
+			remoteRunConfigs.map(cfg => {
+				if (cfg.run_type == remoteRunType && cfg.run_config_name == runConfig) {
 					config = cfg;
 					setLastConfigs(cfg);
 				}

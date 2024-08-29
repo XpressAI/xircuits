@@ -5,8 +5,9 @@ import Switch from "react-switch";
 import { HTMLSelect } from "@jupyterlab/ui-components";
 
 export const RunDialog = ({
-	runTypes,
-	runConfigs,
+	runType,
+	remoteRunTypes,
+	remoteRunConfigs,
 	lastConfig,
 	childStringNodes,
 	childBoolNodes,
@@ -16,8 +17,8 @@ export const RunDialog = ({
 
 	const [checkedState, setCheckedState] = useState<{ [key: string]: boolean }>({});
 	const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
-	const [runType, setRunType] = useState("");
-	const [runConfig, setRunConfig] = useState("");
+	const [remoteRunType, setRemoteRunType] = useState("");
+	const [remoteRunConfig, setRemoteRunConfig] = useState("");
 	const [command, setCommand] = useState("");
 	const [placeholders, setPlaceholders] = useState<string[]>([]);
 
@@ -32,8 +33,8 @@ export const RunDialog = ({
 
 	const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
 		const type = event.target.value;
-		setRunType(type);
-		setRunConfig("-");
+		setRemoteRunType(type);
+		setRemoteRunConfig("-");
 		setCommand("");
 		setPlaceholders([]);
 		setInputValues({});
@@ -41,13 +42,13 @@ export const RunDialog = ({
 
 	const handleConfigChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
 		const configName = event.target.value;
-		setRunConfig(configName);
+		setRemoteRunConfig(configName);
 		if (configName === "-") {
 			setCommand("");
 			setPlaceholders([]);
 			setInputValues({});
 		} else {
-			const selectedConfig = runConfigs.find(config => config.run_config_name === configName);
+			const selectedConfig = remoteRunConfigs.find(config => config.run_config_name === configName);
 			if (selectedConfig) {
 				setCommand(selectedConfig.command);
 				const extractedPlaceholders = extractPlaceholders(selectedConfig.command);
@@ -58,13 +59,13 @@ export const RunDialog = ({
 	};
 
 	useEffect(() => {
-		if (runTypes.length > 0) {
-			setRunType(runTypes[0].run_type);
+		if (remoteRunTypes.length > 0) {
+			setRemoteRunType(remoteRunTypes[0].run_type);
 		}
 
 		if (lastConfig) {
-			setRunType(lastConfig.run_type);
-			setRunConfig(lastConfig.run_config_name);
+			setRemoteRunType(lastConfig.run_type);
+			setRemoteRunConfig(lastConfig.run_config_name);
 			setCommand(lastConfig.command);
 			const extractedPlaceholders = extractPlaceholders(lastConfig.command);
 			setPlaceholders(extractedPlaceholders);
@@ -114,7 +115,7 @@ export const RunDialog = ({
 
 	const { uniqueNames, nameTypeMap } = gatherAndFilterNames();
 
-	const renderInputFields = () => {
+	const renderArgumentAndPlaceholderSections = () => {
 		const argumentFields = uniqueNames
 			.filter(name => nameTypeMap.get(name) !== 'placeholder')
 			.map((name, index) => renderInputField(name, nameTypeMap.get(name), index));
@@ -131,7 +132,7 @@ export const RunDialog = ({
 						{argumentFields}
 					</>
 				)}
-				{placeholderFields.length > 0 && (
+				{runType === 'remote-run' && placeholderFields.length > 0 && (
 					<>
 						<h3 style={runDialogStyle.form.subheader}>Placeholders:</h3>
 						{placeholderFields}
@@ -239,19 +240,19 @@ export const RunDialog = ({
 
 	return (
 		<form>
-			{runConfigs.length !== 0 && (
+			{remoteRunConfigs.length !== 0 && (
 				<>
 					<h3 style={runDialogStyle.form.header}>Remote Run</h3>
 					<div>
 						Available Run Type:
 						<HTMLSelect
 							onChange={(e) => handleTypeChange(e)}
-							value={runType}
+							value={remoteRunType}
 							aria-label={'Available Run Types'}
 							title={'Select the run type'}
-							name='runType'
+							name='remoteRunType'
 						>
-							{runTypes.map((type, i) => (
+							{remoteRunTypes.map((type, i) => (
 								<option id={type.id} key={`index-type-${i}`} value={type.run_type}>
 									{type.run_type}
 								</option>
@@ -261,14 +262,14 @@ export const RunDialog = ({
 					<div>Available Run Config:
 						<HTMLSelect
 							onChange={(e) => handleConfigChange(e)}
-							value={runConfig}
+							value={remoteRunConfig}
 							aria-label={'Run Configuration'}
 							title={'Select which config to run'}
-							name='runConfig'
+							name='remoteRunConfig'
 						>
 							<option value="-">-</option>
-							{runConfigs.map((c, i) => (
-								c.run_type === runType && (
+							{remoteRunConfigs.map((c, i) => (
+								c.run_type === remoteRunType && (
 									<option id={c.id} key={`index-config-${i}`} value={c.run_config_name}>
 										{c.run_config_name}
 									</option>
@@ -289,7 +290,7 @@ export const RunDialog = ({
 				</>
 			)}
 			
-			{renderInputFields()}
+			{renderArgumentAndPlaceholderSections ()}
 		</form>
 	);
 };
