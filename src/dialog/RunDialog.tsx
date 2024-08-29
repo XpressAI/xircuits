@@ -21,7 +21,7 @@ export const RunDialog = ({
 	const [remoteRunConfig, setRemoteRunConfig] = useState("");
 	const [command, setCommand] = useState("");
 	const [placeholders, setPlaceholders] = useState<string[]>([]);
-
+    const [formattedCommand, setFormattedCommand] = useState("");
 
 	const handleChecked = (name: string) => {
 		setCheckedState(prev => {
@@ -86,9 +86,19 @@ export const RunDialog = ({
 		return newInputValues;
 	};
 
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, name: string) => {
-		setInputValues(prev => ({ ...prev, [name]: e.target.value }));
-	};
+    const substituteCommand = (cmd: string, values: { [key: string]: string }) => {
+        return cmd.replace(/{([^}]+)}/g, (_, key) => values[key] || `{${key}}`);
+    };
+
+    useEffect(() => {
+        setFormattedCommand(substituteCommand(command, inputValues));
+    }, [command, inputValues]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, name: string) => {
+        const newInputValues = { ...inputValues, [name]: e.target.value };
+        setInputValues(newInputValues);
+        setFormattedCommand(substituteCommand(command, newInputValues));
+    };
 
 	const gatherAndFilterNames = () => {
 		const allNames = [
@@ -136,6 +146,19 @@ export const RunDialog = ({
 					<>
 						<h3 style={runDialogStyle.form.subheader}>Placeholders:</h3>
 						{placeholderFields}
+
+						<div>
+							<h3 style={runDialogStyle.form.header}>Final Command:</h3>
+							<div>
+								<TextareaAutosize
+									value={formattedCommand}
+									minRows={1}
+									name='formattedCommand'
+									style={runDialogStyle.form.textarea}
+									readOnly
+								/>
+							</div>
+						</div>
 					</>
 				)}
 			</>
@@ -242,9 +265,9 @@ export const RunDialog = ({
 		<form>
 			{remoteRunConfigs.length !== 0 && (
 				<>
-					<h3 style={runDialogStyle.form.header}>Remote Run</h3>
+					<h2 style={runDialogStyle.form.header}>Remote Run</h2>
 					<div>
-						Available Run Type:
+						<h3 style={runDialogStyle.form.header}>Available Run Type:</h3>
 						<HTMLSelect
 							onChange={(e) => handleTypeChange(e)}
 							value={remoteRunType}
@@ -259,7 +282,8 @@ export const RunDialog = ({
 							))}
 						</HTMLSelect>
 					</div>
-					<div>Available Run Config:
+					<div>
+						<h3 style={runDialogStyle.form.header}>Available Run Config:</h3>
 						<HTMLSelect
 							onChange={(e) => handleConfigChange(e)}
 							value={remoteRunConfig}
@@ -277,20 +301,22 @@ export const RunDialog = ({
 							))}
 						</HTMLSelect>
 					</div>
-					Configuration:
 					<div>
-						<TextareaAutosize
-							value={command}
-							minRows={10}
-							name='command'
-							style={runDialogStyle.form.textarea}
-							readOnly
-						/>
+						<h3 style={runDialogStyle.form.header}>Command Template:</h3>
+						<div>
+							<TextareaAutosize
+								value={command}
+								minRows={5}
+								name='commandTemplate'
+								style={runDialogStyle.form.textarea}
+								readOnly
+							/>
+						</div>
 					</div>
 				</>
 			)}
 			
-			{renderArgumentAndPlaceholderSections ()}
+			{renderArgumentAndPlaceholderSections()}
 		</form>
 	);
 };

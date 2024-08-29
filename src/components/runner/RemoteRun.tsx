@@ -1,6 +1,6 @@
-export function doRemoteRun(path: string, config: { command: string, msg?: string, url?: string }) {
+export function doRemoteRun(path: string, config: { formattedCommand: string, msg?: string, url?: string }) {
   try {
-      const command = config.command;
+      const command = config.formattedCommand;
 
       if (!command) {
           throw new Error("Command is required for remote execution.");

@@ -779,8 +779,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (remoteRunConfigs.length != 0) {
 			remoteRunConfigs.map(cfg => {
 				if (cfg.run_type == remoteRunType && cfg.run_config_name == runConfig) {
-					config = cfg;
-					setLastConfigs(cfg);
+					config = { ...cfg, ...dialogResult["value"] };
+					setLastConfigs(config);
 				}
 			})
 		}
