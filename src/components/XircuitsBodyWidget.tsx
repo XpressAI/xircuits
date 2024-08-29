@@ -611,7 +611,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 			if (runType == 'remote-run') {
 			  // Run subprocess when run type is Remote Run
-			  code += doRemoteRun(model_path, config['command'], config['msg'], config['url']);
+			  code += doRemoteRun(model_path, config);
 			} else {
 			  code += "%run " + model_path + runCommand
 			}
