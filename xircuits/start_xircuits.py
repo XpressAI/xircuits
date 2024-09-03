@@ -25,13 +25,13 @@ def cmd_start_xircuits(args, extra_args=[]):
     # handler for extra jupyterlab launch options
     if extra_args:
         try:
-            launch_cmd = "jupyter lab" + " " + " ".join(extra_args) + " " + news_url_option
+            launch_cmd = "jupyter lab --ContentsManager.allow_hidden=True" + " " + " ".join(extra_args) + " " + news_url_option
             os.system(launch_cmd)
         except Exception as e:
             print("Error in launch args! Error log:\n")
             print(e)
     else:
-        os.system(f"jupyter lab {news_url_option}")
+        os.system(f"jupyter lab --ContentsManager.allow_hidden=True {news_url_option}")
 
 def cmd_download_examples(args, extra_args=[]):
     if not os.path.exists("examples") or is_empty("examples"):

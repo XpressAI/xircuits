@@ -371,6 +371,22 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       selector: '.jp-DirListing-item[data-file-type="xircuits"]',
     });
 
+    app.commands.addCommand(commandIDs.openXircuitsConfiguration, {
+      label: 'Open Xircuits Configurations',
+      icon: xircuitsIcon,
+      execute: async () => {
+        const configPath = `.xircuits/config.ini`;
+        await docmanager.openOrReveal(configPath);
+        }
+      }
+    );
+
+    mainMenu.settingsMenu.addGroup([
+      {
+        command: commandIDs.openXircuitsConfiguration,
+      },
+    ], -1);
+
     // Add a launcher item if the launcher is available.
     if (launcher) {
       launcher.add({
