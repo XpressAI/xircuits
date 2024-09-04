@@ -18,6 +18,8 @@ import { showFormDialog } from "../dialog/FormDialog";
 import { inputDialog } from "../dialog/LiteralInputDialog";
 import { getItsLiteralType } from "../dialog/input-dialogues/VariableInput";
 import { RunDialog } from "../dialog/RunDialog";
+import { LocalRunDialog } from "../dialog/LocalRunDialog";
+import { RemoteRunDialog } from "../dialog/RemoteRunDialog";
 import { requestAPI } from "../server/handler";
 import ComponentsPanel from "../context-menu/ComponentsPanel";
 import {
@@ -600,20 +602,22 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		// Run Mode
 		context.ready.then(async () => {
-			let runArgs = await handleRunDialog();
-			let runCommand = runArgs["runCommand"];
-			let config = runArgs["config"];
 
 			const current_path = context.path;
 			const model_path = current_path.split(".xircuits")[0] + ".py";
+			let code = startRunOutputStr();
 
-			let code = startRunOutputStr()
+			let runArgs;
 
-			if (runType == 'remote-run') {
-			  // Run subprocess when run type is Remote Run
-			  code += doRemoteRun(model_path, config);
-			} else {
-			  code += "%run " + model_path + runCommand
+			if (runType == 'run'){
+				runArgs = await handleLocalRunDialog();
+				code += "%run " + model_path + runArgs;
+			}
+			else if (runType == 'remote-run'){
+				runArgs = await handleRemoteRunDialog();
+				let config = runArgs["config"];
+				// Run subprocess when run type is Remote Run
+				code += doRemoteRun(model_path, config);
 			}
   
 			if (runArgs) {
@@ -745,13 +749,54 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		})
 	}, [initialize, runType]);
 
-	const handleRunDialog = async () => {
+	const handleLocalRunDialog = async () => {
 		let title = 'Execute Workflow';
 		const dialogOptions: Partial<Dialog.IOptions<any>> = {
 			title,
 			body: formDialogWidget(
-				<RunDialog
-					runType={runType}
+				<LocalRunDialog
+					childStringNodes={stringNodes}
+					childBoolNodes={boolNodes}
+					childIntNodes={intNodes}
+					childFloatNodes={floatNodes}
+				/>
+			),
+			buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Start') })],
+			defaultButton: 1,
+			focusNodeSelector: '#name'
+		};
+		const dialogResult = await showFormDialog(dialogOptions);
+	
+		if (dialogResult.button.label === 'Cancel') {
+			// When Cancel is clicked on the dialog, just return
+			return false;
+		}
+
+		const date = new Date();
+		xircuitLogger.info(`experiment name: ${date.toLocaleString()}`)
+
+		const runCommand = [
+			stringNodes.filter(param => param != "experiment name"),
+			boolNodes, intNodes, floatNodes
+		].filter(it => !!it).reduce((s, nodes) => {
+			return nodes
+				.filter(param => !!dialogResult.value[param])
+				.reduce((cmd, param) => {
+					xircuitLogger.info(param + ": " + dialogResult.value[param]);
+					let filteredParam = param.replace(/\s+/g, "_");
+					return `${cmd} --${filteredParam} ${dialogResult.value[param]}`;
+				}, s);
+		}, "");
+
+		return runCommand;
+	};
+
+	const handleRemoteRunDialog = async () => {
+		let title = 'Execute Workflow';
+		const dialogOptions: Partial<Dialog.IOptions<any>> = {
+			title,
+			body: formDialogWidget(
+				<RemoteRunDialog
 					remoteRunTypes={remoteRunTypesCfg}
 					remoteRunConfigs={remoteRunConfigs}
 					lastConfig={lastConfig}
@@ -767,11 +812,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		};
 		const dialogResult = await showFormDialog(dialogOptions);
 
-		if (dialogResult["button"]["label"] == 'Cancel') {
+		if (dialogResult.button.label === 'Cancel') {
 			// When Cancel is clicked on the dialog, just return
 			return false;
 		}
-
+		
 		// Remember the last config chose and set the chosen config to output
 		let config;
 		let remoteRunType = dialogResult["value"]['remoteRunType'] ?? "";
@@ -836,6 +881,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		runTypeXircuitSignal.connect((_, args) => {
 			runType = args["runType"];
 			setRunType(runType)
+			// console.log(runType)
 		});
 	}, [runTypeXircuitSignal])
 
