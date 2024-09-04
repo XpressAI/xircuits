@@ -176,14 +176,16 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         {label: "Run Xircuits", icon: runIcon, execute: emitSignal(widgetFactory.runXircuitSignal)}],
       [commandIDs.compileXircuit,
         {execute: emitSignal(widgetFactory.compileXircuitSignal)}],
-      [commandIDs.lockXircuit,
+      [commandIDs.fetchRemoteRunConfig,
+        {execute: emitSignal(widgetFactory.fetchRemoteRunConfigSignal)}],
+        [commandIDs.lockXircuit,
         {execute: emitSignal(widgetFactory.lockNodeSignal)}],
       [commandIDs.triggerLoadingAnimation,
         {execute: emitSignal(widgetFactory.triggerLoadingAnimationSignal)}],
       [commandIDs.reloadAllNodes,
         {execute: emitSignal(widgetFactory.reloadAllNodesSignal)}],
       [commandIDs.toggleAllLinkAnimation,
-        {execute: emitSignal(widgetFactory.toggleAllLinkAnimationSignal)}],
+        {execute: emitSignal(widgetFactory.toggleAllLinkAnimationSignal)}]
     ]
     signalConnections.forEach(([cmdId, def]) => app.commands.addCommand(cmdId, def))
 
@@ -285,6 +287,14 @@ const xircuits: JupyterFrontEndPlugin<void> = {
           if(context.path.startsWith("xai_components/")){
             console.info(`File ${context.path} changed. Reloading components...`);
             await app.commands.execute(commandIDs.refreshComponentList);
+          }
+        });
+      }
+
+      if (context.path.endsWith('config.ini')) {
+        context.fileChanged.connect(async () => {
+          if(context.path.startsWith(".xircuits/")){
+            await app.commands.execute(commandIDs.fetchRemoteRunConfig);
           }
         });
       }

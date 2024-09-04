@@ -37,5 +37,6 @@ export const commandIDs = {
   refreshComponentList: "xircuits-sidebar:refresh-component-list",
   toggleDisplayNodesInLibrary: "xircuits-sidebar:toggle-display-nodes-in-library",
   helpOpenResource: "xircuits-help:open-resource",
-  openXircuitsConfiguration: "xircuits-config:open-config"
+  openXircuitsConfiguration: "xircuits-config:open-config",
+  fetchRemoteRunConfig: "xircuits-config:fetch-remote-config"
 };

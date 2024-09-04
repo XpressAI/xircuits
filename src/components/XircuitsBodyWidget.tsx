@@ -44,6 +44,7 @@ export interface BodyWidgetProps {
 	widgetId?: string;
 	serviceManager: ServiceManager;
 	fetchComponentsSignal: Signal<XircuitsPanel, any>;
+	fetchRemoteRunConfigSignal: Signal<XircuitsPanel, any>;
 	saveXircuitSignal: Signal<XircuitsPanel, any>;
 	compileXircuitSignal: Signal<XircuitsPanel, any>;
 	runXircuitSignal: Signal<XircuitsPanel, any>;
@@ -81,6 +82,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	commands,
 	widgetId,
 	fetchComponentsSignal,
+	fetchRemoteRunConfigSignal,
 	saveXircuitSignal,
 	compileXircuitSignal,
 	runXircuitSignal,
@@ -859,6 +861,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		[saveXircuitSignal, handleSaveClick],
 		[compileXircuitSignal, handleCompileClick],
 		[runXircuitSignal, handleRunClick],
+		[fetchRemoteRunConfigSignal, getRemoteRunTypeFromConfig],
 		[lockNodeSignal, handleLockClick],
 		[triggerLoadingAnimationSignal, triggerLoadingAnimation],
 		[reloadAllNodesSignal, handleReloadAll],
@@ -878,7 +881,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		runTypeXircuitSignal.connect((_, args) => {
 			runType = args["runType"];
 			setRunType(runType)
-			// console.log(runType)
 		});
 	}, [runTypeXircuitSignal])
 

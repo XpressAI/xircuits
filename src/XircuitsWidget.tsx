@@ -18,6 +18,7 @@ export class XircuitsPanel extends ReactWidget {
   xircuitsApp: XircuitsApplication;
   serviceManager: ServiceManager;
   fetchComponentsSignal: Signal<this,any>;
+  fetchRemoteRunConfigSignal: Signal<this,any>;
   saveXircuitSignal: Signal<this, any>;
   compileXircuitSignal: Signal<this, any>;
   runXircuitSignal: Signal<this, any>;
@@ -38,6 +39,7 @@ export class XircuitsPanel extends ReactWidget {
     this.context = options.context;
     this.serviceManager = options.serviceManager;
     this.fetchComponentsSignal = options.fetchComponentsSignal;
+    this.fetchRemoteRunConfigSignal = options.fetchRemoteRunConfigSignal;
     this.saveXircuitSignal = options.saveXircuitSignal;
     this.compileXircuitSignal = options.compileXircuitSignal;
     this.runXircuitSignal = options.runXircuitSignal;
@@ -89,6 +91,7 @@ export class XircuitsPanel extends ReactWidget {
         widgetId={this.parent?.id}
         serviceManager={this.serviceManager}
         fetchComponentsSignal={this.fetchComponentsSignal}
+        fetchRemoteRunConfigSignal={this.fetchRemoteRunConfigSignal}
         saveXircuitSignal={this.saveXircuitSignal}
         compileXircuitSignal={this.compileXircuitSignal}
         runXircuitSignal={this.runXircuitSignal}
