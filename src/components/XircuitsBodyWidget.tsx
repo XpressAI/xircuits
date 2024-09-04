@@ -634,9 +634,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 		if(runType == 'remote-run'){
-			getRemoteRunTypeFromConfig();
+			await getRemoteRunTypeFromConfig();
 		}
-		saveAndCompileAndRun();
+		await saveAndCompileAndRun();
 	}
 
 	const handleLockClick = () => {
@@ -723,6 +723,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setRemoteRunTypesCfg(configuration["run_types"]);
 		setRemoteRunConfigs(configuration["run_types_config"]);
 	};
+
+	// fetch remote run config when toggling to remote run
+	useEffect(() => {
+			getRemoteRunTypeFromConfig();
+	}, [runType]);
 
 	useEffect(() => {
 		
