@@ -109,6 +109,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const [runType, setRunType] = useState<string>("run");
+	const [prevRemoteConfiguration, setPrevRemoteConfiguration] = useState(null);
 	const [remoteRunTypesCfg, setRemoteRunTypesCfg] = useState<string>("");
 	const initialRender = useRef(true);
 	const contextRef = useRef(context);
@@ -632,6 +633,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
+		if(runType == 'remote-run'){
+			getRemoteRunTypeFromConfig();
+		}
 		saveAndCompileAndRun();
 	}
 
@@ -708,17 +712,19 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				buttons: [Dialog.warnButton({ label: 'OK' })]
 			});
 		}
-		setRemoteRunTypesCfg(configuration["run_types"])
+	
+		// Compare new configuration with previous
+		if (JSON.stringify(configuration) !== JSON.stringify(prevRemoteConfiguration)) {
+			// Configuration has changed, reset lastConfig
+			setLastConfigs("");
+			setPrevRemoteConfiguration(configuration);
+		}
+	
+		setRemoteRunTypesCfg(configuration["run_types"]);
 		setRemoteRunConfigs(configuration["run_types_config"]);
-	}
+	};
 
 	useEffect(() => {
-		// Get run configuration when in 'Remote Run' mode only
-		if (runType == 'remote-run') {
-			getRemoteRunTypeFromConfig();
-		} else {
-			setRemoteRunConfigs("")
-		}
 		
 		const setterByType = {
 			'string': setStringNodes,
@@ -747,7 +753,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				}
 			}
 		})
-	}, [initialize, runType]);
+
+	}, [initialize]);
 
 	const handleLocalRunDialog = async () => {
 		let title = 'Execute Workflow';
@@ -1097,7 +1104,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		// note:  can not use the same port name in the same node,or the same name port can not link to other ports
-		// you can use shift + click and then use delete to delete link
 		if (node != null) {
 			let point = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
 			node.setPosition(point);
