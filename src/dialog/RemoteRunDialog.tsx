@@ -33,6 +33,14 @@ export const RemoteRunDialog: React.FC<RemoteRunDialogProps> = ({
   const [command, setCommand] = useState("");
   const [placeholders, setPlaceholders] = useState<string[]>([]);
   const [formattedCommand, setFormattedCommand] = useState("");
+  const [sectionsCollapsed, setSectionsCollapsed] = useState({
+    runType: false,
+    runConfig: false,
+    commandTemplate: false,
+    arguments: false,
+    placeholders: false,
+    finalCommand: false
+  });
 
   useEffect(() => {
     if (remoteRunTypes.length > 0) {
@@ -129,115 +137,183 @@ export const RemoteRunDialog: React.FC<RemoteRunDialogProps> = ({
     setInputValues(newInputValues);
   };
 
+  const toggleSection = (section: string) => {
+    setSectionsCollapsed(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
+
+  const renderCollapsibleSection = (title: string, content: React.ReactNode, section: string) => (
+    <div style={styles.collapsibleSection}>
+      <h3 
+        onClick={() => toggleSection(section)} 
+        style={styles.sectionHeader}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = styles.sectionHeaderHover.backgroundColor;
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = styles.sectionHeader.backgroundColor;
+        }}
+      >
+        {title} {sectionsCollapsed[section] ? '▼' : '▲'}
+      </h3>
+      {!sectionsCollapsed[section] && <div style={styles.sectionContent}>{content}</div>}
+    </div>
+  );
+
+
   const hasArguments = childStringNodes.length > 0 || childBoolNodes.length > 0 || 
                        childIntNodes.length > 0 || childFloatNodes.length > 0;
 
   return (
     <form>
       <h2>Remote Run</h2>
-      <div>
-        <h3>Available Run Type:</h3>
-        <HTMLSelect
-          onChange={(e) => handleTypeChange(e)}
-          value={remoteRunType}
-          aria-label={'Available Run Types'}
-          title={'Select the run type'}
-          name='remoteRunType'
-        >
-          {remoteRunTypes.map((type, i) => (
-            <option id={type.id} key={`index-type-${i}`} value={type.run_type}>
-              {type.run_type}
-            </option>
-          ))}
-        </HTMLSelect>
-      </div>
-      <div>
-        <h3>Available Run Config:</h3>
-        <HTMLSelect
-          onChange={(e) => handleConfigChange(e)}
-          value={remoteRunConfig}
-          aria-label={'Run Configuration'}
-          title={'Select which config to run'}
-          name='remoteRunConfig'
-        >
-          <option value="-">-</option>
-          {remoteRunConfigs.map((c, i) => (
-            c.run_type === remoteRunType && (
-              <option id={c.id} key={`index-config-${i}`} value={c.run_config_name}>
-                {c.run_config_name}
+      
+      {renderCollapsibleSection("Available Run Type", (
+        <div style={styles.select}>
+          <HTMLSelect
+            onChange={(e) => handleTypeChange(e)}
+            value={remoteRunType}
+            aria-label={'Available Run Types'}
+            title={'Select the run type'}
+            name='remoteRunType'
+          >
+            {remoteRunTypes.map((type, i) => (
+              <option id={type.id} key={`index-type-${i}`} value={type.run_type}>
+                {type.run_type}
               </option>
-            )
-          ))}
-        </HTMLSelect>
-      </div>
-      <div>
-        <h3>Command Template:</h3>
+            ))}
+          </HTMLSelect>
+        </div>
+      ), "runType")}
+
+      {renderCollapsibleSection("Available Run Config", (
+        <div style={styles.select}>
+          <HTMLSelect
+            onChange={(e) => handleConfigChange(e)}
+            value={remoteRunConfig}
+            aria-label={'Run Configuration'}
+            title={'Select which config to run'}
+            name='remoteRunConfig'
+          >
+            <option value="-">-</option>
+            {remoteRunConfigs.map((c, i) => (
+              c.run_type === remoteRunType && (
+                <option id={c.id} key={`index-config-${i}`} value={c.run_config_name}>
+                  {c.run_config_name}
+                </option>
+              )
+            ))}
+          </HTMLSelect>
+        </div>
+      ), "runConfig")}
+
+      {renderCollapsibleSection("Command Template", (
         <TextAreaInput
           name="commandTemplate"
           title=""
           oldValue={command}
           onChange={() => {}}
+          readOnly={true}
         />
-      </div>
+      ), "commandTemplate")}
 
-      {hasArguments && <h3>Arguments:</h3>}
-      {childStringNodes.map((name, index) => (
-        <StringInput 
-          key={`string-${index}`} 
-          name={name} 
-          title={name} 
-          oldValue={inputValues[name] || ""} 
-          onChange={(value) => handleInputChange(name, value)}
-        />
-      ))}
-      {childBoolNodes.map((name, index) => (
-        <BooleanInput 
-          key={`bool-${index}`} 
-          name={name} 
-          title={name} 
-          oldValue={checkedState[name] ? "true" : "false"} 
-          onChange={(value) => handleChecked(name, value)}
-        />
-      ))}
-      {childIntNodes.map((name, index) => (
-        <NumberInput 
-          key={`int-${index}`} 
-          name={name} 
-          title={name} 
-          oldValue={inputValues[name] || "0"} 
-          type="int" 
-          onChange={(value) => handleInputChange(name, value)}
-        />
-      ))}
-      {childFloatNodes.map((name, index) => (
-        <NumberInput 
-          key={`float-${index}`} 
-          name={name} 
-          title={name} 
-          oldValue={inputValues[name] || "0.00"} 
-          type="float" 
-          onChange={(value) => handleInputChange(name, value)}
-        />
-      ))}
+      {hasArguments && renderCollapsibleSection("Arguments", (
+        <>
+          {childStringNodes.map((name, index) => (
+            <StringInput 
+              key={`string-${index}`} 
+              name={name} 
+              title={name} 
+              oldValue={inputValues[name] || ""} 
+              onChange={(value) => handleInputChange(name, value)}
+            />
+          ))}
+          {childBoolNodes.map((name, index) => (
+            <BooleanInput 
+              key={`bool-${index}`} 
+              name={name} 
+              title={name} 
+              oldValue={checkedState[name] ? "true" : "false"} 
+              onChange={(value) => handleChecked(name, value)}
+            />
+          ))}
+          {childIntNodes.map((name, index) => (
+            <NumberInput 
+              key={`int-${index}`} 
+              name={name} 
+              title={name} 
+              oldValue={inputValues[name] || "0"} 
+              type="int" 
+              onChange={(value) => handleInputChange(name, value)}
+            />
+          ))}
+          {childFloatNodes.map((name, index) => (
+            <NumberInput 
+              key={`float-${index}`} 
+              name={name} 
+              title={name} 
+              oldValue={inputValues[name] || "0.00"} 
+              type="float" 
+              onChange={(value) => handleInputChange(name, value)}
+            />
+          ))}
+        </>
+      ), "arguments")}
 
-      {placeholders.length > 0 && <h3>Placeholders:</h3>}
-      {placeholders.map((name, index) => (
-        <StringInput 
-          key={`placeholder-${index}`} 
-          name={name}
-          title={name} 
-          oldValue={inputValues[name] || ""} 
-          onChange={(value) => handleInputChange(name, value)}
-        />
-      ))}
+      {placeholders.length > 0 && renderCollapsibleSection("Placeholders", (
+        <>
+          {placeholders.map((name, index) => (
+            <StringInput 
+              key={`placeholder-${index}`} 
+              name={name}
+              title={name} 
+              oldValue={inputValues[name] || ""} 
+              onChange={(value) => handleInputChange(name, value)}
+            />
+          ))}
+        </>
+      ), "placeholders")}
 
-      <h3>Final Command:</h3>
-      <TextAreaInput
-        name="formattedCommand"
-        title=""
-        oldValue={formattedCommand}
-        onChange={() => {}}
-      />
+      {renderCollapsibleSection("Final Command", (
+        <TextAreaInput
+          name="formattedCommand"
+          title=""
+          oldValue={formattedCommand}
+          onChange={() => {}}
+        />
+      ), "finalCommand")}
     </form>
   );
+};
+
+
+const styles = {
+
+  select: {
+    width: '100%',
+    height: 'auto',
+  },
+
+  collapsibleSection: {
+    marginBottom: '10px',
+  },
+  sectionHeader: {
+    backgroundColor: '#f0f0f0',
+    padding: '10px',
+    marginBottom: '0',
+    borderBottom: '1px solid #ddd',
+    cursor: 'pointer',
+    userSelect: 'none' as const,
+  },
+  sectionHeaderHover: {
+    backgroundColor: '#e0e0e0',
+  },
+  sectionContent: {
+    padding: '10px',
+    border: '1px solid #ddd',
+    borderTop: 'none',
+  },
 };

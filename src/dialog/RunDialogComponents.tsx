@@ -13,10 +13,10 @@ interface StringInputProps {
 export const StringInput: React.FC<StringInputProps> = ({ title, name, oldValue, onChange }) => {
     return (
         <div>
-            <h3>{title}</h3>
+            <h4>{title}</h4>
             <input
                 name={name}
-                style={{ width: 350 }}
+                style={{ width: 400 }}
                 defaultValue={oldValue}
                 onChange={(e) => onChange(e.target.value)}
             />
@@ -42,7 +42,7 @@ export const BooleanInput: React.FC<BooleanInputProps> = ({ title, name, oldValu
 
     return (
         <div>
-            <h3>{title}</h3>
+            <h4>{title}</h4>
             <Switch
                 checked={checked}
                 name={name}
@@ -72,7 +72,7 @@ interface NumberInputProps {
 export const NumberInput: React.FC<NumberInputProps> = ({ title, name, oldValue, type, onChange }) => {
     return (
         <div>
-            <h3>{title}</h3>
+            <h4>{title}</h4>
             <NumericInput
                 className="form-control"
                 name={name}
@@ -83,7 +83,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({ title, name, oldValue,
                 precision={type === 'float' ? 2 : 0}
                 mobile={true}
                 onChange={(valueAsNumber, valueAsString) => onChange(valueAsString)}
-                style={{ input: { width: 350 } }}
+                style={{ input: { width: 400 } }}
             />
         </div>
     );
@@ -94,18 +94,20 @@ interface TextAreaInputProps {
     name: string;
     oldValue: string;
     onChange: (value: string) => void;
+    readOnly?: boolean;
 }
 
-export const TextAreaInput: React.FC<TextAreaInputProps> = ({ title, name, oldValue, onChange }) => {
+export const TextAreaInput: React.FC<TextAreaInputProps> = ({ title, name, oldValue, onChange, readOnly = false }) => {
     return (
         <div>
-            <h3>{title}</h3>
+            <h4>{title}</h4>
             <TextareaAutosize
                 name={name}
                 defaultValue={oldValue}
                 minRows={5}
                 style={{ width: 400, fontSize: 12 }}
                 onChange={(e) => onChange(e.target.value)}
+                readOnly={readOnly}
             />
         </div>
     );
