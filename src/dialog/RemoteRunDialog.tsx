@@ -8,7 +8,7 @@ import {
 } from './RunDialogComponents';
 
 interface RemoteRunDialogProps {
-  remoteRunTypes,
+  remoteRunTypes;
   remoteRunConfigs: { id: string; run_type: string; run_config_name: string; command: string }[];
   lastConfig: { run_type: string; run_config_name: string; command: string } | null;
   childStringNodes: string[];
@@ -98,18 +98,39 @@ export const RemoteRunDialog: React.FC<RemoteRunDialogProps> = ({
   };
 
   const substituteCommand = (cmd: string, values: { [key: string]: string }) => {
-    return cmd.replace(/{([^}]+)}/g, (_, key) => values[key] || `{${key}}`);
+    let substitutedCmd = cmd.replace(/{([^}]+)}/g, (_, key) => values[key] || `{${key}}`);
+    
+    // Append argument values
+    const argumentValues = [
+      ...childStringNodes,
+      ...childBoolNodes,
+      ...childIntNodes,
+      ...childFloatNodes
+    ].map(name => {
+      if (childBoolNodes.includes(name)) {
+        return checkedState[name] ? `--${name}` : '';
+      }
+      return inputValues[name] ? `--${name} ${inputValues[name]}` : '';
+    }).filter(Boolean);
+
+    if (argumentValues.length > 0) {
+      substitutedCmd += ' ' + argumentValues.join(' ');
+    }
+
+    return substitutedCmd;
   };
 
   useEffect(() => {
     setFormattedCommand(substituteCommand(command, inputValues));
-  }, [command, inputValues]);
+  }, [command, inputValues, checkedState]);
 
   const handleInputChange = (name: string, value: string) => {
     const newInputValues = { ...inputValues, [name]: value };
     setInputValues(newInputValues);
-    setFormattedCommand(substituteCommand(command, newInputValues));
   };
+
+  const hasArguments = childStringNodes.length > 0 || childBoolNodes.length > 0 || 
+                       childIntNodes.length > 0 || childFloatNodes.length > 0;
 
   return (
     <form>
@@ -159,7 +180,7 @@ export const RemoteRunDialog: React.FC<RemoteRunDialogProps> = ({
         />
       </div>
 
-      <h3>Arguments:</h3>
+      {hasArguments && <h3>Arguments:</h3>}
       {childStringNodes.map((name, index) => (
         <StringInput 
           key={`string-${index}`} 
@@ -199,7 +220,7 @@ export const RemoteRunDialog: React.FC<RemoteRunDialogProps> = ({
         />
       ))}
 
-      <h3>Placeholders:</h3>
+      {placeholders.length > 0 && <h3>Placeholders:</h3>}
       {placeholders.map((name, index) => (
         <StringInput 
           key={`placeholder-${index}`} 
