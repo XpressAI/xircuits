@@ -31,7 +31,7 @@ import { cancelDialog, GeneralComponentLibrary } from "../tray_library/GeneralCo
 import { AdvancedComponentLibrary, fetchNodeByName } from "../tray_library/AdvanceComponentLib";
 import { lowPowerMode, setLowPowerMode } from "./state/powerModeState";
 import { startRunOutputStr } from "./runner/RunOutput";
-import { doRemoteRun } from "./runner/RemoteRun";
+import { buildRemoteRunCommand } from "./runner/RemoteRun";
 
 import styled from "@emotion/styled";
 import { commandIDs } from "../commands/CommandIDs";
@@ -616,9 +616,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			}
 			else if (runType == 'remote-run'){
 				runArgs = await handleRemoteRunDialog();
-				let config = runArgs["config"];
-				// Run subprocess when run type is Remote Run
-				code += doRemoteRun(model_path, config);
+				code += buildRemoteRunCommand(model_path, runArgs);
 			}
   
 			if (runArgs) {
@@ -842,23 +840,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			})
 		}
 
-		const date = new Date();
-		xircuitLogger.info(`experiment name: ${date.toLocaleString()}`)
-
-		const runCommand = [
-			stringNodes.filter(param => param != "experiment name"),
-			boolNodes, intNodes, floatNodes
-		].filter(it => !!it).reduce((s, nodes) => {
-			return nodes
-				.filter(param => !!dialogResult.value[param])
-				.reduce((cmd, param) => {
-					xircuitLogger.info(param + ": " + dialogResult.value[param]);
-					let filteredParam = param.replace(/\s+/g, "_");
-					return `${cmd} --${filteredParam} ${dialogResult.value[param]}`;
-				}, s);
-		}, "");
-
-		return { runCommand, config };
+		return config;
 	};
 
 	const connectSignal = ([signal, handler]) => {

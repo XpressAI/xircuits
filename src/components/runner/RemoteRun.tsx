@@ -1,4 +1,4 @@
-export function doRemoteRun(path: string, config: { formattedCommand: string, msg?: string, url?: string }) {
+export function buildRemoteRunCommand(path: string, config: { formattedCommand: string, msg?: string, url?: string }) {
   try {
       const command = config.formattedCommand;
 
