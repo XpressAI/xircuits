@@ -17,7 +17,6 @@ import { formDialogWidget } from "../dialog/formDialogwidget";
 import { showFormDialog } from "../dialog/FormDialog";
 import { inputDialog } from "../dialog/LiteralInputDialog";
 import { getItsLiteralType } from "../dialog/input-dialogues/VariableInput";
-import { RunDialog } from "../dialog/RunDialog";
 import { LocalRunDialog } from "../dialog/LocalRunDialog";
 import { RemoteRunDialog } from "../dialog/RemoteRunDialog";
 import { requestAPI } from "../server/handler";
@@ -603,24 +602,28 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		// Run Mode
 		context.ready.then(async () => {
-
 			const current_path = context.path;
 			const model_path = current_path.split(".xircuits")[0] + ".py";
 			let code = startRunOutputStr();
-
-			let runArgs;
-
-			if (runType == 'run'){
-				runArgs = await handleLocalRunDialog();
-				code += "%run " + model_path + runArgs;
+	
+			let result;
+	
+			if (runType == 'run') {
+				result = await handleLocalRunDialog();
+				if (result.status === 'ok') {
+					code += "%run " + model_path + result.args;
+				}
+			} else if (runType == 'remote-run') {
+				result = await handleRemoteRunDialog();
+				if (result.status === 'ok') {
+					code += buildRemoteRunCommand(model_path, result.args);
+				}
 			}
-			else if (runType == 'remote-run'){
-				runArgs = await handleRemoteRunDialog();
-				code += buildRemoteRunCommand(model_path, runArgs);
-			}
-  
-			if (runArgs) {
+	
+			if (result.status === 'ok') {
 				commands.execute(commandIDs.executeToOutputPanel, { code });
+			} else if (result.status === 'cancelled') {
+				console.log("Run operation cancelled by user.");
 			}
 		})
 	}
@@ -779,7 +782,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	
 		if (dialogResult.button.label === 'Cancel') {
 			// When Cancel is clicked on the dialog, just return
-			return false;
+			return { status: 'cancelled' };
 		}
 
 		const date = new Date();
@@ -798,7 +801,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				}, s);
 		}, "");
 
-		return runCommand;
+		return { status: 'ok', args: runCommand };
 	};
 
 	const handleRemoteRunDialog = async () => {
@@ -824,7 +827,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		if (dialogResult.button.label === 'Cancel') {
 			// When Cancel is clicked on the dialog, just return
-			return false;
+			return { status: 'cancelled' };
 		}
 		
 		// Remember the last config chose and set the chosen config to output
@@ -840,7 +843,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			})
 		}
 
-		return config;
+		return { status: 'ok', args: config };
 	};
 
 	const connectSignal = ([signal, handler]) => {
