@@ -386,10 +386,20 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       icon: xircuitsIcon,
       execute: async () => {
         const configPath = `.xircuits/config.ini`;
-        await docmanager.openOrReveal(configPath);
+        try {
+          // Check if the file exists first
+          await app.serviceManager.contents.get(configPath);
+          // If we reach here, the file exists, so we can try to open it
+          await docmanager.openOrReveal(configPath);
+        } catch (error) {
+          if (error.response && error.response.status === 404) {
+            alert('Xircuits configuration file not found. Check if it exists or enable hidden files when you launch Jupyter Lab.');
+          } else {
+            alert(`Error accessing Xircuits configuration: ${error.message}`);
+          }
         }
       }
-    );
+    });
 
     mainMenu.settingsMenu.addGroup([
       {
