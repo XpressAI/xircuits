@@ -17,7 +17,8 @@ import { formDialogWidget } from "../dialog/formDialogwidget";
 import { showFormDialog } from "../dialog/FormDialog";
 import { inputDialog } from "../dialog/LiteralInputDialog";
 import { getItsLiteralType } from "../dialog/input-dialogues/VariableInput";
-import { RunDialog } from "../dialog/RunDialog";
+import { LocalRunDialog } from "../dialog/LocalRunDialog";
+import { RemoteRunDialog } from "../dialog/RemoteRunDialog";
 import { requestAPI } from "../server/handler";
 import ComponentsPanel from "../context-menu/ComponentsPanel";
 import {
@@ -29,7 +30,7 @@ import { cancelDialog, GeneralComponentLibrary } from "../tray_library/GeneralCo
 import { AdvancedComponentLibrary, fetchNodeByName } from "../tray_library/AdvanceComponentLib";
 import { lowPowerMode, setLowPowerMode } from "./state/powerModeState";
 import { startRunOutputStr } from "./runner/RunOutput";
-import { doRemoteRun } from "./runner/RemoteRun";
+import { buildRemoteRunCommand } from "./runner/RemoteRun";
 
 import styled from "@emotion/styled";
 import { commandIDs } from "../commands/CommandIDs";
@@ -43,6 +44,7 @@ export interface BodyWidgetProps {
 	widgetId?: string;
 	serviceManager: ServiceManager;
 	fetchComponentsSignal: Signal<XircuitsPanel, any>;
+	fetchRemoteRunConfigSignal: Signal<XircuitsPanel, any>;
 	saveXircuitSignal: Signal<XircuitsPanel, any>;
 	compileXircuitSignal: Signal<XircuitsPanel, any>;
 	runXircuitSignal: Signal<XircuitsPanel, any>;
@@ -80,6 +82,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	commands,
 	widgetId,
 	fetchComponentsSignal,
+	fetchRemoteRunConfigSignal,
 	saveXircuitSignal,
 	compileXircuitSignal,
 	runXircuitSignal,
@@ -94,7 +97,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [saved, setSaved] = useState(false);
 	const [compiled, setCompiled] = useState(false);
 	const [initialize, setInitialize] = useState(true);
-	const [runConfigs, setRunConfigs] = useState<any>("");
+	const [remoteRunConfigs, setRemoteRunConfigs] = useState<any>("");
 	const [lastConfig, setLastConfigs] = useState<any>("");
 	const [stringNodes, setStringNodes] = useState<string[]>([]);
 	const [intNodes, setIntNodes] = useState<string[]>([]);
@@ -107,7 +110,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [inDebugMode, setInDebugMode] = useState<boolean>(false);
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const [runType, setRunType] = useState<string>("run");
-	const [runTypesCfg, setRunTypesCfg] = useState<string>("");
+	const [prevRemoteConfiguration, setPrevRemoteConfiguration] = useState(null);
+	const [remoteRunTypesCfg, setRemoteRunTypesCfg] = useState<string>("");
 	const initialRender = useRef(true);
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
@@ -600,24 +604,28 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		// Run Mode
 		context.ready.then(async () => {
-			let runArgs = await handleRunDialog();
-			let runCommand = runArgs["runCommand"];
-			let config = runArgs["config"];
-
 			const current_path = context.path;
 			const model_path = current_path.split(".xircuits")[0] + ".py";
-
-			let code = startRunOutputStr()
-
-			if (runType == 'remote-run') {
-			  // Run subprocess when run type is Remote Run
-			  code += doRemoteRun(model_path, config['command'], config['msg'], config['url']);
-			} else {
-			  code += "%run " + model_path + runCommand
+			let code = startRunOutputStr();
+	
+			let result;
+	
+			if (runType == 'run') {
+				result = await handleLocalRunDialog();
+				if (result.status === 'ok') {
+					code += "%run " + model_path + result.args;
+				}
+			} else if (runType == 'remote-run') {
+				result = await handleRemoteRunDialog();
+				if (result.status === 'ok') {
+					code += buildRemoteRunCommand(model_path, result.args);
+				}
 			}
-  
-			if (runArgs) {
+	
+			if (result.status === 'ok') {
 				commands.execute(commandIDs.executeToOutputPanel, { code });
+			} else if (result.status === 'cancelled') {
+				console.log("Run operation cancelled by user.");
 			}
 		})
 	}
@@ -628,7 +636,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
-		saveAndCompileAndRun();
+		if(runType == 'remote-run'){
+			await getRemoteRunTypeFromConfig();
+		}
+		await saveAndCompileAndRun();
 	}
 
 	const handleLockClick = () => {
@@ -692,7 +703,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 	}
 
-	const getRunTypeFromConfig = async () => {
+	const getRemoteRunTypeFromConfig = async () => {
 		const configuration = await getRunTypesFromConfig("RUN_TYPES");
 		const error_msg = configuration["err_msg"];
 		if (error_msg) {
@@ -704,27 +715,36 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				buttons: [Dialog.warnButton({ label: 'OK' })]
 			});
 		}
-		setRunTypesCfg(configuration["run_types"])
-		setRunConfigs(configuration["run_types_config"]);
-	}
+	
+		// Compare new configuration with previous
+		if (JSON.stringify(configuration) !== JSON.stringify(prevRemoteConfiguration)) {
+			// Configuration has changed, reset lastConfig
+			setLastConfigs("");
+			setPrevRemoteConfiguration(configuration);
+		}
+	
+		setRemoteRunTypesCfg(configuration["run_types"]);
+		setRemoteRunConfigs(configuration["run_types_config"]);
+	};
+
+	// fetch remote run config when toggling to remote run
+	useEffect(() => {
+			getRemoteRunTypeFromConfig();
+	}, [runType]);
 
 	useEffect(() => {
-		// Get run configuration when in 'Remote Run' mode only
-		if (runType == 'remote-run') {
-			getRunTypeFromConfig();
-		} else {
-			setRunConfigs("")
+		
+		const setterByType = {
+			'string': setStringNodes,
+			'int': setIntNodes,
+			'float': setFloatNodes,
+			'boolean': setBoolNodes,
+			'any': setAnyNodes
 		}
 
-		context.ready.then(() => {
-			const setterByType = {
-				'string': setStringNodes,
-				'int': setIntNodes,
-				'float': setFloatNodes,
-				'boolean': setBoolNodes,
-				'any': setAnyNodes
-			}
+		Object.values(setterByType).forEach(set => set([]));
 
+		context.ready.then(() => {
 
 			if (initialize) {
 				let allNodes = xircuitsApp.getDiagramEngine().getModel().getNodes();
@@ -740,21 +760,16 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					}
 				}
 			}
-			else {
-				Object.values(setterByType).forEach(set => set([]));
-			}
 		})
-	}, [initialize, runType]);
 
-	const handleRunDialog = async () => {
-		let title = 'Run';
+	}, [initialize]);
+
+	const handleLocalRunDialog = async () => {
+		let title = 'Execute Workflow';
 		const dialogOptions: Partial<Dialog.IOptions<any>> = {
 			title,
 			body: formDialogWidget(
-				<RunDialog
-					runTypes={runTypesCfg}
-					runConfigs={runConfigs}
-					lastConfig={lastConfig}
+				<LocalRunDialog
 					childStringNodes={stringNodes}
 					childBoolNodes={boolNodes}
 					childIntNodes={intNodes}
@@ -766,23 +781,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			focusNodeSelector: '#name'
 		};
 		const dialogResult = await showFormDialog(dialogOptions);
-
-		if (dialogResult["button"]["label"] == 'Cancel') {
+	
+		if (dialogResult.button.label === 'Cancel') {
 			// When Cancel is clicked on the dialog, just return
-			return false;
-		}
-
-		// Remember the last config chose and set the chosen config to output
-		let config;
-		let runType = dialogResult["value"]['runType'] ?? "";
-		let runConfig = dialogResult["value"]['runConfig'] ?? "";
-		if (runConfigs.length != 0) {
-			runConfigs.map(cfg => {
-				if (cfg.run_type == runType && cfg.run_config_name == runConfig) {
-					config = cfg;
-					setLastConfigs(cfg);
-				}
-			})
+			return { status: 'cancelled' };
 		}
 
 		const date = new Date();
@@ -797,12 +799,53 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				.reduce((cmd, param) => {
 					xircuitLogger.info(param + ": " + dialogResult.value[param]);
 					let filteredParam = param.replace(/\s+/g, "_");
-					filteredParam = filteredParam.toLowerCase();
 					return `${cmd} --${filteredParam} ${dialogResult.value[param]}`;
 				}, s);
 		}, "");
 
-		return { runCommand, config };
+		return { status: 'ok', args: runCommand };
+	};
+
+	const handleRemoteRunDialog = async () => {
+		let title = 'Execute Workflow';
+		const dialogOptions: Partial<Dialog.IOptions<any>> = {
+			title,
+			body: formDialogWidget(
+				<RemoteRunDialog
+					remoteRunTypes={remoteRunTypesCfg}
+					remoteRunConfigs={remoteRunConfigs}
+					lastConfig={lastConfig}
+					childStringNodes={stringNodes}
+					childBoolNodes={boolNodes}
+					childIntNodes={intNodes}
+					childFloatNodes={floatNodes}
+				/>
+			),
+			buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Start') })],
+			defaultButton: 1,
+			focusNodeSelector: '#name'
+		};
+		const dialogResult = await showFormDialog(dialogOptions);
+
+		if (dialogResult.button.label === 'Cancel') {
+			// When Cancel is clicked on the dialog, just return
+			return { status: 'cancelled' };
+		}
+		
+		// Remember the last config chose and set the chosen config to output
+		let config;
+		let remoteRunType = dialogResult["value"]['remoteRunType'] ?? "";
+		let runConfig = dialogResult["value"]['remoteRunConfig'] ?? "";
+		if (remoteRunConfigs.length != 0) {
+			remoteRunConfigs.map(cfg => {
+				if (cfg.run_type == remoteRunType && cfg.run_config_name == runConfig) {
+					config = { ...cfg, ...dialogResult["value"] };
+					setLastConfigs(config);
+				}
+			})
+		}
+
+		return { status: 'ok', args: config };
 	};
 
 	const connectSignal = ([signal, handler]) => {
@@ -818,6 +861,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		[saveXircuitSignal, handleSaveClick],
 		[compileXircuitSignal, handleCompileClick],
 		[runXircuitSignal, handleRunClick],
+		[fetchRemoteRunConfigSignal, getRemoteRunTypeFromConfig],
 		[lockNodeSignal, handleLockClick],
 		[triggerLoadingAnimationSignal, triggerLoadingAnimation],
 		[reloadAllNodesSignal, handleReloadAll],
@@ -1052,7 +1096,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		// note:  can not use the same port name in the same node,or the same name port can not link to other ports
-		// you can use shift + click and then use delete to delete link
 		if (node != null) {
 			let point = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
 			node.setPosition(point);

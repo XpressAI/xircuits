@@ -176,14 +176,16 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         {label: "Run Xircuits", icon: runIcon, execute: emitSignal(widgetFactory.runXircuitSignal)}],
       [commandIDs.compileXircuit,
         {execute: emitSignal(widgetFactory.compileXircuitSignal)}],
-      [commandIDs.lockXircuit,
+      [commandIDs.fetchRemoteRunConfig,
+        {execute: emitSignal(widgetFactory.fetchRemoteRunConfigSignal)}],
+        [commandIDs.lockXircuit,
         {execute: emitSignal(widgetFactory.lockNodeSignal)}],
       [commandIDs.triggerLoadingAnimation,
         {execute: emitSignal(widgetFactory.triggerLoadingAnimationSignal)}],
       [commandIDs.reloadAllNodes,
         {execute: emitSignal(widgetFactory.reloadAllNodesSignal)}],
       [commandIDs.toggleAllLinkAnimation,
-        {execute: emitSignal(widgetFactory.toggleAllLinkAnimationSignal)}],
+        {execute: emitSignal(widgetFactory.toggleAllLinkAnimationSignal)}]
     ]
     signalConnections.forEach(([cmdId, def]) => app.commands.addCommand(cmdId, def))
 
@@ -288,6 +290,14 @@ const xircuits: JupyterFrontEndPlugin<void> = {
           }
         });
       }
+
+      if (context.path.endsWith('config.ini')) {
+        context.fileChanged.connect(async () => {
+          if(context.path.startsWith(".xircuits/")){
+            await app.commands.execute(commandIDs.fetchRemoteRunConfig);
+          }
+        });
+      }
     });
 
     let outputPanel: OutputPanel;
@@ -370,6 +380,32 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       command: commandIDs.copyXircuitsToRoot,
       selector: '.jp-DirListing-item[data-file-type="xircuits"]',
     });
+
+    app.commands.addCommand(commandIDs.openXircuitsConfiguration, {
+      label: 'Open Xircuits Configurations',
+      icon: xircuitsIcon,
+      execute: async () => {
+        const configPath = `.xircuits/config.ini`;
+        try {
+          // Check if the file exists first
+          await app.serviceManager.contents.get(configPath);
+          // If we reach here, the file exists, so we can try to open it
+          await docmanager.openOrReveal(configPath);
+        } catch (error) {
+          if (error.response && error.response.status === 404) {
+            alert('Xircuits configuration file not found. Check if it exists or enable hidden files when you launch Jupyter Lab.');
+          } else {
+            alert(`Error accessing Xircuits configuration: ${error.message}`);
+          }
+        }
+      }
+    });
+
+    mainMenu.settingsMenu.addGroup([
+      {
+        command: commandIDs.openXircuitsConfiguration,
+      },
+    ], -1);
 
     // Add a launcher item if the launcher is available.
     if (launcher) {

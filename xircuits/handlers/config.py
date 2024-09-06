@@ -8,6 +8,7 @@ from configparser import ConfigParser
 
 def get_config():
     config = ConfigParser()
+    config.optionxform = str  # Make option names case-sensitive
     config.read([
         os.path.join(os.path.dirname(__file__), "..", "..", "xai_components", ".xircuits", "config.ini"),
         os.path.expanduser("~/.xircuits/config.ini"),
@@ -30,29 +31,30 @@ class RunConfigRouteHandler(APIHandler):
 
         try:
             get_run_types = str(cfg['REMOTE_EXECUTION'][config_request]).split('\n')
-            for id, run_type_name in enumerate(get_run_types):
+            for run_type_name in get_run_types:
                 run_configs = str(cfg['RUN_TYPES'][run_type_name]).split('\n')
                 for id, run_config_name in enumerate(run_configs):
                     run_cfg = cfg[run_config_name]
-                    configurations.append(
-                        {
-                            "id" : id,
-                            "run_type" : run_type_name,
-                            "run_config_name": run_cfg["name"],
-                            "command" : run_cfg["command"],
-                            "msg" : run_cfg["msg"],
-                            "url" : run_cfg["url"]
-                        })
+                    config_data = {
+                        "id": id,
+                        "run_type": run_type_name,
+                        "run_config_name": run_config_name,
+                    }
+                    
+                    # Add all key-value pairs from run_cfg to config_data
+                    for key, value in run_cfg.items():
+                        config_data[key] = value
+
+                    configurations.append(config_data)
                 run_types.append({"run_type": run_type_name})
         except Exception:
             err_msg = traceback.format_exc()
-            pass
 
         data = {
             "run_types": run_types,
             "run_types_config": configurations,
             "err_msg": err_msg
-            }
+        }
         self.finish(json.dumps(data))
 
 
