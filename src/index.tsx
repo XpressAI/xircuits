@@ -343,6 +343,53 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       },
     });
 
+    // Add a command for compiling a xircuits file from the file browser context menu.
+    app.commands.addCommand(commandIDs.compileWorkflowFromFileBrowser, {
+      label: 'Compile Xircuits',
+      icon: xircuitsIcon,
+      isVisible: () => {
+        // Ensure that the command only shows for xircuits files
+        return [...browserFactory.tracker.currentWidget.selectedItems()]
+          .filter(item => item.type === 'file' && item.path.endsWith('.xircuits'))
+          .length > 0;
+      },
+      execute: async () => {
+        const selectedItems = Array.from(browserFactory.tracker.currentWidget.selectedItems());
+
+        // Iterate through selected items and compile each one
+        for (const xircuitsFile of selectedItems) {
+          if (xircuitsFile.path.endsWith('.xircuits')) {
+            try {
+              // Retrieve the required compile parameters
+              const python_paths = {};  // Adjust this based on any additional needs
+              const request = await requestToGenerateCompileFile(xircuitsFile.path, python_paths);
+
+              if (request["message"] == "completed") {
+                const modelPath = xircuitsFile.path.split(".xircuits")[0] + ".py";
+                if (modelPath.startsWith("xai_components/")) {
+                  console.info(`File ${modelPath} changed. Reloading components...`);
+                  await app.commands.execute(commandIDs.refreshComponentList);
+                }
+                alert(`${modelPath} successfully compiled!`);
+              } else {
+                console.log(request["message"]);
+                alert("Failed to generate compiled code. Please check console logs for more details.");
+              }
+            } catch (err) {
+              console.error(`Error compiling Xircuits file: ${xircuitsFile.path}`, err);
+              alert(`Error compiling file: ${xircuitsFile.path}. Please check the console logs for more information.`);
+            }
+          }
+        }
+      }
+    });
+
+    // Add the compile command to the context menu of the file browser
+    app.contextMenu.addItem({
+      command: commandIDs.compileWorkflowFromFileBrowser,
+      selector: '.jp-DirListing-item[data-file-type="xircuits"]',
+    });
+
     app.commands.addCommand(commandIDs.copyXircuitsToRoot, {
       label: 'Copy To Root Directory',
       isVisible: () => [...browserFactory.tracker.currentWidget.selectedItems()].length > 0,
