@@ -248,35 +248,44 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     }
 
+    async function compileXircuitsFile(path: string, pythonPaths: any = {}, showOutput: boolean = false) {
+      try {
+        const request = await requestToGenerateCompileFile(path, pythonPaths);
+        if (request["message"] == "completed") {
+          const modelPath = path.split(".xircuits")[0] + ".py";
+          docmanager.closeFile(modelPath);
+   
+          if (showOutput) {
+            alert(`${modelPath} successfully compiled!`);
+          }
+          if (modelPath.startsWith("xai_components/")) {
+            console.info(`File ${modelPath} changed. Reloading components...`);
+            await app.commands.execute(commandIDs.refreshComponentList);
+          }
+        } else {
+          console.log(request["message"]);
+          alert("Failed to generate compiled code. Please check console logs for more details.");
+        }
+      } catch (err) {
+        console.error(`Error compiling Xircuits file: ${path}`, err);
+        alert(`Error compiling file: ${path}. Please check the console logs for more information.`);
+      }
+    }
+   
     app.commands.addCommand(commandIDs.compileFile, {
       execute: async args => {
         const path = tracker.currentWidget.context.path;
-        const showOutput = typeof args['showOutput'] === undefined ? false : (args['showOutput'] as boolean);
-
-        const python_paths = {};
+        const showOutput = args['showOutput'] !== undefined ? (args['showOutput'] as boolean) : false;
+   
+        const pythonPaths = {};
         (args['componentList'] === undefined ? [] : args['componentList'] as []).filter(it => it['python_path']).forEach(it => {
-          python_paths[it['name']] = it['python_path']
+          pythonPaths[it['name']] = it['python_path']
         });
-
-        const request = await requestToGenerateCompileFile(path, python_paths);
-
-        if (request["message"] == "completed") {
-          const model_path = path.split(".xircuits")[0] + ".py";
-          docmanager.closeFile(model_path);
-
-          if (showOutput) {
-            alert(`${model_path} successfully compiled!`);
-          }
-          if(model_path.startsWith("xai_components/")){
-             console.info(`File ${model_path} changed. Reloading components...`);
-             await app.commands.execute(commandIDs.refreshComponentList);
-          }
-        } else {
-          console.log(request["message"])
-          alert("Failed to generate compiled code. Please check console logs for more details.");
-        }
+   
+        await compileXircuitsFile(path, pythonPaths, showOutput);
       }
     });
+   
 
     // Auto-reload components when a component file changes
     editorTracker.widgetAdded.connect((sender, widget) => {
@@ -343,6 +352,29 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       },
     });
 
+    // Add a command for compiling a xircuits file from the file browser context menu.
+    app.commands.addCommand(commandIDs.compileWorkflowFromFileBrowser, {
+      label: 'Compile Xircuits',
+      icon: xircuitsIcon,
+      isVisible: () => {
+        // Ensure that the command only shows for xircuits files
+        return [...browserFactory.tracker.currentWidget.selectedItems()]
+          .filter(item => item.type === 'file' && item.path.endsWith('.xircuits'))
+          .length > 0;
+      },
+      execute: async () => {
+        const selectedItems = Array.from(browserFactory.tracker.currentWidget.selectedItems());
+
+        // Iterate through selected items and compile each one
+        for (const xircuitsFile of selectedItems) {
+          if (xircuitsFile.path.endsWith('.xircuits')) {
+            await compileXircuitsFile(xircuitsFile.path);
+          }
+        }
+      }
+    });
+
+
     app.commands.addCommand(commandIDs.copyXircuitsToRoot, {
       label: 'Copy To Root Directory',
       isVisible: () => [...browserFactory.tracker.currentWidget.selectedItems()].length > 0,
@@ -376,9 +408,24 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     });
 
+    // Add the compile command to the context menu of the file browser
+    app.contextMenu.addItem({
+      command: commandIDs.compileWorkflowFromFileBrowser,
+      selector: '.jp-DirListing-item[data-file-type="xircuits"]',
+      rank: 0
+    });
+
     app.contextMenu.addItem({
       command: commandIDs.copyXircuitsToRoot,
       selector: '.jp-DirListing-item[data-file-type="xircuits"]',
+      rank: 0
+    });
+
+    // Add a separator after Xircuits commands
+    app.contextMenu.addItem({
+      type: 'separator',
+      selector: '.jp-DirListing-item[data-file-type="xircuits"]',
+      rank: 0
     });
 
     app.commands.addCommand(commandIDs.openXircuitsConfiguration, {

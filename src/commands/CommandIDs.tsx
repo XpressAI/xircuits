@@ -30,6 +30,7 @@ export const commandIDs = {
   connectLinkToObviousPorts: "Xircuit-editor:connect-obvious-link",
   addCommentNode: "Xircuit-editor:add-comment-node",
   compileFile: "Xircuit-editor:compile-file",
+  compileWorkflowFromFileBrowser: "Xircuit-editor:compile-workflow-from-file-browser",
   nextNode: "Xircuit-editor:next-node",
   outputMsg: "Xircuit-log:logOutputMessage",
   executeToOutputPanel: "Xircuit-output-panel:execute",
