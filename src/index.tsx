@@ -371,6 +371,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
             await compileXircuitsFile(xircuitsFile.path);
           }
         }
+        browserFactory.tracker.currentWidget.model.refresh();
       }
     });
 
