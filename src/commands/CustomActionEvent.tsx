@@ -10,23 +10,25 @@ interface CustomActionEventOptions {
 
 export class CustomActionEvent extends Action {
     constructor(options: CustomActionEventOptions) {
-        
         super({
             type: InputType.KEY_DOWN,
             fire: (event: ActionEvent<React.KeyboardEvent>) => {
                 const app = options.app;
                 // @ts-ignore
-                if(app.shell._tracker._activeWidget && options.getWidgetId() === app.shell._tracker._activeWidget.id){
+                if (app.shell._tracker._activeWidget && options.getWidgetId() === app.shell._tracker._activeWidget.id) {
                     const keyCode = event.event.key;
                     const ctrlKey = event.event.ctrlKey;
 
                     const executeIf = (condition, command) => {
-                        if(condition){
-                            // @ts-ignore
-                            event.event.stopImmediatePropagation();
-                            app.commands.execute(command)
+                        if (condition) {
+                            event.event.preventDefault();
+                            event.event.stopPropagation();
+                            if (event.event.nativeEvent) {
+                                event.event.nativeEvent.stopImmediatePropagation();
+                            }
+                            app.commands.execute(command);
                         }
-                    }
+                    };
 
                     executeIf(ctrlKey && keyCode === 'z', commandIDs.undo);
                     executeIf(ctrlKey && keyCode === 'y', commandIDs.redo);
