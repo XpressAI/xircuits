@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   fill="none"
+   stroke="currentColor"
+   stroke-width="2"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   class="icon icon-tabler icons-tabler-outline icon-tabler-hammer"
+   version="1.1"
+   id="svg3"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <path
+     d="m 18.713843,18.074764 -3.100882,3.115581 a 0.87822621,0.87822621 0 0 0 0,1.246149 0.88620619,0.88620619 0 0 0 1.249931,0 l 3.11096,-3.101721"
+     id="path2"
+     style="stroke-width:0.840006" />
+  <path
+     d="m 21.530803,20.297839 1.086128,-1.086128 a 0.42000295,0.42000295 0 0 0 0,-0.593884 l -3.186142,-3.186141 a 0.42000295,0.42000295 0 0 0 -0.593886,0 l -1.086126,1.086127 a 0.42000295,0.42000295 0 0 0 0,0.593884 l 3.186142,3.186142 a 0.42000295,0.42000295 0 0 0 0.593884,0 z"
+     id="path3"
+     style="stroke-width:0.840006" />
+  <path
+     d="m 5.5934816,4.580678 v 14.713617 a 0.91960113,0.91960113 0 0 0 1.4014722,0.783501 L 18.949768,12.720987 a 0.91960113,0.91960113 0 0 0 0,-1.567 L 6.9949538,3.7971779 A 0.91960113,0.91960113 0 0 0 5.5934816,4.580678 Z"
+     id="path2-4"
+     style="fill:currentColor;"
+     stroke="none" />
+</svg>
