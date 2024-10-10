@@ -673,6 +673,7 @@ export function addNodeActionCommands(
     
         placeNodes(engine, model, newNodeModels, widget.mousePosition, centerX, centerY);
         recreateLinks(engine, model, clipboardLinks, idMap, widget.mousePosition, centerX, centerY);
+        app.commands.execute(commandIDs.reloadNode);
         engine.repaintCanvas();
     }
     
