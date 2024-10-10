@@ -416,7 +416,7 @@ export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
             return <CommentNode node={node} />;
         }
 
-        if (node.getOptions()["name"].startsWith('Literal') || node.getOptions()["name"].startsWith('Argument')) {
+        if (node.getOptions()["name"]?.startsWith('Literal') || node.getOptions()["name"]?.startsWith('Argument')) {
             return <ParameterNode node={node} engine={engine} app={app} />;
         }
 
