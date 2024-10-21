@@ -20,7 +20,7 @@ import { CustomPortModel } from '../components/port/CustomPortModel';
 import { CustomLinkModel, ParameterLinkModel, TriangleLinkModel } from '../components/link/CustomLinkModel';
 import { PointModel } from '@projectstorm/react-diagrams';
 import { Point } from '@projectstorm/geometry';
-import { handleArgumentInput, handleLiteralInput } from '../tray_library/GeneralComponentLib';
+import { createArgumentNode, createLiteralNode, handleArgumentInput, handleLiteralInput } from '../tray_library/GeneralComponentLib';
 import { CustomDynaPortModel } from '../components/port/CustomDynaPortModel';
 import { fetchComponents } from '../tray_library/Component';
 import { BaseComponentLibrary } from '../tray_library/BaseComponentLib';
@@ -232,8 +232,8 @@ export function addNodeActionCommands(
             await fetchComponents();
 
             const widget = tracker.currentWidget?.content as XircuitsPanel;
-            const engine = widget.xircuitsApp.getDiagramEngine()
-            const model = engine.getModel()
+            const engine = widget.xircuitsApp.getDiagramEngine();
+            const model = engine.getModel();
             const selected_entities = model.getSelectedEntities();
             const selected_nodes = selected_entities.filter(entity => entity instanceof NodeModel) as CustomNodeModel[];
             const nodesToRemove = [];
@@ -242,29 +242,56 @@ export function addNodeActionCommands(
 
             for (let selected_node of selected_nodes) {
 
-                if (
-                    selected_node.name.startsWith("Literal ") ||
-                    selected_node.name.startsWith("Argument ") ||
-                    selected_node.name == "Start"
-                ) {
+                if (selected_node.name == "Start") {
                     console.info(selected_node.name + " cannot be reloaded.");
                     continue;
                 }
             
                 let node;
             
-                if (selected_node.name == "Finish") {
+                if (selected_node.name.startsWith("Literal ")) {
+                    const nodeName = selected_node["name"];
+                    const label = selected_node.getPorts()["out-0"].getOptions()["label"];
+                    const nodeData = {
+                        color: selected_node["color"],
+                        type: selected_node["extras"]["type"],
+                    };
+                    const attached = selected_node["extras"]["attached"];
+    
+                    node = createLiteralNode({
+                        nodeName,
+                        nodeData,
+                        inputValue: label,
+                        type: nodeData.type,
+                        attached
+                    });
+    
+                } else if (selected_node.name.startsWith("Argument ")) {
+                    const nodeName = selected_node["name"];
+                    const nodeData = {
+                        color: selected_node["color"],
+                        type: selected_node["extras"]["type"],
+                    };
+                    const inputValue = nodeName.split(": ")[1];
+    
+                    node = createArgumentNode({
+                        nodeData,
+                        inputValue
+                    });
+    
+                } else if (selected_node.name == "Finish") {
                     node = BaseComponentLibrary('Finish');
                 } else {
                     // For other nodes, fetch from AdvancedComponentLibrary
                     try {
                         let current_node = await fetchNodeByName(selected_node.name);
                         node = AdvancedComponentLibrary({ model: current_node });
+                        node.setPosition(selected_node.getX(), selected_node.getY());
                     } catch (error) {
                         let path = selected_node.getOptions()["extras"].path;
                         console.log(`Error reloading component from path: ${path}. Error: ${error.message}`);
                         selected_node.getOptions().extras["tip"] = `Component could not be loaded from path: \`${path}\`.\nPlease ensure that the component exists!`;
-                        selected_node.getOptions().extras["borderColor"]="red";
+                        selected_node.getOptions().extras["borderColor"] = "red";
                         nodesToHighlight.push(selected_node);
                         continue;
                     }
@@ -293,8 +320,8 @@ export function addNodeActionCommands(
                                     link.setSourcePort(newSourcePort);
                                 } else {
                                     console.log(`Source port '${sourcePortName}' not found in reloaded node '${node.name}'.`);
-                                    linksToRemove.push(link)
-                                    continue
+                                    linksToRemove.push(link);
+                                    continue;
                                 }
                 
                             } else if (link.getTargetPort() === port) {
@@ -302,14 +329,14 @@ export function addNodeActionCommands(
                                 let targetPort = link.getTargetPort();
                                 let targetPortName = targetPort.getName();
                                 let newTargetPort = node.getPorts()[targetPortName];
-                                
-                                if (!newTargetPort){
+
+                                if (!newTargetPort) {
                                     console.log(`Target port '${targetPortName}' not found in reloaded node '${node.name}'.`);
-                                    linksToRemove.push(link)
-                                    continue
+                                    linksToRemove.push(link);
+                                    continue;
                                 }
 
-                                if (targetPort instanceof CustomDynaPortModel){
+                                if (targetPort instanceof CustomDynaPortModel) {
                                     const newPort = newTargetPort.spawnDynamicPort({ offset: 1 });
                                     newPort.previous = newTargetPort.getID();
                                     newTargetPort.next = newPort.getID();
@@ -646,7 +673,7 @@ export function addNodeActionCommands(
     
         placeNodes(engine, model, newNodeModels, widget.mousePosition, centerX, centerY);
         recreateLinks(engine, model, clipboardLinks, idMap, widget.mousePosition, centerX, centerY);
-    
+        app.commands.execute(commandIDs.reloadNode);
         engine.repaintCanvas();
     }
     
