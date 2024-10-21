@@ -709,3 +709,24 @@ class AwaitFutures(Component):
     def execute(self, ctx) -> None:
         from concurrent.futures import wait
         wait(self.futures.value)
+
+@xai_component
+class GetEnvVar(Component):
+    """
+    Fetches a variable from the environment and passes its value as an outport.
+    
+    ##### inPorts:
+    - var_name (str): The name of the environment variable to fetch (compulsory).
+    
+    ##### outPorts:
+    - var_value (str): The value of the environment variable, or None if the variable is not set.
+    """
+    var_name: InCompArg[str]
+    var_value: OutArg[str]
+
+    def execute(self, ctx) -> None:
+        env_var_name = self.var_name.value
+        self.var_value.value = os.getenv(env_var_name)
+               
+        if self.var_value.value is None:
+            print(f"Warning: Environment variable '{env_var_name}' is not set.")
