@@ -53,7 +53,7 @@ def recursive_compile(input_file_path, component_python_paths=None, visited_file
 
     # Compile the current workflow
     py_output_path = input_file_path.replace('.xircuits', '.py')
-    print(f"Compiling {input_file_path} to {py_output_path}")
+    # print(f"Compiling {input_file_path} to {py_output_path}")
 
     try:
         compile(input_file_path, py_output_path, component_python_paths=component_python_paths)

@@ -54,14 +54,12 @@ class CompileRecursiveXircuitsFileRouteHandler(APIHandler):
         input_data = self.get_json_body()
 
         input_file_path = self.__get_notebook_absolute_path__(input_data["filePath"])
-        output_file_path = self.__get_notebook_absolute_path__(input_data["outPath"])
-
         component_python_paths = input_data["pythonPaths"]
 
         msg = ""
 
         try:
-            recursive_compile(str(input_file_path), str(output_file_path), component_python_paths)
+            recursive_compile(str(input_file_path), component_python_paths=component_python_paths)
             msg = "completed"
         
         except Exception:

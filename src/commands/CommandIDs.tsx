@@ -7,7 +7,6 @@ export const commandIDs = {
   copyXircuitsToRoot: "Xircuit-editor:copy-to-root",
   saveXircuit: "Xircuit-editor:save-node",
   compileXircuit: "Xircuit-editor:compile-node",
-  compileRecursiveXircuit: "Xircuit-editor:compile-recursive-node",
   runXircuit: "Xircuit-editor:run-node",
   lockXircuit: "Xircuit-editor:lock-node",
   openScript: "Xircuit-editor:open-node-script",
