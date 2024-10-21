@@ -1,6 +1,6 @@
 from jupyter_server.utils import url_path_join
 
-from .compile_xircuits import CompileXircuitsFileRouteHandler
+from .compile_xircuits import CompileXircuitsFileRouteHandler, CompileRecursiveXircuitsFileRouteHandler
 from .components import ComponentsRouteHandler
 from .config import RunConfigRouteHandler, SplitModeConfigHandler
 from .debugger import DebuggerRouteHandler

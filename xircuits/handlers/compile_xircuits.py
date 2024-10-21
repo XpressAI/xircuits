@@ -21,18 +21,15 @@ class CompileXircuitsFileRouteHandler(APIHandler):
     def post(self):
         input_data = self.get_json_body()
 
-        input_file_path = input_data["filePath"]
-        output_file_path = input_data["outPath"]
+        input_file_path = self.__get_notebook_absolute_path__(input_data["filePath"])
+        output_file_path = self.__get_notebook_absolute_path__(input_data["outPath"])
 
         component_python_paths = input_data["pythonPaths"]
 
         msg = ""
 
         try:
-            with open(self.__get_notebook_absolute_path__(input_file_path), 'r', encoding='utf-8') as infile:
-                with open(self.__get_notebook_absolute_path__(output_file_path), 'w') as outfile:
-                    compile(infile, outfile, component_python_paths)
-
+            compile(str(input_file_path), str(output_file_path), component_python_paths)
             msg = "completed"
         
         except Exception:
@@ -41,7 +38,6 @@ class CompileXircuitsFileRouteHandler(APIHandler):
             pass
         
         finally:
-                
             data = {"message": msg}
             self.finish(json.dumps(data))
 
@@ -57,18 +53,15 @@ class CompileRecursiveXircuitsFileRouteHandler(APIHandler):
     def post(self):
         input_data = self.get_json_body()
 
-        input_file_path = input_data["filePath"]
-        output_file_path = input_data["outPath"]
+        input_file_path = self.__get_notebook_absolute_path__(input_data["filePath"])
+        output_file_path = self.__get_notebook_absolute_path__(input_data["outPath"])
 
         component_python_paths = input_data["pythonPaths"]
 
         msg = ""
 
         try:
-            with open(self.__get_notebook_absolute_path__(input_file_path), 'r', encoding='utf-8') as infile:
-                with open(self.__get_notebook_absolute_path__(output_file_path), 'w') as outfile:
-                    recursive_compile(infile, outfile, component_python_paths)
-
+            recursive_compile(str(input_file_path), str(output_file_path), component_python_paths)
             msg = "completed"
         
         except Exception:
@@ -77,6 +70,5 @@ class CompileRecursiveXircuitsFileRouteHandler(APIHandler):
             pass
         
         finally:
-                
             data = {"message": msg}
             self.finish(json.dumps(data))
