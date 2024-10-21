@@ -5,6 +5,8 @@ import lockSvg from '../../style/icons/lock.svg';
 import breakpointSvg from '../../style/icons/breakpoint.svg';
 import nextSvg from '../../style/icons/next.svg';
 import revertSvg from '../../style/icons/revert.svg';
+import compileSvg from '../../style/icons/compile.svg';
+import compileRunSvg from '../../style/icons/compile-run.svg';
 import componentLibSvg from '../../style/icons/component-library.svg';
 import reloadAllSvg from '../../style/icons/reload-all.svg';
 import toggleAnimationSvg from '../../style/icons/low-power.svg';
@@ -25,6 +27,8 @@ export const lockIcon = new LabIcon({ name: 'xircuits:lockIcon', svgstr: lockSvg
 export const breakpointIcon = new LabIcon({ name: 'xircuits:breakpointIcon', svgstr: breakpointSvg });
 export const nextIcon = new LabIcon({ name: 'xircuits:nextIcon', svgstr: nextSvg });
 export const revertIcon = new LabIcon({ name: 'xircuits:revertIcon', svgstr: revertSvg });
+export const compileIcon = new LabIcon({ name: 'xircuits:compileIcon', svgstr: compileSvg });
+export const compileRunIcon = new LabIcon({ name: 'xircuits:compileRunIcon', svgstr: compileRunSvg });
 export const reloadAllIcon = new LabIcon({ name: 'xircuits:reloadAllIcon', svgstr: reloadAllSvg });
 export const toggleAnimationIcon = new LabIcon({ name: 'xircuits:toggleAnimationIcon', svgstr: toggleAnimationSvg });
 export const componentLibIcon = new LabIcon({ name: 'xircuits:componentLibIcon', svgstr: componentLibSvg });

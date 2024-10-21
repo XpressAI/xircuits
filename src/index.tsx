@@ -236,14 +236,14 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       };
 
       try {
-        return await requestAPI<any>('file/compile', {
+        return await requestAPI<any>('file/compile-recursive', {
           body: JSON.stringify(data),
           method: 'POST',
         });
 
       } catch (reason) {
         console.error(
-          'Error on POST /xircuits/file/compile', data, reason
+          'Error on POST /xircuits/file/compile-recursive', data, reason
         );
       }
     }
@@ -371,6 +371,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
             await compileXircuitsFile(xircuitsFile.path);
           }
         }
+        browserFactory.tracker.currentWidget.model.refresh();
       }
     });
 

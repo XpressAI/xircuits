@@ -10,7 +10,6 @@ import {
 import { Signal } from '@lumino/signaling';
 import { XircuitsPanel } from './XircuitsWidget';
 import {
-  checkIcon,
   copyIcon,
   cutIcon,
   listIcon,
@@ -26,7 +25,14 @@ import { ToolbarButton } from '@jupyterlab/apputils';
 import { LoggerCommandIDs } from './log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
 import { RunSwitcher } from './components/runner/RunSwitcher';
-import { lockIcon, reloadAllIcon, xircuitsIcon, toggleAnimationIcon } from './ui-components/icons';
+import { 
+  lockIcon, 
+  compileIcon,
+  reloadAllIcon, 
+  xircuitsIcon, 
+  toggleAnimationIcon, 
+  compileRunIcon
+} from './ui-components/icons';
 import { commandIDs } from "./commands/CommandIDs";
 const XIRCUITS_CLASS = 'xircuits-editor';
 
@@ -115,8 +121,8 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
     let logButton = CommandButton(LoggerCommandIDs.openLog, listIcon, 'Open log');
     let reloadAllNodesButton = CommandButton(commandIDs.reloadAllNodes, reloadAllIcon, 'Reload all nodes');
     let toggleAllLinkAnimationButton = CommandButton(commandIDs.toggleAllLinkAnimation, toggleAnimationIcon, 'Toggle low power mode by disabling link animation');
-    let compileButton = CommandButton(commandIDs.compileXircuit, checkIcon, 'Compile Xircuits');
-    let compileAndRunButton = CommandButton(commandIDs.runXircuit, runIcon,'Compile and Run Xircuits');
+    let compileButton = CommandButton(commandIDs.compileXircuit, compileIcon, 'Compile Xircuits');
+    let compileAndRunButton = CommandButton(commandIDs.runXircuit, compileRunIcon,'Compile and Run Xircuits');
 
     widget.toolbar.insertItem(0, 'xircuits-add-undo', undoButton);
     widget.toolbar.insertItem(1, 'xircuits-add-redo', redoButton);

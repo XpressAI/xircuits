@@ -536,7 +536,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		await commands.execute(commandIDs.saveDocManager);
 	}
 
-	const handleCompileClick = () => {
+	const handleCompileClick = async() => {
 		// Only compile xircuit if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
@@ -545,16 +545,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		let allNodesConnected = checkAllNodesConnected();
 
-		if (!saved) {
-			alert("Please save before compiling.");
-			return;
-		}
+		// if (!saved) {
+		// 	alert("Please save before compiling.");
+		// 	return;
+		// }
 
 		if (!allNodesConnected) {
 			alert("Please connect all the nodes before compiling.");
 			return;
 		}
-
 		let showOutput = true;
 		setCompiled(true);
 		commands.execute(commandIDs.compileFile, { showOutput, componentList });

@@ -1,1 +1,1 @@
-from .compiler import compile
+from .compiler import compile, recursive_compile
