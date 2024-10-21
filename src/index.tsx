@@ -248,6 +248,26 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     }
 
+    async function requestToGenerateCompileFileRecursively(path: string, python_paths: any) {
+      const data = {
+        "outPath": path.split(".xircuits")[0] + ".py",
+        "filePath": path,
+        "pythonPaths": python_paths
+      };
+
+      try {
+        return await requestAPI<any>('file/compile-recursive', {
+          body: JSON.stringify(data),
+          method: 'POST',
+        });
+
+      } catch (reason) {
+        console.error(
+          'Error on POST /xircuits/file/compile-recursive', data, reason
+        );
+      }
+    }
+
     async function compileXircuitsFile(path: string, pythonPaths: any = {}, showOutput: boolean = false) {
       try {
         const request = await requestToGenerateCompileFile(path, pythonPaths);
@@ -285,7 +305,44 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         await compileXircuitsFile(path, pythonPaths, showOutput);
       }
     });
+
+    async function compileRecursiveXircuitsFile(path: string, pythonPaths: any = {}, showOutput: boolean = false) {
+      try {
+        const request = await requestToGenerateCompileFile(path, pythonPaths);
+        if (request["message"] == "completed") {
+          const modelPath = path.split(".xircuits")[0] + ".py";
+          docmanager.closeFile(modelPath);
    
+          if (showOutput) {
+            alert(`${modelPath} successfully compiled!`);
+          }
+          if (modelPath.startsWith("xai_components/")) {
+            console.info(`File ${modelPath} changed. Reloading components...`);
+            await app.commands.execute(commandIDs.refreshComponentList);
+          }
+        } else {
+          console.log(request["message"]);
+          alert("Failed to generate compiled code. Please check console logs for more details.");
+        }
+      } catch (err) {
+        console.error(`Error compiling Xircuits file: ${path}`, err);
+        alert(`Error compiling file: ${path}. Please check the console logs for more information.`);
+      }
+    }
+
+    app.commands.addCommand(commandIDs.compileRecursiveXircuit, {
+      execute: async args => {
+        const path = tracker.currentWidget.context.path;
+        const showOutput = args['showOutput'] !== undefined ? (args['showOutput'] as boolean) : false;
+   
+        const pythonPaths = {};
+        (args['componentList'] === undefined ? [] : args['componentList'] as []).filter(it => it['python_path']).forEach(it => {
+          pythonPaths[it['name']] = it['python_path']
+        });
+   
+        await compileRecursiveXircuitsFile(path, pythonPaths, showOutput);
+      }
+    });
 
     // Auto-reload components when a component file changes
     editorTracker.widgetAdded.connect((sender, widget) => {

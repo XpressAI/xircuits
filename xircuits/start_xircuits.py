@@ -50,22 +50,14 @@ def cmd_compile(args, extra_args=[]):
         component_paths = json.load(args.python_paths_file)
     
     if args.recursive:
-        if args.out_file:
-            with args.source_file as in_f, args.out_file as out_f:
-                recursive_compile(in_f, out_f, component_python_paths=component_paths)
-        else:
-            with args.source_file as in_f:
-                recursive_compile(in_f, None, component_python_paths=component_paths)
+        recursive_compile(args.source_file, component_python_paths=component_paths)
     else:
         if args.out_file:
-            with args.source_file as in_f, args.out_file as out_f:
-                compile(in_f, out_f, component_python_paths=component_paths)
+            compile(args.source_file, args.out_file, component_python_paths=component_paths)
         else:
             # Generate output filename by replacing .xircuits with .py
-            source_filename = args.source_file.name
-            output_filename = source_filename.replace('.xircuits', '.py')
-            with args.source_file as in_f, open(output_filename, 'w', encoding='utf-8') as out_f:
-                compile(in_f, out_f, component_python_paths=component_paths)
+            output_filename = args.source_file.replace('.xircuits', '.py')
+            compile(args.source_file, output_filename, component_python_paths=component_paths)
 
 def cmd_list_libraries(args, extra_args=[]):
     list_component_library()
@@ -76,8 +68,6 @@ def main():
 
     # Adding parser for 'start' command
     start_parser = subparsers.add_parser('start', help='Start Xircuits.')
-    # Add an arbitrary list of arguments. The nargs="*" means 0 or more arguments.
-    # This will collect all additional arguments into a list.
     start_parser.add_argument('extra_args', nargs='*', help='Additional arguments for Xircuits launch command')
     start_parser.set_defaults(func=cmd_start_xircuits)
 
@@ -98,8 +88,8 @@ def main():
 
     # Adding parser for 'compile' command
     compile_parser = subparsers.add_parser('compile', help='Compile a Xircuits workflow file.')
-    compile_parser.add_argument('source_file', type=argparse.FileType('r', encoding='utf-8'), help='Source Xircuits file to compile.')
-    compile_parser.add_argument('out_file', nargs='?', type=argparse.FileType('w', encoding='utf-8'), help='Output Python file.')
+    compile_parser.add_argument('source_file', type=str, help='Source Xircuits file to compile.')
+    compile_parser.add_argument('out_file', nargs='?', type=str, help='Output Python file.')
     compile_parser.add_argument('-R', '-r', action='store_true', dest='recursive', help='Recursively compile Xircuits workflow files.')
     compile_parser.add_argument("--python-paths-file", default=None, type=argparse.FileType('r'),
                                 help="JSON file with a mapping of component name to required python path. "
@@ -130,12 +120,12 @@ if __name__ == '__main__':
 print(
 '''
 ======================================
-__   __  ___                _ _       
-\ \  \ \/ (_)_ __ ___ _   _(_) |_ ___ 
+__   __  ___                _ _
+\ \  \ \/ (_)_ __ ___ _   _(_) |_ ___
  \ \  \  /| | '__/ __| | | | | __/ __|
  / /  /  \| | | | (__| |_| | | |_\__ \\
 /_/  /_/\_\_|_|  \___|\__,_|_|\__|___/
-                                      
+
 ======================================
 '''
 )

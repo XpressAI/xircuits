@@ -39,6 +39,10 @@ def setup_handlers(web_app, url_path):
             CompileXircuitsFileRouteHandler
         ),
         (
+            url_path_join(base_url, url_path, "file/compile-recursive"),
+            CompileRecursiveXircuitsFileRouteHandler
+        ),
+        (
             url_path_join(base_url, url_path, "library/reload_config"),
             ReloadComponentLibraryConfigHandler
         ),

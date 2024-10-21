@@ -536,7 +536,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		await commands.execute(commandIDs.saveDocManager);
 	}
 
-	const handleCompileClick = () => {
+	const handleCompileClick = async() => {
 		// Only compile xircuit if it is currently in focus
 		// This must be first to avoid unnecessary complication
 		if (shell.currentWidget?.id !== widgetId) {
@@ -545,19 +545,44 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		let allNodesConnected = checkAllNodesConnected();
 
-		if (!saved) {
-			alert("Please save before compiling.");
-			return;
-		}
+		// if (!saved) {
+		// 	alert("Please save before compiling.");
+		// 	return;
+		// }
 
 		if (!allNodesConnected) {
 			alert("Please connect all the nodes before compiling.");
 			return;
 		}
 
-		let showOutput = true;
-		setCompiled(true);
-		commands.execute(commandIDs.compileFile, { showOutput, componentList });
+		const dialogResult = await showDialog({
+			title:
+				'Compiling.',
+			body:
+				'This workflow has workflow components. How would you like to compile it?',
+			buttons: [
+				Dialog.cancelButton(),
+				Dialog.okButton({ label: 'Normal Compile' }),
+				Dialog.okButton({ label: 'Recursive Compile' })
+			]
+		});
+
+		if (dialogResult.button) {
+			if (dialogResult.button.label === 'Normal Compile') {
+				let showOutput = true;
+				commands.execute(commandIDs.compileFile, { showOutput, componentList });
+				setCompiled(true);
+			} else if (dialogResult.button.label === 'Recursive Compile') {
+				// commands.execute(commandIDs.recursiveCompile, { showOutput, componentList });
+				setCompiled(true);
+			} else {
+			  // Cancel was clicked
+			  return;
+			}
+		  } else {
+			// Dialog was closed without clicking a button
+			return;
+		  }
 	}
 
 	const saveAndCompileAndRun = async () => {
