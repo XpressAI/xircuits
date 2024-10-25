@@ -17,7 +17,6 @@ export function cancelDialog(dialogResult) {
 
 const TYPE_LITERALS = ['string', 'int', 'float', 'boolean', 'list', 'tuple', 'dict', 'secret', 'chat'];
 const TYPE_ARGUMENTS = ['string', 'int', 'float', 'boolean', 'any'];
-const SPECIAL_LITERALS = ['chat'];
 
 interface CreateLiteralNodeParams {
     nodeName: string;
@@ -34,7 +33,6 @@ export function createLiteralNode({
     type,
     attached = false
 }: CreateLiteralNodeParams): CustomNodeModel {
-    if (SPECIAL_LITERALS.includes(type)) inputValue = JSON.stringify(inputValue);
     if (nodeName === 'Literal True' || nodeName === 'Literal False') nodeName = 'Literal Boolean';
 
     const extras = { "type": nodeData.type, attached };
@@ -61,7 +59,6 @@ export function createArgumentNode({
     return node;
 }
 
-// The handler functions remain unchanged
 export async function handleLiteralInput(nodeName: string, nodeData: any, inputValue = "", type: string, title = "New Literal Input", nodeConnections = 0) {
     let attached = false;
 
@@ -71,10 +68,11 @@ export async function handleLiteralInput(nodeName: string, nodeData: any, inputV
         let dialogResult = await showFormDialog(dialogOptions);
         if (cancelDialog(dialogResult)) return;
 
-        if (SPECIAL_LITERALS.includes(type)) {
-            inputValue = dialogResult["value"];
+        // Special handling for chat type
+        if (type === 'chat') {
+            inputValue = dialogResult.value.value;
         } else {
-            inputValue = dialogResult["value"][title];
+            inputValue = dialogResult.value[title];
         }
         if (dialogResult.value.hasOwnProperty('attachNode')) {
             attached = dialogResult.value.attachNode == 'on';

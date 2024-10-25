@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 
 type OldValueProps = Array<{ role: string, content: string }>;
 
-export const ChatInput = ({ title, oldValue = [], onSubmit }: { title: string, oldValue?: OldValueProps, onSubmit: (value: Array<{ role: string, content: string }>) => void }): JSX.Element => {
-    const [messages, setMessages] = useState(oldValue || [{ role: '', content: '' }]);
-    const [hiddenMessagesValue, setHiddenMessagesValue] = useState('');
-
-    useEffect(() => {
-        setHiddenMessagesValue(JSON.stringify(messages));
-    }, [messages]);
+export const ChatInput = ({ title, oldValue = [], onSubmit }: { 
+    title: string, 
+    oldValue?: OldValueProps, 
+    onSubmit?: (value: Array<{ role: string, content: string }>) => void 
+}): JSX.Element => {
+    const [messages, setMessages] = useState(
+        oldValue.length ? oldValue : [{ role: '', content: '' }]
+    );
 
     const addMessage = () => {
         setMessages([...messages, { role: '', content: '' }]);
@@ -45,17 +46,18 @@ export const ChatInput = ({ title, oldValue = [], onSubmit }: { title: string, o
     };
 
     return (
-        <>
+        <div>
             <div style={gridContainer} className="jp-mod-styled">
                 <label>Messages</label>
                 {messages.map((message, index) => (
                     <div key={index} className="jp-mod-styled">
                         <div style={flexContainer}>
                             <select
-                                name="role"
+                                name={`role-${index}`}
                                 value={message.role}
                                 onChange={(e) => updateMessage(index, 'role', e.target.value)}
-                                style={selectStyle} className="jp-mod-styled"
+                                style={selectStyle} 
+                                className="jp-mod-styled"
                             >
                                 <option value="">Select a role</option>
                                 <option value="system">system</option>
@@ -67,7 +69,7 @@ export const ChatInput = ({ title, oldValue = [], onSubmit }: { title: string, o
                         </div>
                         <TextareaAutosize
                             minRows={4}
-                            name="content"
+                            name={`content-${index}`}
                             style={{ width: '100%', fontSize: 12 }}
                             value={message.content}
                             onChange={(e) => updateMessage(index, 'content', e.target.value)}
@@ -76,7 +78,16 @@ export const ChatInput = ({ title, oldValue = [], onSubmit }: { title: string, o
                 ))}
                 <button type="button" onClick={addMessage} style={{gridColumn: 'span 1'}} className="jp-mod-styled">Add Message</button>
             </div>
-            <input type="hidden" name="messages" value={hiddenMessagesValue} />
-        </>
+            <input 
+                type="hidden" 
+                name="attachNode"
+                value="off" 
+            />
+            <input 
+                type="hidden" 
+                name="value" 
+                value={JSON.stringify(messages)} 
+            />
+        </div>
     );
 }
