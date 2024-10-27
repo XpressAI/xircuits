@@ -15,6 +15,7 @@ interface RemoteRunDialogProps {
   childBoolNodes: string[];
   childIntNodes: string[];
   childFloatNodes: string[];
+  childSecretNodes: string[];
 }
 
 export const RemoteRunDialog: React.FC<RemoteRunDialogProps> = ({
@@ -24,7 +25,8 @@ export const RemoteRunDialog: React.FC<RemoteRunDialogProps> = ({
   childStringNodes,
   childBoolNodes,
   childIntNodes,
-  childFloatNodes
+  childFloatNodes,
+  childSecretNodes
 }) => {
   const [checkedState, setCheckedState] = useState<{ [key: string]: boolean }>({});
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
@@ -113,7 +115,8 @@ export const RemoteRunDialog: React.FC<RemoteRunDialogProps> = ({
       ...childStringNodes,
       ...childBoolNodes,
       ...childIntNodes,
-      ...childFloatNodes
+      ...childFloatNodes,
+      ...childSecretNodes
     ].map(name => {
       if (childBoolNodes.includes(name)) {
         return checkedState[name] ? `--${name}` : '';

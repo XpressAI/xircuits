@@ -16,7 +16,7 @@ export function cancelDialog(dialogResult) {
 }
 
 const TYPE_LITERALS = ['string', 'int', 'float', 'boolean', 'list', 'tuple', 'dict', 'secret', 'chat'];
-const TYPE_ARGUMENTS = ['string', 'int', 'float', 'boolean', 'any'];
+const TYPE_ARGUMENTS = ['string', 'int', 'float', 'boolean', 'secret', 'any'];
 
 interface CreateLiteralNodeParams {
     nodeName: string;

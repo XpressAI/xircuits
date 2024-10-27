@@ -104,6 +104,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [floatNodes, setFloatNodes] = useState<string[]>([]);
 	const [boolNodes, setBoolNodes] = useState<string[]>([]);
 	const [anyNodes, setAnyNodes] = useState<string[]>([]);
+	const [secretNodes, setSecretNodes] = useState<string[]>([]);
 	const [componentList, setComponentList] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [loadingMessage, setLoadingMessage] = useState('Xircuits loading...');
@@ -738,6 +739,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			'int': setIntNodes,
 			'float': setFloatNodes,
 			'boolean': setBoolNodes,
+			'secret': setSecretNodes,
 			'any': setAnyNodes
 		}
 
@@ -773,7 +775,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					childBoolNodes={boolNodes}
 					childIntNodes={intNodes}
 					childFloatNodes={floatNodes}
-				/>
+					childSecretNodes={secretNodes}
+					/>
 			),
 			buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Start') })],
 			defaultButton: 1,
@@ -791,7 +794,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		const runCommand = [
 			stringNodes.filter(param => param != "experiment name"),
-			boolNodes, intNodes, floatNodes
+			boolNodes, intNodes, floatNodes, secretNodes
 		].filter(it => !!it).reduce((s, nodes) => {
 			return nodes
 				.filter(param => !!dialogResult.value[param])
@@ -818,6 +821,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					childBoolNodes={boolNodes}
 					childIntNodes={intNodes}
 					childFloatNodes={floatNodes}
+					childSecretNodes={secretNodes}
 				/>
 			),
 			buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Start') })],

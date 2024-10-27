@@ -2,21 +2,24 @@ import React, { useState } from 'react';
 import {
   StringInput,
   BooleanInput,
-  NumberInput
+  NumberInput,
 } from './RunDialogComponents';
+import { SecretInput } from './input-dialogues/SecretInput';
 
 interface LocalRunDialogProps {
   childStringNodes: string[];
   childBoolNodes: string[];
   childIntNodes: string[];
   childFloatNodes: string[];
+  childSecretNodes: string[];
 }
 
 export const LocalRunDialog: React.FC<LocalRunDialogProps> = ({
   childStringNodes,
   childBoolNodes,
   childIntNodes,
-  childFloatNodes
+  childFloatNodes,
+  childSecretNodes
 }) => {
   const [checked, setChecked] = useState<boolean[]>(childBoolNodes.map(() => false));
 
@@ -31,7 +34,8 @@ export const LocalRunDialog: React.FC<LocalRunDialogProps> = ({
     childStringNodes.length > 0 || 
     childBoolNodes.length > 0 || 
     childIntNodes.length > 0 || 
-    childFloatNodes.length > 0;
+    childFloatNodes.length > 0 ||
+    childSecretNodes.length > 0;
 
   if (!hasAnyArguments) {
     return null;
@@ -61,6 +65,9 @@ export const LocalRunDialog: React.FC<LocalRunDialogProps> = ({
 
       {childFloatNodes.map((floatNode, i) => (
         <NumberInput key={`float-${i}`} name={floatNode} title={floatNode} oldValue="0.00" type="float" onChange={() => {}} />
+      ))}
+      {childSecretNodes.map((secretNode, i) => (
+        <SecretInput key={`secret-${i}`} title={secretNode} oldValue="" />
       ))}
     </form>
   );

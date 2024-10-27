@@ -142,6 +142,7 @@ class %s(Component):
             "string": "str",
             "boolean": "bool",
             "float": "float",
+            "secret": "str",
             "any": "any"
         }
 
@@ -378,6 +379,7 @@ if __name__ == '__main__':
             "int": "int",
             "string": "str",
             "float": "float",
+            "secret": "str",
             "any": "any"
         }
 
