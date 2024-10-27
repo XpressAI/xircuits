@@ -112,3 +112,33 @@ export const TextAreaInput: React.FC<TextAreaInputProps> = ({ title, name, oldVa
         </div>
     );
 }
+
+interface SecretInputProps {
+    title: string;
+    name: string;
+    oldValue: string;
+    onChange: (value: string) => void;
+  }
+
+export const SecretInput: React.FC<SecretInputProps> = ({
+    title,
+    name,
+    oldValue,
+    onChange,
+  }) => {
+    return (
+      <div>
+        <h4>{title}</h4>
+        <input
+          name={name}
+          type="password"
+          style={{ width: 400 }}
+          defaultValue={oldValue}
+          autoComplete="off"
+          readOnly
+          onFocus={(e) => e.target.removeAttribute('readOnly')}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      </div>
+    );
+};

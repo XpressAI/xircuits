@@ -3,8 +3,8 @@ import {
   StringInput,
   BooleanInput,
   NumberInput,
+  SecretInput
 } from './RunDialogComponents';
-import { SecretInput } from './input-dialogues/SecretInput';
 
 interface LocalRunDialogProps {
   childStringNodes: string[];
@@ -67,7 +67,7 @@ export const LocalRunDialog: React.FC<LocalRunDialogProps> = ({
         <NumberInput key={`float-${i}`} name={floatNode} title={floatNode} oldValue="0.00" type="float" onChange={() => {}} />
       ))}
       {childSecretNodes.map((secretNode, i) => (
-        <SecretInput key={`secret-${i}`} title={secretNode} oldValue="" />
+        <SecretInput key={`secret-${i}`} name={secretNode} title={secretNode} oldValue="" onChange={() => {}}/>
       ))}
     </form>
   );
