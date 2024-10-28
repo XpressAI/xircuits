@@ -4,7 +4,8 @@ import {
   StringInput,
   BooleanInput,
   NumberInput,
-  TextAreaInput
+  TextAreaInput,
+  SecretInput
 } from './RunDialogComponents';
 
 interface RemoteRunDialogProps {
@@ -260,6 +261,15 @@ export const RemoteRunDialog: React.FC<RemoteRunDialogProps> = ({
               title={name} 
               oldValue={inputValues[name] || "0.00"} 
               type="float" 
+              onChange={(value) => handleInputChange(name, value)}
+            />
+          ))}
+          {childSecretNodes.map((name, index) => (
+            <SecretInput 
+              key={`secret-${index}`} 
+              name={name} 
+              title={name} 
+              oldValue={inputValues[name] || ""} 
               onChange={(value) => handleInputChange(name, value)}
             />
           ))}
