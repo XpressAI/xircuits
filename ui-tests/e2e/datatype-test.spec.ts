@@ -101,13 +101,13 @@ test('Test editing literal nodes', async ({ page, browserName }) => {
 
   await page.locator(`div[data-default-node-name='Literal Chat']`).dblclick();
   await page.locator('div').filter({ hasText: /^Select a rolesystemuserassistantfunctionRemovedef$/ }).getByRole('button').click();
-  await page.locator('select[name="role"]').selectOption('user');
-  await page.locator('select[name="role"]').click();
-  await page.locator('textarea[name="content"]').filter({ hasText: 'abc' }).fill('updated user message');
+  await page.locator('select[name="role-0"]').selectOption('user');
+  await page.locator('select[name="role-0"]').click();
+  await page.locator('textarea[name="content-0"]').filter({ hasText: 'abc' }).fill('updated user message');
   await page.getByRole('button', { name: 'Add Message' }).click();
-  await page.getByRole('combobox').nth(2).selectOption('assistant');
-  await page.getByRole('textbox').nth(2).click();
-  await page.getByRole('textbox').nth(2).fill('new assistant message');
+  await page.locator('select[name="role-1"]').selectOption('assistant');
+  await page.locator('textarea[name="content-1"]').click();
+  await page.locator('textarea[name="content-1"]').fill('new assistant message');
   await page.getByRole('button', { name: 'Submit' }).click();
 
   await compileAndRunXircuits(page);
