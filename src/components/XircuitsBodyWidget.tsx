@@ -776,6 +776,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					childIntNodes={intNodes}
 					childFloatNodes={floatNodes}
 					childSecretNodes={secretNodes}
+					childAnyNodes={anyNodes}
 					/>
 			),
 			buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Start') })],
@@ -794,7 +795,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		const runCommand = [
 			stringNodes.filter(param => param != "experiment name"),
-			boolNodes, intNodes, floatNodes, secretNodes
+			boolNodes, intNodes, floatNodes, secretNodes, anyNodes
 		].filter(it => !!it).reduce((s, nodes) => {
 			return nodes
 				.filter(param => !!dialogResult.value[param])
@@ -822,7 +823,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					childIntNodes={intNodes}
 					childFloatNodes={floatNodes}
 					childSecretNodes={secretNodes}
-				/>
+					childAnyNodes={anyNodes}
+					/>
 			),
 			buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Start') })],
 			defaultButton: 1,

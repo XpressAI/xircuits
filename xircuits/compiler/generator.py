@@ -395,6 +395,8 @@ parser = ArgumentParser()
             arg_name = m.group(1)
             if arg.type == "boolean":
                 tpl = "parser.add_argument('--%s', type=parse_bool, default=None, nargs='?', const=True)" % arg_name
+            elif arg.type == "any":
+                tpl = "parser.add_argument('--%s')" % (arg_name)
             else:
                 tpl = "parser.add_argument('--%s', type=%s)" % (arg_name, type_mapping[arg.type])
             body.extend(ast.parse(tpl).body)

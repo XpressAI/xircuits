@@ -12,6 +12,7 @@ interface LocalRunDialogProps {
   childIntNodes: string[];
   childFloatNodes: string[];
   childSecretNodes: string[];
+  childAnyNodes: string[];
 }
 
 export const LocalRunDialog: React.FC<LocalRunDialogProps> = ({
@@ -19,7 +20,8 @@ export const LocalRunDialog: React.FC<LocalRunDialogProps> = ({
   childBoolNodes,
   childIntNodes,
   childFloatNodes,
-  childSecretNodes
+  childSecretNodes,
+  childAnyNodes
 }) => {
   const [checked, setChecked] = useState<boolean[]>(childBoolNodes.map(() => false));
 
@@ -35,7 +37,8 @@ export const LocalRunDialog: React.FC<LocalRunDialogProps> = ({
     childBoolNodes.length > 0 || 
     childIntNodes.length > 0 || 
     childFloatNodes.length > 0 ||
-    childSecretNodes.length > 0;
+    childSecretNodes.length > 0 ||
+    childAnyNodes.length > 0;
 
   if (!hasAnyArguments) {
     return null;
@@ -68,6 +71,9 @@ export const LocalRunDialog: React.FC<LocalRunDialogProps> = ({
       ))}
       {childSecretNodes.map((secretNode, i) => (
         <SecretInput key={`secret-${i}`} name={secretNode} title={secretNode} oldValue="" onChange={() => {}}/>
+      ))}
+      {childAnyNodes.map((anyNode, i) => (
+        <StringInput key={`any-${i}`} name={anyNode} title={anyNode} oldValue="" onChange={() => {}}/>
       ))}
     </form>
   );
