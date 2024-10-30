@@ -1,3 +1,7 @@
+<p>
+    <img src="../../style/icons/TVB_logo.svg" alt="TVB logo" title="TVB" align="right" height="100" />
+</p>
+
 # Xircuits Event Component Library
 
 Xircuits component library to allow usage of events in Xircuits diagrams.

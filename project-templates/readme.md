@@ -1,3 +1,8 @@
+<p>
+    <img src="../style/icons/TVB_logo.svg" alt="TVB logo" title="TVB" align="right" height="100" />
+</p>
+
+
 # Xircuits Project Templates List
 
 Xircuits Project Templates are repositories that uses Xircuits for their specific use case. Unlike Xircuits libraries that are framework focused and typically only contain Xircuits components, project templates are more use case oriented. Each repository contain all the necessary Xircuits components and files needed to start a project.

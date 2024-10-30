@@ -1,3 +1,7 @@
+<p>
+    <img src="../../style/icons/TVB_logo.svg" alt="TVB logo" title="TVB" align="right" height="100" />
+</p>
+
 # XAI Component Library Template
 
 A good component library should come with readme that helps their users to understand their component workflow.

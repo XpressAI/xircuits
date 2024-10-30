@@ -1,3 +1,7 @@
+<p>
+    <img src="style/icons/TVB_logo.svg" alt="TVB logo" title="TVB" align="right" height="100" />
+</p>
+
 # Making a new release of xircuits
 
 The extension can be published to `PyPI` and `npm` manually or using the [Jupyter Releaser](https://github.com/jupyter-server/jupyter_releaser).

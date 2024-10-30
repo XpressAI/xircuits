@@ -1,3 +1,8 @@
+<p>
+    <img src="../style/icons/TVB_logo.svg" alt="TVB logo" title="TVB" align="right" height="100" />
+</p>
+
+
 # Test
 
 The test will produce a video to help debugging and check what happened.

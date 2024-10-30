@@ -1,3 +1,8 @@
+<p>
+    <img src="../../style/icons/TVB_logo.svg" alt="TVB logo" title="TVB" align="right" height="100" />
+</p>
+
+
 # Xircuits Control Flow Component Library
 
 The Xircuits Control Flow Component Library provides a suite of components designed to facilitate control flow operations within Xircuits. This library is essential for users looking to implement conditional logic, loops, and variable manipulations in their workflows.

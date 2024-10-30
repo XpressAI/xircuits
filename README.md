@@ -1,6 +1,15 @@
-<p align="center">
-<img src="https://user-images.githubusercontent.com/68586800/151280601-7ff2b7b2-10e5-4544-b3df-aa6a5a654dae.png" width="450"/>
-</p>
+<div style="display: flex; width: 100%;">
+  <div style="flex: 1; padding: 5px;">
+     <p>
+        <img src="https://user-images.githubusercontent.com/68586800/151280601-7ff2b7b2-10e5-4544-b3df-aa6a5a654dae.png" align="left" width="450"/>
+     </p>
+  </div>
+  <div style="flex: 1; padding: 5px;">
+    <p>
+        <img src="style/icons/TVB_logo.svg" alt="TVB logo" title="TVB" align="right" height="100" />
+    </p>
+  </div>
+</div>
 
 <p align="center">
   <a href="https://xircuits.io/">Docs</a> •

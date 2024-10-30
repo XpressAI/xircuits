@@ -1,3 +1,8 @@
+<p>
+    <img src="../style/icons/TVB_logo.svg" alt="TVB logo" title="TVB" align="right" height="100" />
+</p>
+
+
 # Xircuits Component Library List
 
 ## Internal Library

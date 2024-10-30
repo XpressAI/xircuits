@@ -1,3 +1,8 @@
+<p>
+    <img src="../../style/icons/TVB_logo.svg" alt="TVB logo" title="TVB" align="right" height="100" />
+</p>
+
+
 # Xircuits Utility Component Library
 
 This library consists of utility components for Xircuits, designed to handle common tasks like printing messages, concatenating strings, zipping directories, file deletion, timing, and sleep operations. 
