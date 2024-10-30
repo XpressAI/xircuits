@@ -4,7 +4,8 @@ import {
   StringInput,
   BooleanInput,
   NumberInput,
-  TextAreaInput
+  TextAreaInput,
+  SecretInput
 } from './RunDialogComponents';
 
 interface RemoteRunDialogProps {
@@ -15,6 +16,8 @@ interface RemoteRunDialogProps {
   childBoolNodes: string[];
   childIntNodes: string[];
   childFloatNodes: string[];
+  childSecretNodes: string[];
+  childAnyNodes: string[];
 }
 
 export const RemoteRunDialog: React.FC<RemoteRunDialogProps> = ({
@@ -24,7 +27,9 @@ export const RemoteRunDialog: React.FC<RemoteRunDialogProps> = ({
   childStringNodes,
   childBoolNodes,
   childIntNodes,
-  childFloatNodes
+  childFloatNodes,
+  childSecretNodes,
+  childAnyNodes
 }) => {
   const [checkedState, setCheckedState] = useState<{ [key: string]: boolean }>({});
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
@@ -113,7 +118,9 @@ export const RemoteRunDialog: React.FC<RemoteRunDialogProps> = ({
       ...childStringNodes,
       ...childBoolNodes,
       ...childIntNodes,
-      ...childFloatNodes
+      ...childFloatNodes,
+      ...childSecretNodes,
+      ...childAnyNodes
     ].map(name => {
       if (childBoolNodes.includes(name)) {
         return checkedState[name] ? `--${name}` : '';
@@ -165,7 +172,8 @@ export const RemoteRunDialog: React.FC<RemoteRunDialogProps> = ({
 
 
   const hasArguments = childStringNodes.length > 0 || childBoolNodes.length > 0 || 
-                       childIntNodes.length > 0 || childFloatNodes.length > 0;
+                       childIntNodes.length > 0 || childFloatNodes.length > 0 ||
+                       childAnyNodes.length > 0;
 
   return (
     <form>
@@ -257,6 +265,24 @@ export const RemoteRunDialog: React.FC<RemoteRunDialogProps> = ({
               title={name} 
               oldValue={inputValues[name] || "0.00"} 
               type="float" 
+              onChange={(value) => handleInputChange(name, value)}
+            />
+          ))}
+          {childSecretNodes.map((name, index) => (
+            <SecretInput 
+              key={`secret-${index}`} 
+              name={name} 
+              title={name} 
+              oldValue={inputValues[name] || ""} 
+              onChange={(value) => handleInputChange(name, value)}
+            />
+          ))}
+          {childAnyNodes.map((name, index) => (
+            <StringInput 
+              key={`any-${index}`} 
+              name={name} 
+              title={name} 
+              oldValue={inputValues[name] || ""} 
               onChange={(value) => handleInputChange(name, value)}
             />
           ))}

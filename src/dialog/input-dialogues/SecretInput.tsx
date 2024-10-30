@@ -14,8 +14,11 @@ export const SecretInput = ({ title, oldValue }): JSX.Element => {
                 name={title}
                 type="password"
                 style={{ width: 480 }}
-                defaultValue={oldValue} />
+                defaultValue={oldValue}
+                autoComplete="off"
+                readOnly
+                onFocus={(e) => e.target.removeAttribute('readOnly')}
+            />
         </>
-
     );
 }
