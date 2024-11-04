@@ -60,3 +60,4 @@ def recursive_compile(input_file_path, component_python_paths=None, visited_file
         print(f"Compiled {input_file_path} to {py_output_path}")
     except Exception as e:
         print(f"Failed to compile {input_file_path}: {e}")
+        raise ValueError(f"Compilation failed for {input_file_path}. Check your inputs and try again.")
