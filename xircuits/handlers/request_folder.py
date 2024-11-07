@@ -60,7 +60,7 @@ def extract_library_details_from_url(github_url):
         raise ValueError("Invalid GitHub URL format.")
 
     org_name = match.group(1)
-    repo_name = match.group(2).replace('-', '_')
+    repo_name = match.group(2)
     return org_name, repo_name
 
 def clone_repo(github_url, target_path):
@@ -78,7 +78,8 @@ def clone_from_github_url(github_url: str) -> str:
     g = Github()
 
     org_name, repo_name = extract_library_details_from_url(github_url)
-    target_path = f"xai_components/xai_{repo_name}"
+    local_lib_path = repo_name.replace('-', '_')
+    target_path = f"xai_components/xai_{local_lib_path}"
 
     # Retrieve the repository
     try:
