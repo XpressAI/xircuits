@@ -50,6 +50,7 @@ export interface BodyWidgetProps {
 	runXircuitSignal: Signal<XircuitsPanel, any>;
 	runTypeXircuitSignal: Signal<XircuitsPanel, any>;
 	lockNodeSignal: Signal<XircuitsPanel, any>;
+	triggerCanvasUpdateSignal: Signal<XircuitsPanel, any>;
 	triggerLoadingAnimationSignal: Signal<XircuitsPanel, any>;
 	reloadAllNodesSignal: Signal<XircuitsPanel, any>;
 	toggleAllLinkAnimationSignal: Signal<XircuitsPanel, any>;
@@ -88,6 +89,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	runXircuitSignal,
 	runTypeXircuitSignal,
 	lockNodeSignal,
+	triggerCanvasUpdateSignal,
 	triggerLoadingAnimationSignal,
 	reloadAllNodesSignal,
 	toggleAllLinkAnimationSignal,
@@ -660,6 +662,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			}
 		});
 	}
+	const handleTriggerCanvasUpdate = async () => {
+		if (shell.currentWidget?.id !== widgetId) {
+		  return;
+		}
+		onChange();
+	};
 
 	const handleReloadAll = async () => {
 		if (shell.currentWidget?.id !== widgetId) {
@@ -868,6 +876,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		[runXircuitSignal, handleRunClick],
 		[fetchRemoteRunConfigSignal, getRemoteRunTypeFromConfig],
 		[lockNodeSignal, handleLockClick],
+		[triggerCanvasUpdateSignal, handleTriggerCanvasUpdate],
 		[triggerLoadingAnimationSignal, triggerLoadingAnimation],
 		[reloadAllNodesSignal, handleReloadAll],
 		[toggleAllLinkAnimationSignal, handleToggleAllLinkAnimation],
