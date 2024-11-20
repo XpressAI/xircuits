@@ -33,17 +33,14 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
 
         const handleAttachNode = async () => {
             await this.props.app.commands.execute(commandIDs.attachNode);
-            await this.props.app.commands.execute(commandIDs.reloadNode);
         };
 
         const handleAllAttachNodes = async () => {
             await this.props.app.commands.execute(commandIDs.attachAllNodes);
-            await this.props.app.commands.execute(commandIDs.reloadNode);
         };
 
         const handleDetachAllNodes = async () => {
             await this.props.app.commands.execute(commandIDs.detachAllNodes);
-            await this.props.app.commands.execute(commandIDs.reloadNode);
         };
 
         return (

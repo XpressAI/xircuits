@@ -49,6 +49,7 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
   runXircuitSignal: Signal<this, any>;
   runTypeXircuitSignal: Signal<this, any>;
   lockNodeSignal: Signal<this, any>;
+  triggerCanvasUpdateSignal: Signal<this, any>;
   triggerLoadingAnimationSignal: Signal<this, any>;
   reloadAllNodesSignal: Signal<this, any>;
   toggleAllLinkAnimationSignal: Signal<this, any>;
@@ -68,6 +69,7 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
     this.runXircuitSignal = new Signal<this, any>(this);
     this.runTypeXircuitSignal = new Signal<this, any>(this);
     this.lockNodeSignal = new Signal<this, any>(this);
+    this.triggerCanvasUpdateSignal = new Signal<this, any>(this);
     this.triggerLoadingAnimationSignal = new Signal<this, any>(this);
     this.reloadAllNodesSignal = new Signal<this, any>(this);
     this.toggleAllLinkAnimationSignal = new Signal<this, any>(this);
@@ -90,6 +92,7 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
       runXircuitSignal: this.runXircuitSignal,
       runTypeXircuitSignal: this.runTypeXircuitSignal,
       lockNodeSignal: this.lockNodeSignal,
+      triggerCanvasUpdateSignal: this.triggerCanvasUpdateSignal,
       triggerLoadingAnimationSignal: this.triggerLoadingAnimationSignal,
       reloadAllNodesSignal: this.reloadAllNodesSignal,
       toggleAllLinkAnimationSignal: this.toggleAllLinkAnimationSignal,

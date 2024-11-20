@@ -1011,9 +1011,11 @@ export function addNodeActionCommands(
                 node.getOptions().extras.attached = true;
                 let parameterOutPort = node.getOutPorts()[0] as CustomPortModel;
                 let connectedNodes = parameterOutPort.getTargetNodes();
-                connectedNodes.forEach((node: CustomNodeModel) => node.setSelected(true))
+                connectedNodes.forEach((node: CustomNodeModel) => node.setSelected(true));
+
             });
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+            widget.triggerCanvasUpdateSignal.emit(null);
         },
         label: trans.__('attach node')
     });
@@ -1044,10 +1046,11 @@ export function addNodeActionCommands(
             literal_nodes.forEach(node => {
                 let parameterOutPort = node.getOutPorts()[0] as CustomPortModel;
                 let connectedNodes = parameterOutPort.getTargetNodes();
-                connectedNodes.forEach((node: CustomNodeModel) => node.setSelected(true))
+                connectedNodes.forEach((node: CustomNodeModel) => node.setSelected(true));
             });
 
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+            widget.triggerCanvasUpdateSignal.emit(null);
         },
         label: trans.__('attach all nodes')
     });
@@ -1078,10 +1081,11 @@ export function addNodeActionCommands(
             literal_nodes.forEach(node => {
                 let parameterOutPort = node.getOutPorts()[0] as CustomPortModel;
                 let connectedNodes = parameterOutPort.getTargetNodes();
-                connectedNodes.forEach((node: CustomNodeModel) => node.setSelected(true))
+                connectedNodes.forEach((node: CustomNodeModel) => node.setSelected(true));
             });
 
             widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+            widget.triggerCanvasUpdateSignal.emit(null);
         },
         label: trans.__('detach all nodes')
     });

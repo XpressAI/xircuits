@@ -19,6 +19,7 @@ export const commandIDs = {
   attachNode: "Xircuit-editor:attach-node",
   attachAllNodes: "Xircuit-editor:attach-all-nodes",
   detachAllNodes: "Xircuit-editor:detach-all-nodes",
+  triggerCanvasUpdate: "Xircuit-editor:trigger-canvas-update",
   triggerLoadingAnimation: "Xircuit-editor:trigger-loading-animation",
   reloadNode: "Xircuit-editor:reload-node",
   reloadAllNodes: "Xircuit-editor:reload-all-nodes",
