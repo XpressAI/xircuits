@@ -916,10 +916,63 @@ export function addNodeActionCommands(
 
     function deleteEntity(): void {
         const widget = tracker.currentWidget?.content as XircuitsPanel;
+        if (!widget) return;
+
+        let selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
+        const model = widget.xircuitsApp.getDiagramEngine().getModel();
+
+        function isLiteralNode(node) {
+            return node.getOptions()?.name?.startsWith("Literal ") ?? false;
+        }
+
+        // *Unselect attached literal nodes
+        selectedEntities.forEach((entity) => {
+            if (entity instanceof CustomNodeModel && isLiteralNode(entity)) {
+                const isAttached = entity.getOptions()?.extras?.attached === true;
+                if (isAttached) {
+                    // If the literal node is attached, unselect it
+                    entity.setSelected(false);
+                }
+            }
+        });
+
+        selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
+
+        // Logic to handle attached Literals
+        selectedEntities.forEach((entity) => {
+            if (entity instanceof CustomNodeModel && !isLiteralNode(entity)) {
+                // For each non-literal node, check its input ports for attached literals
+                entity.getInPorts().forEach((port: CustomPortModel) => {
+                    const sourceNodes = port.getSourceNodes();
+                    sourceNodes.forEach((sourceNode: CustomNodeModel) => {
+                        if (sourceNode && isLiteralNode(sourceNode)) {
+                            const isAttached = sourceNode.getOptions()?.extras?.attached === true;
+                            if (isAttached) {
+                                // Check if literal is connected to other nodes
+                                const hasOtherConnections = sourceNode.getOutPorts().some(outPort => {
+                                    return Object.values(outPort.getLinks()).some(link => {
+                                        const targetNode = link.getTargetPort()?.getParent();
+                                        return targetNode && targetNode !== entity && 
+                                                !selectedEntities.includes(targetNode);
+                                    });
+                                });
+
+                                if (!hasOtherConnections) {
+                                    // If literal is only connected to this node, keep it selected for deletion
+                                    sourceNode.setSelected(true);
+                                } else {
+                                    // If literal has other connections, unselect it
+                                    sourceNode.setSelected(false);
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+        });
+
+        selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
         
-        if (widget) {
-            const selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
-            const model = widget.xircuitsApp.getDiagramEngine().getModel()
         // Separate collections for nodes and links
         let nodes = [];
         let links = [];
@@ -940,7 +993,7 @@ export function addNodeActionCommands(
         links.forEach((link) => {
             const port = link.getTargetPort();
             if (port instanceof CustomDynaPortModel) {
-                port.shiftPorts( { shouldShiftBack: true }) // delete
+                port.shiftPorts({ shouldShiftBack: true }) // delete
             }
             link.remove();
         });
@@ -959,7 +1012,7 @@ export function addNodeActionCommands(
                     const link = model.getLink(linkId);
                     const targetPort = link.getTargetPort();
                     if (targetPort instanceof CustomDynaPortModel) {
-                        targetPort.shiftPorts( { shouldShiftBack: true }) // delete
+                        targetPort.shiftPorts({ shouldShiftBack: true }) // delete
                     }
                 }
             });
@@ -987,10 +1040,7 @@ export function addNodeActionCommands(
                 }
             }
         });
-
         widget.xircuitsApp.getDiagramEngine().repaintCanvas();
-        
-        }
     }
 
     // Add command to attach selected node
