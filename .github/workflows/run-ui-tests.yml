@@ -75,6 +75,9 @@ jobs:
     - name: Install xvfb
       run: sudo apt-get install -y xvfb
 
+    - name: Install Playwright Dependencies
+      run: sudo npx playwright install-deps
+
     - name: Test E2E
       run: |
         (jupyter lab --ServerApp.token='' --ServerApp.password='' --LabApp.default_url='/lab?reset' &) && cd ui-tests && jlpm install && jlpm playwright install && xvfb-run jlpm playwright test e2e/datatype-test.spec.ts
