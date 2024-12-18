@@ -80,7 +80,7 @@ jobs:
 
     - name: Test E2E
       run: |
-        (jupyter lab --ServerApp.token='' --ServerApp.password='' --LabApp.default_url='/lab?reset' &) && cd ui-tests && jlpm install && jlpm playwright install && xvfb-run jlpm playwright test e2e/datatype-test.spec.ts
+        (jupyter lab --ServerApp.token='' --ServerApp.password='' --LabApp.default_url='/lab?reset' &) && cd ui-tests && npm install && npx playwright install && xvfb-run npx playwright test e2e/datatype-test.spec.ts
 
     - uses: actions/upload-artifact@v4
       if: failure()
