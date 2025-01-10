@@ -13,7 +13,7 @@ def compile(input_file_path, output_file_path, component_python_paths=None):
     with open(output_file_path, 'w', encoding='utf-8') as out_f:
         generator.generate(out_f)
 
-def recursive_compile(input_file_path, component_python_paths=None, visited_files=None):
+def recursive_compile(input_file_path, output_file_path=None, component_python_paths=None, visited_files=None):
     if component_python_paths is None:
         component_python_paths = {}
     if visited_files is None:
@@ -48,12 +48,16 @@ def recursive_compile(input_file_path, component_python_paths=None, visited_file
                             nested_xircuits_path = py_path.replace('.py', '.xircuits')
                             # Resolve relative paths
                             nested_xircuits_path = os.path.join(os.path.dirname(input_file_path), nested_xircuits_path)
-                            # Recursively compile the nested workflow
-                            recursive_compile(nested_xircuits_path, component_python_paths, visited_files)
+                            # For nested workflows, pass None to keep default .xircuits->.py
+                            recursive_compile(nested_xircuits_path, output_file_path=None, component_python_paths=component_python_paths, visited_files=visited_files)
 
     # Compile the current workflow
-    py_output_path = input_file_path.replace('.xircuits', '.py')
-    # print(f"Compiling {input_file_path} to {py_output_path}")
+    # If 'output_file_path' was provided (top-level file), use it; otherwise default to <filename>.py
+    py_output_path = (
+        output_file_path 
+        if output_file_path 
+        else input_file_path.replace('.xircuits', '.py')
+    )
 
     try:
         compile(input_file_path, py_output_path, component_python_paths=component_python_paths)
