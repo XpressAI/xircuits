@@ -50,7 +50,12 @@ def cmd_compile(args, extra_args=[]):
         component_paths = json.load(args.python_paths_file)
     
     if args.recursive:
-        recursive_compile(args.source_file, component_python_paths=component_paths)
+        # Pass the user-specified out_file (if any) to recursive_compile
+        recursive_compile(
+            input_file_path=args.source_file,
+            output_file_path=args.out_file,
+            component_python_paths=component_paths
+        )
     else:
         # Single file compilation
         if args.out_file:
