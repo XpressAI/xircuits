@@ -1188,6 +1188,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								onMouseLeave={()=>setDontHidePanel(false)}
 								id='component-panel'
 								style={{
+									minHeight: 'auto',
+									height: 'auto',
+									boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
 									top: componentPanelPosition.y,
 									left: componentPanelPosition.x
 								}}
@@ -1207,6 +1210,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							<div
 								id='context-menu'
 								style={{
+									minHeight: 'auto',
+									height: 'auto',
+									boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
 									top: contextMenuPosition.y,
 									left: contextMenuPosition.x
 								}}
