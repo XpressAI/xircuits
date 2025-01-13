@@ -1036,20 +1036,27 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const showComponentPanelFromLink = async (event) => {
 		setContextMenuShown(false);
 		setIsComponentPanelShown(false);
-		const linkName:string = event.link.sourcePort.options.name;
+		const sourcePortName:string = event.link.sourcePort.options.name;
+		const sourceNodeName:string = event.link.sourcePort.getParent().name;
 
-		if (linkName.startsWith("parameter")) {
+		// Don't show panel when loose link from Literal Nodes
+		if (sourceNodeName.includes("Literal ")) {
+			return
+		}
+
+		if (sourcePortName.startsWith("parameter")) {
 			// Don't show panel when loose link from parameter outPorts
-			if (linkName.includes("parameter-out")) {
+			if (sourcePortName.includes("parameter-out")) {
 				return
 			}
+
 			// Don't allow linking to a literal if there is already an established connection
 			// checking for > 1 because the link we are connecting also counts
 			if(Object.keys(event.sourcePort.links).length > 1){
 				return;
 			}
 			// When loose link from type InPort, connect to its respective literal node
-			connectLinkToItsLiteral(linkName, event);
+			connectLinkToItsLiteral(sourcePortName, event);
 			return;
 		}
 
