@@ -1148,6 +1148,20 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 	}, [xircuitsApp.getDiagramEngine().getCanvas()])
 
+	useEffect(() => {
+		const handleEscape = (event: KeyboardEvent) => {
+		  if (event.key === "Escape") {
+			hidePanel();
+		  }
+		};
+	
+		document.addEventListener("keydown", handleEscape);
+		return () => {
+		  document.removeEventListener("keydown", handleEscape);
+		};
+	  }, []);
+
+
 	return (
 		<Body>
 			<Content>

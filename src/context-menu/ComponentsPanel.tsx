@@ -174,9 +174,11 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
                                     autoFocus
                                     onChange={handleOnChange}
                                     onKeyDown={(event) => {
-                                        event.stopPropagation();
+                                        if (event.key !== 'Escape') { // allow Escape for it to be dismissed on the XircuitsBodyWidget level.
+                                            event.stopPropagation();
+                                        }
                                     }}
-                                />                        
+                                />
                         </div>
                         {
                             allowableComponents.filter((val) => {
