@@ -164,7 +164,21 @@ export default function ComponentsPanel(props: ComponentsPanelProps) {
                     <div>
                         <p className='title-panel'>Add Component</p>
                         <div className="search-input-panel" >
-                            <input id='add-component-input' type="text" name="" value={searchTerm} placeholder="SEARCH" className="search-input__text-input-panel" autoFocus onChange={handleOnChange} />
+                            <input
+                                    id="add-component-input"
+                                    type="text"
+                                    name=""
+                                    value={searchTerm}
+                                    placeholder="SEARCH"
+                                    className="search-input__text-input-panel"
+                                    autoFocus
+                                    onChange={handleOnChange}
+                                    onKeyDown={(event) => {
+                                        if (event.key !== 'Escape') { // allow Escape for it to be dismissed on the XircuitsBodyWidget level.
+                                            event.stopPropagation();
+                                        }
+                                    }}
+                                />
                         </div>
                         {
                             allowableComponents.filter((val) => {

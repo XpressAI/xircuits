@@ -983,42 +983,78 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return newPanelPosition;
 	}
 
+	function clampToViewport(
+		position: { x: number; y: number },
+		menuDimension: { x: number; y: number }
+	) {
+		const padding = 8; // Some optional padding from the edges
+		const viewportWidth = window.innerWidth;
+		const viewportHeight = window.innerHeight;
+	
+		// If the menu extends beyond the right edge, shift it left
+		if (position.x + menuDimension.x > viewportWidth) {
+		position.x = viewportWidth - menuDimension.x - padding;
+		}
+	
+		// If the menu extends beyond the bottom edge, shift it upward
+		if (position.y + menuDimension.y > viewportHeight) {
+		position.y = viewportHeight - menuDimension.y - padding;
+		}
+	
+		// If the menu goes past the left edge, clamp to 0
+		if (position.x < 0) {
+		position.x = padding;
+		}
+	
+		// If the menu goes past the top edge, clamp to 0
+		if (position.y < 0) {
+		position.y = padding;
+		}
+	
+		return position;
+	}
+  
 	const calculatePanelSpawn = (event, menuDimension) => {
+
 		let newPanelPosition = {
-			x: event.pageX,
-			y: event.pageY,
+		  x: event.pageX,
+		  y: event.pageY
 		};
+	  
 		const canvas = event.view;
 		const newCenterPosition = {
-			x: canvas.innerWidth / 2,
-			y: canvas.innerHeight / 2,
+		  x: canvas.innerWidth / 2,
+		  y: canvas.innerHeight / 2
 		};
-	
+	  
 		let fileBrowserWidth = document.getElementsByClassName("jp-SidePanel")[0].parentElement.clientWidth;
 		const tabWidth = document.getElementsByClassName("lm-TabBar")[0].clientWidth;
 		const yOffset = 84;
-	
+	  
+		// Quadrant-based shift
 		if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
-			// Bottom right
-			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth - menuDimension.x;
-			newPanelPosition.y = newPanelPosition.y - menuDimension.y - yOffset;
+		  // Bottom right
+		  newPanelPosition.x -= (fileBrowserWidth + tabWidth + menuDimension.x);
+		  newPanelPosition.y -= (menuDimension.y + yOffset);
 		} else if (newPanelPosition.x > newCenterPosition.x && newPanelPosition.y < newCenterPosition.y) {
-			// Top right
-			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth - menuDimension.x;
-			newPanelPosition.y = newPanelPosition.y - yOffset;
+		  // Top right
+		  newPanelPosition.x -= (fileBrowserWidth + tabWidth + menuDimension.x);
+		  newPanelPosition.y -= yOffset;
 		} else if (newPanelPosition.x < newCenterPosition.x && newPanelPosition.y > newCenterPosition.y) {
-			// Bottom left
-			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth;
-			newPanelPosition.y = newPanelPosition.y - menuDimension.y - yOffset;
+		  // Bottom left
+		  newPanelPosition.x -= (fileBrowserWidth + tabWidth);
+		  newPanelPosition.y -= (menuDimension.y + yOffset);
 		} else {
-			// Top left
-			newPanelPosition.x = newPanelPosition.x - fileBrowserWidth - tabWidth;
-			newPanelPosition.y = newPanelPosition.y - yOffset;
+		  // Top left
+		  newPanelPosition.x -= (fileBrowserWidth + tabWidth);
+		  newPanelPosition.y -= yOffset;
 		}
-	
+	  
+		// clamp final position so we don't get clipped off-screen
+		newPanelPosition = clampToViewport(newPanelPosition, menuDimension);
+	  
 		return newPanelPosition;
-	}
-	
+	  };
 
 	// Show the component panel context menu
 	const showComponentPanel = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -1036,20 +1072,27 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const showComponentPanelFromLink = async (event) => {
 		setContextMenuShown(false);
 		setIsComponentPanelShown(false);
-		const linkName:string = event.link.sourcePort.options.name;
+		const sourcePortName:string = event.link.sourcePort.options.name;
+		const sourceNodeName:string = event.link.sourcePort.getParent().name;
 
-		if (linkName.startsWith("parameter")) {
+		// Don't show panel when loose link from Literal Nodes
+		if (sourceNodeName.includes("Literal ")) {
+			return
+		}
+
+		if (sourcePortName.startsWith("parameter")) {
 			// Don't show panel when loose link from parameter outPorts
-			if (linkName.includes("parameter-out")) {
+			if (sourcePortName.includes("parameter-out")) {
 				return
 			}
+
 			// Don't allow linking to a literal if there is already an established connection
 			// checking for > 1 because the link we are connecting also counts
 			if(Object.keys(event.sourcePort.links).length > 1){
 				return;
 			}
 			// When loose link from type InPort, connect to its respective literal node
-			connectLinkToItsLiteral(linkName, event);
+			connectLinkToItsLiteral(sourcePortName, event);
 			return;
 		}
 
@@ -1141,6 +1184,20 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 	}, [xircuitsApp.getDiagramEngine().getCanvas()])
 
+	useEffect(() => {
+		const handleEscape = (event: KeyboardEvent) => {
+		  if (event.key === "Escape") {
+			hidePanel();
+		  }
+		};
+	
+		document.addEventListener("keydown", handleEscape);
+		return () => {
+		  document.removeEventListener("keydown", handleEscape);
+		};
+	  }, []);
+
+
 	return (
 		<Body>
 			<Content>
@@ -1167,6 +1224,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 								onMouseLeave={()=>setDontHidePanel(false)}
 								id='component-panel'
 								style={{
+									minHeight: 'auto',
+									height: 'auto',
+									boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
 									top: componentPanelPosition.y,
 									left: componentPanelPosition.x
 								}}
@@ -1186,6 +1246,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							<div
 								id='context-menu'
 								style={{
+									minHeight: 'auto',
+									height: 'auto',
+									boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
 									top: contextMenuPosition.y,
 									left: contextMenuPosition.x
 								}}
