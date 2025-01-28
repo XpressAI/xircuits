@@ -42,6 +42,7 @@ export class RunSwitcher extends ReactWidget {
                                 <option value="run" >Local Run</option>
                                 <option value="run-dont-compile">Local Run w/o Compile</option>
                                 <option value="remote-run">Remote Run</option>
+                                <option value="terminal-run">Terminal Run</option>
                             </HTMLSelect>
                         );
                     }
@@ -54,8 +55,9 @@ export class RunSwitcher extends ReactWidget {
                             title={'Select the run type'}
                         >
                             <option value="run" >Local Run</option>
-                            <option value="run-dont-compile">Run w/o Compile</option>
+                            <option value="run-dont-compile">Local Run w/o Compile</option>
                             <option value="remote-run">Remote Run</option>
+                            <option value="terminal-run">Terminal Run</option>
                         </HTMLSelect>
                     );
                 }}
