@@ -160,8 +160,12 @@ export  class CustomPortModel extends DefaultPortModel  {
     }
 
     static typeCompatibilityMap = {
-        "chat": ["list"],
-        "secret": ["string", "int", "float"],
+        secret: ["string", "integer", "float"],
+        string: ["secret"],
+        integer: ["secret"],
+        float: ["secret"],
+        chat: ["list"],
+        list: ["chat"],
     };
     
     // Helper function to parse Union types
