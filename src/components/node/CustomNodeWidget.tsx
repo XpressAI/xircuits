@@ -194,7 +194,9 @@ const CommentNode = ({ node }) => {
     };
 
     return (
-        <S.CommentContainer onDoubleClick={handleEditComment} selected={node.isSelected()} onMouseDown={addGrabbing} onMouseUp={removeGrabbing}>
+        <S.CommentContainer
+          className="node comment-node"
+          onDoubleClick={handleEditComment} selected={node.isSelected()} onMouseDown={addGrabbing} onMouseUp={removeGrabbing}>
             <S.TitleName><b>{node.getOptions().name}</b></S.TitleName>
             <div className='comment-component-content'>
                 {commentInput}
@@ -230,6 +232,7 @@ const ParameterNode = ({ node, engine, app }) => {
 
     return (
         <S.Node
+            className="node parameter-node"
             onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
             borderColor={node.getOptions().extras["borderColor"]}
             data-default-node-name={node.getOptions().name}
@@ -249,6 +252,7 @@ const ParameterNode = ({ node, engine, app }) => {
 
 const StartFinishNode = ({ node, engine, handleDeletableNode, app }) => (
     <S.Node
+        className="node start-finish-node"
         onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
         borderColor={node.getOptions().extras["borderColor"]}
         data-default-node-name={node.getOptions().name}
@@ -277,7 +281,7 @@ const WorkflowNode = ({ node, engine, app, handleDeletableNode }) => {
                 data-default-node-name={node.getOptions().name}
                 selected={node.isSelected()}
                 background={node.getOptions().color}
-                className="workflow-node"
+                className="node workflow-node"
             >
                 <S.Title background={node.getOptions().color}
 >
@@ -333,6 +337,7 @@ const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode })
                 </div>
             </div>}
             <S.Node
+                className="node library-node"
                 onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
                 ref={(elementRef as LegacyRef<HTMLDivElement>)}
                 data-tip data-for={node.getOptions().id}

@@ -88,3 +88,62 @@ input[type=number]::-webkit-inner-spin-button {
 body.low-powered-mode .lucide-battery-charging {
   fill: currentColor;
 }
+
+body.light-mode .dark-mode-switch .sun {
+  visibility: visible;
+}
+
+body.light-mode .dark-mode-switch .moon {
+  visibility: hidden;
+}
+
+body .dark-mode-switch .sun {
+  visibility: hidden;
+}
+
+body .dark-mode-switch .moon {
+  visibility: visible;
+}
+
+body.light-mode .xircuits-canvas {
+  background-color: #f5f5f5;
+  background-image: radial-gradient(oklch(85% 0% 0) 1px, transparent 0);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body.light-mode .xircuits-canvas .node {
+  box-shadow: none;
+  border-color: oklch(0.8 0 0 / 1);
+}
+
+body.light-mode .xircuits-canvas .node>div:nth-child(2) {
+  color: black;
+  background-image: linear-gradient(oklch(99% 0 0 / 0.7), oklch(99% 0 0 / 0.9));
+}
+
+body.light-mode .xircuits-canvas .node .port>div>div{
+  background: oklch(0.75 0 0 / 0.5);
+}
+
+
+body.light-mode .xircuits-canvas path {
+  filter: none;
+}
+
+body.light-mode .xircuits-canvas .node .comment-node {
+  background-color: oklch(0.98 0.13 108.65);
+}
+
+body.light-mode .xircuits-canvas .node .comment-node>div:nth-child(1) {
+  color: black;
+}
+
+body.light-mode .xircuits-canvas .node .comment-node>div:nth-child(2) {
+  background: none;
+  scrollbar-width: thin;
+}
+body.light-mode .xircuits-canvas  {
+  stroke: darkgreen;
+}
