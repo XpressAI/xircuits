@@ -85,3 +85,6 @@ input[type=number]::-webkit-inner-spin-button {
   font-size: 18px;
   font-weight: bold;
 }
+body.low-powered-mode .lucide-battery-charging {
+  fill: currentColor;
+}
