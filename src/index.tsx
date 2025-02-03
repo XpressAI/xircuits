@@ -433,6 +433,50 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       rank: 0
     });
 
+    // Add a command for creating a new Xircuits file when nothing is selected
+    app.commands.addCommand(commandIDs.createNewXircuitInCurrentDir, {
+      label: 'New Xircuits File',
+      icon: xircuitsIcon,
+      caption: 'Create a new Xircuits file in the current directory',
+      execute: async () => {
+        const currentBrowser = browserFactory.tracker.currentWidget;
+        if (!currentBrowser) {
+          console.error("No active file browser found.");
+          return;
+        }
+
+        // Use the docmanager command to generate a new file with an incremented name
+        const model = await app.commands.execute(commandIDs.newDocManager, {
+          path: currentBrowser.model.path,
+          type: "file",
+          ext: ".xircuits"
+        });
+
+        // Create the default Xircuits graph (SRD JSON)
+        const fileContent = createInitXircuits(app, app.shell);
+
+        // Save the new file with Xircuits default content
+        await app.serviceManager.contents.save(model.path, {
+          type: 'file',
+          format: 'text',
+          content: fileContent
+        });
+
+        // Open the newly created Xircuits file in the editor
+        await app.commands.execute(commandIDs.openDocManager, {
+          path: model.path,
+          factory: FACTORY
+        });
+      }
+    });
+
+    // Add the command to the file browser context menu when nothing is selected
+    app.contextMenu.addItem({
+      command: commandIDs.createNewXircuitInCurrentDir,
+      selector: '.jp-DirListing-content',
+      rank: 0
+    });
+
     app.commands.addCommand(commandIDs.openXircuitsConfiguration, {
       label: 'Open Xircuits Configurations',
       icon: xircuitsIcon,
