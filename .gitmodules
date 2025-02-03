@@ -94,6 +94,3 @@
 [submodule "xai_components/xai_gradio"]
 	path = xai_components/xai_gradio
 	url = https://github.com/XpressAI/xai-gradio
-[submodule "xai_components/xai_ms_graph"]
-	path = xai_components/xai_ms_graph
-	url = https://github.com/XpressAI/xai-ms-graph

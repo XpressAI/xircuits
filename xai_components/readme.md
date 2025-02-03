@@ -81,7 +81,7 @@ $ xircuits install <component library name>
 | [GDrive](https://github.com/XpressAI/xai-gdrive) | Components for interacting with Google Drive. | - |
 | [GSpread](https://github.com/XpressAI/xai-gspread) | Components for interfacing with Google Sheets. | - |
 | [BOTO3](https://github.com/XpressAI/xai-boto3) | Components for AWS. | - |
-| [MSGraph](https://github.com/XpressAI/xai-ms-graph) | Components that connects with the Microsoft Cloud using Graph API. | - |
+| MSGraph | Components that connects with the Microsoft Cloud using Graph API. | TBA |
 </div>
 
 Want your component library listed here? Just submit a PR to the Xircuits repository. For more information, refer to the [Xircuits component library documentation](https://xircuits.io/docs/component-library/).
