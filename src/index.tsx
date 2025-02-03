@@ -364,7 +364,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         const terminalSession = terminalWidget.content.session;
     
         terminalSession.send({ type: 'stdin', content: [`cd $JUPYTER_SERVER_ROOT\n`] });
-        terminalSession.send({ type: 'stdin', content: [`export PYTHONPATH=$JUPYTER_SERVER_ROOT\n`] });
+        terminalSession.send({ type: 'stdin', content: [`export PYTHONPATH=$JUPYTER_SERVER_ROOT:$PYTHONPATH\n`] });
         terminalSession.send({ type: 'stdin', content: ['python ' + python_path + '\n'] });
       }
     });
