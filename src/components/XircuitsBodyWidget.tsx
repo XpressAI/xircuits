@@ -1224,25 +1224,25 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		};
 	}, []);
 
-	const [translate, setTranslate] = useState({x: 0, y: 0, scale: 1})
+	const [translate, setTranslate] = useState({ x: 0, y: 0, scale: 1 });
 	useEffect(() => {
-			const canvas = xircuitsApp.getDiagramEngine().getCanvas();
-			const observer = new MutationObserver(function(mutations){
-				//@ts-ignore
-				const [_, x, y, scale] = canvas.firstChild.style.transform.match(/translate\((.+)px, (.+)px\) scale\((.+)\)/);
-				setTranslate({x: parseFloat(x), y: parseFloat(y), scale: parseFloat(scale)});
-			});
-			observer.observe(canvas.querySelector('svg'), {attributes: true, attributeFilter: ['style']});
+		const canvas = xircuitsApp.getDiagramEngine().getCanvas();
+		const observer = new MutationObserver(function(mutations) {
+			//@ts-ignore
+			const [_, x, y, scale] = canvas.firstChild.style.transform.match(/translate\((.+)px, (.+)px\) scale\((.+)\)/);
+			setTranslate({ x: parseFloat(x), y: parseFloat(y), scale: parseFloat(scale) });
+		});
+		observer.observe(canvas.querySelector("svg"), { attributes: true, attributeFilter: ["style"] });
 
-			// Change the observation target when things change.
-			((new MutationObserver(function(){
-				observer.disconnect();
-				observer.observe(canvas.querySelector('svg'), {attributes: true, attributeFilter: ['style']});
-			})).observe(canvas, {childList: true}));
+		// Change the observation target when things change.
+		((new MutationObserver(function() {
+			observer.disconnect();
+			observer.observe(canvas.querySelector("svg"), { attributes: true, attributeFilter: ["style"] });
+		})).observe(canvas, { childList: true }));
 
-			return () => {
-				observer.disconnect();
-			}
+		return () => {
+			observer.disconnect();
+		};
 	}, [xircuitsApp.getDiagramEngine().getCanvas()?.firstChild]);
 
 	return (
