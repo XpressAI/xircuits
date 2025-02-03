@@ -22,6 +22,10 @@ namespace S {
 
 	const selected = css`
 		stroke: yellow;
+
+		body.light-mode & {
+			stroke: rgb(255, 204, 0);
+		}
 	`;
 
 	export const Path = styled.path<{ selected: boolean, isRegularLink: boolean }>`
@@ -40,6 +44,10 @@ namespace S {
 	export const G = styled.g`
 		g.hover & path {
 			stroke: rgb(192, 255, 0);
+		}
+		
+		body.light-mode g.hover & path {
+			stroke: rgb(122, 163, 0);
 		}
 	`;
 }

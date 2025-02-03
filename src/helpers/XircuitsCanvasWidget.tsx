@@ -5,6 +5,7 @@ export interface XircuitsCanvasWidgetProps {
 	color?: string;
 	background?: string;
 	children?: any;
+	translate: {x: number; y: number; scale: number};
 }
 
 //namespace S {
@@ -30,6 +31,8 @@ export class XircuitsCanvasWidget extends React.Component<XircuitsCanvasWidgetPr
 	render() {
 		return (
 			<Container
+				className="xircuits-canvas"
+				style={{backgroundPosition: `${this.props.translate.x}px ${this.props.translate.y}px`, backgroundSize: `${15 * this.props.translate.scale}px ${15 * this.props.translate.scale}px`}}
 				background={this.props.background || 'oklch(0.3 0.01 300 / 1)'}
 				color={this.props.color || 'rgba(255,255,255, 0.05)'}>
 				{this.props.children}

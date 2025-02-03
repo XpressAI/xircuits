@@ -40,5 +40,6 @@ export const commandIDs = {
   toggleDisplayNodesInLibrary: "xircuits-sidebar:toggle-display-nodes-in-library",
   helpOpenResource: "xircuits-help:open-resource",
   openXircuitsConfiguration: "xircuits-config:open-config",
-  fetchRemoteRunConfig: "xircuits-config:fetch-remote-config"
+  fetchRemoteRunConfig: "xircuits-config:fetch-remote-config",
+  toggleLightMode: "xircuits-editor:toggle-light-mode"
 };

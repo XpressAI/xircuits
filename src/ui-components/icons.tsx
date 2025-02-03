@@ -10,6 +10,7 @@ import compileRunSvg from '../../style/icons/compile-run.svg';
 import componentLibSvg from '../../style/icons/component-library.svg';
 import reloadAllSvg from '../../style/icons/reload-all.svg';
 import toggleAnimationSvg from '../../style/icons/low-power.svg';
+import toggleLightModeSvg from '../../style/icons/dark-mode-switch.svg';
 import BranchComponentSvg from '../../style/icons/branch-component.svg';
 import WorkflowComponentSvg from '../../style/icons/workflow-component.svg';
 import startFinishComponentSvg from '../../style/icons/start-finish-component.svg';
@@ -31,6 +32,7 @@ export const compileIcon = new LabIcon({ name: 'xircuits:compileIcon', svgstr: c
 export const compileRunIcon = new LabIcon({ name: 'xircuits:compileRunIcon', svgstr: compileRunSvg });
 export const reloadAllIcon = new LabIcon({ name: 'xircuits:reloadAllIcon', svgstr: reloadAllSvg });
 export const toggleAnimationIcon = new LabIcon({ name: 'xircuits:toggleAnimationIcon', svgstr: toggleAnimationSvg });
+export const toggleLightModeIcon = new LabIcon({ name: 'xircuits:toggleLightModeIcon', svgstr: toggleLightModeSvg });
 export const componentLibIcon = new LabIcon({ name: 'xircuits:componentLibIcon', svgstr: componentLibSvg });
 export const branchComponentIcon = new LabIcon({ name: 'xircuits:BranchComponentIcon', svgstr: BranchComponentSvg });
 export const workflowComponentIcon = new LabIcon({ name: 'xircuits:workflowComponentIcon', svgstr: WorkflowComponentSvg });

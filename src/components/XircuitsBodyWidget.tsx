@@ -29,6 +29,7 @@ import {
 import { cancelDialog, GeneralComponentLibrary } from "../tray_library/GeneralComponentLib";
 import { AdvancedComponentLibrary, fetchNodeByName } from "../tray_library/AdvanceComponentLib";
 import { lowPowerMode, setLowPowerMode } from "./state/powerModeState";
+import { lightMode, setLightMode } from "./state/lightModeState";
 import { startRunOutputStr } from "./runner/RunOutput";
 import { buildRemoteRunCommand } from "./runner/RemoteRun";
 
@@ -54,6 +55,7 @@ export interface BodyWidgetProps {
 	triggerLoadingAnimationSignal: Signal<XircuitsPanel, any>;
 	reloadAllNodesSignal: Signal<XircuitsPanel, any>;
 	toggleAllLinkAnimationSignal: Signal<XircuitsPanel, any>;
+	toggleLightModeSignal: Signal<XircuitsPanel, any>;
 }
 
 export const Body = styled.div`
@@ -93,6 +95,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	triggerLoadingAnimationSignal,
 	reloadAllNodesSignal,
 	toggleAllLinkAnimationSignal,
+	toggleLightModeSignal
 }) => {
 	const xircuitLogger = new Log(app);
 
@@ -694,6 +697,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setLowPowerMode(!powerMode)
 	}
 
+	const handleToggleLightMode = () => {
+		// This must be first to avoid unnecessary complication
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
+		let mode = lightMode;
+		setLightMode(!mode)
+	}
+
+
 	async function getRunTypesFromConfig(request: string) {
 		const dataToSend = { "config_request": request };
 	
@@ -880,6 +894,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		[triggerLoadingAnimationSignal, triggerLoadingAnimation],
 		[reloadAllNodesSignal, handleReloadAll],
 		[toggleAllLinkAnimationSignal, handleToggleAllLinkAnimation],
+		[toggleLightModeSignal, handleToggleLightMode],
 	];
 
 	signalConnections.forEach(connectSignal);
@@ -1176,11 +1191,20 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		hidePanel();
 	};
 
+	const [translate, setTranslate] = useState({x: 0, y: 0, scale: 1})
 	useEffect(() => {
 		const canvas = xircuitsApp.getDiagramEngine().getCanvas()
 		canvas.addEventListener('wheel', preventDefault);
+		const observer = new MutationObserver(function(mutations){
+			//@ts-ignore
+			const [_, x, y, scale] = canvas.firstChild.style.transform.match(/translate\((.+)px, (.+)px\) scale\((.+)\)/);
+			setTranslate({x: parseFloat(x), y: parseFloat(y), scale: parseFloat(scale)});
+		})
+		observer.observe(canvas.firstChild, {attributes: true, attributeFilter: ['style']});
+
 		return () => {
 			canvas.removeEventListener('wheel', preventDefault);
+			observer.disconnect();
 		}
 	}, [xircuitsApp.getDiagramEngine().getCanvas()])
 
@@ -1195,8 +1219,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		return () => {
 		  document.removeEventListener("keydown", handleEscape);
 		};
-	  }, []);
-
+	}, []);
 
 	return (
 		<Body>
@@ -1215,8 +1238,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					onMouseDown={preventDefault}
 					onContextMenu={showCanvasContextMenu}
 					onClick={handleClick}>
-					<XircuitsCanvasWidget>
-						<CanvasWidget engine={xircuitsApp.getDiagramEngine()} />
+					<XircuitsCanvasWidget translate={translate}>
+						<CanvasWidget engine={xircuitsApp.getDiagramEngine()}/>
 						{/* Add Component Panel(ctrl + left-click, dropped link) */}
 						{isComponentPanelShown && (
 							<div

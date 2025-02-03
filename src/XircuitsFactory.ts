@@ -25,14 +25,14 @@ import { ToolbarButton } from '@jupyterlab/apputils';
 import { LoggerCommandIDs } from './log/LogPlugin';
 import { ServiceManager } from '@jupyterlab/services';
 import { RunSwitcher } from './components/runner/RunSwitcher';
-import { 
-  lockIcon, 
+import {
+  lockIcon,
   compileIcon,
-  reloadAllIcon, 
-  xircuitsIcon, 
-  toggleAnimationIcon, 
-  compileRunIcon
-} from './ui-components/icons';
+  reloadAllIcon,
+  xircuitsIcon,
+  toggleAnimationIcon,
+  compileRunIcon, toggleLightModeIcon
+} from "./ui-components/icons";
 import { commandIDs } from "./commands/CommandIDs";
 const XIRCUITS_CLASS = 'xircuits-editor';
 
@@ -53,6 +53,7 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
   triggerLoadingAnimationSignal: Signal<this, any>;
   reloadAllNodesSignal: Signal<this, any>;
   toggleAllLinkAnimationSignal: Signal<this, any>;
+  toggleLightModeSignal: Signal<this, any>;
   refreshComponentsSignal: Signal<this, any>;
   toggleDisplayNodesInLibrary: Signal<this, any>;
 
@@ -73,6 +74,7 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
     this.triggerLoadingAnimationSignal = new Signal<this, any>(this);
     this.reloadAllNodesSignal = new Signal<this, any>(this);
     this.toggleAllLinkAnimationSignal = new Signal<this, any>(this);
+    this.toggleLightModeSignal = new Signal<this, any>(this);
     this.refreshComponentsSignal = new Signal<this, any>(this);
     this.toggleDisplayNodesInLibrary = new Signal<this, any>(this);
   }
@@ -96,6 +98,7 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
       triggerLoadingAnimationSignal: this.triggerLoadingAnimationSignal,
       reloadAllNodesSignal: this.reloadAllNodesSignal,
       toggleAllLinkAnimationSignal: this.toggleAllLinkAnimationSignal,
+      toggleLightModeSignal: this.toggleLightModeSignal,
       refreshComponentsSignal: this.refreshComponentsSignal,
       toggleDisplayNodesInLibrary: this.toggleDisplayNodesInLibrary
     };
@@ -126,6 +129,7 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
     let toggleAllLinkAnimationButton = CommandButton(commandIDs.toggleAllLinkAnimation, toggleAnimationIcon, 'Toggle low power mode by disabling link animation');
     let compileButton = CommandButton(commandIDs.compileXircuit, compileIcon, 'Compile Xircuits');
     let compileAndRunButton = CommandButton(commandIDs.runXircuit, compileRunIcon,'Compile and Run Xircuits');
+    let toggleLightModeButton = CommandButton(commandIDs.toggleLightMode, toggleLightModeIcon, 'Toggle Light/Dark Mode');
 
     widget.toolbar.insertItem(0, 'xircuits-add-undo', undoButton);
     widget.toolbar.insertItem(1, 'xircuits-add-redo', redoButton);
@@ -136,11 +140,12 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.insertItem(6, 'xircuits-add-lock', lockButton);
     widget.toolbar.insertItem(7, 'xircuits-add-log', logButton);
     widget.toolbar.insertItem(8, 'xircuits-add-toggle-all-link-animation', toggleAllLinkAnimationButton);
-    widget.toolbar.insertItem(9, 'xircuits-add-reload-all', reloadAllNodesButton);
-    widget.toolbar.insertItem(10, 'xircuits-add-save', saveButton);
-    widget.toolbar.insertItem(11, 'xircuits-add-compile', compileButton);
-    widget.toolbar.insertItem(12, 'xircuits-add-run', compileAndRunButton);
-    widget.toolbar.insertItem(13, 'xircuits-run-type', new RunSwitcher(this));
+    widget.toolbar.insertItem(9, 'xircuits-add-toggle-light-mode', toggleLightModeButton);
+    widget.toolbar.insertItem(10, 'xircuits-add-reload-all', reloadAllNodesButton);
+    widget.toolbar.insertItem(11, 'xircuits-add-save', saveButton);
+    widget.toolbar.insertItem(12, 'xircuits-add-compile', compileButton);
+    widget.toolbar.insertItem(13, 'xircuits-add-run', compileAndRunButton);
+    widget.toolbar.insertItem(14, 'xircuits-run-type', new RunSwitcher(this));
     
     return widget;
   }

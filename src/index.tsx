@@ -187,7 +187,9 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       [commandIDs.reloadAllNodes,
         {execute: emitSignal(widgetFactory.reloadAllNodesSignal)}],
       [commandIDs.toggleAllLinkAnimation,
-        {execute: emitSignal(widgetFactory.toggleAllLinkAnimationSignal)}]
+        {execute: emitSignal(widgetFactory.toggleAllLinkAnimationSignal)}],
+      [commandIDs.toggleLightMode,
+        {execute: emitSignal(widgetFactory.toggleLightModeSignal)}]
     ]
     signalConnections.forEach(([cmdId, def]) => app.commands.addCommand(cmdId, def))
 
