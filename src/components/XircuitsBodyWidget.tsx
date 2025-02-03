@@ -1202,20 +1202,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		hidePanel();
 	};
 
-	const [translate, setTranslate] = useState({x: 0, y: 0, scale: 1})
 	useEffect(() => {
 		const canvas = xircuitsApp.getDiagramEngine().getCanvas()
 		canvas.addEventListener('wheel', preventDefault);
-		const observer = new MutationObserver(function(mutations){
-			//@ts-ignore
-			const [_, x, y, scale] = canvas.firstChild.style.transform.match(/translate\((.+)px, (.+)px\) scale\((.+)\)/);
-			setTranslate({x: parseFloat(x), y: parseFloat(y), scale: parseFloat(scale)});
-		})
-		observer.observe(canvas.firstChild, {attributes: true, attributeFilter: ['style']});
 
 		return () => {
 			canvas.removeEventListener('wheel', preventDefault);
-			observer.disconnect();
 		}
 	}, [xircuitsApp.getDiagramEngine().getCanvas()])
 
@@ -1231,6 +1223,27 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		  document.removeEventListener("keydown", handleEscape);
 		};
 	}, []);
+
+	const [translate, setTranslate] = useState({x: 0, y: 0, scale: 1})
+	useEffect(() => {
+			const canvas = xircuitsApp.getDiagramEngine().getCanvas();
+			const observer = new MutationObserver(function(mutations){
+				//@ts-ignore
+				const [_, x, y, scale] = canvas.firstChild.style.transform.match(/translate\((.+)px, (.+)px\) scale\((.+)\)/);
+				setTranslate({x: parseFloat(x), y: parseFloat(y), scale: parseFloat(scale)});
+			});
+			observer.observe(canvas.querySelector('svg'), {attributes: true, attributeFilter: ['style']});
+
+			// Change the observation target when things change.
+			((new MutationObserver(function(){
+				observer.disconnect();
+				observer.observe(canvas.querySelector('svg'), {attributes: true, attributeFilter: ['style']});
+			})).observe(canvas, {childList: true}));
+
+			return () => {
+				observer.disconnect();
+			}
+	}, [xircuitsApp.getDiagramEngine().getCanvas()?.firstChild]);
 
 	return (
 		<Body>
@@ -1249,7 +1262,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					onMouseDown={preventDefault}
 					onContextMenu={showCanvasContextMenu}
 					onClick={handleClick}>
-					<XircuitsCanvasWidget translate={translate}>
+					<XircuitsCanvasWidget translate={translate} >
 						<CanvasWidget engine={xircuitsApp.getDiagramEngine()}/>
 						{/* Add Component Panel(ctrl + left-click, dropped link) */}
 						{isComponentPanelShown && (
