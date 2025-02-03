@@ -618,19 +618,30 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			if (runType == 'run') {
 				result = await handleLocalRunDialog();
 				if (result.status === 'ok') {
-					code += "%run " + model_path + result.args;
+				code += "%run " + model_path + result.args;
+				commands.execute(commandIDs.executeToOutputPanel, { code });
 				}
-			} else if (runType == 'remote-run') {
-				result = await handleRemoteRunDialog();
-				if (result.status === 'ok') {
-					code += buildRemoteRunCommand(model_path, result.args);
+				else if (result.status === 'cancelled') {
+				console.log("Run operation cancelled by user.");
 				}
 			}
-	
-			if (result.status === 'ok') {
+			
+			else if (runType == 'remote-run') {
+				result = await handleRemoteRunDialog();
+				if (result.status === 'ok') {
+				code += buildRemoteRunCommand(model_path, result.args);
 				commands.execute(commandIDs.executeToOutputPanel, { code });
-			} else if (result.status === 'cancelled') {
-				console.log("Run operation cancelled by user.");
+				}
+			}
+			
+			else if (runType === 'terminal-run') {
+				commands.execute(commandIDs.executeToTerminal, {
+				python_path: model_path
+				});
+			}
+			
+			else {
+				console.log("Unknown runType or user cancelled.");
 			}
 		})
 	}
