@@ -195,7 +195,7 @@ const CommentNode = ({ node }) => {
 
     return (
         <S.CommentContainer
-          className="node comment-node"
+          className={"node comment-node "+(node.isSelected() ? "selected" : "")}
           onDoubleClick={handleEditComment} selected={node.isSelected()} onMouseDown={addGrabbing} onMouseUp={removeGrabbing}>
             <S.TitleName><b>{node.getOptions().name}</b></S.TitleName>
             <div className='comment-component-content'>
@@ -232,7 +232,7 @@ const ParameterNode = ({ node, engine, app }) => {
 
     return (
         <S.Node
-            className="node parameter-node"
+            className={"node parameter-node "+(node.isSelected() ? "selected" : "")}
             onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
             borderColor={node.getOptions().extras["borderColor"]}
             data-default-node-name={node.getOptions().name}
@@ -252,7 +252,7 @@ const ParameterNode = ({ node, engine, app }) => {
 
 const StartFinishNode = ({ node, engine, handleDeletableNode, app }) => (
     <S.Node
-        className="node start-finish-node"
+        className={"node start-finish-node "+(node.isSelected() ? "selected" : "")}
         onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
         borderColor={node.getOptions().extras["borderColor"]}
         data-default-node-name={node.getOptions().name}
@@ -281,7 +281,7 @@ const WorkflowNode = ({ node, engine, app, handleDeletableNode }) => {
                 data-default-node-name={node.getOptions().name}
                 selected={node.isSelected()}
                 background={node.getOptions().color}
-                className="node workflow-node"
+                className={"node workflow-node "+(node.isSelected() ? "selected" : "")}
             >
                 <S.Title background={node.getOptions().color}
 >
@@ -337,7 +337,7 @@ const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode })
                 </div>
             </div>}
             <S.Node
-                className="node library-node"
+                className={"node library-node "+(node.isSelected() ? "selected" : "")}
                 onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
                 ref={(elementRef as LegacyRef<HTMLDivElement>)}
                 data-tip data-for={node.getOptions().id}
