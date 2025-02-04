@@ -124,7 +124,7 @@ body.light-mode .xircuits-canvas .node>div:nth-child(2) {
 }
 
 body.light-mode .xircuits-canvas .node .port>div>div{
-  background: oklch(0.75 0 0 / 0.5);
+  filter: saturate(150%);
 }
 
 
