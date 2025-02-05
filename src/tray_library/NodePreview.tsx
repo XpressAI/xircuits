@@ -73,7 +73,7 @@ export function NodePreview(props: { model: any }) {
       }
     }
 
-    return <NodeStyle.Ports>
+    return <NodeStyle.Ports className="ports">
       <NodeStyle.PortsContainer>{inPorts.map(p => <PortComponent port={p} direction="in"
                                                                  key={p.name} />)}</NodeStyle.PortsContainer>
       <NodeStyle.PortsContainer>{outPorts.map(p => <PortComponent port={p} direction="out"
@@ -87,7 +87,7 @@ export function NodePreview(props: { model: any }) {
     borderColor={model.color}
     selected={false}
     background={null}
-    className={model.type === "xircuits_workflow" ? "workflow-node" : null}
+    className={"node " + (model.type === "xircuits_workflow" ? "workflow-node" : "")}
     style={{ backgroundColor: "black" }}
   >
     <NodeStyle.Title background={model.color}>

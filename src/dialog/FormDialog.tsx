@@ -112,7 +112,10 @@ const preventDefaultDialogHandler = (
         await defaultButton.focus();
       }
     } else {
-      dialogHandleEvent.call(dialog, event);
+      // Explicitly allow context menu for inputs and textarea elements
+      if(!(event.type === 'contextmenu' && ['TEXTAREA', 'INPUT'].includes(event.target['tagName']))){
+        dialogHandleEvent.call(dialog, event);
+      }
     }
   };
 };
