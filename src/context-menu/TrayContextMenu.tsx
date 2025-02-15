@@ -74,25 +74,8 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigg
         const userResponse = confirm(`Do you want to proceed with ${libraryName} library installation?`);
         if (userResponse) {
             try {
-                // clone the repository
-                const response: any = await requestAPI("library/fetch", {
-                    body: JSON.stringify({libraryName}),
-                    method: 'POST',
-                  });
-
-                if (response.status !== 'OK') {
-                    throw new Error(response.message || 'Failed to fetch the library.');
-                }
-
-                const libraryConfig = await fetchLibraryConfig(libraryName);
-                if (libraryConfig && libraryConfig.local_path) {
-                    let code = startRunOutputStr();
-                    code += `!pip install -r ${libraryConfig.local_path}/requirements.txt`;
-                    app.commands.execute(commandIDs.executeToOutputPanel, { code });
-                    console.log(`${libraryName} library successfully installed.`);
-                } else {
-                    alert(`Library configuration not found for: ${libraryName}`);
-                }
+                let command = `xircuits install ${libraryName}`;
+                await app.commands.execute(commandIDs.executeToTerminal, { command });
                 refreshTrigger();
             } catch (error) {
                 alert(`Failed to install ${libraryName}. Please check the console for more details.`);

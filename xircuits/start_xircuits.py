@@ -42,7 +42,7 @@ def cmd_fetch_library(args, extra_args=[]):
     fetch_library(args.library_name)
 
 def cmd_install_library(args, extra_args=[]):
-    install_library(args.library_name)
+    install_library(args.library_name.lower())
 
 def cmd_compile(args, extra_args=[]):
     component_paths = {}

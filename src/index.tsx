@@ -359,15 +359,27 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     app.commands.addCommand(commandIDs.executeToTerminal, {
       label: 'Run in Terminal',
       execute: async args => {
-
-        const python_path = (args['python_path'] as string);
+        const command = args['command']; // Can be a string or an array
+        const useRootDir = args['useRootDir'] !== undefined ? args['useRootDir'] : true;
+    
         const terminalWidget = await app.commands.execute('terminal:create-new');
         app.shell.add(terminalWidget, 'main', { mode: 'split-bottom' });
         const terminalSession = terminalWidget.content.session;
     
-        terminalSession.send({ type: 'stdin', content: [`cd $JUPYTER_SERVER_ROOT\n`] });
-        terminalSession.send({ type: 'stdin', content: [`export PYTHONPATH=$JUPYTER_SERVER_ROOT:$PYTHONPATH\n`] });
-        terminalSession.send({ type: 'stdin', content: ['python ' + python_path + '\n'] });
+        if (useRootDir) {
+          terminalSession.send({ type: 'stdin', content: [`cd $JUPYTER_SERVER_ROOT\n`] });
+          terminalSession.send({ type: 'stdin', content: [`export PYTHONPATH=$JUPYTER_SERVER_ROOT:$PYTHONPATH\n`] });
+        }
+    
+        if (Array.isArray(command)) {
+          for (const cmd of command) {
+            terminalSession.send({ type: 'stdin', content: [cmd + '\n'] });
+          }
+        } else if (typeof command === 'string') {
+          terminalSession.send({ type: 'stdin', content: [command + '\n'] });
+        } else {
+          console.error('Invalid command type. Must be a string or an array of strings.');
+        }
       }
     });
     
