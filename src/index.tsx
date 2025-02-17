@@ -365,22 +365,35 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         const terminalWidget = await app.commands.execute('terminal:create-new');
         app.shell.add(terminalWidget, 'main', { mode: 'split-bottom' });
         const terminalSession = terminalWidget.content.session;
-    
-        if (useRootDir) {
-          terminalSession.send({ type: 'stdin', content: [`cd $JUPYTER_SERVER_ROOT\n`] });
-          terminalSession.send({ type: 'stdin', content: [`export PYTHONPATH=$JUPYTER_SERVER_ROOT:$PYTHONPATH\n`] });
-        }
-    
-        if (Array.isArray(command)) {
-          for (const cmd of command) {
-            terminalSession.send({ type: 'stdin', content: [cmd + '\n'] });
+
+        return new Promise((resolve) => {
+          let currentTerminalContent = "";
+          terminalSession.messageReceived.connect((sender, message) => {
+            for (let contentElement of message.content) {
+              currentTerminalContent += contentElement;
+            }
+            if(currentTerminalContent.includes("ready to use.")){
+              terminalSession.shutdown();
+              resolve('Execution done.');
+            }
+          })
+
+          if (useRootDir) {
+            terminalSession.send({ type: 'stdin', content: [`cd $JUPYTER_SERVER_ROOT\n`] });
+            terminalSession.send({ type: 'stdin', content: [`export PYTHONPATH=$JUPYTER_SERVER_ROOT:$PYTHONPATH\n`] });
           }
-        } else if (typeof command === 'string') {
-          terminalSession.send({ type: 'stdin', content: [command + '\n'] });
-        } else {
-          console.error('Invalid command type. Must be a string or an array of strings.');
+
+          if (Array.isArray(command)) {
+            for (const cmd of command) {
+              terminalSession.send({ type: 'stdin', content: [cmd + '\n'] });
+            }
+          } else if (typeof command === 'string') {
+            terminalSession.send({ type: 'stdin', content: [command + '\n'] });
+          } else {
+            console.error('Invalid command type. Must be a string or an array of strings.');
+          }
+          })
         }
-      }
     });
     
     // Add a command for compiling a xircuits file from the file browser context menu.
