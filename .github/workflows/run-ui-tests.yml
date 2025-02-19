@@ -69,6 +69,9 @@ jobs:
         whl_name=$(ls dist/*.whl)
         pip install $whl_name
 
+    - name: Init Xircuits
+      run: xircuits init
+
     - name: Install Xircuits Test Component Library
       run: xircuits install tests
 
