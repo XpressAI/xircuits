@@ -636,7 +636,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			
 			else if (runType === 'terminal-run') {
 				commands.execute(commandIDs.executeToTerminal, {
-				python_path: model_path
+					command: `python ${model_path}`
 				});
 			}
 			

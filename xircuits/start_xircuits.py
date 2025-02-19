@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+
 from .handlers.request_folder import request_folder
 from .utils import is_empty, copy_from_installed_wheel
 from .library import list_component_library, install_library, fetch_library, save_component_library_config
@@ -13,23 +14,66 @@ def init_xircuits():
     component_library_path = Path(os.getcwd()) / "xai_components"
     if not component_library_path.exists():
         copy_from_installed_wheel('xai_components', '', 'xai_components')
-        
+    save_component_library_config()
+
+def find_xircuits_working_dir():
+    """
+    Traverse upward from the current directory and return the directory that contains
+    both the '.xircuits' and 'xai_components' folders. Returns None if not found.
+    """
+    current_dir = Path(os.getcwd())
+    while True:
+        if (current_dir / ".xircuits").exists() and (current_dir / "xai_components").exists():
+            return current_dir
+        if current_dir == current_dir.parent:  # Reached filesystem root.
+            return None
+        current_dir = current_dir.parent
+
+def ensure_xircuits_initialized():
+    """
+    Ensure that the Xircuits base directories (.xircuits and xai_components) are present.
+    If found, return the directory where they exist (the xircuits working directory).
+    If not:
+      - Auto-initialize if XIRCUITS_INIT is set.
+      - Otherwise, prompt the user to initialize in the current directory.
+    """
+    working_dir = find_xircuits_working_dir()
+    if working_dir is not None:
+        return working_dir
+
+    if os.environ.get("XIRCUITS_INIT"):
+        init_xircuits()
+        print("Xircuits initialized automatically (XIRCUITS_INIT set).")
+        return Path(os.getcwd())
+    else:
+        answer = input("Xircuits base directories (.xircuits and xai_components) are not present.\n"
+                       "Would you like to initialize them here? (Y/n): ").strip().lower()
+        if answer in ["y", "yes", ""]:
+            init_xircuits()
+            return Path(os.getcwd())
+        else:
+            print("Xircuits is not initialized. Please run 'xircuits init' to initialize manually.")
+            return None
+
+def cmd_init(args, extra_args=[]):
+    init_xircuits()
+    print("Xircuits has been initialized in the current directory.")
+
 def cmd_start_xircuits(args, extra_args=[]):
-    # fetch xai_components
+    # Assume initialization has been ensured.
     component_library_path = Path(os.getcwd()) / "xai_components"
     if not component_library_path.exists():
-        copy_from_installed_wheel('xai_components', '', 'xai_components')
+        print("Error: 'xai_components' not found. Please initialize your directory using 'xircuits init'.")
+        return
 
     news_url_option = '--LabApp.news_url="https://xpress.ai/blog/atom.xml"'
-
-    # handler for extra jupyterlab launch options
+    # Handler for extra JupyterLab launch options.
     if extra_args:
         try:
-            launch_cmd = "jupyter lab --ContentsManager.allow_hidden=True" + " " + " ".join(extra_args) + " " + news_url_option
+            launch_cmd = "jupyter lab --ContentsManager.allow_hidden=True " + " ".join(extra_args) + " " + news_url_option
             os.system(launch_cmd)
         except Exception as e:
-            print("Error in launch args! Error log:\n")
-            print(e)
+            print("Error in launch args! Error log:\n", e)
     else:
         os.system(f"jupyter lab --ContentsManager.allow_hidden=True {news_url_option}")
 
@@ -42,7 +86,7 @@ def cmd_fetch_library(args, extra_args=[]):
     fetch_library(args.library_name)
 
 def cmd_install_library(args, extra_args=[]):
-    install_library(args.library_name)
+    install_library(args.library_name.lower())
 
 def cmd_compile(args, extra_args=[]):
     component_paths = {}
@@ -68,45 +112,70 @@ def cmd_list_libraries(args, extra_args=[]):
     list_component_library()
 
 def main():
+    # Print banner only when executing as a CLI command.
+    print(
+    '''
+    ======================================
+    __   __  ___                _ _
+    \ \  \ \/ (_)_ __ ___ _   _(_) |_ ___
+     \ \  \  /| | '__/ __| | | | | __/ __|
+     / /  /  \| | | | (__| |_| | | |_\__ \\
+    /_/  /_/\_\_|_|  \___|\__,_|_|\__|___/
+    
+    ======================================
+    '''
+    )
+
     parser = argparse.ArgumentParser(description='Xircuits Command Line Interface', add_help=False)
     subparsers = parser.add_subparsers(dest="command")
 
-    # Adding parser for 'start' command
+    # 'init' command.
+    init_parser = subparsers.add_parser('init', help='Initialize Xircuits in the current directory.')
+    init_parser.set_defaults(func=cmd_init)
+
+    # 'start' command.
     start_parser = subparsers.add_parser('start', help='Start Xircuits.')
     start_parser.add_argument('extra_args', nargs='*', help='Additional arguments for Xircuits launch command')
     start_parser.set_defaults(func=cmd_start_xircuits)
 
-    # Adding parser for 'install' command
-    install_parser = subparsers.add_parser('install', help='Fetch and installs a library for Xircuits.')
+    # 'install' command.
+    install_parser = subparsers.add_parser('install', help='Fetch and install a library for Xircuits.')
     install_parser.add_argument('library_name', type=str, help='Name of the library to install')
     install_parser.set_defaults(func=cmd_install_library)
 
-    # Adding parser for 'fetch' command
+    # 'fetch-only' command.
     fetch_parser = subparsers.add_parser('fetch-only', help='Fetch a library for Xircuits. Does not install.')
     fetch_parser.add_argument('library_name', type=str, help='Name of the library to fetch')
     fetch_parser.set_defaults(func=cmd_fetch_library)
 
-    # Adding parser for 'examples' command
+    # 'examples' command.
     examples_parser = subparsers.add_parser('examples', help='Get example workflows for Xircuits.')
-    examples_parser.add_argument('--branch', nargs='?', default="master", help='Load example workflows to current working directory/')
+    examples_parser.add_argument('--branch', nargs='?', default="master", help='Load example workflows to current working directory')
     examples_parser.set_defaults(func=cmd_download_examples)
 
-    # Adding parser for 'compile' command
+    # 'compile' command.
     compile_parser = subparsers.add_parser('compile', help='Compile a Xircuits workflow file.')
     compile_parser.add_argument('source_file', type=str, help='Source Xircuits file to compile.')
     compile_parser.add_argument('out_file', nargs='?', type=str, help='Output Python file.')
     compile_parser.add_argument("--python-paths-file", default=None, type=argparse.FileType('r'),
-                                help="JSON file with a mapping of component name to required python path. "
-                                    "e.g. {'MyComponent': '/some/path'}")
+                                help="JSON file mapping component names to python paths. e.g. {'MyComponent': '/some/path'}")
     compile_parser.add_argument('--non-recursive', action='store_false', dest='recursive', default=True,
                                 help='Do not recursively compile Xircuits workflow files.')
     compile_parser.set_defaults(func=cmd_compile)
 
-    # Adding parser for 'list' command
+    # 'list' command.
     list_parser = subparsers.add_parser('list', help='List available component libraries for Xircuits.')
     list_parser.set_defaults(func=cmd_list_libraries)
 
     args, unknown_args = parser.parse_known_args()
+
+    # For any command other than 'init', switch to the xircuits working directory.
+    if args.command != "init":
+        working_dir = ensure_xircuits_initialized()
+        if working_dir:
+            os.chdir(working_dir)
+            print(f"Operating in Xircuits working directory: {working_dir}")
+
 
     if hasattr(args, 'func'):
         args.func(args, unknown_args)
@@ -115,29 +184,7 @@ def main():
         if any(arg in unknown_args for arg in valid_help_args):
             parser.print_help()
         else:
-            # Default behavior: if no sub-command is provided, start xircuits.
             cmd_start_xircuits(args, unknown_args)
-
-    return 0
 
 if __name__ == '__main__':
     main()
-
-print(
-'''
-======================================
-__   __  ___                _ _
-\ \  \ \/ (_)_ __ ___ _   _(_) |_ ___
- \ \  \  /| | '__/ __| | | | | __/ __|
- / /  /  \| | | | (__| |_| | | |_\__ \\
-/_/  /_/\_\_|_|  \___|\__,_|_|\__|___/
-
-======================================
-'''
-)
-
-config_path = Path(os.getcwd()) / ".xircuits"
-if not config_path.exists():
-    init_xircuits()
-
-save_component_library_config()
