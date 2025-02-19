@@ -120,7 +120,7 @@ const PortLabel = ({nodeType, port}) => {
 	}
 
 	return (
-			<S.Label style={{ textAlign: (!port.getOptions().in && port.getOptions().label === '▶') ? 'right' : 'left', cursor: attached ? 'pointer' : 'inherit' }}>
+			<S.Label style={{ textAlign: port.getOptions().in ? 'left' : 'right', cursor: attached ? 'pointer' : 'inherit' }}>
 				{nodeType === LITERAL_SECRET ? "*****" : labelText}
 			</S.Label>
 	);
