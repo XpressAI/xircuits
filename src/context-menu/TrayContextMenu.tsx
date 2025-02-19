@@ -74,8 +74,9 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigg
         const userResponse = confirm(`Do you want to proceed with ${libraryName} library installation?`);
         if (userResponse) {
             try {
-                let command = `xircuits install ${libraryName}`;
-                await app.commands.execute(commandIDs.executeToTerminal, { command });
+                await app.commands.execute(commandIDs.executeToTerminal, { 
+                    command: `xircuits install ${libraryName}`,
+                });
                 refreshTrigger();
             } catch (error) {
                 alert(`Failed to install ${libraryName}. Please check the console for more details.`);

@@ -360,7 +360,6 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       label: 'Run in Terminal',
       execute: async args => {
         const command = args['command']; // Can be a string or an array
-        const useRootDir = args['useRootDir'] !== undefined ? args['useRootDir'] : true;
     
         const terminalWidget = await app.commands.execute('terminal:create-new');
         app.shell.add(terminalWidget, 'main', { mode: 'split-bottom' });
@@ -377,11 +376,6 @@ const xircuits: JupyterFrontEndPlugin<void> = {
               resolve('Execution done.');
             }
           })
-
-          if (useRootDir) {
-            terminalSession.send({ type: 'stdin', content: [`cd $JUPYTER_SERVER_ROOT\n`] });
-            terminalSession.send({ type: 'stdin', content: [`export PYTHONPATH=$JUPYTER_SERVER_ROOT:$PYTHONPATH\n`] });
-          }
 
           if (Array.isArray(command)) {
             for (const cmd of command) {
