@@ -416,7 +416,11 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     app.commands.addCommand(commandIDs.copyXircuitsToRoot, {
       label: 'Copy To Root Directory',
-      isVisible: () => [...browserFactory.tracker.currentWidget.selectedItems()].length > 0,
+      isVisible: () => {
+        const selectedItems = [...browserFactory.tracker.currentWidget.selectedItems()];
+        // Only show if at least one file's path contains a slash (i.e. not in root)
+        return selectedItems.some(item => item.path.indexOf('/') !== -1);
+      },
       icon: xircuitsIcon,
       execute: async () => {
         const selectedItems = Array.from(browserFactory.tracker.currentWidget.selectedItems());
