@@ -44,7 +44,6 @@ def ensure_xircuits_initialized():
     if working_dir is not None:
         # Found xai_components. Now check for .xircuits.
         if not (working_dir / ".xircuits").exists():
-            # print(f"Found 'xai_components' in {working_dir} but missing '.xircuits'. Auto-initializing .xircuits.")
             # Switch to the working directory to initialize .xircuits there.
             os.chdir(working_dir)
             init_xircuits()
@@ -179,8 +178,8 @@ def main():
 
     args, unknown_args = parser.parse_known_args()
 
-    # For any command other than 'init', switch to the xircuits working directory.
-    if args.command != "init":
+    # For any command other than 'init' and 'compile', switch to the xircuits working directory.
+    if args.command not in ("init", "compile"):
         working_dir = ensure_xircuits_initialized()
         if working_dir:
             os.chdir(working_dir)
