@@ -9,6 +9,9 @@ from .library import list_component_library, install_library, fetch_library, sav
 from .compiler import compile, recursive_compile
 
 def init_xircuits():
+    """
+    Initialize the Xircuits base directories in the current directory.
+    """
     package_name = 'xircuits'
     copy_from_installed_wheel(package_name, resource='.xircuits', dest_path='.xircuits')
     component_library_path = Path(os.getcwd()) / "xai_components"
@@ -18,12 +21,12 @@ def init_xircuits():
 
 def find_xircuits_working_dir():
     """
-    Traverse upward from the current directory and return the directory that contains
-    both the '.xircuits' and 'xai_components' folders. Returns None if not found.
+    Traverse upward from the current directory to find the first directory
+    that contains 'xai_components'. That directory is considered the Xircuits working directory.
     """
     current_dir = Path(os.getcwd())
     while True:
-        if (current_dir / ".xircuits").exists() and (current_dir / "xai_components").exists():
+        if (current_dir / "xai_components").exists():
             return current_dir
         if current_dir == current_dir.parent:  # Reached filesystem root.
             return None
@@ -31,23 +34,30 @@ def find_xircuits_working_dir():
 
 def ensure_xircuits_initialized():
     """
-    Ensure that the Xircuits base directories (.xircuits and xai_components) are present.
-    If found, return the directory where they exist (the xircuits working directory).
-    If not:
+    Define the working directory by the presence of xai_components.
+    If the working directory is found but the .xircuits folder is missing, auto-initialize it there.
+    If no working directory is found:
       - Auto-initialize if XIRCUITS_INIT is set.
       - Otherwise, prompt the user to initialize in the current directory.
     """
     working_dir = find_xircuits_working_dir()
     if working_dir is not None:
+        # Found xai_components. Now check for .xircuits.
+        if not (working_dir / ".xircuits").exists():
+            # print(f"Found 'xai_components' in {working_dir} but missing '.xircuits'. Auto-initializing .xircuits.")
+            # Switch to the working directory to initialize .xircuits there.
+            os.chdir(working_dir)
+            init_xircuits()
         return working_dir
 
+    # If no working directory was found, handle initialization in the current directory.
     if os.environ.get("XIRCUITS_INIT"):
         init_xircuits()
         print("Xircuits initialized automatically (XIRCUITS_INIT set).")
         return Path(os.getcwd())
     else:
-        answer = input("Xircuits base directories (.xircuits and xai_components) are not present.\n"
-                       "Would you like to initialize them here? (Y/n): ").strip().lower()
+        answer = input("No xai_components folder found in any parent directories.\n"
+                       "Would you like to initialize Xircuits in the current directory? (Y/n): ").strip().lower()
         if answer in ["y", "yes", ""]:
             init_xircuits()
             return Path(os.getcwd())
@@ -175,7 +185,6 @@ def main():
         if working_dir:
             os.chdir(working_dir)
             print(f"Operating in Xircuits working directory: {working_dir}")
-
 
     if hasattr(args, 'func'):
         args.func(args, unknown_args)
