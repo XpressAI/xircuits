@@ -16,12 +16,13 @@ class GetCurrentTime(Component):
     - time_str (str): The current time as a string in ISO 8601 format.
     """
     time_str: OutArg[str]
+    time_zone: InArg[str]
     
     def execute(self, ctx) -> None:
         try:
             import pytz
     
-            tz = pytz.timezone('UTC')
+            tz = pytz.timezone(self.time_zone.value if self.time_zone.value is not None else 'UTC')
             now = datetime.datetime.now(tz)
         except:
             now = datetime.datetime.now()
