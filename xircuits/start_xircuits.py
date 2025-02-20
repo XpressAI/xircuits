@@ -120,8 +120,16 @@ def cmd_compile(args, extra_args=[]):
 def cmd_list_libraries(args, extra_args=[]):
     list_component_library()
 
+def cmd_run(args, extra_args=[]):
+
+    cmd_compile(args, extra_args)
+    
+    output_filename = args.out_file if args.out_file else args.source_file.replace('.xircuits', '.py')
+    
+    run_command = f"python {output_filename} {' '.join(extra_args)}"
+    os.system(run_command)
+
 def main():
-    # Print banner only when executing as a CLI command.
     print(
     '''
     ======================================
@@ -176,6 +184,16 @@ def main():
     list_parser = subparsers.add_parser('list', help='List available component libraries for Xircuits.')
     list_parser.set_defaults(func=cmd_list_libraries)
 
+    # 'run' command.
+    run_parser = subparsers.add_parser('run', help='Compile and run a Xircuits workflow file.')
+    run_parser.add_argument('source_file', type=str, help='Source Xircuits file to compile and run.')
+    run_parser.add_argument('out_file', nargs='?', type=str, help='Optional output Python file.')
+    run_parser.add_argument("--python-paths-file", default=None, type=argparse.FileType('r'),
+                            help="JSON file mapping component names to python paths. e.g. {'MyComponent': '/some/path'}")
+    run_parser.add_argument('--non-recursive', action='store_false', dest='recursive', default=True,
+                            help='Do not recursively compile Xircuits workflow files.')
+    run_parser.set_defaults(func=cmd_run)
+
     args, unknown_args = parser.parse_known_args()
 
     # For any command other than 'init' and 'compile', switch to the xircuits working directory.
@@ -183,7 +201,7 @@ def main():
         working_dir = ensure_xircuits_initialized()
         if working_dir:
             os.chdir(working_dir)
-            print(f"Operating in Xircuits working directory: {working_dir}")
+            print(f"Xircuits computing from: {working_dir}")
 
     if hasattr(args, 'func'):
         args.func(args, unknown_args)
