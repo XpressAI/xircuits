@@ -122,9 +122,11 @@ def cmd_list_libraries(args, extra_args=[]):
 
 def cmd_run(args, extra_args=[]):
 
-    cmd_compile(args, extra_args)
-    
-    output_filename = args.out_file if args.out_file else args.source_file.replace('.xircuits', '.py')
+    if args.source_file.endswith('.py'):
+        output_filename = args.source_file
+    else:
+        cmd_compile(args, extra_args)
+        output_filename = args.out_file if args.out_file else args.source_file.replace('.xircuits', '.py')
     
     run_command = f"python {output_filename} {' '.join(extra_args)}"
     os.system(run_command)
@@ -186,7 +188,7 @@ def main():
 
     # 'run' command.
     run_parser = subparsers.add_parser('run', help='Compile and run a Xircuits workflow file.')
-    run_parser.add_argument('source_file', type=str, help='Source Xircuits file to compile and run.')
+    run_parser.add_argument('source_file', type=str, help='Source Xircuits file to compile and run (or a Python file to run directly).')
     run_parser.add_argument('out_file', nargs='?', type=str, help='Optional output Python file.')
     run_parser.add_argument("--python-paths-file", default=None, type=argparse.FileType('r'),
                             help="JSON file mapping component names to python paths. e.g. {'MyComponent': '/some/path'}")
