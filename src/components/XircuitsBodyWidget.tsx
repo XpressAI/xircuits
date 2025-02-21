@@ -636,7 +636,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			
 			else if (runType === 'terminal-run') {
 				commands.execute(commandIDs.executeToTerminal, {
-					command: `python ${model_path}`
+					command: `xircuits run ${model_path}`
 				});
 			}
 			

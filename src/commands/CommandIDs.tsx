@@ -31,17 +31,18 @@ export const commandIDs = {
   connectLinkToObviousPorts: "Xircuit-editor:connect-obvious-link",
   addCommentNode: "Xircuit-editor:add-comment-node",
   compileFile: "Xircuit-editor:compile-file",
-  compileWorkflowFromFileBrowser: "Xircuit-editor:compile-workflow-from-file-browser",
   nextNode: "Xircuit-editor:next-node",
+  toggleLightMode: "xircuits-editor:toggle-light-mode",
   outputMsg: "Xircuit-log:logOutputMessage",
   executeToOutputPanel: "Xircuit-output-panel:execute",
   executeToTerminal: "Xircuit-terminal:execute",
   createNewComponentLibrary: "Xircuit-editor:new-component-library",
   refreshComponentList: "xircuits-sidebar:refresh-component-list",
   toggleDisplayNodesInLibrary: "xircuits-sidebar:toggle-display-nodes-in-library",
+  compileWorkflowFromFileBrowser: "Xircuit-filebrowser:compile-workflow-from-file-browser",
+  runXircuitsFileFromFileBrowser: "Xircuit-filebrowser:run-workflow-from-file-browser",
   createNewXircuitInCurrentDir: "Xircuit-filebrowser:create-new-in-current-dir",
   helpOpenResource: "xircuits-help:open-resource",
   openXircuitsConfiguration: "xircuits-config:open-config",
-  fetchRemoteRunConfig: "xircuits-config:fetch-remote-config",
-  toggleLightMode: "xircuits-editor:toggle-light-mode"
+  fetchRemoteRunConfig: "xircuits-config:fetch-remote-config"
 };

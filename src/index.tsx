@@ -416,7 +416,11 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     app.commands.addCommand(commandIDs.copyXircuitsToRoot, {
       label: 'Copy To Root Directory',
-      isVisible: () => [...browserFactory.tracker.currentWidget.selectedItems()].length > 0,
+      isVisible: () => {
+        const selectedItems = [...browserFactory.tracker.currentWidget.selectedItems()];
+        // Only show if at least one file's path contains a slash (i.e. not in root)
+        return selectedItems.some(item => item.path.indexOf('/') !== -1);
+      },
       icon: xircuitsIcon,
       execute: async () => {
         const selectedItems = Array.from(browserFactory.tracker.currentWidget.selectedItems());
@@ -447,9 +451,35 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     });
 
-    // Add the compile command to the context menu of the file browser
+    app.commands.addCommand(commandIDs.runXircuitsFileFromFileBrowser, {
+      label: 'Run Xircuits',
+      icon: xircuitsIcon,
+      isVisible: () => {
+        return [...browserFactory.tracker.currentWidget.selectedItems()]
+          .filter(item => item.type === 'file' && item.path.endsWith('.xircuits'))
+          .length > 0;
+      },
+      execute: async () => {
+        const selectedItems = Array.from(browserFactory.tracker.currentWidget.selectedItems());
+        for (const xircuitsFile of selectedItems) {
+          if (xircuitsFile.path.endsWith('.xircuits')) {
+            await app.commands.execute(commandIDs.executeToTerminal, {
+              command: `xircuits run ${xircuitsFile.path}`
+            });
+          }
+        }
+      }
+    });
+
+    // Add the commands to the context menu of the file browser
     app.contextMenu.addItem({
       command: commandIDs.compileWorkflowFromFileBrowser,
+      selector: '.jp-DirListing-item[data-file-type="xircuits"]',
+      rank: 0
+    });
+
+    app.contextMenu.addItem({
+      command: commandIDs.runXircuitsFileFromFileBrowser,
       selector: '.jp-DirListing-item[data-file-type="xircuits"]',
       rank: 0
     });
