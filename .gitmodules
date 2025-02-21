@@ -94,3 +94,6 @@
 [submodule "xai_components/xai_telegram"]
 	path = xai_components/xai_telegram
 	url = https://github.com/XpressAI/xai-telegram
+[submodule "xai_components/xai_serpapi"]
+	path = xai_components/xai_serpapi
+	url = https://github.com/XpressAI/xai-serpapi
