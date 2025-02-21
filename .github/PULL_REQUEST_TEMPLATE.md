@@ -36,11 +36,10 @@ Please describe the tests that you ran to verify your changes. Provide instructi
     3. ...
 
 
-## Tested on?
+**Tested on? Specify Version.**
 
 - [ ] Windows  
-- [ ] Linux Ubuntu 
-- [ ] Centos 
+- [ ] Linux
 - [ ] Mac  
 - [ ] Others  (State here -> xxx )  
 

@@ -34,11 +34,10 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Tested on?**
+**Tested on? Specify Version.**
 
 - [ ] Windows  
-- [ ] Linux Ubuntu 
-- [ ] Centos 
+- [ ] Linux 
 - [ ] Mac  
 - [ ] Others  (State here -> xxx )  
 
