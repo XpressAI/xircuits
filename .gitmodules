@@ -91,3 +91,6 @@
 [submodule "xai_components/xai_gradio"]
 	path = xai_components/xai_gradio
 	url = https://github.com/XpressAI/xai-gradio
+[submodule "xai_components/xai_telegram"]
+	path = xai_components/xai_telegram
+	url = https://github.com/XpressAI/xai-telegram
