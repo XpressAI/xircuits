@@ -112,3 +112,6 @@
 [submodule "xai_components/xai_confluence"]
 	path = xai_components/xai_confluence
 	url = https://github.com/XpressAI/xai-confluence
+[submodule "xai_components/xai_gcalendar"]
+	path = xai_components/xai_gcalendar
+	url = https://github.com/XpressAI/xai-gcalendar
