@@ -1,4 +1,4 @@
-from xai_components.base import InArg, OutArg, InCompArg, Component, xai_component, dynalist, dynatuple, BaseComponent, SubGraphExecutor
+from xai_components.base import InArg, OutArg, InCompArg, Component, xai_component, secret, dynalist, dynatuple, BaseComponent, SubGraphExecutor
 
 import os
 import sys
@@ -754,7 +754,7 @@ class GetEnvVar(Component):
     - var_value (str): The value of the environment variable, or None if the variable is not set.
     """
     var_name: InCompArg[str]
-    var_value: OutArg[secret]
+    var_value: OutArg[str]
 
     def execute(self, ctx) -> None:
         # Try to load .env file if python-dotenv is installed
