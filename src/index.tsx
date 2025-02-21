@@ -252,16 +252,13 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     }
 
-    async function compileXircuitsFile(path: string, pythonPaths: any = {}, showOutput: boolean = false) {
+    async function compileXircuitsFile(path: string, pythonPaths: any = {}) {
       try {
         const request = await requestToGenerateCompileFile(path, pythonPaths);
         if (request["message"] == "completed") {
           const modelPath = path.split(".xircuits")[0] + ".py";
           docmanager.closeFile(modelPath);
-   
-          if (showOutput) {
-            alert(`${modelPath} successfully compiled!`);
-          }
+
           if (modelPath.startsWith("xai_components/")) {
             console.info(`File ${modelPath} changed. Reloading components...`);
             await app.commands.execute(commandIDs.refreshComponentList);
@@ -279,14 +276,13 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     app.commands.addCommand(commandIDs.compileFile, {
       execute: async args => {
         const path = tracker.currentWidget.context.path;
-        const showOutput = args['showOutput'] !== undefined ? (args['showOutput'] as boolean) : false;
    
         const pythonPaths = {};
         (args['componentList'] === undefined ? [] : args['componentList'] as []).filter(it => it['python_path']).forEach(it => {
           pythonPaths[it['name']] = it['python_path']
         });
    
-        await compileXircuitsFile(path, pythonPaths, showOutput);
+        await compileXircuitsFile(path, pythonPaths);
       }
     });
    
