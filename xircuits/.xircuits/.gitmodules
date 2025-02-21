@@ -4,6 +4,9 @@
 [submodule "xai_components/xai_modelstash"]
 	path = xai_components/xai_modelstash
 	url = https://github.com/XpressAI/xai-modelstash
+[submodule "xai_components/xai_rpa"]
+	path = xai_components/xai_rpa
+	url = https://github.com/yuenherny/xai-rpa
 [submodule "xai_components/xai_streamlit"]
 	path = xai_components/xai_streamlit
 	url = https://github.com/XpressAI/xai-streamlit
@@ -91,33 +94,3 @@
 [submodule "xai_components/xai_gradio"]
 	path = xai_components/xai_gradio
 	url = https://github.com/XpressAI/xai-gradio
-[submodule "xai_components/xai_telegram"]
-	path = xai_components/xai_telegram
-	url = https://github.com/XpressAI/xai-telegram
-[submodule "xai_components/xai_serpapi"]
-	path = xai_components/xai_serpapi
-	url = https://github.com/XpressAI/xai-serpapi
-[submodule "xai_components/xai_sendgrid"]
-	path = xai_components/xai_sendgrid
-	url = https://github.com/XpressAI/xai-sendgrid
-[submodule "xai_components/xai_github"]
-	path = xai_components/xai_github
-	url = https://github.com/XpressAI/xai-github
-[submodule "xai_components/xai_aws"]
-	path = xai_components/xai_aws
-	url = https://github.com/XpressAI/xai-aws
-[submodule "xai_components/xai_requests"]
-	path = xai_components/xai_requests
-	url = https://github.com/XpressAI/xai-requests
-[submodule "xai_components/xai_confluence"]
-	path = xai_components/xai_confluence
-	url = https://github.com/XpressAI/xai-confluence
-[submodule "xai_components/xai_gcalendar"]
-	path = xai_components/xai_gcalendar
-	url = https://github.com/XpressAI/xai-gcalendar
-[submodule "xai_components/xai_gtasks"]
-	path = xai_components/xai_gtasks
-	url = https://github.com/XpressAI/xai-google-tasks
-[submodule "xai_components/xai_twilio"]
-	path = xai_components/xai_twilio
-	url = https://github.com/XpressAI/xai-twilio
