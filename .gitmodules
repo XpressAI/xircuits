@@ -97,3 +97,9 @@
 [submodule "xai_components/xai_serpapi"]
 	path = xai_components/xai_serpapi
 	url = https://github.com/XpressAI/xai-serpapi
+[submodule "xai_components/xai_sendgrid"]
+	path = xai_components/xai_sendgrid
+	url = https://github.com/XpressAI/xai-sendgrid
+[submodule "xai_components/xai_github"]
+	path = xai_components/xai_github
+	url = https://github.com/XpressAI/xai-github
