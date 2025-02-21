@@ -118,3 +118,6 @@
 [submodule "xai_components/xai_gtasks"]
 	path = xai_components/xai_gtasks
 	url = https://github.com/XpressAI/xai-google-tasks
+[submodule "xai_components/xai_twilio"]
+	path = xai_components/xai_twilio
+	url = https://github.com/XpressAI/xai-twilio
