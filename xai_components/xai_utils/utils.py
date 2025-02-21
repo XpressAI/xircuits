@@ -498,42 +498,43 @@ class IsNotNone(Component):
 
 @xai_component
 class SetDictValue(Component):
-    """Sets a key-value pair in a dictionary, creating a new one if none exists.
-    
-    ##### inPorts:
-    - dict (dict): Input or existing dictionary.
-    - key (str): Key to set in the dictionary.
-    - value (any): Value to set for the key.
-    
-    ##### outPorts:
-    - out_dict (dict): Dictionary with the updated key-value pair.
-    """
-    dict: InArg[dict]
-    key: InArg[str]
-    value: InArg[any]
-    out_dict: OutArg[dict]
+    """Sets a key-value pair in a dictionary, creating a new dictionary if none is provided.
 
+    InPorts:
+    - obj (dict): The input dictionary. If falsy or not provided, a new dictionary will be created.
+    - name (str): The key to set in the dictionary.
+    - value (any): The value to assign to the key.
+
+    OutPorts:
+    - out_dict (dict): The resulting dictionary with the updated key-value pair.
+    """
+    obj: InArg[dict]
+    name: InCompArg[str]
+    value: InCompArg[any]
+    out_dict: OutArg[dict]
+    
     def execute(self, ctx) -> None:
-        self.out_dict.value = {} if self.dict.value is None else self.dict.value
-        self.out_dict.value[self.key.value] = self.value.value
+        obj = self.obj.value if self.obj.value else {}
+        obj[self.name.value] = self.value.value
+        self.out_dict.value = obj
 
 @xai_component
 class GetDictValue(Component):
-    """Retrieves a value from a dictionary by key.
-    
-    ##### inPorts:
-    - dict (dict): The dictionary to search.
-    - key (str): The key for the value to retrieve.
-    
-    ##### outPorts:
-    - value (any): The retrieved value, or None if the key is not found.
+    """Retrieves a value from a dictionary using a specified key.
+
+    InPorts:
+    - obj (dict): The dictionary to search.
+    - name (str): The key for which the value will be retrieved.
+
+    OutPorts:
+    - value (any): The value associated with the key. Raises a KeyError if the key is not found.
     """
-    dict: InArg[dict]
-    key: InArg[str]
+    obj: InArg[dict]
+    name: InCompArg[str]
     value: OutArg[any]
 
     def execute(self, ctx) -> None:
-        self.value.value = self.dict.value.get(self.key.value)
+        self.value.value = self.obj.value[self.name.value]
 
 @xai_component
 class ListAppend(Component):
@@ -753,11 +754,40 @@ class GetEnvVar(Component):
     - var_value (str): The value of the environment variable, or None if the variable is not set.
     """
     var_name: InCompArg[str]
-    var_value: OutArg[str]
+    var_value: OutArg[secret]
 
     def execute(self, ctx) -> None:
+        # Try to load .env file if python-dotenv is installed
+        try:
+            from dotenv import load_dotenv
+            load_dotenv()  # Loads the variables from a .env file into the environment
+        except ImportError:
+            # If dotenv isn't installed, skip loading
+            pass
+
         env_var_name = self.var_name.value
         self.var_value.value = os.getenv(env_var_name)
-               
+        
         if self.var_value.value is None:
             print(f"Warning: Environment variable '{env_var_name}' is not set.")
+
+@xai_component
+class DeepCopy(Component):
+    """
+    Creates a deep copy of the input data and outputs the copied data.
+
+    ##### inPorts:
+    - data (any): The input data to be deep-copied.
+
+    ##### outPorts:
+    - copied_data (any): The deep-copied output data.
+    """
+    data: InArg[any]
+    copied_data: OutArg[any]
+
+    def execute(self, ctx) -> None:
+        import copy
+
+        # Perform a deep copy of the input data
+        input_data = self.data.value
+        self.copied_data.value = copy.deepcopy(input_data)
