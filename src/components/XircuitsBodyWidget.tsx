@@ -104,12 +104,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [initialize, setInitialize] = useState(true);
 	const [remoteRunConfigs, setRemoteRunConfigs] = useState<any>("");
 	const [lastConfig, setLastConfigs] = useState<any>("");
-	const [stringNodes, setStringNodes] = useState<string[]>([]);
-	const [intNodes, setIntNodes] = useState<string[]>([]);
-	const [floatNodes, setFloatNodes] = useState<string[]>([]);
-	const [boolNodes, setBoolNodes] = useState<string[]>([]);
-	const [anyNodes, setAnyNodes] = useState<string[]>([]);
-	const [secretNodes, setSecretNodes] = useState<string[]>([]);
 	const [componentList, setComponentList] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [loadingMessage, setLoadingMessage] = useState('Xircuits loading...');
@@ -551,18 +545,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		let allNodesConnected = checkAllNodesConnected();
 
-		// if (!saved) {
-		// 	alert("Please save before compiling.");
-		// 	return;
-		// }
-
 		if (!allNodesConnected) {
 			alert("Please connect all the nodes before compiling.");
 			return;
 		}
-		let showOutput = true;
 		setCompiled(true);
-		commands.execute(commandIDs.compileFile, { showOutput, componentList });
+		commands.execute(commandIDs.compileFile, { componentList });
 	}
 
 	const saveAndCompileAndRun = async () => {
@@ -599,11 +587,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		let showOutput = false;
-
 		// Only compile when 'Run' is chosen
 		if (runType == 'run') {
-			commands.execute(commandIDs.compileFile, { showOutput, componentList });
+			commands.execute(commandIDs.compileFile, { componentList });
 			setCompiled(true);
 		}
 
@@ -718,7 +704,45 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setLightMode(!mode)
 	}
 
-
+	// Helper function to compute argument nodes on demand
+	const getArgumentNodes = (): {
+		string: string[];
+		int: string[];
+		float: string[];
+		boolean: string[];
+		secret: string[];
+		any: string[];
+	} => {
+		const nodesByType = {
+		string: [] as string[],
+		int: [] as string[],
+		float: [] as string[],
+		boolean: [] as string[],
+		secret: [] as string[],
+		any: [] as string[]
+		};
+	
+		const allNodes = xircuitsApp.getDiagramEngine().getModel().getNodes();
+		allNodes.forEach((node) => {
+		const nodeName = node.getOptions()["name"];
+		if (nodeName.startsWith("Argument ")) {
+			const regEx = /\(([^)]+)\)/;
+			const match = nodeName.match(regEx);
+			if (!match) return;
+			const argType = match[1];
+			const parts = nodeName.split(": ");
+			// Use the last part as the argument name (trim if needed)
+			const argValue = parts[parts.length - 1].trim();
+			// Make sure the type exists in our map
+			if (nodesByType[argType] !== undefined) {
+			nodesByType[argType].push(argValue);
+			nodesByType[argType].sort();
+			}
+		}
+		});
+		return nodesByType;
+	};
+  
 	async function getRunTypesFromConfig(request: string) {
 		const dataToSend = { "config_request": request };
 	
@@ -765,55 +789,25 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			getRemoteRunTypeFromConfig();
 	}, [runType]);
 
-	useEffect(() => {
-		
-		const setterByType = {
-			'string': setStringNodes,
-			'int': setIntNodes,
-			'float': setFloatNodes,
-			'boolean': setBoolNodes,
-			'secret': setSecretNodes,
-			'any': setAnyNodes
-		}
-
-		Object.values(setterByType).forEach(set => set([]));
-
-		context.ready.then(() => {
-
-			if (initialize) {
-				let allNodes = xircuitsApp.getDiagramEngine().getModel().getNodes();
-				let nodesCount = allNodes.length;
-
-				for (let i = 0; i < nodesCount; i++) {
-					let nodeName = allNodes[i].getOptions()["name"];
-					if (nodeName.startsWith("Argument ")) {
-						let regEx = /\(([^)]+)\)/;
-						let result = nodeName.match(regEx);
-						let nodeText = nodeName.split(": ");
-						setterByType[result[1]](nodes => ([...nodes, nodeText[nodeText.length -1]].sort()));
-					}
-				}
-			}
-		})
-
-	}, [initialize]);
 
 	const handleLocalRunDialog = async () => {
+		// Recalculate argument nodes before showing the dialog
+		const argNodes = getArgumentNodes();
+
 		let title = 'Execute Workflow';
 		const dialogOptions: Partial<Dialog.IOptions<any>> = {
 			title,
 			body: formDialogWidget(
-				<LocalRunDialog
-					childStringNodes={stringNodes}
-					childBoolNodes={boolNodes}
-					childIntNodes={intNodes}
-					childFloatNodes={floatNodes}
-					childSecretNodes={secretNodes}
-					childAnyNodes={anyNodes}
-					/>
+			<LocalRunDialog
+				childStringNodes={argNodes.string}
+				childBoolNodes={argNodes.boolean}
+				childIntNodes={argNodes.int}
+				childFloatNodes={argNodes.float}
+				childSecretNodes={argNodes.secret}
+				childAnyNodes={argNodes.any}
+			/>
 			),
 			buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Start') })],
-			defaultButton: 1,
 			focusNodeSelector: '#name'
 		};
 		const dialogResult = await showFormDialog(dialogOptions);
@@ -824,11 +818,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 
 		const date = new Date();
-		xircuitLogger.info(`experiment name: ${date.toLocaleString()}`)
+		xircuitLogger.info(`experiment name: ${date.toLocaleString()}`);
 
 		const runCommand = [
-			stringNodes.filter(param => param != "experiment name"),
-			boolNodes, intNodes, floatNodes, secretNodes, anyNodes
+			argNodes.string.filter(param => param !== "experiment name"),
+			argNodes.boolean, argNodes.int, argNodes.float, argNodes.secret, argNodes.any
 		].filter(it => !!it).reduce((s, nodes) => {
 			return nodes
 				.filter(param => !!dialogResult.value[param])
@@ -843,23 +837,26 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	};
 
 	const handleRemoteRunDialog = async () => {
+		// Recalculate argument nodes before showing the dialog
+		const argNodes = getArgumentNodes();
+
 		let title = 'Execute Workflow';
 		const dialogOptions: Partial<Dialog.IOptions<any>> = {
 			title,
 			body: formDialogWidget(
-				<RemoteRunDialog
-					remoteRunTypes={remoteRunTypesCfg}
-					remoteRunConfigs={remoteRunConfigs}
-					lastConfig={lastConfig}
-					childStringNodes={stringNodes}
-					childBoolNodes={boolNodes}
-					childIntNodes={intNodes}
-					childFloatNodes={floatNodes}
-					childSecretNodes={secretNodes}
-					childAnyNodes={anyNodes}
-					/>
+			<RemoteRunDialog
+				remoteRunTypes={remoteRunTypesCfg}
+				remoteRunConfigs={remoteRunConfigs}
+				lastConfig={lastConfig}
+				childStringNodes={argNodes.string}
+				childBoolNodes={argNodes.boolean}
+				childIntNodes={argNodes.int}
+				childFloatNodes={argNodes.float}
+				childSecretNodes={argNodes.secret}
+				childAnyNodes={argNodes.any}
+			/>
 			),
-			buttons: [Dialog.cancelButton(), Dialog.okButton({ label: ('Start') })],
+			buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Start' })],
 			defaultButton: 1,
 			focusNodeSelector: '#name'
 		};
@@ -870,17 +867,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return { status: 'cancelled' };
 		}
 		
-		// Remember the last config chose and set the chosen config to output
+		// Remember the last config chosen and set the chosen config to output
 		let config;
 		let remoteRunType = dialogResult["value"]['remoteRunType'] ?? "";
 		let runConfig = dialogResult["value"]['remoteRunConfig'] ?? "";
-		if (remoteRunConfigs.length != 0) {
-			remoteRunConfigs.map(cfg => {
-				if (cfg.run_type == remoteRunType && cfg.run_config_name == runConfig) {
+		if (remoteRunConfigs.length !== 0) {
+			remoteRunConfigs.forEach(cfg => {
+				if (cfg.run_type === remoteRunType && cfg.run_config_name === runConfig) {
 					config = { ...cfg, ...dialogResult["value"] };
 					setLastConfigs(config);
 				}
-			})
+			});
 		}
 
 		return { status: 'ok', args: config };
