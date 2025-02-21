@@ -4,6 +4,9 @@
 [submodule "xai_components/xai_modelstash"]
 	path = xai_components/xai_modelstash
 	url = https://github.com/XpressAI/xai-modelstash
+[submodule "xai_components/xai_rpa"]
+	path = xai_components/xai_rpa
+	url = https://github.com/yuenherny/xai-rpa
 [submodule "xai_components/xai_streamlit"]
 	path = xai_components/xai_streamlit
 	url = https://github.com/XpressAI/xai-streamlit
