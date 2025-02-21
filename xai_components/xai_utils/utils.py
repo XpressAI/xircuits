@@ -7,6 +7,7 @@ import time
 import datetime
 import json
 import random
+import re
 
 @xai_component
 class GetCurrentTime(Component):
@@ -16,12 +17,13 @@ class GetCurrentTime(Component):
     - time_str (str): The current time as a string in ISO 8601 format.
     """
     time_str: OutArg[str]
+    time_zone: InArg[str]
     
     def execute(self, ctx) -> None:
         try:
             import pytz
     
-            tz = pytz.timezone('UTC')
+            tz = pytz.timezone(self.time_zone.value if self.time_zone.value is not None else 'UTC')
             now = datetime.datetime.now(tz)
         except:
             now = datetime.datetime.now()
@@ -32,17 +34,26 @@ class GetCurrentTime(Component):
 class GetCurrentDate(Component):
     """Retrieves the current date components.
     
+    ##### inPorts:
+    - timezone (str): An optional time zone string (e.g., 'America/New_York'). If not provided, defaults to UTC.
+    
     ##### outPorts:
     - year (str): The current year.
     - month (str): The current month.
     - day (str): The current day.
     """
+    timezone: InArg[str]  # Optional time zone input
     year: OutArg[str]
     month: OutArg[str]
     day: OutArg[str]
     
     def execute(self, ctx) -> None:
-        today = datetime.date.today()
+        # Get the timezone from the input, default to UTC if not provided
+        tz_name = self.timezone.value if self.timezone.value else 'UTC'
+        timezone = pytz.timezone(tz_name)
+        
+        # Get the current date in the specified timezone
+        today = datetime.datetime.now(timezone).date()
         
         self.year.value = str(today.year)
         self.month.value = str(today.month)
@@ -58,7 +69,7 @@ class Print(Component):
     msg: InArg[any]
     
     def execute(self, ctx) -> None:
-        print(str(self.msg.value))
+        print(str(self.msg.value), flush=True)
 
 @xai_component
 class PrettyPrint(Component):
@@ -72,7 +83,7 @@ class PrettyPrint(Component):
     def execute(self, ctx) -> None:
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
-        print(pp.pformat(self.msg.value))
+        print(pp.pformat(self.msg.value), flush=True)
 
 @xai_component
 class ConcatString(Component):
@@ -91,6 +102,26 @@ class ConcatString(Component):
 
     def execute(self, cts) -> None:
         self.out.value = self.a.value + self.b.value
+
+@xai_component
+class ConcatStrings(Component):
+    """Concatenates any number of strings.
+    
+    ##### inPorts:
+    - separator (str): A string used to separate the parts, otherwise uses the empty string.
+    - parts (dynalist): The strings to concatenate
+    
+    ##### outPorts:
+    - out (str): The concatenated result of strings a and b.
+    """
+    separator: InArg[str]
+    parts: InArg[dynalist]
+    out: OutArg[str]
+
+    def execute(self, cts) -> None:
+        sep = self.separator.value if self.separator.value is not None else ''
+        res = sep.join(str(part) for part in self.parts.value)
+        self.out.value = res
 
 @xai_component
 class FormatString(Component):
