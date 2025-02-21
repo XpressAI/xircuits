@@ -791,3 +791,81 @@ class DeepCopy(Component):
         # Perform a deep copy of the input data
         input_data = self.data.value
         self.copied_data.value = copy.deepcopy(input_data)
+
+
+@xai_component
+class RegexMatch(Component):
+    """Component to check if a string matches a regex pattern.
+
+    ##### inPorts:
+    - input_string (str): The string to be checked.
+    - regex_pattern (str): The regex pattern to match against.
+
+    ##### outPorts:
+    - match (bool): True if the string matches the pattern, False otherwise.
+    """
+    input_string: InCompArg[str]
+    regex_pattern: InCompArg[str]
+    match: OutArg[bool]
+
+    def execute(self, ctx) -> None:
+        self.match.value = bool(re.match(self.regex_pattern.value, self.input_string.value))
+
+
+@xai_component
+class RegexFindAll(Component):
+    """Component to find all occurrences of a regex pattern in a string.
+
+    ##### inPorts:
+    - input_string (str): The string to search.
+    - regex_pattern (str): The regex pattern to find.
+
+    ##### outPorts:
+    - matches (list): A list of all matches found.
+    """
+    input_string: InCompArg[str]
+    regex_pattern: InCompArg[str]
+    matches: OutArg[list]
+
+    def execute(self, ctx) -> None:
+        self.matches.value = re.findall(self.regex_pattern.value, self.input_string.value)
+
+
+@xai_component
+class RegexReplace(Component):
+    """Component to replace occurrences of a regex pattern in a string.
+
+    ##### inPorts:
+    - input_string (str): The string to modify.
+    - regex_pattern (str): The regex pattern to replace.
+    - replacement (str): The string to replace matches with.
+
+    ##### outPorts:
+    - modified_string (str): The modified string after replacements.
+    """
+    input_string: InCompArg[str]
+    regex_pattern: InCompArg[str]
+    replacement: InCompArg[str]
+    modified_string: OutArg[str]
+
+    def execute(self, ctx) -> None:
+        self.modified_string.value = re.sub(self.regex_pattern.value, self.replacement.value, self.input_string.value)
+
+
+@xai_component
+class RegexSplit(Component):
+    """Component to split a string by a regex pattern.
+
+    ##### inPorts:
+    - input_string (str): The string to split.
+    - regex_pattern (str): The regex pattern to split by.
+
+    ##### outPorts:
+    - split_result (list): A list of substrings after the split.
+    """
+    input_string: InCompArg[str]
+    regex_pattern: InCompArg[str]
+    split_result: OutArg[list]
+
+    def execute(self, ctx) -> None:
+        self.split_result.value = re.split(self.regex_pattern.value, self.input_string.value)
