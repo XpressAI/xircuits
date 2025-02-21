@@ -109,3 +109,6 @@
 [submodule "xai_components/xai_requests"]
 	path = xai_components/xai_requests
 	url = https://github.com/XpressAI/xai-requests
+[submodule "xai_components/xai_confluence"]
+	path = xai_components/xai_confluence
+	url = https://github.com/XpressAI/xai-confluence
