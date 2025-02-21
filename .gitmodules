@@ -115,3 +115,6 @@
 [submodule "xai_components/xai_gcalendar"]
 	path = xai_components/xai_gcalendar
 	url = https://github.com/XpressAI/xai-gcalendar
+[submodule "xai_components/xai_gtasks"]
+	path = xai_components/xai_gtasks
+	url = https://github.com/XpressAI/xai-google-tasks
