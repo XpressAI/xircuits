@@ -308,7 +308,7 @@ class StructuredDebugLogger:
             self.target = open(self.target_file, 'w')
 
     def write(self, value):
-        json.dump(value, self.target)
+        json.dump(value, self.target, default=repr)
         self.target.write("\n")
         self.target.flush()
 
@@ -333,7 +333,7 @@ class StructuredDebugLogger:
             elif type == 'after_execution':
                 component['outputs'] = self.get_parameter_state(comp, (OutArg,))
             output = {'timestamp': datetime.datetime.now().isoformat(), 'level': 'DEBUG', 'type': type,
-                      'component': component, 'ctx': repr(ctx)}
+                      'component': component, 'ctx': ctx}
             self.write(output)
 
     def log_before_execution(self, comp, ctx):
