@@ -2,6 +2,8 @@ from argparse import Namespace
 from typing import TypeVar, Generic, Tuple, NamedTuple, Callable, List
 from copy import deepcopy
 
+import os, json, datetime
+
 from asgiref.sync import async_to_sync, sync_to_async
 
 T = TypeVar('T')
@@ -125,7 +127,8 @@ class ExecutionContext:
 
 
 class BaseComponent:
-    def __init__(self):
+    def __init__(self, id: str = None):
+        self.__id__ = id
         all_ports = self.__annotations__
         for key, type_arg in all_ports.items():
             if hasattr(type_arg, '__origin__'):
@@ -206,10 +209,14 @@ class SubGraphExecutor:
         self.comp = component
 
     def do(self, ctx):
+        logger = StructuredDebugLogger.get_logger()
         comp = self.comp
 
         while comp is not None:
+            orig_comp = comp
+            logger.log_before_execution(orig_comp, ctx)
             comp = comp.do(ctx)
+            logger.log_after_execution(orig_comp, ctx)
         return None
 
     @sync_to_async
@@ -282,3 +289,55 @@ def parse_bool(value):
         return True
     elif value.lower() in ('false', 'f', 'no', 'n', '0'):
         return False
+
+
+class StructuredDebugLogger:
+    @classmethod
+    def get_logger(cls):
+        if not hasattr(cls, "logger"):
+            setattr(cls, "logger", StructuredDebugLogger())
+        return cls.logger
+
+    def __init__(self):
+        import sys
+        self.debug = os.getenv("XIRCUITS_DEBUG", None) is not None
+        self.target_file = os.getenv("XIRCUITS_DEBUG_FILE", 'stderr')
+        if self.target_file == 'stderr':
+            self.target = sys.stderr
+        else:
+            self.target = open(self.target_file, 'w')
+
+    def write(self, value):
+        json.dump(value, self.target)
+        self.target.write("\n")
+        self.target.flush()
+
+    def get_parameter_state(self, comp, classes):
+        all_ports = comp.__annotations__
+        result = {}
+        for key, type_arg in all_ports.items():
+            if hasattr(type_arg, '__origin__'):
+                port_class = type_arg.__origin__
+                if port_class in classes:
+                    result[key] = getattr(comp, key).value
+        return result
+
+    def _log(self, comp, ctx, type):
+        if self.debug:
+            component = {
+                'class': comp.__class__.__name__,
+                'id': comp.__id__,
+            }
+            if type == 'before_execution':
+                component['inputs'] = self.get_parameter_state(comp, (InArg, InCompArg))
+            elif type == 'after_execution':
+                component['outputs'] = self.get_parameter_state(comp, (OutArg,))
+            output = {'timestamp': datetime.datetime.now().isoformat(), 'level': 'DEBUG', 'type': type,
+                      'component': component, 'ctx': repr(ctx)}
+            self.write(output)
+
+    def log_before_execution(self, comp, ctx):
+        self._log(comp, ctx, 'before_execution')
+
+    def log_after_execution(self, comp, ctx):
+        self._log(comp, ctx, 'after_execution')

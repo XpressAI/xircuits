@@ -134,7 +134,7 @@ class %s(Component):
 
         # Instantiate all components
         init_code.extend([
-            ast.parse("%s = %s()" % (named_nodes[n.id], n.name)) for n in component_nodes
+            ast.parse("%s = %s(id='%s')" % (named_nodes[n.id], n.name, n.id)) for n in component_nodes
         ])
 
         type_mapping = {
@@ -291,10 +291,7 @@ class %s(Component):
 for node in self.__start_nodes__:
     if hasattr(node, 'init'):
         node.init(ctx)
-    
-next_component = %s
-while next_component is not None:
-    next_component = next_component.do(ctx)        
+SubGraphExecutor(%s).do(ctx)        
         """ % (named_nodes[self.graph[0].ports[0].target.id])
         exec_code.append(ast.parse(trailer))
 
