@@ -869,3 +869,112 @@ class RegexSplit(Component):
 
     def execute(self, ctx) -> None:
         self.split_result.value = re.split(self.regex_pattern.value, self.input_string.value)
+
+
+@xai_component
+class ToString(Component):
+    obj: InCompArg[any]
+    string: OutArg[str]
+
+    def execute(self, ctx) -> None:
+        self.string.value = str(self.obj.value)
+
+
+@xai_component
+class StringWordCharacterCount(Component):
+    """Component to count the number of words and characters in a given text.
+
+    ##### inPorts:
+    - text (str): The input text to analyze.
+    
+    ##### outPorts:
+    - word_count (int): The count of words in the input text.
+    - character_count (int): The count of characters in the input text.
+    """
+    text: InArg[str]
+    word_count: OutArg[int]
+    character_count: OutArg[int]
+
+    def execute(self, ctx) -> None:
+        # Get the input text
+        input_text = self.text.value
+        
+        # Count words and characters
+        self.word_count.value = len(input_text.split())
+        self.character_count.value = len(input_text)
+
+@xai_component
+class StringStartsWith(Component):
+    """Component to check if a given string starts with a specified prefix.
+
+    ##### inPorts:
+    - string (str): The input string to check.
+    - prefix (str): The prefix to check against the input string.
+    
+    ##### outPorts:
+    - starts_with (bool): True if the input string starts with the specified prefix, otherwise False.
+    """
+    string: InCompArg[str]
+    prefix: InCompArg[str]
+    
+    starts_with: OutArg[bool]
+    
+    def execute(self, ctx) -> None:
+        self.starts_with.value = self.string.value.startswith(self.prefix.value)
+
+@xai_component
+class StringEndsWith(Component):
+    """Component to check if a given string ends with a specified postfix.
+
+    ##### inPorts:
+    - string (str): The input string to check.
+    - postfix (str): The postfix to check against the input string.
+    
+    ##### outPorts:
+    - ends_with (bool): True if the input string ends with the specified postfix, otherwise False.
+    """
+    string: InCompArg[str]
+    postfix: InCompArg[str]
+    
+    ends_with: OutArg[bool]
+    
+    def execute(self, ctx) -> None:
+        self.ends_with.value = self.string.value.endswith(self.postfix.value)
+
+@xai_component
+class StringGetLength(Component):
+    """Component to get the length of a given string.
+
+    ##### inPorts:
+    - string (str): The input string whose length is to be determined.
+    
+    ##### outPorts:
+    - length (int): The length of the input string.
+    """
+    string: InCompArg[str]
+    
+    length: OutArg[int]
+    
+    def execute(self, ctx) -> None:
+        self.length.value = len(self.string.value)
+
+@xai_component
+class StringLimitToLength(Component):
+    """Component to limit a given string to a specified maximum length.
+
+    ##### inPorts:
+    - string (str): The input string to be limited.
+    - max_length (int): The maximum length to limit the input string to.
+    
+    ##### outPorts:
+    - out_string (str): The resulting string limited to the specified maximum length.
+    """
+    string: InCompArg[str]
+    max_length: InCompArg[int]
+    
+    out_string: OutArg[str]
+    
+    def execute(self, ctx) -> None:
+        new_length = min(len(self.string.value), self.max_length.value)
+        
+        self.out_string.value = self.string.value[:new_length]
