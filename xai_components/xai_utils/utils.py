@@ -873,6 +873,14 @@ class RegexSplit(Component):
 
 @xai_component
 class ToString(Component):
+    """Converts an input object to its string representation.
+
+    ##### inPorts:
+    - obj (any): The input object to convert to a string.
+
+    ##### outPorts:
+    - string (str): The resulting string representation of the input object.
+    """
     obj: InCompArg[any]
     string: OutArg[str]
 
