@@ -324,6 +324,8 @@ class StructuredDebugLogger:
 
     def _log(self, comp, ctx, type):
         if self.debug:
+            if isinstance(comp, SubGraphExecutor): return
+
             component = {
                 'class': comp.__class__.__name__,
                 'id': comp.__id__,
