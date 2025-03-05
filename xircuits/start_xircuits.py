@@ -121,7 +121,19 @@ def cmd_list_libraries(args, extra_args=[]):
     list_component_library()
 
 def cmd_run(args, extra_args=[]):
+    original_cwd = args.original_cwd
 
+    # Resolve the source file path if it's not absolute.
+    source_file = Path(args.source_file)
+    if not source_file.is_absolute():
+        args.source_file = str((original_cwd / source_file).resolve())
+    
+    # Resolve the output file path if provided and not absolute.
+    if getattr(args, "out_file", None):
+        out_file = Path(args.out_file)
+        if not out_file.is_absolute():
+            args.out_file = str((original_cwd / out_file).resolve())
+    
     if args.source_file.endswith('.py'):
         output_filename = args.source_file
     else:
@@ -197,6 +209,10 @@ def main():
     run_parser.set_defaults(func=cmd_run)
 
     args, unknown_args = parser.parse_known_args()
+
+    # For the 'run' command, capture the original working directory before any directory changes.
+    if args.command == "run":
+        args.original_cwd = Path.cwd()
 
     # For any command other than 'init' and 'compile', switch to the xircuits working directory.
     if args.command not in ("init", "compile"):

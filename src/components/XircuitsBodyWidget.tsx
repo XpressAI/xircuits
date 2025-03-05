@@ -595,8 +595,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 		// Run Mode
 		context.ready.then(async () => {
-			const current_path = context.path;
-			const model_path = current_path.split(".xircuits")[0] + ".py";
+			const workflow_path = context.path;
+			const model_path = workflow_path.split(".xircuits")[0] + ".py";
 			let code = startRunOutputStr();
 	
 			let result;
@@ -622,7 +622,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			
 			else if (runType === 'terminal-run') {
 				commands.execute(commandIDs.executeToTerminal, {
-					command: `xircuits run ${model_path}`
+					command: `xircuits run ${workflow_path}`
 				});
 			}
 			
