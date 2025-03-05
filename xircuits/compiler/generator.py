@@ -112,8 +112,8 @@ from xai_components.base import SubGraphExecutor, InArg, OutArg, Component, xai_
         mainFlowCls = ast.parse("""
 @xai_component(type="xircuits_workflow")
 class %s(Component):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, id: str = None):
+        super().__init__(id=id)
         self.__start_nodes__ = []
     
     def execute(self, ctx):
@@ -134,7 +134,7 @@ class %s(Component):
 
         # Instantiate all components
         init_code.extend([
-            ast.parse("%s = %s(id='%s')" % (named_nodes[n.id], n.name, n.id)) for n in component_nodes
+            ast.parse("%s = %s(); %s.__id__ = '%s';" % (named_nodes[n.id], n.name, named_nodes[n.id], n.id)) for n in component_nodes
         ])
 
         type_mapping = {
