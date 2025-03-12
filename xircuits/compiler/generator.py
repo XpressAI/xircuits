@@ -329,6 +329,7 @@ def main(args):
             body.extend(ast.parse(tpl).body)
 
         execute = ast.parse("""
+@sync_to_async
 def execute():
     try:
         flow.do(ctx)
@@ -352,11 +353,16 @@ pprint.pprint(flow.%s.value)
 
         body.append(execute)
         body.extend(ast.parse("""
+event_loop = None
 try:
     event_loop = asyncio.get_running_loop()
-    event_loop.create_task(sync_to_async(execute)())
 except RuntimeError:
-    execute()
+    pass
+
+if event_loop:
+    event_loop.create_task(execute())
+else:
+    asyncio.run(execute())
       
 """).body)
 
