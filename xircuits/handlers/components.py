@@ -121,7 +121,7 @@ class ComponentsRouteHandler(APIHandler):
                         and directory.is_dir() \
                         and not any(pathlib.Path.samefile(directory, d) for d in visited_directories):
                     visited_directories.append(directory)
-                    python_files = directory.rglob("xai_*/*.py")
+                    python_files = directory.glob("xai_*/*.py")
 
                     python_path = directory.expanduser().resolve()
 
