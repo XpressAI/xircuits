@@ -1,0 +1,33 @@
+name: Run CLI Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ "*" ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Upgrade pip and install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[test]
+
+      - name: Run CLI tests
+        run: |
+          python -m pytest -v tests/tests.py
