@@ -233,6 +233,9 @@ def test_run_command():
     # Verify that the corresponding .py file was created
     py_file = example_file.replace(".xircuits", ".py")
     assert os.path.exists(py_file)
+    assert "Compiled" in stdout, "Expected 'Compiled' not found in output."
+    assert "Finished Executing" in stdout, "Expected 'Finished Executing' not found in output."
+
 
 def test_list_libraries_command():
     """Test that list command shows available libraries"""
@@ -250,13 +253,9 @@ def test_install_library_command():
     """Test that install command installs a library"""
     # Initialize first
     run_command("xircuits init")
-    
-    # Install a library (use a small one for testing)
-    stdout, stderr, return_code = run_command("xircuits install flask", timeout=60)
-    
-    # Check library was installed by running list
-    list_stdout, _, _ = run_command("xircuits list")
-    assert "flask" in list_stdout.lower()
+    library_name ="flask"
+    stdout, stderr, return_code = run_command(f"xircuits install {library_name}", timeout=60)
+    assert f"library {library_name} ready to use" in stdout.lower()
 
 def test_working_directory_detection():
     """Test that Xircuits correctly finds the working directory"""
@@ -389,18 +388,16 @@ def test_compile_with_python_paths_file():
 def test_run_existing_py_file():
     run_command("xircuits init")
 
-    test_py = "test_script.py"
-    with open(test_py, "w") as f:
-        f.write("print('Hello from test_script')")
+    # Find an example file in the xai_controlflow folder
+    example_file = "xai_components/xai_controlflow/WorkflowComponentsExample.py"
+    assert os.path.exists(example_file), f"Expected workflow file '{example_file}' not found."
 
-    try:
-        stdout, stderr, return_code = run_command(f"xircuits run {test_py}")
+    command = f"xircuits run {example_file} --example_input=Hello_Xircuits!"
+    
+    stdout, stderr, return_code = run_command(command)
+    assert return_code == 0, "Expected return code 0 for successful execution"
+    assert "Hello_Xircuits!" in stdout, "Expected input 'Hello_Xircuits!' not found in output"
 
-        assert "Hello from test_script" in stdout, "Expected output not found in run command output"
-        assert return_code == 0, "Expected return code 0 for successful execution"
-    finally:
-        if os.path.exists(test_py):
-            os.remove(test_py)
 
 def test_run_with_custom_output():
     """Test run with a custom output file name"""
@@ -476,7 +473,7 @@ def test_run_with_custom_arguments(tmp_path):
     assert return_code == 0, "Initialization failed."
 
     # Install the library from GitHub.
-    stdout, stderr, return_code = run_command("xircuits fetch-only https://github.com/rabea-al/xai-tests", timeout=60)
+    stdout, stderr, return_code = run_command("xircuits fetch-only https://github.com/XpressAI/xai-tests", timeout=60)
     assert return_code == 0, "Library installation failed."
 
     # Determine the library directory.
@@ -672,7 +669,7 @@ def test_run_non_recursive_mode_with_install():
     stdout, stderr, rc = run_command("xircuits init", timeout=15)
     assert rc == 0, "Initialization failed."
 
-    install_cmd = "xircuits install https://github.com/rabea-al/xai-tests"
+    install_cmd = "xircuits install https://github.com/XpressAI/xai-tests"
     stdout, stderr, rc = run_command(install_cmd, timeout=60)
     assert rc == 0, "Library installation failed."
 
@@ -703,7 +700,7 @@ def test_compile_non_recursive_mode_with_install():
     stdout, stderr, rc = run_command("xircuits init", timeout=15)
     assert rc == 0, "Initialization failed."
 
-    install_cmd = "xircuits install https://github.com/rabea-al/xai-tests"
+    install_cmd = "xircuits install https://github.com/XpressAI/xai-tests"
     stdout, stderr, rc = run_command(install_cmd, timeout=60)
     assert rc == 0, "Library installation failed."
 
