@@ -219,12 +219,9 @@ def test_05_run_command():
     # Initialize and download examples
     run_command("xircuits init")
     
-    # Search for .xircuits files in the xai_controlflow folder using glob
-    xircuits_files = list(Path("xai_components/xai_controlflow").glob("*.xircuits"))
-    assert xircuits_files, "No .xircuits files found in xai_controlflow."
-
-    # Select the first available .xircuits file
-    example_file = str(xircuits_files[0])
+    # Use a specific workflow to ensure consistency across environments
+    example_file = "xai_components/xai_controlflow/ControlflowBranch.xircuits"
+    assert os.path.exists(example_file), f"Expected workflow file '{example_file}' not found."
 
     # Compile the selected .xircuits file
     stdout, stderr, return_code = run_command(f"xircuits run {example_file}")
