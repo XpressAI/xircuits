@@ -12,7 +12,7 @@ def get_installed_packages():
 
 def check_requirements_installed(installed_packages, requirements):
     """Check if all required packages are installed."""
-    required_packages = {pkg.strip() for pkg in requirements}
+    required_packages = {pkg.split("==")[0].strip() for pkg in requirements}
     missing_packages = required_packages - installed_packages
     return len(missing_packages) == 0, missing_packages
 
