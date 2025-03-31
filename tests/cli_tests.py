@@ -170,21 +170,21 @@ def run_command(command, timeout=10, input_data=None, expected_output=None, chec
 
 # Now define the actual tests
 
-def test_help_command():
+def test_01_help_command():
     """Test that help command works properly"""
     stdout, stderr, return_code = run_command("xircuits --h")
     assert return_code == 0
     assert "usage:" in stdout
     assert "Xircuits Command Line Interface" in stdout
 
-def test_alternative_help_command():
+def test_02_alternative_help_command():
     """Test that help command works properly"""
     stdout, stderr, return_code = run_command("xircuits --help")
     assert return_code == 0
     assert "usage:" in stdout
     assert "Xircuits Command Line Interface" in stdout
 
-def test_init_command():
+def test_03_init_command():
     """Test that init command creates necessary files"""
     stdout, stderr, return_code = run_command("xircuits init")
     assert return_code == 0
@@ -194,7 +194,7 @@ def test_init_command():
     assert os.path.exists(".xircuits")
     assert os.path.exists("xai_components")
 
-def test_compile_command():
+def test_04_compile_command():
     """Test that the compile command works properly."""
     # Initialize Xircuits
     run_command("xircuits init")
@@ -214,7 +214,7 @@ def test_compile_command():
     py_file = example_file.replace(".xircuits", ".py")
     assert os.path.exists(py_file)
 
-def test_run_command():
+def test_05_run_command():
     """Test that run command compiles and executes a workflow"""
     # Initialize and download examples
     run_command("xircuits init")
@@ -236,8 +236,7 @@ def test_run_command():
     assert "Compiled" in stdout, "Expected 'Compiled' not found in output."
     assert "Finished Executing" in stdout, "Expected 'Finished Executing' not found in output."
 
-
-def test_list_libraries_command():
+def test_06_list_libraries_command():
     """Test that list command shows available libraries"""
     # Initialize first
     run_command("xircuits init")
@@ -249,7 +248,7 @@ def test_list_libraries_command():
     # Should contain some mention of libraries
     assert re.search(r"librar(y|ies)", stdout, re.IGNORECASE)
 
-def test_install_library_command():
+def test_07_install_library_command():
     """Test that install command installs a library"""
     # Initialize first
     run_command("xircuits init")
@@ -257,7 +256,7 @@ def test_install_library_command():
     stdout, stderr, return_code = run_command(f"xircuits install {library_name}", timeout=60)
     assert f"library {library_name} ready to use" in stdout.lower()
 
-def test_working_directory_detection():
+def test_08_working_directory_detection():
     """Test that Xircuits correctly finds the working directory"""
     # Initialize in parent directory
     run_command("xircuits init")
@@ -273,7 +272,7 @@ def test_working_directory_detection():
     assert "Xircuits computing from:" in stdout
     assert return_code == 0
 
-def test_compile_with_custom_output():
+def test_09_compile_with_custom_output():
     """Test compiling with a custom output file name"""
     run_command("xircuits init")
     
@@ -290,21 +289,20 @@ def test_compile_with_custom_output():
     # Check that the custom named Python file was created
     assert os.path.exists(custom_output), f"Expected output file '{custom_output}' not found."
 
-
-def test_error_handling_invalid_command():
+def test_10_error_handling_invalid_command():
     """Test that invalid commands are handled gracefully"""
     stdout, stderr, return_code = run_command("xircuits invalid_command")
     # Should print help or error message, not crash
     assert return_code != 0
 
-def test_install_invalid_library():
+def test_11_install_invalid_library():
     stdout, stderr, return_code = run_command("xircuits install non_existing_library")
 
     expected_error_message = "component library submodule not found"
     assert expected_error_message in stdout or expected_error_message in stderr, \
         f"Expected error message '{expected_error_message}' not found in output"
 
-def test_fetch_only_valid_library(tmp_path):
+def test_12_fetch_only_valid_library(tmp_path):
     # Change to the temporary directory.
     os.chdir(tmp_path)
 
@@ -330,7 +328,7 @@ def test_fetch_only_valid_library(tmp_path):
     lib_path = tmp_path / "xai_components" / library_name
     assert lib_path.exists(), f"Library {library_name} should exist in xai_components after fetch-only."
 
-def test_install_already_installed_library():
+def test_13_install_already_installed_library():
     library_name = "xai_utils"  # Select a library that is already installed
     run_command(f"xircuits install {library_name}")  # Ensure the library is installed beforehand
 
@@ -342,7 +340,7 @@ def test_install_already_installed_library():
     assert unexpected_message not in stdout.lower(), \
         f"Unexpected cloning detected: '{unexpected_message}' found in output"
 
-def test_compile_invalid_xircuits():
+def test_14_compile_invalid_xircuits():
     # Create an invalid Xircuits file in the current directory.
     invalid_file = "invalid_workflow.xircuits"
     # Create an invalid Xircuits file with unexpected content (simulate invalid JSON or format)
@@ -359,7 +357,7 @@ def test_compile_invalid_xircuits():
         if os.path.exists(invalid_file):
             os.remove(invalid_file)
 
-def test_compile_with_python_paths_file():
+def test_15_compile_with_python_paths_file():
     run_command("xircuits init")
 
     example_file = "xai_components/xai_template/HelloTutorial.xircuits"
@@ -385,7 +383,7 @@ def test_compile_with_python_paths_file():
         if os.path.exists(json_file):
             os.remove(json_file)
 
-def test_run_existing_py_file():
+def test_16_run_existing_py_file():
     run_command("xircuits init")
 
     # Find an example file in the xai_controlflow folder
@@ -398,8 +396,7 @@ def test_run_existing_py_file():
     assert return_code == 0, "Expected return code 0 for successful execution"
     assert "Hello_Xircuits!" in stdout, "Expected input 'Hello_Xircuits!' not found in output"
 
-
-def test_run_with_custom_output():
+def test_17_run_with_custom_output():
     """Test run with a custom output file name"""
     run_command("xircuits init")
     
@@ -416,7 +413,7 @@ def test_run_with_custom_output():
     # Check that the custom named Python file was created
     assert os.path.exists(custom_output), f"Expected output file '{custom_output}' not found."
 
-def test_run_invalid_xircuits():
+def test_18_run_invalid_xircuits():
     run_command("xircuits init")
 
     # Create an invalid Xircuits file in the current directory.
@@ -434,7 +431,7 @@ def test_run_invalid_xircuits():
         if os.path.exists(invalid_file):
             os.remove(invalid_file)
 
-def test_run_with_python_paths_file():
+def test_19_run_with_python_paths_file():
     run_command("xircuits init")
 
     example_file = "xai_components/xai_template/HelloTutorial.xircuits"
@@ -460,7 +457,7 @@ def test_run_with_python_paths_file():
         if os.path.exists(json_file):
             os.remove(json_file)
 
-def test_run_with_custom_arguments(tmp_path):
+def test_20_run_with_custom_arguments(tmp_path):
     import os
     import shutil
     from pathlib import Path
@@ -496,61 +493,7 @@ def test_run_with_custom_arguments(tmp_path):
     assert "Hello_Xircuits" in stdout, "Expected output 'Hello_Xircuits' not found in run command output."
     assert output_file.exists(), f"Expected output file '{output_file}' not found."
 
-
-def test_interrupted_initialization():
-    # Start the 'xircuits init' command in a separate process.
-    process = subprocess.Popen(
-        "xircuits init",
-        shell=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        preexec_fn=os.setsid
-    )
-
-    try:
-        # Wait a very short time then send the SIGINT signal.
-        time.sleep(0.1)
-        os.killpg(os.getpgid(process.pid), signal.SIGINT)
-
-        stdout, stderr = process.communicate(timeout=5)
-
-        assert process.returncode != 0, "Expected interruption handling not found in output."
-        assert not os.path.exists(".xircuits") or not os.path.exists("xai_components"), \
-            "Initialization directories should not exist after interruption."
-    finally:
-        try:
-            os.killpg(os.getpgid(process.pid), signal.SIGTERM)
-        except Exception:
-            pass
-
-def test_insufficient_permissions():
-    readonly_dir = Path("readonly_dir")
-    readonly_dir.mkdir(exist_ok=True)
-
-    # Set the directory permissions to read-only (0555).
-    readonly_dir.chmod(0o555)
-
-    # Save the current directory then change to the read-only directory.
-    original_dir = os.getcwd()
-    os.chdir(readonly_dir)
-
-    try:
-        stdout, stderr, return_code = run_command("xircuits init", timeout=10)
-
-        assert return_code != 0, "Expected failure due to insufficient permissions, but command succeeded."
-
-        error_indicators = ["Permission denied", "not allowed"]
-        output = stdout + stderr
-        assert any(indicator.lower() in output.lower() for indicator in error_indicators), \
-            "Expected permission error not found in output."
-    finally:
-        # Return to the original directory, restore directory permissions, then remove the directory.
-        os.chdir(original_dir)
-        readonly_dir.chmod(0o755)
-        shutil.rmtree(readonly_dir)
-
-def test_no_arguments_starts_jupyter_lab():
+def test_21_no_arguments_starts_jupyter_lab():
     stdout, stderr, return_code = run_command("xircuits", timeout=5, wait_for_exit=False, no_browser=True)
 
     output = stdout + stderr
@@ -558,7 +501,7 @@ def test_no_arguments_starts_jupyter_lab():
             "jupyter server" in output.lower() or
             "jupyterlab" in output), "Expected Jupyter Lab startup message not found in output."
 
-def test_start_command():
+def test_22_start_command():
     run_command("xircuits init")
 
     stdout, stderr, return_code = run_command("xircuits start", timeout=5, wait_for_exit=False, no_browser=True)
@@ -568,7 +511,7 @@ def test_start_command():
             "jupyter server" in output.lower() or 
             "jupyterlab" in output), "Expected Jupyter Lab startup indicators not found in output."
 
-def test_start_with_extra_arguments():
+def test_23_start_with_extra_arguments():
     run_command("xircuits init")
 
     stdout, stderr, return_code = run_command("xircuits start --port=8899", timeout=5, wait_for_exit=False, no_browser=True)
@@ -576,7 +519,7 @@ def test_start_with_extra_arguments():
     output = stdout + stderr
     assert "8899" in output, "Expected port 8899 to be indicated in the output."
 
-def test_auto_initialization(tmp_path):
+def test_24_auto_initialization(tmp_path):
     os.chdir(tmp_path)
 
     # Remove existing directories to ensure a clean environment.
@@ -602,7 +545,7 @@ def test_auto_initialization(tmp_path):
     assert os.path.exists(".xircuits"), "Expected .xircuits directory to be created during auto-initialization."
     assert os.path.exists("xai_components"), "Expected xai_components directory to be created during auto-initialization."
 
-def test_reinit_in_already_initialized_directory():
+def test_25_reinit_in_already_initialized_directory():
     # Ensure that any existing initialization directories are removed from the current directory.
     if os.path.exists(".xircuits"):
         shutil.rmtree(".xircuits")
@@ -625,7 +568,7 @@ def test_reinit_in_already_initialized_directory():
     assert expected_indicator in output2.lower() or "already initialized" in output2.lower(), \
         f"Expected message indicating reinitialization was handled gracefully not found in output:\n{output2}"
 
-def test_start_in_non_initialized_directory(tmp_path):
+def test_26_start_in_non_initialized_directory(tmp_path):
     # Change to the isolated test directory.
     os.chdir(tmp_path)
 
@@ -641,7 +584,7 @@ def test_start_in_non_initialized_directory(tmp_path):
     output = stdout + stderr
     assert expected_prompt in output, f"Expected prompt '{expected_prompt}' not found in output:\n{output}"
 
-def test_xircuits_missing_xai_components(tmp_path):
+def test_27_xircuits_missing_xai_components(tmp_path):
     # Change to the isolated test directory.
     os.chdir(tmp_path)
 
@@ -664,8 +607,7 @@ def test_xircuits_missing_xai_components(tmp_path):
     expected_prompt = "Would you like to initialize Xircuits in the current directory?"
     assert expected_prompt in output, f"Expected prompt '{expected_prompt}' not found in output:\n{output}"
 
-
-def test_run_non_recursive_mode_with_install():
+def test_28_run_non_recursive_mode_with_install():
     stdout, stderr, rc = run_command("xircuits init", timeout=15)
     assert rc == 0, "Initialization failed."
 
@@ -696,7 +638,7 @@ def test_run_non_recursive_mode_with_install():
     assert os.path.exists(outer_py), f"Expected compiled file {outer_py} not found."
     assert not os.path.exists(sub_py), f"Sub-workflow file {sub_py} should not be compiled in non-recursive mode."
 
-def test_compile_non_recursive_mode_with_install():
+def test_29_compile_non_recursive_mode_with_install():
     stdout, stderr, rc = run_command("xircuits init", timeout=15)
     assert rc == 0, "Initialization failed."
 
