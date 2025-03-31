@@ -28,6 +28,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .[test]
 
-      - name: Run CLI tests
+      - name: Run CLI Tests
         run: |
-          python -m pytest -v tests/tests.py
+          python -m pytest -v tests/cli_tests.py
