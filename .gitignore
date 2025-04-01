@@ -151,3 +151,5 @@ examples/*.py
 /playwright/.cache/
 
 .yarn/
+
+tests/*/
