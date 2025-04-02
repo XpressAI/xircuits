@@ -86,11 +86,6 @@ def cmd_start_xircuits(args, extra_args=[]):
     else:
         os.system(f"jupyter lab --ContentsManager.allow_hidden=True {news_url_option}")
 
-def cmd_download_examples(args, extra_args=[]):
-    if not os.path.exists("examples") or is_empty("examples"):
-        copy_from_installed_wheel('examples')
-        print("Example workflows ready at working directory.")
-
 def cmd_fetch_library(args, extra_args=[]):
     fetch_library(args.library_name)
 
@@ -178,11 +173,6 @@ def main():
     fetch_parser = subparsers.add_parser('fetch-only', help='Fetch a library for Xircuits. Does not install.')
     fetch_parser.add_argument('library_name', type=str, help='Name of the library to fetch')
     fetch_parser.set_defaults(func=cmd_fetch_library)
-
-    # 'examples' command.
-    examples_parser = subparsers.add_parser('examples', help='Get example workflows for Xircuits.')
-    examples_parser.add_argument('--branch', nargs='?', default="master", help='Load example workflows to current working directory')
-    examples_parser.set_defaults(func=cmd_download_examples)
 
     # 'compile' command.
     compile_parser = subparsers.add_parser('compile', help='Compile a Xircuits workflow file.')
