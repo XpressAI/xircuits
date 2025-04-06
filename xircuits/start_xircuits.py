@@ -3,7 +3,6 @@ import json
 import os
 from pathlib import Path
 
-from .handlers.request_folder import request_folder
 from .utils import is_empty, copy_from_installed_wheel
 from .library import list_component_library, install_library, fetch_library, save_component_library_config
 from .compiler import compile, recursive_compile
