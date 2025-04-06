@@ -213,7 +213,6 @@ class ZipDirectory(Component):
         |-- file1
         |-- file2
         ```
-
     """
     zip_fn: InArg[str]
     dir_name: InCompArg[str]
@@ -221,7 +220,6 @@ class ZipDirectory(Component):
 
     def execute(self, ctx) -> None:
         from zipfile import ZipFile
-        from tqdm import tqdm
 
         zip_fn = self.zip_fn.value if self.zip_fn.value else Path(sys.argv[0]).stem
         dir_name = self.dir_name.value
@@ -232,14 +230,14 @@ class ZipDirectory(Component):
             zip_fn = zip_fn + ".zip"
 
         if not Path(zip_fn).is_file():
-            print(zip_fn + " created at " + os.getcwd()) 
+            print(zip_fn + " created at " + os.getcwd())
             zipObj = ZipFile(zip_fn, 'w')
         else:
-            print(zip_fn + " updated at " + os.getcwd()) 
-            zipObj = ZipFile(zip_fn,'a')
+            print(zip_fn + " updated at " + os.getcwd())
+            zipObj = ZipFile(zip_fn, 'a')
 
-        for root, dirs, files in tqdm(list(os.walk(dir_name))):
-            # chop off root dir
+        for root, dirs, files in list(os.walk(dir_name)):
+            # chop off root dir if include_dir is False
             if self.include_dir.value == False:
                 length = len(dir_name)
                 dirs = root[length:]
