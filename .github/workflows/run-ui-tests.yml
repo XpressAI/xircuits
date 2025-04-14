@@ -12,6 +12,7 @@ on:
         required: false
         default: 'master'
 
+        
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
@@ -75,16 +76,34 @@ jobs:
     - name: Install Xircuits Test Component Library
       run: xircuits install tests
 
+    - name: Install Xircuits Test Component Library
+      run: xircuits install gradio
+
     - name: Install xvfb
       run: sudo apt-get install -y xvfb
 
     - name: Install Playwright Dependencies
       run: sudo npx playwright install-deps
 
-    - name: Test E2E
+    - name: Test E2E (TypeScript)
       run: |
         (jupyter lab --ServerApp.token='' --ServerApp.password='' --LabApp.default_url='/lab?reset' &) && cd ui-tests && npm install && npx playwright install && xvfb-run npx playwright test e2e/datatype-test.spec.ts
 
+    - name: Run Python UI Tests
+      run: |
+        pip install playwright
+        playwright install
+        nohup jupyter lab --ServerApp.token='' --ServerApp.password='' --LabApp.default_url='/lab?reset' > jupyter.log 2>&1 &
+        sleep 10
+        cd ui-tests/tests
+        xvfb-run -a python3 arg_input_ui_test.py
+        xvfb-run -a python3 parameter-names-autoshift.py
+        xvfb-run -a python3 parameter-names-despawn.py
+        xvfb-run -a python3 parameter-names-spawn.py
+        xvfb-run -a python3 protected-nodes-and-lock-test.py
+        xvfb-run -a python3 remote_run_arguments_test.py
+
+      
     - uses: actions/upload-artifact@v4
       if: failure()
       with:
