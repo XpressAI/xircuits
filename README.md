@@ -99,6 +99,11 @@ You will also need to install the component library before using them. For examp
 
 For the list of available libraries, you can check [here]( https://github.com/XpressAI/xircuits/tree/master/xai_components). 
 
+## Download Examples
+```
+$ xircuits examples
+```
+
 ## Launch
 ```
 $ xircuits
