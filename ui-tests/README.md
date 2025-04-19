@@ -137,4 +137,67 @@ PWDEBUG=1 npx playwright test
 Alternatively, if you would like to debug in the browser console:
 ```
 PWDEBUG=console npx playwright test testname.spec.ts
-``
+```
+
+## Run Python-based Playwright UI Tests
+
+This section describes how to run the new **Python-based UI tests** located in the `ui-tests/` folder using [Playwright](https://playwright.dev/python).
+
+These tests simulate user interactions with Xircuits inside JupyterLab and cover various UI behaviors such as argument input, remote run, port spawning, and node protection.
+
+---
+
+### Prerequisites
+
+Ensure you have the following:
+
+- Python 3.11 or later (recommended)
+- `pip` and `virtualenv`
+- Xircuits
+
+Install Playwright for Python:
+
+```bash
+pip install playwright
+playwright install
+```
+
+---
+
+### Running the tests
+
+1. Launch JupyterLab in one terminal:
+
+```bash
+jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset
+```
+
+2. In a separate terminal, run one of the test scripts:
+
+```bash
+cd ui-tests
+python arg_input_ui_test.py
+python remote_run_arguments_test.py
+python autospawn_and_despawn_ports_test.py
+python protected-nodes-and-lock-test.py
+```
+
+> Tip: you can pause tests at the end with `input("any")` to let you inspect the result before closing the browser.
+
+---
+
+### Tests Overview
+
+- **`arg_input_ui_test.py`**  
+  Verifies that argument input prompts appear correctly.
+
+- **`remote_run_arguments_test.py`**  
+  Tests remote run with string, float, and boolean arguments.
+
+- **`autospawn_and_despawn_ports_test.py`**  
+  Checks dynamic port spawning and removal when components are connected/disconnected.
+
+- **`protected-nodes-and-lock-test.py`**  
+  Ensures that Start/Finish nodes can't be deleted and locked components remain protected.
+
+For more details about the helper functions, refer to `ui-tests/xircuits_test_utils.py`.
