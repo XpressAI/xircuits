@@ -103,11 +103,11 @@ For the list of available libraries, you can check [here]( https://github.com/Xp
 ```
 $ xircuits examples
 ```
+
 ## Launch
 ```
 $ xircuits
 ```
-
 
 # Development
 Creating workflows and components in Xircuits is easy. We've provided extensive guides for you in our [documentation](https://xircuits.io/). Here are a few quick links to get you started:
