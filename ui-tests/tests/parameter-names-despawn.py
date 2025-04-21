@@ -9,7 +9,7 @@ with sync_playwright() as p:
     page.wait_for_selector('#jupyterlab-splash', state='detached')
     page.get_by_text('Xircuits File', exact=True).click()
 
-    simulate_drag_component_from_library(page, "GRADIO", "GradioInterface")
+    simulate_drag_component_from_library(page, "TESTS", "DynaportTester")
 
     simulate_drag_component_from_library(page, "GENERAL", "Literal String")
 
@@ -18,12 +18,12 @@ with sync_playwright() as p:
     connect_nodes(page, {
         "sourceNode": "Literal String",
         "sourcePort": "out-0",
-        "targetNode": "GradioInterface",
-        "targetPort": "parameter-dynalist-parameterNames"
+        "targetNode": "DynaportTester",
+        "targetPort": "parameter-dynalist-inputs"
     })
 
-    verify_new_port_spawned(page, "GradioInterface", "parameter-dynalist-parameterNames-1")
+    verify_new_port_spawned(page, "DynaportTester", "parameter-dynalist-inputs-1")
 
     delete_component_directly(page, "Literal String")
 
-    verify_port_not_spawned(page,"GradioInterface", "parameter-dynalist-parameterNames-1")
+    verify_port_not_spawned(page,"DynaportTester", "parameter-dynalist-inputs-1")
