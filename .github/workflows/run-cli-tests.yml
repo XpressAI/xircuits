@@ -11,10 +11,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-<<<<<<< HEAD
-=======
-
->>>>>>> 35cd4d4 (limit tcli est run to 5 mins)
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]

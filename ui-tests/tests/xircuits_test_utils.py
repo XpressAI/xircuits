@@ -220,9 +220,18 @@ def simulate_zoom_ctrl_wheel(page: Page, zoom_in: bool = True, delta: int = 120)
         page.keyboard.up("Control")
 
 def compile_and_run_workflow(page):
-    page.locator('button[title="Save (Ctrl+S)"]').click()
-    page.locator('button[title="Compile Xircuits"]').click()
-    page.locator('button[title="Compile and Run Xircuits"]').click()
+    # Save
+    page.locator('jp-button[title="Save (Ctrl+S)"] >>> button').click()
+    page.wait_for_timeout(500)
+
+    # Compile
+    page.locator('jp-button[title="Compile Xircuits"] >>> button').click()
+    page.wait_for_timeout(500)
+
+    # Compile and Run
+    page.locator('jp-button[title="Compile and Run Xircuits"] >>> button').click()
+    page.wait_for_timeout(500)
+
 
 def connect_nodes_simple(page: Page, connection: dict) -> None:
     """
