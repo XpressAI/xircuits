@@ -99,6 +99,9 @@ jobs:
         xvfb-run -a python3 parameter-names-spawn.py
         xvfb-run -a python3 protected-nodes-and-lock-test.py
         xvfb-run -a python3 remote_run_arguments_test.py
+        xvfb-run -a python3 connecting-nodes-test.py
+        xvfb-run -a python3 editing-literal-nodes-test.py
+
 
       
     - uses: actions/upload-artifact@v4
