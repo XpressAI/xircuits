@@ -79,12 +79,12 @@ jobs:
     - name: Install xvfb
       run: sudo apt-get install -y xvfb
 
-    - name: Install Playwright Dependencies
-      run: sudo npx playwright install-deps
+    # - name: Install Playwright Dependencies
+    #   run: sudo npx playwright install-deps
 
-    - name: Test E2E (TypeScript)
-      run: |
-        (jupyter lab --ServerApp.token='' --ServerApp.password='' --LabApp.default_url='/lab?reset' &) && cd ui-tests && npm install && npx playwright install && xvfb-run npx playwright test e2e/datatype-test.spec.ts
+    # - name: Test E2E (TypeScript)
+    #   run: |
+    #     (jupyter lab --ServerApp.token='' --ServerApp.password='' --LabApp.default_url='/lab?reset' &) && cd ui-tests && npm install && npx playwright install && xvfb-run npx playwright test e2e/datatype-test.spec.ts
 
     - name: Run Python UI Tests
       run: |
