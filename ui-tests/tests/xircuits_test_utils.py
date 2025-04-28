@@ -474,6 +474,7 @@ def clean_xircuits_directory(page, subfolder_name: str):
     page.wait_for_selector('#jupyterlab-splash', state='detached')
 
     page.get_by_text("xai_components", exact=True).dblclick()
+    page.wait_for_selector("text=xai_tests", timeout=10000)
     page.get_by_text("xai_tests", exact=True).dblclick()
     page.get_by_text(subfolder_name, exact=True).dblclick()
     page.wait_for_timeout(1000)
@@ -494,10 +495,12 @@ def clean_xircuits_directory(page, subfolder_name: str):
 
 def copy_xircuits_file(page, source_file: str, target_folder: str):
     print(f"Copying {source_file} to {target_folder}")
+    page.wait_for_timeout(1000)
     page.goto("http://localhost:8888")
     page.wait_for_selector('#jupyterlab-splash', state='detached')
-
+    page.wait_for_timeout(1000)
     page.get_by_text("xai_components", exact=True).dblclick()
+    page.wait_for_selector("text=xai_tests", timeout=10000)
     page.get_by_text("xai_tests", exact=True).dblclick()
     page.get_by_text(source_file, exact=True).click()
     page.keyboard.press("Control+C")
