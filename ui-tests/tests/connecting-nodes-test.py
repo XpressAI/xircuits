@@ -9,7 +9,7 @@ browsers_to_test = ["chromium", "firefox"]
 with sync_playwright() as p:
     for browser_name in browsers_to_test:
         print(f"\nRunning test on: {browser_name}")
-        browser = getattr(p, browser_name).launch(headless=False, slow_mo=500)
+        browser = getattr(p, browser_name).launch(headless=True, slow_mo=500)
         context = browser.new_context()
         page = context.new_page()
 
