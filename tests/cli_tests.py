@@ -396,12 +396,7 @@ def test_16_run_existing_py_file():
 def test_17_run_with_custom_output():
     """Test run with a custom output file name"""
     run_command("xircuits init")
-    
-    # Find an example file in the xai_controlflow folder
-    example_files = list(Path("xai_components/xai_controlflow").glob("*.xircuits"))
-    assert example_files, "No .xircuits files found in xai_controlflow."
-    example_file = str(example_files[0])
-    
+    example_file = "xai_components/xai_controlflow/ControlflowBranch.xircuits"
     custom_output = "custom_output.py"
     # run with the custom output name
     stdout, stderr, return_code = run_command(f"xircuits run {example_file} {custom_output}")
