@@ -220,9 +220,18 @@ def simulate_zoom_ctrl_wheel(page: Page, zoom_in: bool = True, delta: int = 120)
         page.keyboard.up("Control")
 
 def compile_and_run_workflow(page):
-    page.locator('button[title="Save (Ctrl+S)"]').click()
-    page.locator('button[title="Compile Xircuits"]').click()
-    page.locator('button[title="Compile and Run Xircuits"]').click()
+    # Save
+    page.locator('jp-button[title="Save (Ctrl+S)"] >>> button').click()
+    page.wait_for_timeout(500)
+
+    # Compile
+    page.locator('jp-button[title="Compile Xircuits"] >>> button').click()
+    page.wait_for_timeout(2000)
+
+    # Compile and Run
+    page.locator('jp-button[title="Compile and Run Xircuits"] >>> button').click()
+    page.wait_for_timeout(1000)
+
 
 def connect_nodes_simple(page: Page, connection: dict) -> None:
     """
@@ -354,3 +363,217 @@ def delete_component_directly(page: Page, node_name: str) -> None:
         print(f"Component '{node_name}' deleted (if supported by canvas logic).")
     else:
         print(f"Failed to delete component '{node_name}'. Check DOM or logic.")
+
+def simulate_drag_component_to_position(page: Page, library_name: str, component_name: str, drop_x: int, drop_y: int) -> None:
+    """
+    Opens the specified library and drags the specified component to a given position on the canvas.
+
+    :param page: The Playwright page object.
+    :param library_name: Name of the library containing the component (e.g. "GRADIO" or "GENERAL").
+    :param component_name: Name of the component to drag (e.g. "GradioInterface" or "Literal String").
+    :param drop_x: X coordinate on the canvas to drop the component.
+    :param drop_y: Y coordinate on the canvas to drop the component.
+    """
+    print(f"Opening library: {library_name}")
+    page.wait_for_selector("[data-id='table-of-contents']")
+    page.click("[data-id='table-of-contents']")
+    page.wait_for_selector("[data-id='xircuits-component-sidebar']")
+    page.click("[data-id='xircuits-component-sidebar']")
+    page.get_by_text(library_name, exact=True).click()
+    page.wait_for_timeout(1000)
+
+    print(f"Dragging component: {component_name} to ({drop_x}, {drop_y})")
+
+    page.evaluate(f"""
+    () => {{
+      const source = [...document.querySelectorAll("[draggable='true']")]
+        .find(el => el.innerText.includes("{component_name}"));
+      const target = document.querySelector(".xircuits-canvas");
+
+      if (!source || !target) {{
+          console.warn("Component or canvas not found.");
+          return;
+      }}
+
+      HTMLElement.prototype.dragTo = function(targetElement, x, y) {{
+          const dataTransfer = new DataTransfer();
+          const rect = targetElement.getBoundingClientRect();
+
+          const clientX = rect.left + x;
+          const clientY = rect.top + y;
+
+          this.dispatchEvent(new DragEvent('dragstart', {{ dataTransfer, bubbles: true }}));
+          targetElement.dispatchEvent(new DragEvent('dragenter', {{ dataTransfer, bubbles: true, clientX, clientY }}));
+          targetElement.dispatchEvent(new DragEvent('dragover', {{ dataTransfer, bubbles: true, clientX, clientY }}));
+          targetElement.dispatchEvent(new DragEvent('drop', {{ dataTransfer, bubbles: true, clientX, clientY }}));
+          this.dispatchEvent(new DragEvent('dragend', {{ dataTransfer, bubbles: true }}));
+      }};
+
+      source.dragTo(target, {drop_x}, {drop_y});
+      target.click();
+    }}
+    """)
+
+
+def align_start(page: Page, first_component_name: str, offset: int = 150):
+    """
+    Moves the Start node to the left of the first component with a customizable offset.
+
+    :param page: The Playwright page object.
+    :param first_component_name: The name of the first component dropped.
+    :param offset: Distance in pixels to shift Start from the first component.
+    """
+    first_box = page.locator(f"div[data-default-node-name='{first_component_name}']").bounding_box()
+    if first_box is None:
+        raise Exception(f"Component '{first_component_name}' not found.")
+
+    start_box = page.locator("div[data-default-node-name='Start']").bounding_box()
+    if start_box is None:
+        raise Exception("Start node not found.")
+
+    new_x = first_box["x"] - offset
+    new_y = first_box["y"]
+
+    page.mouse.move(start_box["x"] + 5, start_box["y"] + 5)
+    page.mouse.down()
+    page.mouse.move(new_x, new_y)
+    page.mouse.up()
+
+    print(f"Moved Start to ({new_x}, {new_y}) with offset {offset}px")
+
+def align_finish(page: Page, last_component_name: str, offset: int = 150):
+    """
+    Moves the Finish node to the right of the last component with a customizable offset.
+
+    :param page: The Playwright page object.
+    :param last_component_name: The name of the last component dropped.
+    :param offset: Distance in pixels to shift Finish from the last component.
+    """
+    last_box = page.locator(f"div[data-default-node-name='{last_component_name}']").bounding_box()
+    if last_box is None:
+        raise Exception(f"Component '{last_component_name}' not found.")
+
+    finish_box = page.locator("div[data-default-node-name='Finish']").bounding_box()
+    if finish_box is None:
+        raise Exception("Finish node not found.")
+
+    new_x = last_box["x"] + offset
+    new_y = last_box["y"]
+
+    page.mouse.move(finish_box["x"] + 5, finish_box["y"] + 5)
+    page.mouse.down()
+    page.mouse.move(new_x, new_y)
+    page.mouse.up()
+
+    print(f"Moved Finish to ({new_x}, {new_y}) with offset {offset}px")
+
+def clean_xircuits_directory(page, subfolder_name: str):
+    """Deletes all files in the specified subfolder inside xai_tests."""
+    print(f"Cleaning directory: {subfolder_name}")
+    page.goto("http://localhost:8888")
+    page.wait_for_selector('#jupyterlab-splash', state='detached')
+
+    page.get_by_text("xai_components", exact=True).dblclick()
+    page.wait_for_selector("text=xai_tests", timeout=10000)
+    page.get_by_text("xai_tests", exact=True).dblclick()
+    page.get_by_text(subfolder_name, exact=True).dblclick()
+    page.wait_for_timeout(1000)
+
+    while True:
+        try:
+            file = page.locator(".jp-DirListing-item[data-isdir='false']").first
+            file.wait_for(timeout=2000)
+            file.click(button="right")
+            page.get_by_text("Move to Trash").click()
+            page.get_by_role("button", name="Move to Trash").click()
+            page.wait_for_timeout(500)
+        except Exception:
+            print("No more files to delete.")
+            break
+
+    print("All files moved to trash.")
+
+def copy_xircuits_file(page, source_file: str, target_folder: str):
+    print(f"Copying {source_file} to {target_folder}")
+    page.wait_for_timeout(1000)
+    page.goto("http://localhost:8888")
+    page.wait_for_selector('#jupyterlab-splash', state='detached')
+    page.wait_for_timeout(1000)
+    page.get_by_text("xai_components", exact=True).dblclick()
+    page.wait_for_selector("text=xai_tests", timeout=10000)
+    page.get_by_text("xai_tests", exact=True).dblclick()
+    page.get_by_text(source_file, exact=True).click()
+    page.keyboard.press("Control+C")
+
+    page.get_by_text(target_folder, exact=True).dblclick()
+    page.locator(".jp-DirListing-content").click(button="right")
+    page.get_by_text("Ctrl+V").click()
+    page.wait_for_timeout(1000)
+    print("Copy completed.")
+
+literal_type_mapping = {
+    "Literal String":  { "title": "Update string",  "type": "textarea" },
+    "Literal Integer": { "title": "Update int",     "type": "input" },
+    "Literal Float":   { "title": "Update float",   "type": "input" },
+    "Literal List":    { "title": "Update list",    "type": "textarea" },
+    "Literal Tuple":   { "title": "Update tuple",   "type": "textarea" },
+    "Literal Dict":    { "title": "Update dict",    "type": "textarea" },
+    "Literal Secret":  { "title": "Update secret",  "type": "input" },
+    "Literal Boolean": { "title": "Update boolean" },  # handled differently
+}
+
+def update_literal_value(page, node_type: str, value):
+    print(f"Updating: {node_type} = {value}")
+    node = page.locator(f"div[data-default-node-name='{node_type}']")
+    node.scroll_into_view_if_needed()
+    node.hover()
+    page.wait_for_timeout(500)
+
+    node.dblclick()
+    page.wait_for_timeout(500)
+    
+    if node_type == "Literal Boolean":
+        switch = page.locator("input[role='switch']")
+        current = switch.get_attribute("aria-checked") == "true"
+        if str(current).lower() != str(value).lower():
+            page.locator(".react-switch-handle").click()
+        page.get_by_role("button", name="Submit").click()
+        return
+
+    config = literal_type_mapping.get(node_type)
+    if not config:
+        raise Exception(f"Unknown node type: {node_type}")
+
+    selector = f"{config['type']}[name='{config['title']}']"
+    editor = page.locator(selector)
+    editor.wait_for(timeout=2000)
+    editor.fill(str(value))
+    page.get_by_role("button", name="Submit").click()
+    page.wait_for_timeout(500)
+
+def update_literal_chat(page, messages):
+    print("Updating Literal Chat...")
+    page.locator("div[data-default-node-name='Literal Chat']").dblclick()
+    page.wait_for_timeout(500)
+
+    while True:
+        remove_button = page.locator("button").filter(has_text="Remove").first
+        if not remove_button.is_visible():
+            break
+        remove_button.click()
+        page.wait_for_timeout(200)
+    
+    page.get_by_role("button", name="Add Message").click()
+
+    for i, msg in enumerate(messages):
+        role_selector = f'select[name=\"role-{i}\"]'
+        content_selector = f'textarea[name=\"content-{i}\"]'
+
+        page.locator(role_selector).select_option(msg["role"])
+        page.locator(content_selector).fill(msg["content"])
+
+        if i < len(messages) - 1:
+            page.get_by_role("button", name="Add Message").click()
+
+    page.get_by_role("button", name="Submit").click()
+    page.wait_for_timeout(500)

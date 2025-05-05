@@ -1,3 +1,4 @@
+<h1>PyPI rocks!</h1>
 <p align="center">
 <img src="https://user-images.githubusercontent.com/68586800/151280601-7ff2b7b2-10e5-4544-b3df-aa6a5a654dae.png" width="450"/>
 </p>
@@ -31,7 +32,7 @@
         <img alt="Documentation" src="https://img.shields.io/website/http/xircuits.io.svg?color=orange">
     </a>
      <a>
-        <img alt="Python" src="https://img.shields.io/badge/Python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11-blue">
+        <img alt="Python" src="https://img.shields.io/badge/Python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue">
     </a>
 </p>
 
