@@ -1,4 +1,3 @@
-<h1>PyPI rocks!</h1>
 <p align="center">
 <img src="https://user-images.githubusercontent.com/68586800/151280601-7ff2b7b2-10e5-4544-b3df-aa6a5a654dae.png" width="450"/>
 </p>
