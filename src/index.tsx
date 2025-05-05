@@ -196,7 +196,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     // Add a command for creating a new xircuits file.
     app.commands.addCommand(commandIDs.createNewXircuit, {
-      label: (args) => (args['isLauncher'] ? 'Xircuits File' : 'Create New Xircuits'),
+      label: (args) => (args['isLauncher'] ? 'New Xircuits File' : 'Create New Xircuits'),
       icon: xircuitsIcon,
       caption: 'Create a new xircuits file',
       execute: async () => {
@@ -569,9 +569,186 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         command: commandIDs.createNewXircuit,
         rank: 1,
         args: { isLauncher: true },
-        category: 'Other'
+        category: 'Xircuits Templates'
       });
     }
+
+    // Register a "Open Example" button in the Launcher
+    function registerTemplateButton(
+      id: string,
+      label: string,
+      examplePath: string,
+      libraries: string[],
+      rank = 1
+    ) {
+      app.commands.addCommand(id, {
+        label: label,
+        caption: `Install ${libraries.join(', ')} and open the example`,
+        icon: xircuitsIcon,
+        execute: async () => {
+          const currentPath = browserFactory.tracker.currentWidget?.model.path ?? '';
+
+          // Install each library using a terminal session
+          async function installLibraryWithTerminal(lib: string): Promise<void> {
+            const terminalWidget = await app.commands.execute('terminal:create-new');
+            app.shell.add(terminalWidget, 'main', { mode: 'split-bottom' });
+            const session = terminalWidget.content.session;
+
+            return new Promise<void>(resolve => {
+              const listener = (_: any, msg: any) => {
+                const out = (msg.content as string[]).join('');
+                if (
+                  out.includes(`Library ${lib} ready to use`)
+                ) {
+                  session.messageReceived.disconnect(listener);
+                  resolve();
+                }
+              };
+
+              session.messageReceived.connect(listener);
+              session.send({ type: 'stdin', content: [`xircuits install ${lib}\n`] });
+            }).then(async () => {
+              await session.shutdown();
+              terminalWidget.close();
+              terminalWidget.dispose();
+            });
+          }
+
+          // Step 1: Install all libraries sequentially
+          for (const lib of libraries) {
+            await installLibraryWithTerminal(lib);
+          }
+
+          // Step 2: Create a new untitled file
+          const model = await app.commands.execute('docmanager:new-untitled', {
+            path: currentPath,
+            type: 'file',
+            ext: '.xircuits'
+          }) as { path: string };
+
+          // Step 3: Copy content from the example into the new file
+          const data = await app.serviceManager.contents.get(examplePath) as { content: string };
+          await app.serviceManager.contents.save(model.path, {
+            type: 'file',
+            format: 'text',
+            content: data.content
+          });
+
+          // Step 4: Open the file and refresh the component list
+          await app.commands.execute('docmanager:open', {
+            path: model.path
+          });
+          await app.commands.execute(commandIDs.refreshComponentList);
+        }
+      });
+
+      // Add to Launcher
+      launcher.add({
+        command: id,
+        category: 'Xircuits Templates',
+        rank : rank
+      });
+    }
+    
+    async function registerUserTemplates(launcher: ILauncher, app: JupyterFrontEnd) {
+      const templatesPath = '.xircuits/templates';
+
+      try {
+        const list = await app.serviceManager.contents.get(templatesPath);
+
+        for (const item of list.content) {
+          if (item.type === 'file' && item.path.endsWith('.xircuits')) {
+            const fileName = item.name.replace(/\.xircuits$/, '');
+            const commandId = `xircuits:user-template-${fileName}`;
+
+            app.commands.addCommand(commandId, {
+              label: fileName,
+              caption: `Open ${fileName} template`,
+              icon: xircuitsIcon,
+              execute: async () => {
+                const newFile = await app.commands.execute('docmanager:new-untitled', {
+                  path: '', type: 'file', ext: '.xircuits'
+                }) as { path: string };
+
+                const data = await app.serviceManager.contents.get(item.path) as { content: string };
+                await app.serviceManager.contents.save(newFile.path, {
+                  type: 'file',
+                  format: 'text',
+                  content: data.content
+                });
+
+                await app.commands.execute('docmanager:open', { path: newFile.path });
+                await app.commands.execute(commandIDs.refreshComponentList);
+              }
+            });
+
+            launcher.add({
+              command: commandId,
+              category: 'User Templates',
+            });
+          }
+        }
+      } catch (err) {
+        console.warn(`No user templates found at ${templatesPath}.`, err);
+      }
+    }
+
+
+    // Register example buttons
+    registerTemplateButton(
+      'xircuits:open-agent-example',
+      'Agent',
+      'xai_components/xai_agent/examples/agent_example.xircuits',
+      ['xai_agent', 'xai_openai'],
+      2
+    );
+        registerTemplateButton(
+      'xircuits:open-flask-example',
+      'Service',
+      'xai_components/xai_flask/examples/InlineExample.xircuits',
+      ['xai_flask'],
+      3
+    );
+    
+    await registerUserTemplates(launcher, app);
+
+    app.restored.then(() => {
+      const tryMove = () => {
+        const sections = Array.from(
+          document.querySelectorAll<HTMLElement>('.jp-Launcher-section')
+        );
+    
+        const xircuitsSection = sections.find(sec =>
+          sec.textContent?.includes('Xircuits Templates')
+        );
+        const userTemplatesSection = sections.find(sec =>
+          sec.textContent?.includes('User Templates')
+        );
+    
+        if (xircuitsSection && xircuitsSection.parentElement) {
+          // Always move Xircuits Templates to the top
+          xircuitsSection.parentElement.prepend(xircuitsSection);
+    
+          // If User Templates exists, insert it right after
+          if (userTemplatesSection && userTemplatesSection !== xircuitsSection) {
+            xircuitsSection.parentElement.insertBefore(
+              userTemplatesSection,
+              xircuitsSection.nextSibling
+            );
+          }
+          return true;
+        }
+        return false;
+      };
+    
+      let attempts = 0;
+      const handle = setInterval(() => {
+        if (tryMove() || ++attempts > 10) {
+          clearInterval(handle);
+        }
+      }, 200);
+    });
+    
   },
 };
 
