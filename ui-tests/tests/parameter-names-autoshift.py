@@ -7,7 +7,7 @@ with sync_playwright() as p:
     page = context.new_page()
     page.goto("http://localhost:8888")
     page.wait_for_selector('#jupyterlab-splash', state='detached')
-    page.get_by_text('Xircuits File', exact=True).click()
+    page.get_by_text('New Xircuits File', exact=True).click()
  
     simulate_drag_component_from_library(page, "TESTS", "DynaportTester")
  
