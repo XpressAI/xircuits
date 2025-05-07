@@ -712,41 +712,54 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     
     await registerUserTemplates(launcher, app);
 
+    // Reorders the launcher sections: Xircuits first, then User Templates
+    function reorderSections(sections: HTMLElement[]) {
+      const xircuitsSection = sections.find(sec =>
+        sec.textContent?.includes('Xircuits Templates')
+      );
+      const userTemplatesSection = sections.find(sec =>
+        sec.textContent?.includes('User Templates')
+      );
+    
+      if (xircuitsSection && xircuitsSection.parentElement) {
+        xircuitsSection.parentElement.prepend(xircuitsSection);
+    
+        if (userTemplatesSection && userTemplatesSection !== xircuitsSection) {
+          xircuitsSection.parentElement.insertBefore(
+            userTemplatesSection,
+            xircuitsSection.nextSibling
+          );
+        }
+      }
+    }
+    
     app.restored.then(() => {
-      const tryMove = () => {
+      // Watch for the first launcher loaded during startup
+      const observer = new MutationObserver(() => {
         const sections = Array.from(
           document.querySelectorAll<HTMLElement>('.jp-Launcher-section')
         );
-    
-        const xircuitsSection = sections.find(sec =>
-          sec.textContent?.includes('Xircuits Templates')
-        );
-        const userTemplatesSection = sections.find(sec =>
-          sec.textContent?.includes('User Templates')
-        );
-    
-        if (xircuitsSection && xircuitsSection.parentElement) {
-          // Always move Xircuits Templates to the top
-          xircuitsSection.parentElement.prepend(xircuitsSection);
-    
-          // If User Templates exists, insert it right after
-          if (userTemplatesSection && userTemplatesSection !== xircuitsSection) {
-            xircuitsSection.parentElement.insertBefore(
-              userTemplatesSection,
-              xircuitsSection.nextSibling
+        if (sections.length > 0) {
+          reorderSections(sections);
+          observer.disconnect();
+        }
+      });
+      // Observe any DOM changes (required for first launcher)
+      observer.observe(document.body, { childList: true, subtree: true });
+    });
+
+    // Reorder sections for any subsequent launcher opened by the user
+    app.commands.commandExecuted.connect((_sender, args) => {
+      if (args.id === 'launcher:create') {
+        requestAnimationFrame(() => {
+          document.querySelectorAll<HTMLElement>('.jp-Launcher').forEach(launcher => {
+            const sections = Array.from(
+              launcher.querySelectorAll<HTMLElement>('.jp-Launcher-section')
             );
-          }
-          return true;
-        }
-        return false;
-      };
-    
-      let attempts = 0;
-      const handle = setInterval(() => {
-        if (tryMove() || ++attempts > 10) {
-          clearInterval(handle);
-        }
-      }, 200);
+            reorderSections(sections);
+          });
+        });
+      }
     });
     
   },
