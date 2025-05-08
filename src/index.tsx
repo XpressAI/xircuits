@@ -573,7 +573,6 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       });
     }
 
-    // Register a "Open Example" button in the Launcher
     function registerTemplateButton(
       id: string,
       label: string,
@@ -589,56 +588,76 @@ const xircuits: JupyterFrontEndPlugin<void> = {
           const currentPath = browserFactory.tracker.currentWidget?.model.path ?? '';
 
           // Install each library using a terminal session
-          async function installLibraryWithTerminal(lib: string): Promise<void> {
-            const terminalWidget = await app.commands.execute('terminal:create-new');
-            app.shell.add(terminalWidget, 'main', { mode: 'split-bottom' });
-            const session = terminalWidget.content.session;
+          async function installLibraryWithTerminal(lib: string): Promise<boolean> {
+            // Check if already installed
+            try {
+              await app.serviceManager.contents.get(`xai_components/${lib}`);
+              console.log(`Library ${lib} already exists. Skipping installation.`);
+              return true;
+            } catch (error) {
+              if (error.response?.status !== 404) {
+                console.error(`Error checking for library ${lib}:`, error);
+                alert(`Unexpected error while checking for ${lib}.`);
+                return false;
+              }
+            }
+          
+            // Ask for confirmation
+            const confirmed = confirm(`Do you want to proceed with ${lib} library installation?`);
+            if (!confirmed) return false;
+          
+            // Install library
+            try {
+              const terminalWidget = await app.commands.execute('terminal:create-new');
+              const session = terminalWidget.content.session;
+          
+              return new Promise<boolean>(resolve => {
+                const listener = (_: any, msg: any) => {
+                  const out = (msg.content as string[]).join('');
+                  if (out.includes(`Library ${lib} ready to use`) || out.includes(`${lib} already installed`)) {
+                    session.messageReceived.disconnect(listener);
+                    resolve(true);
+                  }
+                };
+          
+                session.messageReceived.connect(listener);
+                session.send({ type: 'stdin', content: [`xircuits install ${lib}\n`] });
+              }).then(async () => {
+                await session.shutdown();
+                terminalWidget.dispose();
+                return true;
+              });
+            } catch (err) {
+              console.error(`Failed to install ${lib}:`, err);
+              alert(`Failed to install ${lib}.`);
+              return false;
+            }
+          }          
 
-            return new Promise<void>(resolve => {
-              const listener = (_: any, msg: any) => {
-                const out = (msg.content as string[]).join('');
-                if (
-                  out.includes(`Library ${lib} ready to use`)
-                ) {
-                  session.messageReceived.disconnect(listener);
-                  resolve();
-                }
-              };
-
-              session.messageReceived.connect(listener);
-              session.send({ type: 'stdin', content: [`xircuits install ${lib}\n`] });
-            }).then(async () => {
-              await session.shutdown();
-              terminalWidget.close();
-              terminalWidget.dispose();
-            });
-          }
-
-          // Step 1: Install all libraries sequentially
+          // Install all libraries sequentially
           for (const lib of libraries) {
-            await installLibraryWithTerminal(lib);
+            const success = await installLibraryWithTerminal(lib);
+            if (!success) {
+              console.warn(`Library ${lib} not installed. Aborting template creation.`);
+              return; 
+            }
           }
 
-          // Step 2: Create a new untitled file
-          const model = await app.commands.execute('docmanager:new-untitled', {
-            path: currentPath,
-            type: 'file',
-            ext: '.xircuits'
-          }) as { path: string };
 
-          // Step 3: Copy content from the example into the new file
-          const data = await app.serviceManager.contents.get(examplePath) as { content: string };
-          await app.serviceManager.contents.save(model.path, {
-            type: 'file',
-            format: 'text',
-            content: data.content
-          });
+          const model = await app.serviceManager.contents.copy(
+            examplePath,
+            currentPath || ''          
+          );
 
-          // Step 4: Open the file and refresh the component list
-          await app.commands.execute('docmanager:open', {
-            path: model.path
-          });
+          const finalPath = model.path;    
+
+          // small delay to avoid the empty-canvas race
+          await new Promise(res => setTimeout(res, 200));
+
+          // Open the file and refresh the component list
+          await app.commands.execute('docmanager:open', { path: finalPath });
           await app.commands.execute(commandIDs.refreshComponentList);
+
         }
       });
 
@@ -652,36 +671,39 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     
     async function registerUserTemplates(launcher: ILauncher, app: JupyterFrontEnd) {
       const templatesPath = '.xircuits/templates';
-
+      const browser = app.serviceManager.contents;
+    
       try {
-        const list = await app.serviceManager.contents.get(templatesPath);
-
+        const list = await browser.get(templatesPath);
+    
         for (const item of list.content) {
           if (item.type === 'file' && item.path.endsWith('.xircuits')) {
-            const fileName = item.name.replace(/\.xircuits$/, '');
+            const fileName = item.name; 
             const commandId = `xircuits:user-template-${fileName}`;
-
+    
             app.commands.addCommand(commandId, {
-              label: fileName,
+              label: fileName.replace(/\.xircuits$/, ''),
               caption: `Open ${fileName} template`,
               icon: xircuitsIcon,
               execute: async () => {
-                const newFile = await app.commands.execute('docmanager:new-untitled', {
-                  path: '', type: 'file', ext: '.xircuits'
-                }) as { path: string };
-
-                const data = await app.serviceManager.contents.get(item.path) as { content: string };
-                await app.serviceManager.contents.save(newFile.path, {
-                  type: 'file',
-                  format: 'text',
-                  content: data.content
-                });
-
-                await app.commands.execute('docmanager:open', { path: newFile.path });
-                await app.commands.execute(commandIDs.refreshComponentList);
+                const currentPath = browserFactory.tracker.currentWidget?.model.path ?? '';
+    
+                try {
+                  const model = await browser.copy(item.path, currentPath || '');
+                  const finalPath = model.path;
+                
+                  await new Promise(res => setTimeout(res, 200));
+                  await app.commands.execute('docmanager:open', { path: finalPath });
+                  await app.commands.execute(commandIDs.refreshComponentList);
+                
+                } catch (copyErr) {
+                  console.error(`Failed to copy "${fileName}":`, copyErr);
+                  alert(`Failed to copy template "${fileName}".`);
+                }
+                                
               }
             });
-
+    
             launcher.add({
               command: commandId,
               category: 'User Templates',
@@ -692,8 +714,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         console.warn(`No user templates found at ${templatesPath}.`, err);
       }
     }
-
-
+    
     // Register example buttons
     registerTemplateButton(
       'xircuits:open-agent-example',
@@ -712,7 +733,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     
     await registerUserTemplates(launcher, app);
 
-    // Reorders the launcher sections: Xircuits first, then User Templates
+    // Reorders the launcher sections
     function reorderSections(sections: HTMLElement[]) {
       const xircuitsSection = sections.find(sec =>
         sec.textContent?.includes('Xircuits Templates')
@@ -734,7 +755,6 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     }
     
     app.restored.then(() => {
-      // Watch for the first launcher loaded during startup
       const observer = new MutationObserver(() => {
         const sections = Array.from(
           document.querySelectorAll<HTMLElement>('.jp-Launcher-section')
@@ -744,11 +764,9 @@ const xircuits: JupyterFrontEndPlugin<void> = {
           observer.disconnect();
         }
       });
-      // Observe any DOM changes (required for first launcher)
       observer.observe(document.body, { childList: true, subtree: true });
     });
 
-    // Reorder sections for any subsequent launcher opened by the user
     app.commands.commandExecuted.connect((_sender, args) => {
       if (args.id === 'launcher:create') {
         requestAnimationFrame(() => {
