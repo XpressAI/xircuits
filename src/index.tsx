@@ -196,7 +196,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     // Add a command for creating a new xircuits file.
     app.commands.addCommand(commandIDs.createNewXircuit, {
-      label: (args) => (args['isLauncher'] ? 'Xircuits File' : 'Create New Xircuits'),
+      label: (args) => (args['isLauncher'] ? 'New Xircuits File' : 'Create New Xircuits'),
       icon: xircuitsIcon,
       caption: 'Create a new xircuits file',
       execute: async () => {
@@ -569,9 +569,217 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         command: commandIDs.createNewXircuit,
         rank: 1,
         args: { isLauncher: true },
-        category: 'Other'
+        category: 'Xircuits Templates'
       });
     }
+
+    function registerTemplateButton(
+      id: string,
+      label: string,
+      examplePath: string,
+      libraries: string[],
+      rank = 1
+    ) {
+      app.commands.addCommand(id, {
+        label: label,
+        caption: `Install ${libraries.join(', ')} and open the example`,
+        icon: xircuitsIcon,
+        execute: async () => {
+          const currentPath = browserFactory.tracker.currentWidget?.model.path ?? '';
+
+          // Install each library using a terminal session
+          async function installLibraryWithTerminal(lib: string): Promise<boolean> {
+            // Check if already installed
+            try {
+              await app.serviceManager.contents.get(`xai_components/${lib}`);
+              console.log(`Library ${lib} already exists. Skipping installation.`);
+              return true;
+            } catch (error) {
+              if (error.response?.status !== 404) {
+                console.error(`Error checking for library ${lib}:`, error);
+                alert(`Unexpected error while checking for ${lib}.`);
+                return false;
+              }
+            }
+          
+            // Ask for confirmation
+            const confirmed = confirm(`Do you want to proceed with ${lib} library installation?`);
+            if (!confirmed) return false;
+          
+            // Install library
+            try {
+              const terminalWidget = await app.commands.execute('terminal:create-new');
+              const session = terminalWidget.content.session;
+          
+              return new Promise<boolean>(resolve => {
+                const listener = (_: any, msg: any) => {
+                  const out = (msg.content as string[]).join('');
+                  if (out.includes(`Library ${lib} ready to use`) || out.includes(`${lib} already installed`)) {
+                    session.messageReceived.disconnect(listener);
+                    resolve(true);
+                  }
+                };
+          
+                session.messageReceived.connect(listener);
+                session.send({ type: 'stdin', content: [`xircuits install ${lib}\n`] });
+              }).then(async () => {
+                await session.shutdown();
+                terminalWidget.dispose();
+                return true;
+              });
+            } catch (err) {
+              console.error(`Failed to install ${lib}:`, err);
+              alert(`Failed to install ${lib}.`);
+              return false;
+            }
+          }          
+
+          // Install all libraries sequentially
+          for (const lib of libraries) {
+            const success = await installLibraryWithTerminal(lib);
+            if (!success) {
+              console.warn(`Library ${lib} not installed. Aborting template creation.`);
+              return; 
+            }
+          }
+
+
+          const model = await app.serviceManager.contents.copy(
+            examplePath,
+            currentPath || ''          
+          );
+
+          const finalPath = model.path;    
+
+          // small delay to avoid the empty-canvas race
+          await new Promise(res => setTimeout(res, 200));
+
+          // Open the file and refresh the component list
+          await app.commands.execute('docmanager:open', { path: finalPath });
+          await app.commands.execute(commandIDs.refreshComponentList);
+
+        }
+      });
+
+      // Add to Launcher
+      launcher.add({
+        command: id,
+        category: 'Xircuits Templates',
+        rank : rank
+      });
+    }
+    
+    async function registerUserTemplates(launcher: ILauncher, app: JupyterFrontEnd) {
+      const templatesPath = '.xircuits/templates';
+      const browser = app.serviceManager.contents;
+    
+      try {
+        const list = await browser.get(templatesPath);
+    
+        for (const item of list.content) {
+          if (item.type === 'file' && item.path.endsWith('.xircuits')) {
+            const fileName = item.name; 
+            const commandId = `xircuits:user-template-${fileName}`;
+    
+            app.commands.addCommand(commandId, {
+              label: fileName.replace(/\.xircuits$/, ''),
+              caption: `Open ${fileName} template`,
+              icon: xircuitsIcon,
+              execute: async () => {
+                const currentPath = browserFactory.tracker.currentWidget?.model.path ?? '';
+    
+                try {
+                  const model = await browser.copy(item.path, currentPath || '');
+                  const finalPath = model.path;
+                
+                  await new Promise(res => setTimeout(res, 200));
+                  await app.commands.execute('docmanager:open', { path: finalPath });
+                  await app.commands.execute(commandIDs.refreshComponentList);
+                
+                } catch (copyErr) {
+                  console.error(`Failed to copy "${fileName}":`, copyErr);
+                  alert(`Failed to copy template "${fileName}".`);
+                }
+                                
+              }
+            });
+    
+            launcher.add({
+              command: commandId,
+              category: 'User Templates',
+            });
+          }
+        }
+      } catch (err) {
+        console.warn(`No user templates found at ${templatesPath}.`, err);
+      }
+    }
+    
+    // Register example buttons
+    registerTemplateButton(
+      'xircuits:open-agent-example',
+      'Agent',
+      'xai_components/xai_agent/examples/agent_example.xircuits',
+      ['xai_agent', 'xai_openai'],
+      2
+    );
+        registerTemplateButton(
+      'xircuits:open-flask-example',
+      'Service',
+      'xai_components/xai_flask/examples/InlineExample.xircuits',
+      ['xai_flask'],
+      3
+    );
+    
+    await registerUserTemplates(launcher, app);
+
+    // Reorders the launcher sections
+    function reorderSections(sections: HTMLElement[]) {
+      const xircuitsSection = sections.find(sec =>
+        sec.textContent?.includes('Xircuits Templates')
+      );
+      const userTemplatesSection = sections.find(sec =>
+        sec.textContent?.includes('User Templates')
+      );
+    
+      if (xircuitsSection && xircuitsSection.parentElement) {
+        xircuitsSection.parentElement.prepend(xircuitsSection);
+    
+        if (userTemplatesSection && userTemplatesSection !== xircuitsSection) {
+          xircuitsSection.parentElement.insertBefore(
+            userTemplatesSection,
+            xircuitsSection.nextSibling
+          );
+        }
+      }
+    }
+    
+    app.restored.then(() => {
+      const observer = new MutationObserver(() => {
+        const sections = Array.from(
+          document.querySelectorAll<HTMLElement>('.jp-Launcher-section')
+        );
+        if (sections.length > 0) {
+          reorderSections(sections);
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    });
+
+    app.commands.commandExecuted.connect((_sender, args) => {
+      if (args.id === 'launcher:create') {
+        requestAnimationFrame(() => {
+          document.querySelectorAll<HTMLElement>('.jp-Launcher').forEach(launcher => {
+            const sections = Array.from(
+              launcher.querySelectorAll<HTMLElement>('.jp-Launcher-section')
+            );
+            reorderSections(sections);
+          });
+        });
+      }
+    });
+    
   },
 };
 
