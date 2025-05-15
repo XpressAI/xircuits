@@ -700,8 +700,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		let mode = lightMode;
-		setLightMode(!mode)
+		const newLightMode = !lightMode;
+
+		const desiredTheme = newLightMode ? 'JupyterLab Light' : 'JupyterLab Dark';
+		void app.commands.execute('apputils:change-theme', { theme: desiredTheme });
+		// Delay to avoid visual mismatch while JupyterLab updates theme
+		setTimeout(() => {
+		setLightMode(newLightMode);
+		}, 120);
 	}
 
 	// Helper function to compute argument nodes on demand
