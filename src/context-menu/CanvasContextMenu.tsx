@@ -6,12 +6,117 @@ import { DiagramEngine, NodeModel, LinkModel } from '@projectstorm/react-diagram
 import '../../style/ContextMenu.css'
 import { commandIDs } from "../commands/CommandIDs";
 import { CustomPortModel } from '../components/port/CustomPortModel';
+import { CustomNodeModel } from '../components/node/CustomNodeModel';
+
 
 export interface CanvasContextMenuProps {
 	app: JupyterFrontEnd;
 	engine: DiagramEngine;
 	nodePosition?: {x: number, y: number};
 }
+
+function customZoomToFit(
+    engine: DiagramEngine,
+    padding = 40,
+    viewportEl: HTMLElement
+  ) {
+    const model = engine.getModel();
+    const nodes = model.getNodes();
+    if (!nodes.length) return;
+  
+    // 1) Reset
+    model.setZoomLevel(100);
+    model.setOffset(0, 0);
+  
+    // 2) Compute bounding-box (model coords)
+    let minX = Infinity, minY = Infinity;
+    let maxX = -Infinity, maxY = -Infinity;
+    console.groupCollapsed('zoomToFit: per-node dimensions');
+    nodes.forEach(node => {
+      const { x, y } = node.getPosition();
+      const { width, height } =
+        (node as any).getSize?.() ?? { width: 150, height: 100 };
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x + width);
+      maxY = Math.max(maxY, y + height);
+      console.log(`…`, { x, y, width, height, right: x + width, bottom: y + height });
+    });
+    console.groupEnd();
+    console.log('raw bounding box:', { minX, minY, maxX, maxY });
+  
+    // apply padding
+    minX -= padding;
+    minY -= padding;
+    maxX += padding;
+    maxY += padding;
+    const contentWidth  = maxX - minX;
+    const contentHeight = maxY - minY;
+    console.log('padded bounding box:', { minX, minY, maxX, maxY, contentWidth, contentHeight });
+  
+    // 3) Measure viewport
+    let { width: vpW, height: vpH } = viewportEl.getBoundingClientRect();
+    if (vpW === 0 || vpH === 0) {
+      vpW = window.innerWidth;
+      vpH = window.innerHeight;
+    }
+  
+    // 3a) Subtract left file-browser if open
+    const leftPanel = document.querySelector<HTMLElement>(
+      '.lm-Widget.jp-SidePanel:not(.lm-mod-hidden)'
+    );
+    if (leftPanel) {
+      vpW = Math.max(0, vpW - leftPanel.getBoundingClientRect().width);
+    }
+  
+    // 3b) Subtract right sidebar if open
+    const rightPanel = document.querySelector<HTMLElement>(
+      '.lm-Widget.jp-SideBar.jp-mod-right:not(.lm-mod-hidden)'
+    );
+    if (rightPanel) {
+        console.log(rightPanel.getBoundingClientRect().width);
+      vpW = Math.max(0, vpW - rightPanel.getBoundingClientRect().width);
+    }
+  
+    // 3c) Subtract bottom status bar height
+    const statusBar = document.getElementById('jp-main-statusbar');
+    if (statusBar) {
+      vpH = Math.max(0, vpH - statusBar.getBoundingClientRect().height);
+    }
+  
+    // 4) Compute zoom
+    const zoomX = vpW / contentWidth;
+    const zoomY = vpH / contentHeight;
+    const rawZoom = Math.min(zoomX, zoomY);
+    const safetyFactor = 0.995;
+    const zoom = Math.max(0.1, Math.min(1.5, rawZoom * safetyFactor));
+    model.setZoomLevel(zoom * 100);
+  
+    // 5) Center
+    const centerX = minX + contentWidth  / 2;
+    const centerY = minY + contentHeight / 2;
+    const offsetX = vpW / 2 - centerX * zoom;
+    const offsetY = vpH / 2 - centerY * zoom;
+    model.setOffset(offsetX, offsetY);
+  
+    engine.repaintCanvas();
+  
+    console.log({
+      vpW, vpH,
+      rawZoom, zoom,
+      centerX, centerY,
+      offsetX, offsetY
+    });
+  }
+  
+  function delayedZoomToFit(engine: DiagramEngine, padding = 300) {
+    // wait for Lab to layout all panels
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        customZoomToFit(engine, padding, window.document.documentElement);
+      }, 200);
+    });
+  }
 
 export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
 	hideCanvasContextMenu() {
@@ -41,6 +146,12 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
 
         const handleDetachAllNodes = async () => {
             await this.props.app.commands.execute(commandIDs.detachAllNodes);
+        };
+
+        const handleZoomToFit = () => {
+            setTimeout(() => {
+                delayedZoomToFit(this.props.engine);
+            }, 200); 
         };
 
         return (
@@ -83,7 +194,10 @@ export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
                     </>
                 )}
                 {visibility.showAddComment && (
-                    <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.addCommentNode, {nodePosition: this.props.nodePosition})}>Add Comment</div>
+                    <>
+                        <div className="context-menu-option" onClick={() => this.props.app.commands.execute(commandIDs.addCommentNode, { nodePosition: this.props.nodePosition })}>Add Comment</div>
+                        <div className="context-menu-option" onClick={handleZoomToFit}>Zoom to Fit</div>
+                    </>
                 )}
             </div>
         );
