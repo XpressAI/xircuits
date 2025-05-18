@@ -573,6 +573,34 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       });
     }
 
+    function getXsrfToken(): string | null {
+      const matches = document.cookie.match('\\b_xsrf=([^;]*)\\b');
+      return matches ? decodeURIComponent(matches[1]) : null;
+    }
+
+    async function getInstalledLibraries(): Promise<Set<string>> {
+      try {
+        const res = await fetch('/xircuits/library/get_config', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-XSRFToken': getXsrfToken() ?? ''
+          },
+          credentials: 'same-origin'
+        });
+
+        const result = await res.json();
+        return new Set<string>(
+          result.config.libraries
+            .filter((lib: any) => lib.status === 'installed' && typeof lib.name === 'string')
+            .map((lib: any) => lib.name)
+        );
+      } catch (err) {
+        console.error('Failed to load library config via API:', err);
+        return new Set();
+      }
+    }
+
     function registerTemplateButton(
       id: string,
       label: string,
@@ -586,63 +614,54 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         icon: xircuitsIcon,
         execute: async () => {
           const currentPath = browserFactory.tracker.currentWidget?.model.path ?? '';
+          const installedLibs = await getInstalledLibraries();
 
-          // Install each library using a terminal session
-          async function installLibraryWithTerminal(lib: string): Promise<boolean> {
-            // Check if already installed
-            try {
-              await app.serviceManager.contents.get(`xai_components/${lib}`);
-              console.log(`Library ${lib} already exists. Skipping installation.`);
+          async function installLibraryWithAPI(lib: string): Promise<boolean> {
+            if (installedLibs.has(lib)) {
+              console.log(`Library ${lib} already installed. Skipping.`);
               return true;
-            } catch (error) {
-              if (error.response?.status !== 404) {
-                console.error(`Error checking for library ${lib}:`, error);
-                alert(`Unexpected error while checking for ${lib}.`);
-                return false;
-              }
             }
-          
-            // Ask for confirmation
-            const confirmed = confirm(`Do you want to proceed with ${lib} library installation?`);
-            if (!confirmed) return false;
-          
-            // Install library
-            try {
-              const terminalWidget = await app.commands.execute('terminal:create-new');
-              const session = terminalWidget.content.session;
-          
-              return new Promise<boolean>(resolve => {
-                const listener = (_: any, msg: any) => {
-                  const out = (msg.content as string[]).join('');
-                  if (out.includes(`Library ${lib} ready to use`) || out.includes(`${lib} already installed`)) {
-                    session.messageReceived.disconnect(listener);
-                    resolve(true);
-                  }
-                };
-          
-                session.messageReceived.connect(listener);
-                session.send({ type: 'stdin', content: [`xircuits install ${lib}\n`] });
-              }).then(async () => {
-                await session.shutdown();
-                terminalWidget.dispose();
-                return true;
-              });
-            } catch (err) {
-              console.error(`Failed to install ${lib}:`, err);
-              alert(`Failed to install ${lib}.`);
-              return false;
+
+          const confirmed = confirm(`The library "${lib}" is not installed.\n\nDo you want to install it now?\n\nNote: This may take a few seconds.`);
+          if (!confirmed) return false;
+
+          try {
+            const xsrf = getXsrfToken();
+
+            const res = await fetch('/xircuits/library/install', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-XSRFToken': xsrf ?? ''
+              },
+              credentials: 'same-origin',
+              body: JSON.stringify({ libraryName: lib })
+            });
+
+            const result = await res.json();
+
+            if (res.ok && result.status === 'OK') {
+              console.log(`Library ${lib} installed successfully.`);
+              return true;
+            } else {
+              throw new Error(result.error || 'Unknown error');
             }
-          }          
+
+          } catch (err) {
+            console.error(`Failed to install ${lib}:`, err);
+            alert(`Failed to install ${lib}.`);
+            return false;
+          }
+          }
 
           // Install all libraries sequentially
           for (const lib of libraries) {
-            const success = await installLibraryWithTerminal(lib);
-            if (!success) {
-              console.warn(`Library ${lib} not installed. Aborting template creation.`);
-              return; 
+            const ok = await installLibraryWithAPI(lib);
+              if (!ok) {
+                console.warn(`Aborted: ${lib} not installed.`);
+                return;
+              }
             }
-          }
-
 
           const model = await app.serviceManager.contents.copy(
             examplePath,
@@ -669,52 +688,67 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       });
     }
     
-    async function registerUserTemplates(launcher: ILauncher, app: JupyterFrontEnd) {
-      const templatesPath = '.xircuits/templates';
-      const browser = app.serviceManager.contents;
+
+    /**
+     * Checks for the existence of a subdirectory without triggering a 404 error.
+     * 
+     * @param parentPath - The parent directory (e.g., "" or ".xircuits")
+     * @param childDir - The name of the subdirectory to check within the parent
+     */
     
+    async function dirExists(browser, parentPath, childDir) {
       try {
-        const list = await browser.get(templatesPath);
-    
-        for (const item of list.content) {
-          if (item.type === 'file' && item.path.endsWith('.xircuits')) {
-            const fileName = item.name; 
-            const commandId = `xircuits:user-template-${fileName}`;
-    
-            app.commands.addCommand(commandId, {
-              label: fileName.replace(/\.xircuits$/, ''),
-              caption: `Open ${fileName} template`,
-              icon: xircuitsIcon,
-              execute: async () => {
-                const currentPath = browserFactory.tracker.currentWidget?.model.path ?? '';
-    
-                try {
-                  const model = await browser.copy(item.path, currentPath || '');
-                  const finalPath = model.path;
-                
-                  await new Promise(res => setTimeout(res, 200));
-                  await app.commands.execute('docmanager:open', { path: finalPath });
-                  await app.commands.execute(commandIDs.refreshComponentList);
-                
-                } catch (copyErr) {
-                  console.error(`Failed to copy "${fileName}":`, copyErr);
-                  alert(`Failed to copy template "${fileName}".`);
-                }
-                                
-              }
-            });
-    
-            launcher.add({
-              command: commandId,
-              category: 'User Templates',
-            });
-          }
-        }
+        const listing = await browser.get(parentPath, { content: true });
+
+        return listing.content.some(
+          entry => entry.type === 'directory' && entry.name === childDir
+        );
       } catch (err) {
-        console.warn(`No user templates found at ${templatesPath}.`, err);
+        return false;
       }
     }
-    
+
+    async function registerUserTemplates(
+      launcher: ILauncher,
+      app: JupyterFrontEnd
+    ) {
+      const browser = app.serviceManager.contents;
+
+      const hasXircuits = await dirExists(browser, '', '.xircuits');
+      if (!hasXircuits) return;
+
+      const hasTemplates = await dirExists(browser, '.xircuits', 'templates');
+      if (!hasTemplates) return;
+
+      const list = await browser.get('.xircuits/templates');
+
+      for (const item of list.content) {
+        if (item.type === 'file' && item.path.endsWith('.xircuits')) {
+          const fileName = item.name;
+          const commandId = `xircuits:user-template-${fileName}`;
+
+          app.commands.addCommand(commandId, {
+            label: fileName.replace(/\.xircuits$/, ''),
+            caption: `Open ${fileName} template`,
+            icon: xircuitsIcon,
+            execute: async () => {
+              const currentPath =
+                browserFactory.tracker.currentWidget?.model.path ?? '';
+              try {
+                const model = await browser.copy(item.path, currentPath || '');
+                await new Promise(res => setTimeout(res, 200));
+                await app.commands.execute('docmanager:open', { path: model.path });
+                await app.commands.execute(commandIDs.refreshComponentList);
+              } catch {
+              }
+            }
+          });
+
+          launcher.add({ command: commandId, category: 'User Templates' });
+        }
+      }
+    }
+
     // Register example buttons
     registerTemplateButton(
       'xircuits:open-agent-example',
@@ -754,17 +788,25 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     }
     
+    
+    function handleLauncher(ln: HTMLElement) {
+      const sections = Array.from(
+        ln.querySelectorAll<HTMLElement>('.jp-Launcher-section')
+      );
+      reorderSections(sections);
+    }
+
     app.restored.then(() => {
-      const observer = new MutationObserver(() => {
-        const sections = Array.from(
-          document.querySelectorAll<HTMLElement>('.jp-Launcher-section')
-        );
-        if (sections.length > 0) {
-          reorderSections(sections);
-          observer.disconnect();
-        }
+      const processed = new WeakSet<HTMLElement>();
+
+    (app.shell as any).layoutModified?.connect(() => {
+        document.querySelectorAll<HTMLElement>('.jp-Launcher').forEach(ln => {
+          if (!processed.has(ln)) {
+            requestAnimationFrame(() => handleLauncher(ln));
+            processed.add(ln);
+          }
+        });
       });
-      observer.observe(document.body, { childList: true, subtree: true });
     });
 
     app.commands.commandExecuted.connect((_sender, args) => {
