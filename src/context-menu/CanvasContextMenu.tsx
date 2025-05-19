@@ -5,9 +5,6 @@ import { DiagramEngine, NodeModel, LinkModel } from '@projectstorm/react-diagram
 
 import '../../style/ContextMenu.css'
 import { commandIDs } from "../commands/CommandIDs";
-import { CustomPortModel } from '../components/port/CustomPortModel';
-import { CustomNodeModel } from '../components/node/CustomNodeModel';
-
 
 export interface CanvasContextMenuProps {
 	app: JupyterFrontEnd;
@@ -17,8 +14,7 @@ export interface CanvasContextMenuProps {
 
 function customZoomToFit(
     engine: DiagramEngine,
-    padding = 40,
-    viewportEl: HTMLElement
+    padding = 40
   ) {
     const model = engine.getModel();
     const nodes = model.getNodes();
@@ -28,11 +24,11 @@ function customZoomToFit(
     model.setZoomLevel(100);
     model.setOffset(0, 0);
   
-    // 2) Compute bounding-box (model coords)
+    // 2) Compute model‐space bounds
     let minX = Infinity, minY = Infinity;
     let maxX = -Infinity, maxY = -Infinity;
     console.groupCollapsed('zoomToFit: per-node dimensions');
-    nodes.forEach(node => {
+    for (const node of nodes) {
       const { x, y } = node.getPosition();
       const { width, height } =
         (node as any).getSize?.() ?? { width: 150, height: 100 };
@@ -40,12 +36,12 @@ function customZoomToFit(
       minY = Math.min(minY, y);
       maxX = Math.max(maxX, x + width);
       maxY = Math.max(maxY, y + height);
-      console.log(`…`, { x, y, width, height, right: x + width, bottom: y + height });
-    });
+      console.log(`Node ${node.getID()}:`, { x, y, width, height, right: x + width, bottom: y + height });
+    }
     console.groupEnd();
     console.log('raw bounding box:', { minX, minY, maxX, maxY });
   
-    // apply padding
+    // 2b) padding
     minX -= padding;
     minY -= padding;
     maxX += padding;
@@ -54,34 +50,19 @@ function customZoomToFit(
     const contentHeight = maxY - minY;
     console.log('padded bounding box:', { minX, minY, maxX, maxY, contentWidth, contentHeight });
   
-    // 3) Measure viewport
-    let { width: vpW, height: vpH } = viewportEl.getBoundingClientRect();
-    if (vpW === 0 || vpH === 0) {
+    // 3) Measure *real* viewport: the notebook-content widget
+    const viewportEl = document.querySelector<HTMLElement>(
+      '.lm-Widget[role="region"][aria-label="notebook content"]'
+    );
+    let vpW: number, vpH: number;
+    if (viewportEl) {
+      const rect = viewportEl.getBoundingClientRect();
+      vpW = rect.width;
+      vpH = rect.height;
+    } else {
+      // fallback
       vpW = window.innerWidth;
       vpH = window.innerHeight;
-    }
-  
-    // 3a) Subtract left file-browser if open
-    const leftPanel = document.querySelector<HTMLElement>(
-      '.lm-Widget.jp-SidePanel:not(.lm-mod-hidden)'
-    );
-    if (leftPanel) {
-      vpW = Math.max(0, vpW - leftPanel.getBoundingClientRect().width);
-    }
-  
-    // 3b) Subtract right sidebar if open
-    const rightPanel = document.querySelector<HTMLElement>(
-      '.lm-Widget.jp-SideBar.jp-mod-right:not(.lm-mod-hidden)'
-    );
-    if (rightPanel) {
-        console.log(rightPanel.getBoundingClientRect().width);
-      vpW = Math.max(0, vpW - rightPanel.getBoundingClientRect().width);
-    }
-  
-    // 3c) Subtract bottom status bar height
-    const statusBar = document.getElementById('jp-main-statusbar');
-    if (statusBar) {
-      vpH = Math.max(0, vpH - statusBar.getBoundingClientRect().height);
     }
   
     // 4) Compute zoom
