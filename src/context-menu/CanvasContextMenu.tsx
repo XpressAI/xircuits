@@ -15,89 +15,72 @@ export interface CanvasContextMenuProps {
 function customZoomToFit(
     engine: DiagramEngine,
     padding = 40
-  ) {
+) {
     const model = engine.getModel();
     const nodes = model.getNodes();
     if (!nodes.length) return;
-  
+
     // 1) Reset
     model.setZoomLevel(100);
     model.setOffset(0, 0);
-  
-    // 2) Compute model‐space bounds
+
+    // 2) Compute model-space bounds
     let minX = Infinity, minY = Infinity;
     let maxX = -Infinity, maxY = -Infinity;
-    console.groupCollapsed('zoomToFit: per-node dimensions');
     for (const node of nodes) {
-      const { x, y } = node.getPosition();
-      const { width, height } =
+        const { x, y } = node.getPosition();
+        const { width, height } =
         (node as any).getSize?.() ?? { width: 150, height: 100 };
-      minX = Math.min(minX, x);
-      minY = Math.min(minY, y);
-      maxX = Math.max(maxX, x + width);
-      maxY = Math.max(maxY, y + height);
-      console.log(`Node ${node.getID()}:`, { x, y, width, height, right: x + width, bottom: y + height });
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x + width);
+        maxY = Math.max(maxY, y + height);
     }
-    console.groupEnd();
-    console.log('raw bounding box:', { minX, minY, maxX, maxY });
-  
-    // 2b) padding
+    // apply padding
     minX -= padding;
     minY -= padding;
     maxX += padding;
     maxY += padding;
     const contentWidth  = maxX - minX;
     const contentHeight = maxY - minY;
-    console.log('padded bounding box:', { minX, minY, maxX, maxY, contentWidth, contentHeight });
-  
-    // 3) Measure *real* viewport: the notebook-content widget
-    const viewportEl = document.querySelector<HTMLElement>(
-      '.lm-Widget[role="region"][aria-label="notebook content"]'
+
+    // 3) Measure viewport from Jupyter’s content widget
+    const contentWidget = document.querySelector<HTMLElement>(
+    '.lm-Widget[role="region"][aria-label="notebook content"]'
     );
+    
     let vpW: number, vpH: number;
-    if (viewportEl) {
-      const rect = viewportEl.getBoundingClientRect();
-      vpW = rect.width;
-      vpH = rect.height;
-    } else {
-      // fallback
-      vpW = window.innerWidth;
-      vpH = window.innerHeight;
-    }
-  
+    const cs = window.getComputedStyle(contentWidget);
+    vpW = parseFloat(cs.width);
+    vpH = parseFloat(cs.height);
+    
+    console.log('Final viewport size:', { vpW, vpH });
+
     // 4) Compute zoom
-    const zoomX = vpW / contentWidth;
-    const zoomY = vpH / contentHeight;
-    const rawZoom = Math.min(zoomX, zoomY);
-    const safetyFactor = 0.995;
-    const zoom = Math.max(0.1, Math.min(1.5, rawZoom * safetyFactor));
+    const rawZoom = Math.min(vpW / contentWidth, vpH / contentHeight);
+    const zoom    = Math.max(0.1, Math.min(1.5, rawZoom * 0.995));
     model.setZoomLevel(zoom * 100);
-  
+
     // 5) Center
     const centerX = minX + contentWidth  / 2;
     const centerY = minY + contentHeight / 2;
     const offsetX = vpW / 2 - centerX * zoom;
     const offsetY = vpH / 2 - centerY * zoom;
     model.setOffset(offsetX, offsetY);
-  
+
     engine.repaintCanvas();
-  
-    console.log({
-      vpW, vpH,
-      rawZoom, zoom,
-      centerX, centerY,
-      offsetX, offsetY
-    });
-  }
-  
-  function delayedZoomToFit(engine: DiagramEngine, padding = 300) {
+
+    console.log({ vpW, vpH, rawZoom, zoom, centerX, centerY, offsetX, offsetY });
+}
+
+function delayedZoomToFit(engine: DiagramEngine, padding = 300) {
     // wait for Lab to layout all panels
     requestAnimationFrame(() => {
-      setTimeout(() => {
-        customZoomToFit(engine, padding, window.document.documentElement);
-      }, 200);
+    setTimeout(() => {
+        customZoomToFit(engine, padding);
+    }, 500);
     });
-  }
+}
 
 export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
 	hideCanvasContextMenu() {
