@@ -24,7 +24,8 @@ import ComponentsPanel from "../context-menu/ComponentsPanel";
 import {
 	CanvasContextMenu,
 	countVisibleMenuOptions,
-	getMenuOptionsVisibility
+	getMenuOptionsVisibility,
+	delayedZoomToFit
 } from "../context-menu/CanvasContextMenu";
 import { cancelDialog, GeneralComponentLibrary } from "../tray_library/GeneralComponentLib";
 import { AdvancedComponentLibrary, fetchNodeByName } from "../tray_library/AdvanceComponentLib";
@@ -76,6 +77,25 @@ export const Layer = styled.div`
 		flex-grow: 1;
 	`;
 
+export const FixedZoomButton = styled.button`
+	position: fixed;      /* pin to the browser viewport */
+	bottom: 12px;
+	right: 12px;
+	z-index: 9999;        /* above everything */
+	background: rgba(255,255,255,0.9);
+	border: none;
+	padding: 8px 12px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 1.1rem;
+	box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+	pointer-events: auto;
+  
+	&:hover {
+	  background: rgba(255,255,255,1);
+	}
+  `;
+
 
 export const BodyWidget: FC<BodyWidgetProps> = ({
 	context,
@@ -116,6 +136,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
 
+	// handler to trigger the zoom
+	const handleZoomToFit = useCallback(() => {
+	delayedZoomToFit(xircuitsApp.getDiagramEngine(), /* optional padding */);
+	}, [xircuitsApp]);
+	
 	const onChange = useCallback(
 		(): void => {
 			if (contextRef.current.isReady) {
@@ -1307,6 +1332,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					</XircuitsCanvasWidget>
 				</Layer>
 			</Content>
+			{/* ← Zoom-to-fit button must be inside Layer */}
+			<FixedZoomButton  onClick={handleZoomToFit} title="Zoom to fit all nodes">
+			🔍↔️
+			</FixedZoomButton >
 		</Body>
 	);
 }
