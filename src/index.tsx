@@ -584,7 +584,6 @@ const xircuits: JupyterFrontEndPlugin<void> = {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'X-XSRFToken': getXsrfToken() ?? ''
           },
           credentials: 'same-origin'
         });
@@ -795,10 +794,10 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       );
       reorderSections(sections);
     }
-
+    // Prevent reordering the same launcher multiple times.
+    // layoutModified may trigger multiple times (e.g., theme change, panel move)
     app.restored.then(() => {
-      const processed = new WeakSet<HTMLElement>();
-
+    const processed = new WeakSet<HTMLElement>();
     (app.shell as any).layoutModified?.connect(() => {
         document.querySelectorAll<HTMLElement>('.jp-Launcher').forEach(ln => {
           if (!processed.has(ln)) {
