@@ -37,6 +37,8 @@ import { buildRemoteRunCommand } from "./runner/RemoteRun";
 import styled from "@emotion/styled";
 import { commandIDs } from "../commands/CommandIDs";
 
+import { ReactComponent as ZoomIcon } from "C:/Users/manso/Documents/Github/build_features/xircuits/style/icons/fit.svg";
+
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
 	xircuitsApp: XircuitsApplication;
@@ -82,7 +84,7 @@ export const FixedZoomButton = styled.button`
 	bottom: 12px;
 	right: 12px;
 	z-index: 9999;        /* above everything */
-	background: rgba(255,255,255,0.9);
+	background: none;
 	border: none;
 	padding: 8px 12px;
 	border-radius: 4px;
@@ -1332,10 +1334,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					</XircuitsCanvasWidget>
 				</Layer>
 			</Content>
+
 			{/* ← Zoom-to-fit button must be inside Layer */}
 			<FixedZoomButton  onClick={handleZoomToFit} title="Zoom to fit all nodes">
-			🔍↔️
+			<ZoomIcon width={24} height={24} />
 			</FixedZoomButton >
 		</Body>
+		
 	);
 }
