@@ -25,8 +25,8 @@ import {
 	CanvasContextMenu,
 	countVisibleMenuOptions,
 	getMenuOptionsVisibility,
-	delayedZoomToFit
 } from "../context-menu/CanvasContextMenu";
+import { delayedZoomToFit, zoomIn, zoomOut } from '../helpers/zoom';
 import { cancelDialog, GeneralComponentLibrary } from "../tray_library/GeneralComponentLib";
 import { AdvancedComponentLibrary, fetchNodeByName } from "../tray_library/AdvanceComponentLib";
 import { lowPowerMode, setLowPowerMode } from "./state/powerModeState";
@@ -40,7 +40,7 @@ import { Notification } from '@jupyterlab/apputils';
 import { SplitLinkCommand } from './link/SplitLinkCommand';
 import { LinkSplitManager } from './link/LinkSplitManager';
 
-import { ReactComponent as ZoomIcon } from "C:/Users/manso/Documents/Github/build_features/xircuits/style/icons/fit.svg";
+import { fitIcon, zoomInIcon, zoomOutIcon } from '../ui-components/icons';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -83,23 +83,28 @@ export const Layer = styled.div`
 	`;
 
 export const FixedZoomButton = styled.button`
-	position: fixed;      /* pin to the browser viewport */
+		background: rgba(0, 0, 0, 0.2);
+		border: none;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 35px;
+		height: 35px;
+		svg {
+		width: 100%;
+		height: 90%;
+		}
+		`;
+
+const ZoomControls = styled.div`
+	position: fixed;
 	bottom: 12px;
 	right: 12px;
-	z-index: 9999;        /* above everything */
-	background: none;
-	border: none;
-	padding: 8px 12px;
-	border-radius: 4px;
-	cursor: pointer;
-	font-size: 1.1rem;
-	box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-	pointer-events: auto;
-  
-	&:hover {
-	  background: rgba(255,255,255,1);
-	}
-  `;
+	z-index: 9999;
+	display: flex;
+	gap: 8px;
+	`;
 
 
 export const BodyWidget: FC<BodyWidgetProps> = ({
@@ -141,10 +146,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
 
-	// handler to trigger the zoom
+	// handler to trigger the zoom functions
 	const handleZoomToFit = useCallback(() => {
 	delayedZoomToFit(xircuitsApp.getDiagramEngine(), /* optional padding */);
 	}, [xircuitsApp]);
+
+	const handleZoomIn = useCallback(() => {
+		zoomIn(xircuitsApp.getDiagramEngine());
+	}, [xircuitsApp]);
+	
+	const handleZoomOut = useCallback(() => {
+		zoomOut(xircuitsApp.getDiagramEngine());
+		}, [xircuitsApp]);
 	
 	const onChange = useCallback(
 		(): void => {
@@ -1372,10 +1385,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				</Layer>
 			</Content>
 
-			{/* ← Zoom-to-fit button must be inside Layer */}
-			<FixedZoomButton  onClick={handleZoomToFit} title="Zoom to fit all nodes">
-			<ZoomIcon width={24} height={24} />
-			</FixedZoomButton >
+			<ZoomControls>
+				<FixedZoomButton  onClick={handleZoomToFit} title="Fit all nodes">
+					<fitIcon.react />
+				</FixedZoomButton >
+				<FixedZoomButton  onClick={handleZoomIn} title="Zoom In">
+					<zoomInIcon.react />
+				</FixedZoomButton >
+				<FixedZoomButton  onClick={handleZoomOut} title="Zoom Out">
+					<zoomOutIcon.react />
+				</FixedZoomButton >
+			</ZoomControls>
 		</Body>
 		
 	);
