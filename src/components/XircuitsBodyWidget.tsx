@@ -101,20 +101,10 @@ const ZoomControls = styled.div`
 	position: fixed;
 	bottom: 12px;
 	right: 12px;
-	z-index: 9999;        /* above everything */
-	background: none;
-	border: none;
-	padding: 8px 12px;
-	border-radius: 4px;
-	cursor: pointer;
-	font-size: 1.1rem;
-	box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-	pointer-events: auto;
-  
-	&:hover {
-	  background: rgba(255,255,255,1);
-	}
-  `;
+	z-index: 9999;
+	display: flex;
+	gap: 8px;
+	`;
 
 
 export const BodyWidget: FC<BodyWidgetProps> = ({
