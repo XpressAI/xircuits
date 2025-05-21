@@ -145,8 +145,11 @@ def connect_nodes(page: Page, connection: dict) -> None:
     if not result:
         raise AssertionError(f"Failed to initiate connection between {source} and {target}.")
 
-    page.wait_for_timeout(1000)
-
+    page.wait_for_function(
+    "(n) => document.querySelectorAll('g[data-linkid]').length >= n",
+    arg=before_count + 1,
+    timeout=10000
+)
     after_count = page.locator("g[data-linkid]").count()
 
     assert after_count > before_count, (
@@ -278,7 +281,7 @@ def delete_component_simple(page: Page, node_name: str) -> None:
 
     # Press Delete
     page.keyboard.press("Delete")
-    print(f"Component '{node_name}' deletion triggered.s")
+    print(f"Component '{node_name}' deletion triggered.")
 
 def define_argument_parameter(page: Page, value: str):
     """
@@ -493,12 +496,16 @@ def clean_xircuits_directory(page, subfolder_name: str):
 def copy_xircuits_file(page, source_file: str, target_folder: str):
     print(f"Copying {source_file} to {target_folder}")
     page.wait_for_timeout(1000)
+    
     page.goto("http://localhost:8888")
     page.wait_for_selector('#jupyterlab-splash', state='detached')
     page.wait_for_timeout(1000)
     page.get_by_text("xai_components", exact=True).dblclick()
-    page.wait_for_selector("text=xai_tests", timeout=10000)
-    page.get_by_text("xai_tests", exact=True).dblclick()
+    locator = page.locator("text=xai_tests")
+    locator.wait_for(state="attached", timeout=10000)
+    locator.scroll_into_view_if_needed()
+    locator.dblclick()
+
     page.get_by_text(source_file, exact=True).click()
     page.keyboard.press("Control+C")
 
