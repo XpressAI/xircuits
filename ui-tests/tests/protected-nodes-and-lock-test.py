@@ -7,7 +7,7 @@ from xircuits_test_utils import delete_component_directly, lock_component, simul
 
 with sync_playwright() as p:
 
-    browser = p.chromium.launch(headless=True)
+    browser = p.chromium.launch(headless=True, slow_mo=200)
     context = browser.new_context()
     page = context.new_page()
     page.goto("http://localhost:8888")
