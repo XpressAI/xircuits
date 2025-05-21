@@ -19,6 +19,9 @@ import setVariableComponentSvg from '../../style/icons/set-variable-component.sv
 import getVariableComponentSvg from '../../style/icons/get-variable-component.svg';
 import variableComponentSvg from '../../style/icons/variable-component.svg';
 import infoSvg from '../../style/icons/info.svg';
+import fitSvg from '../../style/icons/fit.svg';
+import zoomInSvg from '../../style/icons/zoom-in.svg';
+import zoomOutSvg from '../../style/icons/zoom-out.svg';
 
 
 export const xircuitsFaviconLink = 'https://raw.githubusercontent.com/XpressAI/xircuits/master/style/icons/xpress-logo.ico';
@@ -42,6 +45,10 @@ export const setVariableComponentIcon = new LabIcon({ name: 'xircuits:setVariabl
 export const getVariableComponentIcon = new LabIcon({ name: 'xircuits:getVariableComponentIcon', svgstr: getVariableComponentSvg });
 export const variableComponentIcon = new LabIcon({ name: 'xircuits:variableComponentIcon', svgstr: variableComponentSvg });
 export const infoIcon = new LabIcon({ name: 'xircuits:infoIcon', svgstr: infoSvg });
+export const fitIcon = new LabIcon({ name: 'xircuits:fitIcon', svgstr: fitSvg });
+export const zoomInIcon = new LabIcon({ name: 'xircuits:zoomInIcon', svgstr: zoomInSvg });
+export const zoomOutIcon = new LabIcon({ name: 'xircuits:zoomOutIcon', svgstr: zoomOutSvg });
+
 
 export function changeFavicon(src: string) {
     let head = document.head || document.getElementsByTagName('head')[0];
