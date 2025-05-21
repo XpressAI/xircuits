@@ -68,7 +68,7 @@ function zoomToFit(engine: DiagramEngine, padding = 40): void {
     engine.repaintCanvas();
 }
 
-function delayedZoomToFit(engine: DiagramEngine, padding = 300): void {
+export function delayedZoomToFit(engine: DiagramEngine, padding = 300): void {
     requestAnimationFrame(() => {
         setTimeout(() => zoomToFit(engine, padding), 500);
     });
