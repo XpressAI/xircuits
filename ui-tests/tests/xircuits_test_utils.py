@@ -230,7 +230,6 @@ def compile_and_run_workflow(page):
     page.locator('jp-button[title="Compile and Run Xircuits"] >>> button').click()
     page.wait_for_timeout(1000)
 
-
 def connect_nodes_simple(page: Page, connection: dict) -> None:
     """
     Connects a port from the source node to a port on the target node

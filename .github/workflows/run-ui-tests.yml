@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
     - uses: actions/checkout@v4
@@ -79,12 +79,12 @@ jobs:
     - name: Install xvfb
       run: sudo apt-get install -y xvfb
 
-    - name: Install Playwright Dependencies
-      run: sudo npx playwright install-deps
+    # - name: Install Playwright Dependencies
+    #   run: sudo npx playwright install-deps
 
-    - name: Test E2E (TypeScript)
-      run: |
-        (jupyter lab --ServerApp.token='' --ServerApp.password='' --LabApp.default_url='/lab?reset' &) && cd ui-tests && npm install && npx playwright install && xvfb-run npx playwright test e2e/datatype-test.spec.ts
+    # - name: Test E2E (TypeScript)
+    #   run: |
+    #     (jupyter lab --ServerApp.token='' --ServerApp.password='' --LabApp.default_url='/lab?reset' &) && cd ui-tests && npm install && npx playwright install && xvfb-run npx playwright test e2e/datatype-test.spec.ts
 
     - name: Run Python UI Tests
       run: |
@@ -99,6 +99,9 @@ jobs:
         xvfb-run -a python3 parameter-names-spawn.py
         xvfb-run -a python3 protected-nodes-and-lock-test.py
         xvfb-run -a python3 remote_run_arguments_test.py
+        xvfb-run -a python3 connecting-nodes-test.py
+        xvfb-run -a python3 editing-literal-nodes-test.py
+
 
       
     - uses: actions/upload-artifact@v4

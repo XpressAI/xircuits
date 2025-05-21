@@ -113,7 +113,8 @@ from xai_components.base import SubGraphExecutor, InArg, OutArg, Component, xai_
 @xai_component(type="xircuits_workflow")
 class %s(Component):
     def __init__(self, id: str = None):
-        super().__init__(id=id)
+        super().__init__()
+        self.__id__ = id
         self.__start_nodes__ = []
     
     def execute(self, ctx):
