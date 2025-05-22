@@ -93,7 +93,7 @@ jobs:
         nohup jupyter lab --ServerApp.token='' --ServerApp.password='' --LabApp.default_url='/lab?reset' > jupyter.log 2>&1 &
         sleep 10
         cd ui-tests/tests
-        xvfb-run -a python3 arg_input_ui_test.py
+        xvfb-run -a python3 connecting-args-test.py
         xvfb-run -a python3 parameter-names-autoshift.py
         xvfb-run -a python3 parameter-names-despawn.py
         xvfb-run -a python3 parameter-names-spawn.py
