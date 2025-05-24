@@ -5,15 +5,12 @@ import React from 'react';
 let componentsCache = {
   data: null
 };
-// When true, indicates a manual reload. Used to show error popup only during manual reloads.
-let isManualReload = false;
 
 export async function manualReload() {
-  isManualReload = true;
-  await refreshComponentListCache();    
+  await refreshComponentListCache(true);
 }
 
-export async function fetchComponents() {
+export async function fetchComponents(isManualReload = false) {
   console.log("Fetching all components... this might take a while.")
   try {
     const componentsResponse = await requestAPI<any>('components/');
@@ -41,11 +38,7 @@ export async function fetchComponents() {
         buttons: [Dialog.warnButton({ label: 'OK' })]
       });
     }
-
-    componentsCache.data = null;
-    return []; 
-  } finally {
-    isManualReload = false;
+    return [];
   }
 }
 
@@ -58,6 +51,6 @@ export async function ComponentList() {
   return componentsCache.data;
 }
 
-export async function refreshComponentListCache() {
-  componentsCache.data = await fetchComponents();
+export async function refreshComponentListCache(isManualReload = false) {
+  componentsCache.data = await fetchComponents(isManualReload);
 }
