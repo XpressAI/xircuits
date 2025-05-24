@@ -573,22 +573,12 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       });
     }
 
-    function getXsrfToken(): string | null {
-      const matches = document.cookie.match('\\b_xsrf=([^;]*)\\b');
-      return matches ? decodeURIComponent(matches[1]) : null;
-    }
-
     async function getInstalledLibraries(): Promise<Set<string>> {
       try {
-        const res = await fetch('/xircuits/library/get_config', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'same-origin'
+        const result = await requestAPI<any>('library/get_config', {
+          method: 'GET'
         });
 
-        const result = await res.json();
         return new Set<string>(
           result.config.libraries
             .filter((lib: any) => lib.status === 'installed' && typeof lib.name === 'string')
@@ -625,21 +615,14 @@ const xircuits: JupyterFrontEndPlugin<void> = {
           if (!confirmed) return false;
 
           try {
-            const xsrf = getXsrfToken();
 
-            const res = await fetch('/xircuits/library/install', {
+            const result = await requestAPI<any>('library/install', {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-XSRFToken': xsrf ?? ''
-              },
-              credentials: 'same-origin',
               body: JSON.stringify({ libraryName: lib })
             });
 
-            const result = await res.json();
 
-            if (res.ok && result.status === 'OK') {
+            if (result.status === 'OK') {
               console.log(`Library ${lib} installed successfully.`);
               return true;
             } else {
