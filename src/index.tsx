@@ -33,6 +33,7 @@ import type { Signal } from "@lumino/signaling";
 import { commandIDs } from "./commands/CommandIDs";
 import { IEditorTracker } from '@jupyterlab/fileeditor';
 import { IMainMenu } from '@jupyterlab/mainmenu';
+import { handleInstall } from './context-menu/TrayContextMenu';
 
 const FACTORY = 'Xircuits editor';
 
@@ -605,44 +606,21 @@ const xircuits: JupyterFrontEndPlugin<void> = {
           const currentPath = browserFactory.tracker.currentWidget?.model.path ?? '';
           const installedLibs = await getInstalledLibraries();
 
-          async function installLibraryWithAPI(lib: string): Promise<boolean> {
+          for (const lib of libraries) {
             if (installedLibs.has(lib)) {
               console.log(`Library ${lib} already installed. Skipping.`);
-              return true;
+              continue;
             }
 
-          const confirmed = confirm(`The library "${lib}" is not installed.\n\nDo you want to install it now?\n\nNote: This may take a few seconds.`);
-          if (!confirmed) return false;
+            const ok = await handleInstall(app, lib, () =>
+              app.commands.execute(commandIDs.refreshComponentList)
+            );
 
-          try {
-
-            const result = await requestAPI<any>('library/install', {
-              method: 'POST',
-              body: JSON.stringify({ libraryName: lib })
-            });
-
-
-            if (result.status === 'OK') {
-              console.log(`Library ${lib} installed successfully.`);
-              return true;
-            } else {
-              throw new Error(result.error || 'Unknown error');
-            }
-
-          } catch (err) {
-            console.error(`Failed to install ${lib}:`, err);
-            alert(`Failed to install ${lib}.`);
-            return false;
-          }
-          }
-
-          // Install all libraries sequentially
-          for (const lib of libraries) {
-            const ok = await installLibraryWithAPI(lib);
               if (!ok) {
                 console.warn(`Aborted: ${lib} not installed.`);
                 return;
               }
+            installedLibs.add(lib);
             }
 
           const model = await app.serviceManager.contents.copy(
@@ -736,14 +714,14 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       'xircuits:open-agent-example',
       'Agent',
       'xai_components/xai_agent/examples/agent_example.xircuits',
-      ['xai_agent', 'xai_openai'],
+      ['AGENT', 'OPENAI'],
       2
     );
         registerTemplateButton(
       'xircuits:open-flask-example',
       'Service',
       'xai_components/xai_flask/examples/InlineExample.xircuits',
-      ['xai_flask'],
+      ['FLASK'],
       3
     );
     
