@@ -25,6 +25,20 @@ let libraryConfigCache = {
     data: null
 };
 
+export function normalizeLibraryName(libraryName: string): string {
+    let name = libraryName.trim().toLowerCase();
+
+    if (!name.startsWith("xai_")) {
+        name = "xai_" + name;
+    }
+
+    if (!name.startsWith("xai_components/")) {
+        name = "xai_components/" + name;
+    }
+
+    return name;
+}
+
 export async function fetchComponentLibraryConfig() {
     try {
         const response = await requestAPI<any>('library/get_config');

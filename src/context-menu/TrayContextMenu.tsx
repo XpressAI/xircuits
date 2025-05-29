@@ -6,7 +6,54 @@ import '../../style/ContextMenu.css';
 import { buildLocalFilePath, fetchLibraryConfig } from '../tray_library/ComponentLibraryConfig';
 import { commandIDs } from "../commands/CommandIDs";
 import { downloadIcon, linkIcon, folderIcon, textEditorIcon, kernelIcon } from "@jupyterlab/ui-components";
+import { Notification } from '@jupyterlab/apputils';
+import { normalizeLibraryName } from '../tray_library/ComponentLibraryConfig';
 
+export async function handleInstall(
+    app,
+    libraryName: string,
+    refreshTrigger: () => void
+): Promise<boolean> {
+    const originalName = libraryName;
+    const normalizedLibName = normalizeLibraryName(originalName);
+
+    const proceed = confirm(`Do you want to proceed with installing "${originalName}" library?`);
+    if (!proceed) return false;
+
+    const installPromise = requestAPI<any>('library/install', {
+        method: 'POST',
+        body: JSON.stringify({ libraryName: normalizedLibName })
+    });
+
+    Notification.promise(installPromise, {
+        pending: {
+        message: `Installing ${originalName} library...`,
+        options: { autoClose: 3000 }
+    },
+    success: {
+        message: () => `Library ${originalName} installed successfully.`,
+        options: { autoClose: 3000 }
+    },
+    error: {
+        message: (err) => `Failed to install ${originalName}: ${err}`,
+        options: { autoClose: false }
+    }
+    });
+
+    try {
+        const result = await installPromise;
+        if (result.status === 'OK') {
+        refreshTrigger();
+        return true;
+        } else {
+        console.error(`Installation failed: ${result.error || 'Unknown error'}`);
+        return false;
+        }
+    } catch (err) {
+        console.error(`Installation error: ${err}`);
+        return false;
+    }
+}
 
 export interface TrayContextMenuProps {
     app: any;
@@ -69,21 +116,6 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigg
         };
     }, []);
 
-    // Context menu action handlers
-    const handleInstall = async (libraryName, refreshTrigger) => {
-        const userResponse = confirm(`Do you want to proceed with ${libraryName} library installation?`);
-        if (userResponse) {
-            try {
-                await app.commands.execute(commandIDs.executeToTerminal, { 
-                    command: `xircuits install ${libraryName}`,
-                });
-                refreshTrigger();
-            } catch (error) {
-                alert(`Failed to install ${libraryName}. Please check the console for more details.`);
-                console.error(`Failed to install ${libraryName}:`, error);
-            }
-        }
-    };
 
     const handleShowInFileBrowser = async (libraryName) => {
         try {
@@ -161,7 +193,7 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigg
           <ul className="lm-Menu-content" role="menu">
             {status === 'remote' ? (
                 <>
-                    <Option icon={downloadIcon.react} label={`Install ${libraryName}`} onClick={() =>  handleInstall(libraryName, refreshTrigger)} />
+                    <Option icon={downloadIcon.react} label={`Install ${libraryName}`} onClick={() => handleInstall(app, libraryName, refreshTrigger)} />
                     {validOptions.showPageInNewTab && (
                       <Option icon={linkIcon.react} label="Open Repository" onClick={() => handleShowPageInNewTab(libraryName)} />
                     )}
