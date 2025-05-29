@@ -253,7 +253,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       }
     }
 
-    async function compileXircuitsFile(path: string, pythonPaths: any = {}) {
+    async function compileXircuitsFile(path: string, pythonPaths: any = {}): Promise<boolean> {
       try {
         const request = await requestToGenerateCompileFile(path, pythonPaths);
         if (request["message"] == "completed") {
@@ -264,13 +264,14 @@ const xircuits: JupyterFrontEndPlugin<void> = {
             console.info(`File ${modelPath} changed. Reloading components...`);
             await app.commands.execute(commandIDs.refreshComponentList);
           }
+          return true;
         } else {
           console.log(request["message"]);
-          alert("Failed to generate compiled code. Please check console logs for more details.");
+          return false;
         }
       } catch (err) {
         console.error(`Error compiling Xircuits file: ${path}`, err);
-        alert(`Error compiling file: ${path}. Please check the console logs for more information.`);
+        return false;
       }
     }
    
@@ -283,7 +284,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
           pythonPaths[it['name']] = it['python_path']
         });
    
-        await compileXircuitsFile(path, pythonPaths);
+        return await compileXircuitsFile(path, pythonPaths);
       }
     });
    

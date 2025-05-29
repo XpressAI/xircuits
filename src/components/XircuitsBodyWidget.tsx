@@ -551,10 +551,15 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			Notification.error("Please connect all the nodes before compiling.", { autoClose: 3000 });
 			return;
 		}
-		setCompiled(true);
-		commands.execute(commandIDs.compileFile, { componentList });
-		Notification.success("Workflow compiled successfully.", { autoClose: 3000 });
-	}
+		const success = await commands.execute(commandIDs.compileFile, { componentList });
+
+		if (success) {
+			setCompiled(true);
+			Notification.success("Workflow compiled successfully.", { autoClose: 3000 });
+		} else {
+			Notification.error("Failed to generate compiled code. Please check console logs for more details.", { autoClose: 5000 });
+		}
+	};
 
 	const saveAndCompileAndRun = async () => {
 
