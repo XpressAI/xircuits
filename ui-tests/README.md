@@ -1,203 +1,58 @@
-# Test
+# UI Integration Tests – Playwright (Python)
 
-The test will produce a video to help debugging and check what happened.
+These scripts exercise key user journeys inside **Xircuits** running in JupyterLab. They drive the browser with Playwright Python and verify that nodes, ports and dialogs behave as expected.
 
-To execute integration tests, you have two options:
+---
 
-- use docker-compose (cons: needs to know and use docker) - this is a more reliable solution.
-- run tests locally (cons: will interact with your JupyterLab user settings)
+## 1  Prerequisites
 
-## Test on docker
+| Requirement       | Notes                                          |
+| ----------------- | ---------------------------------------------- |
+| Python ≥ 3.9     | Same version used by Xircuits core             |
+| Playwright Python | `pip install playwright && playwright install` |
+| Xircuits          | Installed locally             |
 
-1. Compile the extension:
+The tests talk to a live JupyterLab on **[http://localhost:8888](http://localhost:8888)** with no token or password.
 
-```
-jlpm install
-jlpm run build:prod
-```
+---
 
-2. Execute the docker stack in the example folder:
+## 2  Running the tests
 
-```
-docker-compose -f ../end-to-end-tests/docker-compose.yml --env-file ./ui-tests/.env build --no-cache
-docker-compose -f ../end-to-end-tests/docker-compose.yml --env-file ./ui-tests/.env run --rm e2e
-docker-compose -f ../end-to-end-tests/docker-compose.yml --env-file ./ui-tests/.env down
-```
+```bash
+# 1. Start JupyterLab (terminal 1)
+jupyter lab \
+  --ServerApp.token= \
+  --ServerApp.password= \
+  --LabApp.default_url=/lab?reset
 
-
-
-## Test Xircuits locally
-
-1. Ensure that you have Xircuits installed. If you're developing core features, ensure that you've installed your changes.
-
-```
-# Install package in development mode
-pip install -e .
-# Link your development version of the extension with JupyterLab
-jupyter labextension develop . --overwrite
-# Enable the server extension
-jupyter server extension enable xircuits
-```
-
-Otherwise a simple 
-```
-pip install xircuits
-```
-will suffice. 
-
-2. Install the Test Component Library
-
-```
+# 2. Install the test component library (first run only)
 xircuits install tests
-```
 
-3. Start JupyterLab _with the extension installed_ without any token or password
-
-```
-jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset
-```
-
-4. Execute in another console the [Playwright](https://playwright.dev/docs/intro) tests:
-
-```
-cd ui-tests
-jlpm install
-npx playwright install
-npx playwright test
-```
-
-
-# Create tests
-
-To create tests, the easiest way is to use the code generator tool of playwright:
-
-1. Compile the extension:
-
-```
-jlpm install
-jlpm run build:prod
-```
-
-2. Start JupyterLab _with the extension installed_ without any token or password:
-
-**Using docker**
-
-```
-docker-compose -f ../end-to-end-tests/docker-compose.yml --env-file ./ui-tests/.env run --rm -p 8888:8888 lab
-```
-
-**Using local installation**
-
-```
-jupyter lab --ServerApp.token= --ServerApp.password=
-```
-
-3. Launch the code generator tool:
-
-```
-cd ui-tests
-jlpm install
-npx playwright install
-npx playwright codegen localhost:8888
-```
-
-# Debug tests
-
-To debug tests, a good way is to use the inspector tool of playwright:
-
-1. Compile the extension:
-
-```
-jlpm install
-jlpm run build:prod
-```
-
-2. Start JupyterLab _with the extension installed_ without any token or password:
-
-**Using docker**
-
-```
-docker-compose -f ../end-to-end-tests/docker-compose.yml --env-file ./ui-tests/.env run --rm -p 8888:8888 lab
-```
-
-**Using local installation**
-
-```
-jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset
-```
-
-3. Launch the debug tool:
-
-```
-cd ui-tests
-jlpm install
-npx playwright install
-PWDEBUG=1 npx playwright test
-```
-Alternatively, if you would like to debug in the browser console:
-```
-PWDEBUG=console npx playwright test testname.spec.ts
-```
-
-## Run Python-based Playwright UI Tests
-
-This section describes how to run the new **Python-based UI tests** located in the `ui-tests/` folder using [Playwright](https://playwright.dev/python).
-
-These tests simulate user interactions with Xircuits inside JupyterLab and cover various UI behaviors such as argument input, remote run, port spawning, and node protection.
-
----
-
-### Prerequisites
-
-Ensure you have the following:
-
-- Python 3.11 or later (recommended)
-- `pip` and `virtualenv`
-- Xircuits
-
-Install Playwright for Python:
-
-```bash
-pip install playwright
-playwright install
+# 3. Run a test script (terminal 2)
+cd ui-tests/tests
+python connecting-nodes-test.py        # pick any script listed below
 ```
 
 ---
 
-### Running the tests
+## 3  Test scripts
 
-1. Launch JupyterLab in one terminal:
+| Script                               | What it covers                                                                                                                                                                             |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **connecting-nodes-test.py**         | Connects **9 literal nodes** (String, Integer, Float, Boolean, List, Tuple, Dict, Secret, Chat) to **AllLiteralTypes**, runs the workflow, and checks that every inbound value is printed. |
+| **connecting-args-test.py**          | Connects **Argument** nodes (string, int, float, boolean, secret) to **AllLiteralTypes** and verifies the output panel shows each value.                                                   |
+| **editing-literal-nodes-test.py**    | Opens each **Literal** node dialog, updates the value, and confirms both the canvas label and the workflow output reflect the new value.                                                   |
+| **parameter-names-spawn.py**         | Links a string argument to **DynaportTester** and asserts a new dynamic port (`*-inputs-1`) is spawned.                                                                                    |
+| **parameter-names-autoshift.py**     | Adds a second argument confirms **DynaportTester** now shows the second numbered port.                                                                                      |
+| **parameter-names-despawn.py**       | Deletes the upstream node and checks that the corresponding dynamic port disappears from **DynaportTester**.                                                                               |
+| **protected-nodes-and-lock-test.py** | Verifies that **Start** and **Finish** cannot be deleted and that a manually locked node is also protected.                                                                                |
+| **remote\_run\_arguments\_test.py**  | Drives the **Remote Run** dialog, supplies string / float / boolean arguments, and checks that the generated CLI flags include all three values.                                           |
 
-```bash
-jupyter lab --ServerApp.token= --ServerApp.password= --LabApp.default_url=/lab\?reset
-```
-
-2. In a separate terminal, run one of the test scripts:
-
-```bash
-cd ui-tests
-python arg_input_ui_test.py
-python remote_run_arguments_test.py
-python autospawn_and_despawn_ports_test.py
-python protected-nodes-and-lock-test.py
-```
-
-> Tip: you can pause tests at the end with `input("any")` to let you inspect the result before closing the browser.
+All scripts share functions in **`xircuits_test_utils.py`** (drag‑and‑drop, connections, zoom, etc.).
 
 ---
 
-### Tests Overview
+## 4  Debugging tips
 
-- **`arg_input_ui_test.py`**  
-  Verifies that argument input prompts appear correctly.
-
-- **`remote_run_arguments_test.py`**  
-  Tests remote run with string, float, and boolean arguments.
-
-- **`autospawn_and_despawn_ports_test.py`**  
-  Checks dynamic port spawning and removal when components are connected/disconnected.
-
-- **`protected-nodes-and-lock-test.py`**  
-  Ensures that Start/Finish nodes can't be deleted and locked components remain protected.
-
-For more details about the helper functions, refer to `ui-tests/xircuits_test_utils.py`.
+* **Headless** mode is on by default. Pass `headless=False` when launching the browser to watch the actions.
+* Use `slow_mo=500` ms (or any value) to slow down each step and follow the flow.
