@@ -6,11 +6,14 @@ These scripts exercise key user journeys inside **Xircuits** running in JupyterL
 
 ## 1  Prerequisites
 
-| Requirement       | Notes                                          |
-| ----------------- | ---------------------------------------------- |
-| Python ≥ 3.9     | Same version used by Xircuits core             |
-| Playwright Python | `pip install playwright && playwright install` |
-| Xircuits          | Installed locally             |
+1. Python 3.9+.
+2. Xircuits.    
+3. Playwright
+```bash
+# 1. Install Playwright
+pip install playwright 
+playwright install
+```
 
 The tests talk to a live JupyterLab on **[http://localhost:8888](http://localhost:8888)** with no token or password.
 
