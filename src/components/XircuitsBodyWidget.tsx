@@ -35,6 +35,7 @@ import { buildRemoteRunCommand } from "./runner/RemoteRun";
 
 import styled from "@emotion/styled";
 import { commandIDs } from "../commands/CommandIDs";
+import { Notification } from '@jupyterlab/apputils';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -534,6 +535,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setInitialize(true);
 		setSaved(true);
 		await commands.execute(commandIDs.saveDocManager);
+		Notification.success("Workflow saved successfully.", { autoClose: 3000 });
 	}
 
 	const handleCompileClick = async() => {
@@ -546,12 +548,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let allNodesConnected = checkAllNodesConnected();
 
 		if (!allNodesConnected) {
-			alert("Please connect all the nodes before compiling.");
+			Notification.error("Please connect all the nodes before compiling.", { autoClose: 3000 });
 			return;
 		}
-		setCompiled(true);
-		commands.execute(commandIDs.compileFile, { componentList });
-	}
+		const success = await commands.execute(commandIDs.compileFile, { componentList });
+
+		if (success) {
+			setCompiled(true);
+			Notification.success("Workflow compiled successfully.", { autoClose: 3000 });
+		} else {
+			Notification.error("Failed to generate compiled code. Please check console logs for more details.", { autoClose: 5000 });
+		}
+	};
 
 	const saveAndCompileAndRun = async () => {
 
@@ -580,10 +588,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let allCompulsoryNodesConnected = checkAllCompulsoryInPortsConnected();
 
 		if (!allNodesConnected) {
-			alert("Please connect all the nodes before running.");
+			Notification.error("Please connect all the nodes before running.", { autoClose: 3000 });
+			return;
 		}
 		if (!allCompulsoryNodesConnected) {
-			alert("Please connect all [★]COMPULSORY InPorts.");
+			Notification.error("Please connect all [★]COMPULSORY InPorts.", { autoClose: 3000 });
 			return;
 		}
 
