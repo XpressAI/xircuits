@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import os
+import shutil
 import json
 from pathlib import Path
 from ..utils import is_valid_url, is_empty
@@ -28,7 +29,7 @@ def get_library_config(library_name, config_key):
                         return library[config_key]
                     else:
                         return None  # Explicitly return None if the key is missing or its value is None
-    
+
     return None  # Return None if the library isn't found or the file doesn't exist
 
 def build_library_file_path_from_config(library_name, config_key):
@@ -49,7 +50,38 @@ def get_component_library_path(library_name: str) -> str:
     else:
         return build_component_library_path(library_name)
 
+def is_uv_venv() -> bool:
+    """Return True if we're in a uv-managed venv (pyvenv.cfg contains 'uv =')."""
+    venv = os.environ.get("VIRTUAL_ENV")
+    if not venv:
+        return False
+    cfg = Path(venv) / "pyvenv.cfg"
+    if not cfg.exists():
+        return False
+    for line in cfg.read_text().splitlines():
+        if line.strip().startswith("uv ="):
+            return True
+    return False
+
+def get_pip_command() -> list[str]:
+    """
+    Return the command prefix to run 'pip install' in the current environment.
+    Prefers 'uv pip' if in a uv-managed venv and 'uv' is on PATH.
+    Otherwise falls back to 'python -m pip'.
+    """
+    # if uv-managed venv, use uv pip
+    if is_uv_venv():
+        uv_cmd = shutil.which("uv")
+        if uv_cmd:
+            return [uv_cmd, "pip", "install"]
+    # otherwise, use the interpreter's pip
+    return [sys.executable, "-m", "pip", "install"]
+
 def install_library(library_name: str):
+
+    if not os.environ.get("VIRTUAL_ENV"):
+        print("Warning: no virtual environment detected; installing globally.")
+
     print(f"Installing {library_name}...")
     component_library_path = get_component_library_path(library_name)
 
@@ -67,13 +99,14 @@ def install_library(library_name: str):
     # Install requirements if the file exists
     if requirements_path.exists():
         try:
-            print(f"Installing requirements for {library_name}...")
-            subprocess.run([sys.executable, "-m", "pip", "install", "-r", str(requirements_path)], check=True)
+            print(f"Installing requirements for {library_name} from {requirements_path}...")
+            cmd = get_pip_command() + ["-r", str(requirements_path)]
+            subprocess.run(cmd, check=True)
             print(f"Library {library_name} ready to use.")
         except Exception as e:
             print(f"An error occurred while installing requirements for {library_name}: {e}")
     else:
-        print(f"No requirements.txt found for {library_name}. Skipping installation of dependencies.")
+        print(f"ℹNo requirements.txt found for {library_name}. Skipping installation of dependencies.")
         print(f"Library {library_name} ready to use.")
 
 def fetch_library(library_name: str):
