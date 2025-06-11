@@ -106,7 +106,7 @@ def install_library(library_name: str):
         except Exception as e:
             print(f"An error occurred while installing requirements for {library_name}: {e}")
     else:
-        print(f"ℹNo requirements.txt found for {library_name}. Skipping installation of dependencies.")
+        print(f"No requirements.txt found for {library_name}. Skipping installation of dependencies.")
         print(f"Library {library_name} ready to use.")
 
 def fetch_library(library_name: str):
