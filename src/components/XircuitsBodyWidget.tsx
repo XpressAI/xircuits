@@ -36,6 +36,8 @@ import { buildRemoteRunCommand } from "./runner/RemoteRun";
 import styled from "@emotion/styled";
 import { commandIDs } from "../commands/CommandIDs";
 import { Notification } from '@jupyterlab/apputils';
+import { SplitLinkCommand } from './link/SplitLinkCommand';
+import { LinkSplitManager } from './link/LinkSplitManager';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -1169,6 +1171,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const preventDefault = (event) => {
 		event.preventDefault();
 	}
+	const updateHoveredLink = (event: React.DragEvent | React.MouseEvent): string | null => {
+		const linkId = LinkSplitManager.detectLinkUnderPointer(event.clientX, event.clientY);
+		const model = xircuitsApp.getDiagramEngine().getModel();
+		LinkSplitManager.setHover(linkId, model);
+		return linkId;
+	};
 
 	const handleDropEvent = async (event) => {
 		let data = JSON.parse(event.dataTransfer.getData("storm-diagram-node"));
@@ -1193,8 +1201,19 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		// note:  can not use the same port name in the same node,or the same name port can not link to other ports
 		if (node != null) {
 			let point = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
-			node.setPosition(point);
-			xircuitsApp.getDiagramEngine().getModel().addNode(node);
+			const linkId = updateHoveredLink(event);
+
+			if (linkId) {
+				new SplitLinkCommand(
+					xircuitsApp.getDiagramEngine().getModel(),
+					node,
+					linkId,
+					point
+				).execute();
+				} else {
+				node.setPosition(point);
+				xircuitsApp.getDiagramEngine().getModel().addNode(node);
+				}
 			if (node["name"].startsWith("Argument ")) {
 				setInitialize(true);
 			}
@@ -1268,7 +1287,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				)}
 				<Layer
 					onDrop={handleDropEvent}
-					onDragOver={preventDefault}
+					onDragOver={(event) => {
+  					event.preventDefault();
+  					updateHoveredLink(event);
+					}}
 					onMouseOver={preventDefault}
 					onMouseUp={preventDefault}
 					onMouseDown={preventDefault}
