@@ -19,6 +19,7 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 	port: CustomPortModel;
 	link: LinkModel;
 	config: DragNewLinkStateOptions;
+	protected potentialPort: CustomPortModel | null = null;
 
 	constructor(options: DragNewLinkStateOptions = {}) {
 		super({ name: 'drag-new-link' });
@@ -57,7 +58,12 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 			new Action({
 				type: InputType.MOUSE_UP,
 				fire: (event: ActionEvent<MouseEvent>) => {
-					const model = this.engine.getMouseElement(event.event);
+					let model = this.engine.getMouseElement(event.event);
+					// Allow connecting to node area
+					if (!(model instanceof CustomPortModel)) {
+						const point = this.engine.getRelativeMousePoint(event.event);
+						model = this.findTargetIn0PortAtPosition(point);
+					}
 
 					if (!(model instanceof CustomPortModel)) {
 						this.handleLooseLink(event);
@@ -70,11 +76,60 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 						return;
 					}
 
+					// Re-enable pointer-events after we override them during hover
+					document
+					.querySelectorAll('div.port[data-nodeid][data-name]')
+					.forEach(el => (el as HTMLElement).style.pointerEvents = '');
+
 					this.handleConnectedPort(model);
 					this.engine.repaintCanvas();
 				}
 			})
 		);
+	}
+
+	// Get `in-0` port if cursor is inside node bounds
+	private findTargetIn0PortAtPosition(point: { x: number, y: number }): CustomPortModel | null {
+		const nodes = this.engine.getModel().getNodes();
+
+		for (const node of nodes) {
+			const bounds = node.getBoundingBox?.();
+			if (!bounds?.getTopLeft || !bounds?.getBottomRight) continue;
+
+			const topLeft = bounds.getTopLeft();
+			const bottomRight = bounds.getBottomRight();
+			const inPort = node.getPort?.('in-0');
+
+			const isInside =
+				point.x >= topLeft.x &&
+				point.x <= bottomRight.x &&
+				point.y >= topLeft.y &&
+				point.y <= bottomRight.y;
+
+			const isFlow =
+				this.link.getOptions().type?.includes('flow') ||
+				this.port.getOptions().label === '▶';
+
+			if (isInside && inPort && isFlow && inPort instanceof CustomPortModel) {
+				return inPort;
+				}
+
+		}
+		return null;
+	}
+
+	private applyPortHoverEffect(port: CustomPortModel) {
+		const nodeId = port.getNode().getID();
+		const portName = port.getName();
+		const selector = `div.port[data-nodeid="${nodeId}"][data-name='${portName}']>div>div`;
+		document.querySelector(selector)?.classList.add("hover");
+	}
+
+	private removePortHoverEffect(port: CustomPortModel) {
+		const nodeId = port.getNode().getID();
+		const portName = port.getName();
+		const selector = `div.port[data-nodeid="${nodeId}"][data-name='${portName}']>div>div`;
+		document.querySelector(selector)?.classList.remove("hover");
 	}
 
 	private handleConnectedPort(model: CustomPortModel) {
@@ -116,9 +171,9 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 	};
 
 	/**
-	 * Calculates the link's far-end point position on mouse move.
-	 * In order to be as precise as possible the mouse initialXRelative & initialYRelative are taken into account as well
-	 * as the possible engine offset
+	 * Updates the dragged link endpoint and highlights the nearest valid in-0 port,
+	 * unless hovering over a different port within the same node.
+	 * Accounts for engine zoom and offset to position the link accurately.
 	 */
 	fireMouseMoved(event: AbstractDisplacementStateEvent): any {
 		const portPos = this.port.getPosition();
@@ -132,5 +187,54 @@ export class DragNewLinkState extends AbstractDisplacementState<DiagramEngine> {
 
 		this.link.getLastPoint().setPosition(linkNextX, linkNextY);
 		this.engine.repaintCanvas();
+
+	// Get element under cursor (for avoiding highlight on sibling ports)
+	const rawEv = event.event;
+	const hovered =
+		'clientX' in rawEv && 'clientY' in rawEv
+		? (this.engine.getMouseElement(rawEv as MouseEvent) as unknown)
+		: null;
+
+	// Find target in-0 port to highlight
+	let highlight: CustomPortModel | null = null;
+	const pt = { x: linkNextX, y: linkNextY };
+	const isFlowDrag =
+		this.link.getOptions().type?.includes('flow') ||
+		this.port.getOptions().label === '▶';
+
+	for (const node of this.engine.getModel().getNodes()) {
+		const bb = node.getBoundingBox?.();
+		if (!bb) continue;
+
+		const tl = bb.getTopLeft();
+		const br = bb.getBottomRight();
+		const inside =
+		pt.x >= tl.x && pt.x <= br.x && pt.y >= tl.y && pt.y <= br.y;
+		if (!inside) continue;
+
+		const in0 = node.getPort?.('in-0') as CustomPortModel | undefined;
+		if (!in0 || !isFlowDrag) break;
+
+		// Skip highlight if hovering over another port in the same node
+		if (hovered instanceof CustomPortModel && hovered !== in0) {
+		if (hovered.getNode() === node) {
+			highlight = null;
+			break;
+		}
+		}
+
+		highlight = in0;
+		break;
+	}
+
+	// Apply or remove hover effect
+	if (this.potentialPort && this.potentialPort !== highlight) {
+		this.removePortHoverEffect(this.potentialPort);
+	}
+	if (highlight && this.potentialPort !== highlight) {
+		this.applyPortHoverEffect(highlight);
+	}
+
+	this.potentialPort = highlight;
 	}
 }
