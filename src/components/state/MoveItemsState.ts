@@ -128,9 +128,8 @@ export class MoveItemsState<E extends CanvasEngine = CanvasEngine> extends Abstr
     const model = (this.engine as any).getModel() as DiagramModel;
     const items = this.engine.getModel().getSelectedEntities();
     const draggedNode = items.find(item => item instanceof CustomNodeModel) as CustomNodeModel|undefined;
-    const canNodeSplit = !!draggedNode?.getPort('in-0') && !!draggedNode?.getPort('out-0');
 
-    if (linkId && canNodeSplit) {
+    if (linkId) {
       const link = model.getLink(linkId) as DefaultLinkModel;
       const srcNode = link?.getSourcePort()?.getNode();
       const dstNode = link?.getTargetPort()?.getNode();
