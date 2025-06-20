@@ -83,27 +83,40 @@ export const Layer = styled.div`
 	`;
 
 export const FixedZoomButton = styled.button`
-		background: rgba(0, 0, 0, 0.2);
-		border: none;
-		border-radius: 50%;
+		background: rgba(0, 0, 0, 0.4);        
+		border: 1px solid rgba(255,255,255,0.2);
+		width: 26px;
+		height: 26px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 35px;
-		height: 35px;
-		svg {
-		width: 100%;
-		height: 90%;
+		padding: 0;
+		cursor: pointer;
+
+		box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+		transition: all .3s ease;
+
+		&:hover {
+			background: var(--jp-layout-color2,#3c3c3c);
+			border-color: var(--jp-border-color1,#888);
+			box-shadow: 0 2px 8px var(--jp-shadow-base,rgba(0,0,0,.3));
 		}
+
+		svg { width: 12px; height: 12px; color: inherit; }
 		`;
 
-const ZoomControls = styled.div`
+const ZoomControls = styled.div<{visible: boolean}>`
 	position: fixed;
 	bottom: 12px;
 	right: 12px;
 	z-index: 9999;
 	display: flex;
-	gap: 8px;
+	gap: 0px;
+	flex-direction: column;
+	opacity: ${({visible}) => (visible ? 1 : 0)};
+	pointer-events: ${({visible}) => (visible ? 'auto' : 'none')};
+	transition: opacity 0.5s ease;
+	
 	`;
 
 
@@ -145,6 +158,27 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const initialRender = useRef(true);
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
+
+	const [showZoom, setShowZoom] = useState(true);
+	const hideTimeout = useRef<ReturnType<typeof setTimeout>>();
+	const [isHoveringControls, setIsHoveringControls] = useState(false);
+
+	const isHoveringControlsRef = useRef(false);
+
+	useEffect(() => {
+	isHoveringControlsRef.current = isHoveringControls;
+	}, [isHoveringControls]);
+
+	const handleMouseMoveCanvas = useCallback(() => {
+	setShowZoom(true);
+	if (hideTimeout.current) clearTimeout(hideTimeout.current);
+
+	hideTimeout.current = setTimeout(() => {
+		if (!isHoveringControlsRef.current) {
+		setShowZoom(false);
+		}
+	}, 1500);
+	}, []);
 
 	// handler to trigger the zoom functions
 	const handleZoomToFit = useCallback(() => {
@@ -1326,6 +1360,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				</div>
 				)}
 				<Layer
+					onMouseMove={handleMouseMoveCanvas}
 					onDrop={handleDropEvent}
 					onDragOver={(event) => {
   					event.preventDefault();
@@ -1385,17 +1420,21 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				</Layer>
 			</Content>
 
-			<ZoomControls>
-				<FixedZoomButton  onClick={handleZoomToFit} title="Fit all nodes">
-					<fitIcon.react />
-				</FixedZoomButton >
+			<ZoomControls
+				visible={showZoom || isHoveringControls}
+				onMouseEnter={() => setIsHoveringControls(true)}
+				onMouseLeave={() => setIsHoveringControls(false)}
+			>
 				<FixedZoomButton  onClick={handleZoomIn} title="Zoom In">
 					<zoomInIcon.react />
 				</FixedZoomButton >
 				<FixedZoomButton  onClick={handleZoomOut} title="Zoom Out">
 					<zoomOutIcon.react />
 				</FixedZoomButton >
-			</ZoomControls>
+				<FixedZoomButton onClick={handleZoomToFit} title="Fit all nodes">
+					<fitIcon.react />
+				</FixedZoomButton>	
+				</ZoomControls>
 		</Body>
 		
 	);
