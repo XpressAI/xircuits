@@ -42,6 +42,8 @@ import { LinkSplitManager } from './link/LinkSplitManager';
 
 import { fitIcon, zoomInIcon, zoomOutIcon } from '../ui-components/icons';
 
+import { fitIcon, zoomInIcon, zoomOutIcon } from '../ui-components/icons';
+
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
 	xircuitsApp: XircuitsApplication;
@@ -119,7 +121,6 @@ const ZoomControls = styled.div<{visible: boolean}>`
 	
 	`;
 
-
 export const BodyWidget: FC<BodyWidgetProps> = ({
 	context,
 	xircuitsApp,
@@ -158,6 +159,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const initialRender = useRef(true);
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
+  const contextRef = useRef(context);
+	const notInitialRender = useRef(false);
 
 	const [showZoom, setShowZoom] = useState(true);
 	const hideTimeout = useRef<ReturnType<typeof setTimeout>>();
@@ -179,7 +182,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		}
 	}, 1500);
 	}, []);
-
+  
 	// handler to trigger the zoom functions
 	const handleZoomToFit = useCallback(() => {
 	delayedZoomToFit(xircuitsApp.getDiagramEngine(), /* optional padding */);
@@ -1420,7 +1423,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				</Layer>
 			</Content>
 
-			<ZoomControls
+      <ZoomControls
 				visible={showZoom || isHoveringControls}
 				onMouseEnter={() => setIsHoveringControls(true)}
 				onMouseLeave={() => setIsHoveringControls(false)}
