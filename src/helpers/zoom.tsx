@@ -41,7 +41,7 @@ export function zoomToFit(engine: DiagramEngine, padding = 40): void {
 
     // measure viewport
     const contentWidget = (engine as any).canvas.closest(
-        '.lm-Widget[role="region"][aria-label="notebook content"]'
+        '.lm-Widget[role="region"][aria-label="main area content"]'
     ) as HTMLElement;
     const { width: vpW, height: vpH } = contentWidget.getBoundingClientRect();
 
@@ -81,7 +81,7 @@ function zoomBy(engine: DiagramEngine, factor: number): void {
     const ratio = newZoom / prevZoom;
 
     const contentWidget = (engine as any).canvas.closest(
-        '.lm-Widget[role="region"][aria-label="notebook content"]'
+        '.lm-Widget[role="region"][aria-label="main area content"]'
     ) as HTMLElement;
     const { width: vpW, height: vpH } = contentWidget.getBoundingClientRect();
 

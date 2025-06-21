@@ -96,72 +96,68 @@ def simulate_drag_component_from_library(page: Page, library_name: str, componen
 
 def connect_nodes(page: Page, connection: dict) -> None:
     """
-    Connects a port from a source node to a port on a target node.
-
-    :param page: The Playwright page object.
-    :param connection: A dictionary with the following keys:
-        - sourceNode: Name of the source node (e.g. "Literal String")
-        - sourcePort: Name of the source port (e.g. "out-0")
-        - targetNode: Name of the target node (e.g. "GradioInterface")
-        - targetPort: Name of the target port (e.g. "parameter-dynalist-parameterNames")
+    Connects a port from a source node to a port on a target node
+    and asserts that a new link (flow or data) was actually created.
     """
-    print(f"Connecting {connection['sourceNode']} (port {connection['sourcePort']}) "
-          f"to {connection['targetNode']} (port {connection['targetPort']})...")
+    source = connection['sourceNode']
+    target = connection['targetNode']
+    print(f"🔗 Connecting {source} (port {connection['sourcePort']}) "
+          f"→ {target} (port {connection['targetPort']})...")
+
+    before_count = page.locator("g[data-linkid]").count()
+
     result = page.evaluate(f"""
     () => {{
-        // Function to calculate the center of an element
         function getCenter(el) {{
             const rect = el.getBoundingClientRect();
             return {{ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }};
         }}
 
-        // Target the source port based on node name and port
-        const sourcePort = document.querySelector("div.node[data-default-node-name='{connection['sourceNode']}'] div.port[data-name='{connection['sourcePort']}']");
-        // Try to find the target port inside a node, or fallback to a global port if not found inside
-        let targetPort = document.querySelector("div.node[data-default-node-name='{connection['targetNode']}'] div.port[data-name='{connection['targetPort']}']");
+        const sourcePort = document.querySelector(
+            "div.node[data-default-node-name='{source}'] div.port[data-name='{connection['sourcePort']}']"
+        );
+        const targetPort = document.querySelector(
+            "div.node[data-default-node-name='{target}'] div.port[data-name='{connection['targetPort']}']"
+        );
 
-        console.log("Source port:", sourcePort);
-        console.log("Target port:", targetPort);
-
-        if (!sourcePort || !targetPort) {{
-            console.warn("Source or target port not found.");
-            return false;
-        }}
+        if (!sourcePort || !targetPort) return false;
 
         const from = getCenter(sourcePort);
-        const to = getCenter(targetPort);
-        const dataTransfer = new DataTransfer();
+        const to   = getCenter(targetPort);
+        const dt   = new DataTransfer();
 
-        function fireEvent(el, type, clientX, clientY) {{
-            const event = new DragEvent(type, {{
-                bubbles: true,
-                cancelable: true,
-                composed: true,
-                clientX: clientX,
-                clientY: clientY,
-                dataTransfer: dataTransfer
-            }});
-            el.dispatchEvent(event);
+        function fire(el, type, x, y) {{
+            el.dispatchEvent(new DragEvent(type, {{
+                bubbles: true, cancelable: true, composed: true,
+                clientX: x, clientY: y, dataTransfer: dt
+            }}));
         }}
 
-        fireEvent(sourcePort, "mousedown", from.x, from.y);
-        fireEvent(document, "mousemove", (from.x + to.x) / 2, (from.y + to.y) / 2);
-        fireEvent(document, "mousemove", to.x, to.y);
-        fireEvent(targetPort, "mouseup", to.x, to.y);
+        fire(sourcePort, "mousedown", from.x, from.y);
+        fire(document,  "mousemove", (from.x+to.x)/2, (from.y+to.y)/2);
+        fire(document,  "mousemove", to.x, to.y);
+        fire(targetPort, "mouseup", to.x, to.y);
 
         return true;
     }}
     """)
 
-    if result:
-        print(f"{connection['sourceNode']} successfully connected to {connection['targetNode']}.")
-    else:
-        print("Failed to connect. Check canvas_debug.html for details.")
+    if not result:
+        raise AssertionError(f"Failed to initiate connection between {source} and {target}.")
 
-    if result:
-        print(f"{connection['sourceNode']} successfully connected to {connection['targetNode']}.")
-    else:
-        print("Failed to connect. Check canvas_debug.html for details.")
+    page.wait_for_function(
+    "(n) => document.querySelectorAll('g[data-linkid]').length >= n",
+    arg=before_count + 1,
+    timeout=10000
+)
+    after_count = page.locator("g[data-linkid]").count()
+
+    assert after_count > before_count, (
+        f"No link created between {source} and {target}:\n"
+        f"  before={before_count}, after={after_count}"
+    )
+
+    print(f"Link created. Links before: {before_count}, after: {after_count}")
 
 def lock_component(page, component_name: str):
     """
@@ -221,17 +217,21 @@ def simulate_zoom_ctrl_wheel(page: Page, zoom_in: bool = True, delta: int = 120)
 
 def compile_and_run_workflow(page):
     # Save
-    page.locator('jp-button[title="Save (Ctrl+S)"] >>> button').click()
     page.wait_for_timeout(500)
+    page.locator('jp-button[title="Save (Ctrl+S)"] >>> button').click()
+    page.wait_for_timeout(1000)
 
     # Compile
+    page.wait_for_timeout(500)
+    page.locator('jp-button[title="Compile Xircuits"] >>> button').click()
+    page.wait_for_timeout(500)
     page.locator('jp-button[title="Compile Xircuits"] >>> button').click()
     page.wait_for_timeout(2000)
 
     # Compile and Run
+    page.wait_for_timeout(500)
     page.locator('jp-button[title="Compile and Run Xircuits"] >>> button').click()
     page.wait_for_timeout(1000)
-
 
 def connect_nodes_simple(page: Page, connection: dict) -> None:
     """
@@ -496,12 +496,16 @@ def clean_xircuits_directory(page, subfolder_name: str):
 def copy_xircuits_file(page, source_file: str, target_folder: str):
     print(f"Copying {source_file} to {target_folder}")
     page.wait_for_timeout(1000)
+    
     page.goto("http://localhost:8888")
     page.wait_for_selector('#jupyterlab-splash', state='detached')
     page.wait_for_timeout(1000)
     page.get_by_text("xai_components", exact=True).dblclick()
-    page.wait_for_selector("text=xai_tests", timeout=10000)
-    page.get_by_text("xai_tests", exact=True).dblclick()
+    locator = page.locator("text=xai_tests")
+    locator.wait_for(state="attached", timeout=10000)
+    locator.scroll_into_view_if_needed()
+    locator.dblclick()
+
     page.get_by_text(source_file, exact=True).click()
     page.keyboard.press("Control+C")
 

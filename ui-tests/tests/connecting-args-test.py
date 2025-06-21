@@ -3,7 +3,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 from xircuits_test_utils import connect_nodes, compile_and_run_workflow, clean_xircuits_directory, copy_xircuits_file
 
-base_file = "DataTypes-TestNodeConnect.xircuits"
+base_file = "ArgTypes_ConnectionTest.xircuits"
 browsers_to_test = ["chromium", "firefox"]
 
 with sync_playwright() as p:
@@ -20,40 +20,51 @@ with sync_playwright() as p:
         page.wait_for_timeout(3000)
 
         connections = [
-            {"sourceNode": "Literal String",  "sourcePort": "out-0", "targetNode": "AllLiteralTypes", "targetPort": "parameter-string-string_port"},
-            {"sourceNode": "Literal Integer", "sourcePort": "out-0", "targetNode": "AllLiteralTypes", "targetPort": "parameter-int-int_port"},
-            {"sourceNode": "Literal Float",   "sourcePort": "out-0", "targetNode": "AllLiteralTypes", "targetPort": "parameter-float-float_port"},
-            {"sourceNode": "Literal Boolean", "sourcePort": "out-0", "targetNode": "AllLiteralTypes", "targetPort": "parameter-boolean-boolean_port"},
-            {"sourceNode": "Literal List",    "sourcePort": "out-0", "targetNode": "AllLiteralTypes", "targetPort": "parameter-list-list_port"},
-            {"sourceNode": "Literal Tuple",   "sourcePort": "out-0", "targetNode": "AllLiteralTypes", "targetPort": "parameter-tuple-tuple_port"},
-            {"sourceNode": "Literal Dict",    "sourcePort": "out-0", "targetNode": "AllLiteralTypes", "targetPort": "parameter-dict-dict_port"},
-            {"sourceNode": "Literal Secret",  "sourcePort": "out-0", "targetNode": "AllLiteralTypes", "targetPort": "parameter-secret-secret_port"},
-            {"sourceNode": "Literal Chat",    "sourcePort": "out-0", "targetNode": "AllLiteralTypes", "targetPort": "parameter-chat-chat_port"},
+            {"sourceNode": "Argument (string): string",  "sourcePort": "parameter-out-0", "targetNode": "AllLiteralTypes", "targetPort": "parameter-string-string_port"},
+            {"sourceNode": "Argument (int): integer",  "sourcePort": "parameter-out-0", "targetNode": "AllLiteralTypes", "targetPort": "parameter-int-int_port"},
+            {"sourceNode": "Argument (float): float",  "sourcePort": "parameter-out-0", "targetNode": "AllLiteralTypes", "targetPort": "parameter-float-float_port"},
+            {"sourceNode": "Argument (boolean): boolean",  "sourcePort": "parameter-out-0", "targetNode": "AllLiteralTypes", "targetPort": "parameter-boolean-boolean_port"},
+            {"sourceNode": "Argument (secret): secret",  "sourcePort": "parameter-out-0", "targetNode": "AllLiteralTypes", "targetPort": "parameter-secret-secret_port"},
             {"sourceNode": "Start",           "sourcePort": "out-0", "targetNode": "AllLiteralTypes", "targetPort": "in-0"},
             {"sourceNode": "AllLiteralTypes", "sourcePort": "out-0", "targetNode": "Finish",          "targetPort": "in-0"},
         ]
 
         for conn in connections:
             connect_nodes(page, conn)
-
+            
         page.locator('jp-button[title="Reload all nodes"] >>> button').click()
         page.wait_for_selector('#jupyterlab-splash', state='detached')
+        
+        page.wait_for_timeout(2000)
 
         compile_and_run_workflow(page)
+        page.wait_for_timeout(2000)
+
+        page.get_by_text("Boolean").locator("..").locator("div.react-switch-bg").click()
+        page.wait_for_timeout(500)
+
+        page.fill("input[name='string']", "Hello")
+        page.wait_for_timeout(500)
+
+        page.locator("input[name='integer']").press("ArrowUp") 
+        page.wait_for_timeout(500)
+
+        page.locator("input[name='float']").press("ArrowUp") 
+        page.wait_for_timeout(500)
+
+        page.fill("input[name='secret']", "554", force=True)
+        page.wait_for_timeout(500)
+
         page.click("div.jp-Dialog-buttonLabel:has-text('Start')")
         page.click("div.jp-Dialog-buttonLabel:has-text('Select')")
         page.wait_for_timeout(5000)
-
+        
         essential_lines = [
-            "String inPort:\nabc",
-            "Integer inPort:\n123",
-            "Float inPort:\n12.3",
+            "String inPort:\nHello",
+            "Integer inPort:\n1",
+            "Float inPort:\n0.1",
             "Boolean inPort:\nTrue",
-            "List inPort:\n['a', 'b', 'c']",
-            "Tuple inPort:\n('a', 'b', 'c')",
-            "Dict inPort:\n{'a': 'apple', 'b': 'banana', 'c': 2022}",
             "Secret inPort:\n554",
-            "Chat inPort:\n[{'role': 'system', 'content': 'abc'}, {'role': 'user', 'content': 'def'}]",
         ]
 
         all_outputs = page.locator('.jp-OutputArea-output').all_inner_texts()

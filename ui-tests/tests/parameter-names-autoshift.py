@@ -1,5 +1,5 @@
 from playwright.sync_api import sync_playwright
-from xircuits_test_utils import simulate_drag_component_from_library, fill_literal_string_input_and_submit, connect_nodes, verify_new_port_spawned
+from xircuits_test_utils import simulate_drag_component_from_library, fill_literal_string_input_and_submit, connect_nodes, verify_new_port_spawned, simulate_zoom_ctrl_wheel
  
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)
@@ -21,11 +21,13 @@ with sync_playwright() as p:
          "targetNode": "DynaportTester",
          "targetPort": "parameter-dynalist-inputs"
      })
- 
+    simulate_drag_component_from_library(page, "GENERAL", "Literal True")
+    simulate_zoom_ctrl_wheel(page, zoom_in= False, delta=120)
     connect_nodes(page, {
-         "sourceNode": "Literal String",
+         "sourceNode": "Literal Boolean",
          "sourcePort": "out-0",
          "targetNode": "DynaportTester",
          "targetPort": "parameter-dynalist-inputs"
     })
+
     verify_new_port_spawned(page,"DynaportTester", "parameter-dynalist-inputs-2")
