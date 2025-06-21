@@ -39,9 +39,6 @@ import { commandIDs } from "../commands/CommandIDs";
 import { Notification } from '@jupyterlab/apputils';
 import { SplitLinkCommand } from './link/SplitLinkCommand';
 import { LinkSplitManager } from './link/LinkSplitManager';
-
-import { fitIcon, zoomInIcon, zoomOutIcon } from '../ui-components/icons';
-
 import { fitIcon, zoomInIcon, zoomOutIcon } from '../ui-components/icons';
 
 export interface BodyWidgetProps {
@@ -159,9 +156,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const initialRender = useRef(true);
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
-  const contextRef = useRef(context);
-	const notInitialRender = useRef(false);
-
 	const [showZoom, setShowZoom] = useState(true);
 	const hideTimeout = useRef<ReturnType<typeof setTimeout>>();
 	const [isHoveringControls, setIsHoveringControls] = useState(false);
