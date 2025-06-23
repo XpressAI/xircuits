@@ -82,27 +82,41 @@ export const Layer = styled.div`
 	`;
 
 export const FixedZoomButton = styled.button`
-		background: rgba(0, 0, 0, 0.4);        
-		border: 1px solid rgba(255,255,255,0.2);
-		width: 26px;
-		height: 26px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0;
-		cursor: pointer;
+	background: rgba(255, 255, 255, 0.1);        
+	border: 1px solid rgba(255,255,255,0.2);
+	width: 26px;
+	height: 26px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	cursor: pointer;
+	color: white;
 
-		box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-		transition: all .3s ease;
+	box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+	transition: all .3s ease;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.2);
+		border-color: white;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+	}
+
+	svg { width: 12px; height: 12px; color: inherit; }
+
+	/* Light theme override */
+	body.light-mode & {
+		background: rgba(0, 0, 0, 0.05);
+		border-color: rgba(0, 0, 0, 0.1);
+		color: black;
 
 		&:hover {
-			background: var(--jp-layout-color2,#3c3c3c);
-			border-color: var(--jp-border-color1,#888);
-			box-shadow: 0 2px 8px var(--jp-shadow-base,rgba(0,0,0,.3));
+			background: rgba(0, 0, 0, 0.1);
+			border-color: black;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 		}
-
-		svg { width: 12px; height: 12px; color: inherit; }
-		`;
+	}
+	`;
 
 const ZoomControls = styled.div<{visible: boolean}>`
 	position: fixed;
