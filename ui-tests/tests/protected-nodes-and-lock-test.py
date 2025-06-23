@@ -7,7 +7,7 @@ from xircuits_test_utils import delete_component_directly, lock_component, simul
 
 with sync_playwright() as p:
 
-    browser = p.chromium.launch(headless=True)
+    browser = p.chromium.launch(headless=True, slow_mo=200)
     context = browser.new_context()
     page = context.new_page()
     page.goto("http://localhost:8888")
@@ -15,8 +15,10 @@ with sync_playwright() as p:
     page.get_by_text('New Xircuits File', exact=True).click()
 
     delete_component_directly(page, "Start")
+    page.locator("button:has-text('OK')").click(timeout=1000)
 
     delete_component_directly(page, "Finish")
+    page.locator("button:has-text('OK')").click(timeout=1000)
 
     try:
         page.wait_for_selector("div.node[data-default-node-name='Start']", timeout=2000)

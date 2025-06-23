@@ -9,7 +9,7 @@ from playwright.sync_api import sync_playwright
 from xircuits_test_utils import connect_nodes, compile_and_run_workflow ,simulate_drag_component_from_library, simulate_zoom_ctrl_wheel
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True)
+    browser = p.chromium.launch(headless=False, slow_mo=200)
     context = browser.new_context()
     page = context.new_page()
     page.goto("http://localhost:8888")

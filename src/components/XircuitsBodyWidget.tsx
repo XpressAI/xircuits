@@ -36,7 +36,9 @@ import { buildRemoteRunCommand } from "./runner/RemoteRun";
 
 import styled from "@emotion/styled";
 import { commandIDs } from "../commands/CommandIDs";
-
+import { Notification } from '@jupyterlab/apputils';
+import { SplitLinkCommand } from './link/SplitLinkCommand';
+import { LinkSplitManager } from './link/LinkSplitManager';
 import { fitIcon, zoomInIcon, zoomOutIcon } from '../ui-components/icons';
 
 export interface BodyWidgetProps {
@@ -80,29 +82,55 @@ export const Layer = styled.div`
 	`;
 
 export const FixedZoomButton = styled.button`
-		background: rgba(0, 0, 0, 0.2);
-		border: none;
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 35px;
-		height: 35px;
-		svg {
-		width: 100%;
-		height: 90%;
-		}
-		`;
+	background: rgba(255, 255, 255, 0.1);        
+	border: 1px solid rgba(255,255,255,0.2);
+	width: 26px;
+	height: 26px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	cursor: pointer;
+	color: white;
 
-const ZoomControls = styled.div`
+	box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+	transition: all .3s ease;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.2);
+		border-color: white;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+	}
+
+	svg { width: 12px; height: 12px; color: inherit; }
+
+	/* Light theme override */
+	body.light-mode & {
+		background: rgba(0, 0, 0, 0.05);
+		border-color: rgba(0, 0, 0, 0.1);
+		color: black;
+
+		&:hover {
+			background: rgba(0, 0, 0, 0.1);
+			border-color: black;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+		}
+	}
+	`;
+
+const ZoomControls = styled.div<{visible: boolean}>`
 	position: fixed;
 	bottom: 12px;
 	right: 12px;
 	z-index: 9999;
 	display: flex;
-	gap: 8px;
+	gap: 0px;
+	flex-direction: column;
+	opacity: ${({visible}) => (visible ? 1 : 0)};
+	pointer-events: ${({visible}) => (visible ? 'auto' : 'none')};
+	transition: opacity 0.5s ease;
+	
 	`;
-
 
 export const BodyWidget: FC<BodyWidgetProps> = ({
 	context,
@@ -142,7 +170,27 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const initialRender = useRef(true);
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
+	const [showZoom, setShowZoom] = useState(true);
+	const hideTimeout = useRef<ReturnType<typeof setTimeout>>();
+	const [isHoveringControls, setIsHoveringControls] = useState(false);
 
+	const isHoveringControlsRef = useRef(false);
+
+	useEffect(() => {
+	isHoveringControlsRef.current = isHoveringControls;
+	}, [isHoveringControls]);
+
+	const handleMouseMoveCanvas = useCallback(() => {
+	setShowZoom(true);
+	if (hideTimeout.current) clearTimeout(hideTimeout.current);
+
+	hideTimeout.current = setTimeout(() => {
+		if (!isHoveringControlsRef.current) {
+		setShowZoom(false);
+		}
+	}, 1500);
+	}, []);
+  
 	// handler to trigger the zoom functions
 	const handleZoomToFit = useCallback(() => {
 	delayedZoomToFit(xircuitsApp.getDiagramEngine(), /* optional padding */);
@@ -574,6 +622,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		setInitialize(true);
 		setSaved(true);
 		await commands.execute(commandIDs.saveDocManager);
+		Notification.success("Workflow saved successfully.", { autoClose: 3000 });
 	}
 
 	const handleCompileClick = async() => {
@@ -586,12 +635,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let allNodesConnected = checkAllNodesConnected();
 
 		if (!allNodesConnected) {
-			alert("Please connect all the nodes before compiling.");
+			Notification.error("Please connect all the nodes before compiling.", { autoClose: 3000 });
 			return;
 		}
-		setCompiled(true);
-		commands.execute(commandIDs.compileFile, { componentList });
-	}
+		const success = await commands.execute(commandIDs.compileFile, { componentList });
+
+		if (success) {
+			setCompiled(true);
+			Notification.success("Workflow compiled successfully.", { autoClose: 3000 });
+		} else {
+			Notification.error("Failed to generate compiled code. Please check console logs for more details.", { autoClose: 5000 });
+		}
+	};
 
 	const saveAndCompileAndRun = async () => {
 
@@ -620,10 +675,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let allCompulsoryNodesConnected = checkAllCompulsoryInPortsConnected();
 
 		if (!allNodesConnected) {
-			alert("Please connect all the nodes before running.");
+			Notification.error("Please connect all the nodes before running.", { autoClose: 3000 });
+			return;
 		}
 		if (!allCompulsoryNodesConnected) {
-			alert("Please connect all [★]COMPULSORY InPorts.");
+			Notification.error("Please connect all [★]COMPULSORY InPorts.", { autoClose: 3000 });
 			return;
 		}
 
@@ -740,8 +796,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 
-		let mode = lightMode;
-		setLightMode(!mode)
+		const newLightMode = !lightMode;
+
+		const desiredTheme = newLightMode ? 'JupyterLab Light' : 'JupyterLab Dark';
+		void app.commands.execute('apputils:change-theme', { theme: desiredTheme });
+		// Delay to avoid visual mismatch while JupyterLab updates theme
+		setTimeout(() => {
+		setLightMode(newLightMode);
+		}, 120);
 	}
 
 	// Helper function to compute argument nodes on demand
@@ -1194,6 +1256,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const preventDefault = (event) => {
 		event.preventDefault();
 	}
+	const updateHoveredLink = (event: React.DragEvent | React.MouseEvent): string | null => {
+		const linkId = LinkSplitManager.detectLinkUnderPointer(event.clientX, event.clientY);
+		const model = xircuitsApp.getDiagramEngine().getModel();
+		LinkSplitManager.setHover(linkId, model);
+		return linkId;
+	};
 
 	const handleDropEvent = async (event) => {
 		let data = JSON.parse(event.dataTransfer.getData("storm-diagram-node"));
@@ -1218,8 +1286,19 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		// note:  can not use the same port name in the same node,or the same name port can not link to other ports
 		if (node != null) {
 			let point = xircuitsApp.getDiagramEngine().getRelativeMousePoint(event);
-			node.setPosition(point);
-			xircuitsApp.getDiagramEngine().getModel().addNode(node);
+			const linkId = updateHoveredLink(event);
+
+			if (linkId) {
+				new SplitLinkCommand(
+					xircuitsApp.getDiagramEngine().getModel(),
+					node,
+					linkId,
+					point
+				).execute();
+				} else {
+				node.setPosition(point);
+				xircuitsApp.getDiagramEngine().getModel().addNode(node);
+				}
 			if (node["name"].startsWith("Argument ")) {
 				setInitialize(true);
 			}
@@ -1292,8 +1371,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				</div>
 				)}
 				<Layer
+					onMouseMove={handleMouseMoveCanvas}
 					onDrop={handleDropEvent}
-					onDragOver={preventDefault}
+					onDragOver={(event) => {
+  					event.preventDefault();
+  					updateHoveredLink(event);
+					}}
 					onMouseOver={preventDefault}
 					onMouseUp={preventDefault}
 					onMouseDown={preventDefault}
@@ -1348,17 +1431,21 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				</Layer>
 			</Content>
 
-			<ZoomControls>
-				<FixedZoomButton  onClick={handleZoomToFit} title="Fit all nodes">
-					<fitIcon.react />
-				</FixedZoomButton >
+      <ZoomControls
+				visible={showZoom || isHoveringControls}
+				onMouseEnter={() => setIsHoveringControls(true)}
+				onMouseLeave={() => setIsHoveringControls(false)}
+			>
 				<FixedZoomButton  onClick={handleZoomIn} title="Zoom In">
 					<zoomInIcon.react />
 				</FixedZoomButton >
 				<FixedZoomButton  onClick={handleZoomOut} title="Zoom Out">
 					<zoomOutIcon.react />
 				</FixedZoomButton >
-			</ZoomControls>
+				<FixedZoomButton onClick={handleZoomToFit} title="Fit all nodes">
+					<fitIcon.react />
+				</FixedZoomButton>	
+				</ZoomControls>
 		</Body>
 		
 	);

@@ -12,6 +12,10 @@ import {
   State
 } from '@projectstorm/react-canvas-core';
 import { Point } from '@projectstorm/geometry';
+import { LinkSplitManager } from '../link/LinkSplitManager';
+import { SplitLinkCommand } from '../link/SplitLinkCommand';
+import { CustomNodeModel } from '../node/CustomNodeModel';
+import { DiagramModel, DefaultLinkModel } from '@projectstorm/react-diagrams';
 
 export class MoveItemsState<E extends CanvasEngine = CanvasEngine> extends AbstractDisplacementState<E> {
   initialPositions: {
@@ -52,6 +56,11 @@ export class MoveItemsState<E extends CanvasEngine = CanvasEngine> extends Abstr
             this.engine.getModel().clearSelection();
           }
           element.setSelected(true);
+          const mouseEv = event.event as MouseEvent;
+          const linkId = LinkSplitManager.detectLinkUnderPointer(mouseEv.clientX, mouseEv.clientY);
+          const model = (this.engine as any).getModel() as DiagramModel;
+          LinkSplitManager.setHover(linkId, model);
+
           this.engine.repaintCanvas();
           this.initialPosition = element['position'];
           this.finalPosition = element['position'];
@@ -60,20 +69,48 @@ export class MoveItemsState<E extends CanvasEngine = CanvasEngine> extends Abstr
     );
 
     this.registerAction(
-      new Action({
-        type: InputType.MOUSE_UP,
-        fire: () => {
-          // When node in the same position, just return
-          if (
-            this.initialPosition?.x === this.finalPosition?.x &&
-            this.initialPosition?.y === this.finalPosition?.y
-          ) {
-            return;
-          }
-          this.fireEvent();
+  new Action({
+    type: InputType.MOUSE_UP,
+    fire: (event) => {
+      const mouseEv = event.event as MouseEvent;
+      const linkId = LinkSplitManager.getHoveredLinkId();
+      const items = this.engine.getModel().getSelectedEntities();
+      const draggedNode = items.find(item => item instanceof CustomNodeModel) as CustomNodeModel;
+      const model = (this.engine as any).getModel() as DiagramModel;
+      const link = model.getLink(linkId) as DefaultLinkModel;
+
+      if (link) {
+        const srcNode = link.getSourcePort().getNode();
+        const dstNode = link.getTargetPort().getNode();
+
+        if (srcNode === draggedNode || dstNode === draggedNode) {
+          LinkSplitManager.clearHover();
+          return;
         }
-      })
-    );
+      }
+
+      if (linkId && draggedNode) {
+        const point = this.engine.getRelativeMousePoint(mouseEv);
+        new SplitLinkCommand(
+          (this.engine as any).model, 
+          draggedNode,
+          linkId,
+          point
+        ).execute();
+      }
+
+      LinkSplitManager.clearHover();
+
+      if (
+        this.initialPosition?.x === this.finalPosition?.x &&
+        this.initialPosition?.y === this.finalPosition?.y
+      ) {
+        return;
+      }
+      this.fireEvent();
+    }
+  })
+);
   }
 
   fireEvent = () => {
@@ -86,8 +123,26 @@ export class MoveItemsState<E extends CanvasEngine = CanvasEngine> extends Abstr
   }
 
   fireMouseMoved(event: AbstractDisplacementStateEvent) {
+    const mouseEv = event.event as MouseEvent;
+    const linkId = LinkSplitManager.detectLinkUnderPointer(mouseEv.clientX, mouseEv.clientY);
+    const model = (this.engine as any).getModel() as DiagramModel;
     const items = this.engine.getModel().getSelectedEntities();
-    const model = this.engine.getModel();
+    const draggedNode = items.find(item => item instanceof CustomNodeModel) as CustomNodeModel|undefined;
+
+    if (linkId) {
+      const link = model.getLink(linkId) as DefaultLinkModel;
+      const srcNode = link?.getSourcePort()?.getNode();
+      const dstNode = link?.getTargetPort()?.getNode();
+
+      if (draggedNode && draggedNode !== srcNode && draggedNode !== dstNode) {
+        LinkSplitManager.setHover(linkId, model);
+      } else {
+        LinkSplitManager.clearHover();
+      }
+    } else {
+      LinkSplitManager.clearHover();
+    }
+
     for (const item of items) {
       if (item instanceof BasePositionModel) {
         if (item.isLocked()) {
