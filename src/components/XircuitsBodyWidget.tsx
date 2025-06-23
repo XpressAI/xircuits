@@ -24,8 +24,9 @@ import ComponentsPanel from "../context-menu/ComponentsPanel";
 import {
 	CanvasContextMenu,
 	countVisibleMenuOptions,
-	getMenuOptionsVisibility
+	getMenuOptionsVisibility,
 } from "../context-menu/CanvasContextMenu";
+import { delayedZoomToFit, zoomIn, zoomOut } from '../helpers/zoom';
 import { cancelDialog, GeneralComponentLibrary } from "../tray_library/GeneralComponentLib";
 import { AdvancedComponentLibrary, fetchNodeByName } from "../tray_library/AdvanceComponentLib";
 import { lowPowerMode, setLowPowerMode } from "./state/powerModeState";
@@ -38,6 +39,7 @@ import { commandIDs } from "../commands/CommandIDs";
 import { Notification } from '@jupyterlab/apputils';
 import { SplitLinkCommand } from './link/SplitLinkCommand';
 import { LinkSplitManager } from './link/LinkSplitManager';
+import { fitIcon, zoomInIcon, zoomOutIcon } from '../ui-components/icons';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -79,6 +81,56 @@ export const Layer = styled.div`
 		flex-grow: 1;
 	`;
 
+export const FixedZoomButton = styled.button`
+	background: rgba(255, 255, 255, 0.1);        
+	border: 1px solid rgba(255,255,255,0.2);
+	width: 26px;
+	height: 26px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	cursor: pointer;
+	color: white;
+
+	box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+	transition: all .3s ease;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.2);
+		border-color: white;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+	}
+
+	svg { width: 12px; height: 12px; color: inherit; }
+
+	/* Light theme override */
+	body.light-mode & {
+		background: rgba(0, 0, 0, 0.05);
+		border-color: rgba(0, 0, 0, 0.1);
+		color: black;
+
+		&:hover {
+			background: rgba(0, 0, 0, 0.1);
+			border-color: black;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+		}
+	}
+	`;
+
+const ZoomControls = styled.div<{visible: boolean}>`
+	position: fixed;
+	bottom: 12px;
+	right: 12px;
+	z-index: 9999;
+	display: flex;
+	gap: 0px;
+	flex-direction: column;
+	opacity: ${({visible}) => (visible ? 1 : 0)};
+	pointer-events: ${({visible}) => (visible ? 'auto' : 'none')};
+	transition: opacity 0.5s ease;
+	
+	`;
 
 export const BodyWidget: FC<BodyWidgetProps> = ({
 	context,
@@ -118,7 +170,40 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const initialRender = useRef(true);
 	const contextRef = useRef(context);
 	const notInitialRender = useRef(false);
+	const [showZoom, setShowZoom] = useState(true);
+	const hideTimeout = useRef<ReturnType<typeof setTimeout>>();
+	const [isHoveringControls, setIsHoveringControls] = useState(false);
 
+	const isHoveringControlsRef = useRef(false);
+
+	useEffect(() => {
+	isHoveringControlsRef.current = isHoveringControls;
+	}, [isHoveringControls]);
+
+	const handleMouseMoveCanvas = useCallback(() => {
+	setShowZoom(true);
+	if (hideTimeout.current) clearTimeout(hideTimeout.current);
+
+	hideTimeout.current = setTimeout(() => {
+		if (!isHoveringControlsRef.current) {
+		setShowZoom(false);
+		}
+	}, 1500);
+	}, []);
+  
+	// handler to trigger the zoom functions
+	const handleZoomToFit = useCallback(() => {
+	delayedZoomToFit(xircuitsApp.getDiagramEngine(), /* optional padding */);
+	}, [xircuitsApp]);
+
+	const handleZoomIn = useCallback(() => {
+		zoomIn(xircuitsApp.getDiagramEngine());
+	}, [xircuitsApp]);
+	
+	const handleZoomOut = useCallback(() => {
+		zoomOut(xircuitsApp.getDiagramEngine());
+		}, [xircuitsApp]);
+	
 	const onChange = useCallback(
 		(): void => {
 			if (contextRef.current.isReady) {
@@ -1286,6 +1371,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				</div>
 				)}
 				<Layer
+					onMouseMove={handleMouseMoveCanvas}
 					onDrop={handleDropEvent}
 					onDragOver={(event) => {
   					event.preventDefault();
@@ -1344,6 +1430,23 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					</XircuitsCanvasWidget>
 				</Layer>
 			</Content>
+
+      <ZoomControls
+				visible={showZoom || isHoveringControls}
+				onMouseEnter={() => setIsHoveringControls(true)}
+				onMouseLeave={() => setIsHoveringControls(false)}
+			>
+				<FixedZoomButton  onClick={handleZoomIn} title="Zoom In">
+					<zoomInIcon.react />
+				</FixedZoomButton >
+				<FixedZoomButton  onClick={handleZoomOut} title="Zoom Out">
+					<zoomOutIcon.react />
+				</FixedZoomButton >
+				<FixedZoomButton onClick={handleZoomToFit} title="Fit all nodes">
+					<fitIcon.react />
+				</FixedZoomButton>	
+				</ZoomControls>
 		</Body>
+		
 	);
 }
