@@ -2,6 +2,7 @@ import { DefaultPortModel, DefaultPortModelOptions } from "@projectstorm/react-d
 import { DeserializeEvent} from '@projectstorm/react-canvas-core';
 import {PortModel} from "@projectstorm/react-diagrams-core";
 import { CustomLinkModel } from "../link/CustomLinkModel";
+import { Notification } from '@jupyterlab/apputils';
 
 /**
  * @author wenfeng xu
@@ -65,8 +66,8 @@ export  class CustomPortModel extends DefaultPortModel  {
         if (port instanceof DefaultPortModel) {
             if(this.options.in === port.getOptions().in){
                 port.getNode().getOptions().extras["borderColor"]="red";
-                port.getNode().getOptions().extras["tip"]="in not connected to in";
                 port.getNode().setSelected(true);
+                Notification.error("in not connected to in", { autoClose: 3000 });
                 console.log("in not connected to in");
                 return false;
             }
@@ -81,8 +82,8 @@ export  class CustomPortModel extends DefaultPortModel  {
         if (this.options.label.includes('▶') || port.getOptions().label.includes('▶')) {
             if (!this.canTriangleLinkToTriangle(this, port)) {
                 port.getNode().getOptions().extras["borderColor"]="red";
-                port.getNode().getOptions().extras["tip"]="Triangle must be linked to triangle.";
                 port.getNode().setSelected(true);
+                Notification.error("Triangle must be linked to triangle.", { autoClose: 3000 });
                 console.log("triangle to triangle failed.");
                 return false;
             }
@@ -97,8 +98,8 @@ export  class CustomPortModel extends DefaultPortModel  {
 
         if (checkLinkDirection == false){
             port.getNode().getOptions().extras["borderColor"]="red";
-            port.getNode().getOptions().extras["tip"]="Port should be created from outPort [right] to inPort [left].";
             port.getNode().setSelected(true);
+            Notification.error("Port should be created from outPort [right] to inPort [left].", { autoClose: 3000 });            
             console.log("Port should be created from outPort [right] to inPort [left]");
             return false;
         }
@@ -124,14 +125,14 @@ export  class CustomPortModel extends DefaultPortModel  {
         const thisNode = this.getNode();
         const thisNodeModelType = thisNode.getOptions()["extras"]["type"];
         const thisName: string = targetPort.getName();
-        const thisLabel: string = "**" + targetPort.getOptions()["label"] + "**";
+        const thisLabel: string = "\"" + targetPort.getOptions()["label"] + "\"";
 
         if (this.isParameterNode(thisNodeModelType) == true){
 
             if (!thisName.startsWith("parameter")){
                 targetPort.getNode().getOptions().extras["borderColor"] = "red";
-                targetPort.getNode().getOptions().extras["tip"] = `Port ${thisLabel} linked is not a parameter, please link a ${thisLabel} node to it.`;
                 targetPort.getNode().setSelected(true);
+                Notification.error(`Port ${thisLabel} linked is not a parameter, please link a ${thisLabel} node to it.`, { autoClose: 3000 });
                 return false;
             }
         }
@@ -146,8 +147,11 @@ export  class CustomPortModel extends DefaultPortModel  {
                 targetDataType = this.parseUnionPortType(targetDataType);
             }
             targetPort.getNode().getOptions().extras["borderColor"] = "red";
-            targetPort.getNode().getOptions().extras["tip"] = `Incorrect data type. Port ${thisLabel} is of type *\`${targetDataType}\`*. You have provided type *\`${sourceDataType}\`*.`;
             targetPort.getNode().setSelected(true);
+            Notification.error(
+            `Incorrect data type. Port ${thisLabel} is of type "${targetDataType}". You have provided type "${sourceDataType}".`,
+            { autoClose: 3000 }
+            );
             return false;
         }
         
@@ -250,8 +254,11 @@ export  class CustomPortModel extends DefaultPortModel  {
         let port = this as CustomPortModel
         if (Object.keys(port.getLinks()).length > 0) {
             port.getNode().getOptions().extras["borderColor"] = "red";
-            port.getNode().getOptions().extras["tip"] = "Xircuits only allows 1 link per InPort! Please delete the current link to proceed.";
             port.getNode().setSelected(true);
+            Notification.error(
+            "Xircuits only allows one link per InPort. Please delete the existing link before adding another.",
+            { autoClose: 3000 }
+            );
             return false;
         }
         return true;
@@ -259,9 +266,7 @@ export  class CustomPortModel extends DefaultPortModel  {
 
     removeErrorTooltip = (thisPort, port) => {
         port.getNode().getOptions().extras["borderColor"] = "rgb(0,192,255)";
-        delete port.getNode().getOptions().extras["tip"];
         thisPort.getNode().getOptions().extras["borderColor"] = "rgb(0,192,255)";
-        delete thisPort.getNode().getOptions().extras["tip"];
     }
 
     getCircularReplacer = ()=> {

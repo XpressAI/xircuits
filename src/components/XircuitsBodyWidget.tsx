@@ -553,8 +553,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (lastNode['name'] != 'Finish') {
 			// When last node is not Finish node, check failed and show error tooltip
 			lastNode.getOptions().extras["borderColor"] = "red";
-			lastNode.getOptions().extras["tip"] = `Please make sure this **${lastNode['name']}** node end with **Finish** node`;
 			lastNode.setSelected(true);
+			Notification.error(`Please make sure this "${lastNode['name']}" node ends with a "Finish" node.`,
+			{ autoClose: 3000 }
+			);
 			return false;
 		}
 		return true;
@@ -567,8 +569,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				let node = allNodes[i]["portsIn"][k]
 				if (node.getOptions()["label"].startsWith("★") && Object.keys(node.getLinks()).length == 0) {
 					allNodes[i].getOptions().extras["borderColor"] = "red";
-					allNodes[i].getOptions().extras["tip"] = "Please make sure the [★]COMPULSORY InPorts are connected ";
 					allNodes[i].setSelected(true);
+					Notification.error("Please make sure the [★]COMPULSORY InPorts are connected.",{ autoClose: 3000 });
 					return false;
 				}
 			}
@@ -679,7 +681,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 		if (!allCompulsoryNodesConnected) {
-			Notification.error("Please connect all [★]COMPULSORY InPorts.", { autoClose: 3000 });
 			return;
 		}
 
