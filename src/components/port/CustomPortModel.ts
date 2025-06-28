@@ -3,6 +3,8 @@ import { DeserializeEvent} from '@projectstorm/react-canvas-core';
 import {PortModel} from "@projectstorm/react-diagrams-core";
 import { CustomLinkModel } from "../link/CustomLinkModel";
 import { Notification } from '@jupyterlab/apputils';
+import { DiagramEngine, DiagramModel } from "@projectstorm/react-diagrams";
+import { zoomNodeOnNotificationHover } from '../../helpers/notificationEffects';
 
 /**
  * @author wenfeng xu
@@ -29,6 +31,8 @@ export  class CustomPortModel extends DefaultPortModel  {
     portType: string;
     dataType: string;
     extras: object;
+    private _engine?: DiagramEngine;
+    
 
     constructor(options: CustomPortModelOptions) {
         super({
@@ -41,6 +45,19 @@ export  class CustomPortModel extends DefaultPortModel  {
         this.extras = options.extras || {};
     }
 
+        setEngine(engine: DiagramEngine) {
+        this._engine = engine;
+        }
+
+        getEngine(): DiagramEngine | undefined {
+            return this._engine;
+        }
+
+        static attachEngine(model: DiagramModel, engine: DiagramEngine): void {
+            model.getNodes().forEach(node =>
+            Object.values(node.getPorts()).forEach((p: any) => p.setEngine?.(engine))
+            );
+        }
     serialize() {
         return {
             ...super.serialize(),
@@ -59,16 +76,26 @@ export  class CustomPortModel extends DefaultPortModel  {
         this.extras=event.data.extras;
     }
 
+    private triggerZoom(message: string, nodeId: string) {
+    const engine = this.getEngine?.();
+    if (engine) {
+        zoomNodeOnNotificationHover(message, nodeId, engine);
+    }
+    }
+
     canLinkToPort(port: CustomPortModel): boolean {
         // No self connections allowed
         if(port === this) return false;
 
         if (port instanceof DefaultPortModel) {
             if(this.options.in === port.getOptions().in){
-                port.getNode().getOptions().extras["borderColor"]="red";
-                port.getNode().setSelected(true);
-                Notification.error("in not connected to in", { autoClose: 3000 });
-                console.log("in not connected to in");
+                const targetNode = port.getNode();
+                const message = "In port cannot connected to another in port.";
+                targetNode.getOptions().extras["borderColor"]="red";
+                targetNode.setSelected(true);
+                Notification.error(message, { autoClose: 3000 });
+                this.triggerZoom(message, targetNode.getID());
+                console.log(message);
                 return false;
             }
         }
@@ -81,10 +108,13 @@ export  class CustomPortModel extends DefaultPortModel  {
         // Check if it's a triangle-to-triangle link
         if (this.options.label.includes('▶') || port.getOptions().label.includes('▶')) {
             if (!this.canTriangleLinkToTriangle(this, port)) {
-                port.getNode().getOptions().extras["borderColor"]="red";
-                port.getNode().setSelected(true);
-                Notification.error("Triangle must be linked to triangle.", { autoClose: 3000 });
-                console.log("triangle to triangle failed.");
+                const targetNode = port.getNode();
+                const message = "Triangle must be linked to triangle.";
+                targetNode.getOptions().extras["borderColor"]="red";
+                targetNode.setSelected(true);
+                Notification.error(message, { autoClose: 3000 });
+                this.triggerZoom(message, targetNode.getID());
+                console.log(message);
                 return false;
             }
         } else {
@@ -97,10 +127,13 @@ export  class CustomPortModel extends DefaultPortModel  {
         let checkLinkDirection = this.checkLinkDirection(this, port);
 
         if (checkLinkDirection == false){
-            port.getNode().getOptions().extras["borderColor"]="red";
-            port.getNode().setSelected(true);
-            Notification.error("Port should be created from outPort [right] to inPort [left].", { autoClose: 3000 });            
-            console.log("Port should be created from outPort [right] to inPort [left]");
+            const targetNode = port.getNode();
+            const message = "Port should be created from outPort [right] to inPort [left].";
+            targetNode.getOptions().extras["borderColor"]="red";
+            targetNode.setSelected(true);
+            Notification.error(message, { autoClose: 3000 });
+            this.triggerZoom(message, targetNode.getID());
+            console.log(message);
             return false;
         }
 
@@ -126,13 +159,16 @@ export  class CustomPortModel extends DefaultPortModel  {
         const thisNodeModelType = thisNode.getOptions()["extras"]["type"];
         const thisName: string = targetPort.getName();
         const thisLabel: string = "\"" + targetPort.getOptions()["label"] + "\"";
+        const targetNode = targetPort.getNode();
 
         if (this.isParameterNode(thisNodeModelType) == true){
 
             if (!thisName.startsWith("parameter")){
-                targetPort.getNode().getOptions().extras["borderColor"] = "red";
-                targetPort.getNode().setSelected(true);
-                Notification.error(`Port ${thisLabel} linked is not a parameter, please link a ${thisLabel} node to it.`, { autoClose: 3000 });
+                const message = `Port ${thisLabel} linked is not a parameter, please link a ${thisLabel} node to it.`;
+                targetNode.getOptions().extras["borderColor"] = "red";
+                targetNode.setSelected(true);
+                Notification.error(message, { autoClose: 3000 });
+                this.triggerZoom(message, targetNode.getID());
                 return false;
             }
         }
@@ -146,12 +182,11 @@ export  class CustomPortModel extends DefaultPortModel  {
             if (targetDataType.includes('Union')) {
                 targetDataType = this.parseUnionPortType(targetDataType);
             }
-            targetPort.getNode().getOptions().extras["borderColor"] = "red";
-            targetPort.getNode().setSelected(true);
-            Notification.error(
-            `Incorrect data type. Port ${thisLabel} is of type "${targetDataType}". You have provided type "${sourceDataType}".`,
-            { autoClose: 3000 }
-            );
+            const message = `Incorrect data type. Port ${thisLabel} is of type "${targetDataType}". You have provided type "${sourceDataType}".`;
+            targetNode.getOptions().extras["borderColor"] = "red";
+            targetNode.setSelected(true);
+            Notification.error(message, { autoClose: 3000 });
+            this.triggerZoom(message, targetNode.getID());
             return false;
         }
         
@@ -253,12 +288,12 @@ export  class CustomPortModel extends DefaultPortModel  {
     canLinkToLinkedPort(): boolean {
         let port = this as CustomPortModel
         if (Object.keys(port.getLinks()).length > 0) {
-            port.getNode().getOptions().extras["borderColor"] = "red";
-            port.getNode().setSelected(true);
-            Notification.error(
-            "Xircuits only allows one link per InPort. Please delete the existing link before adding another.",
-            { autoClose: 3000 }
-            );
+            const targetNode = port.getNode();
+            const message = "Xircuits only allows one link per InPort. Please delete the existing link before adding another.";
+            targetNode.getOptions().extras["borderColor"] = "red";
+            targetNode.setSelected(true);
+            Notification.error(message, { autoClose: 3000 });
+            this.triggerZoom(message, targetNode.getID());
             return false;
         }
         return true;

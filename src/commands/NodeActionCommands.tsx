@@ -26,6 +26,7 @@ import { manualReload } from '../tray_library/Component';
 import { BaseComponentLibrary } from '../tray_library/BaseComponentLib';
 import { commandIDs } from "./CommandIDs";
 import { Notification } from '@jupyterlab/apputils';
+import { zoomNodeOnNotificationHover } from '../helpers/notificationEffects';
 
 /**
  * Add the commands for node actions.
@@ -292,10 +293,10 @@ export function addNodeActionCommands(
                         let path = selected_node.getOptions()["extras"].path;
                         console.log(`Error reloading component from path: ${path}. Error: ${error.message}`);
                         selected_node.getOptions().extras["borderColor"] = "red";
-                        Notification.error(
-                        `Component could not be loaded from path: "${path}".\nPlease ensure that the component exists!`,
-                        { autoClose: 3000 }
-                        );
+                        const message =
+                        `Component could not be loaded from path: "${path}". `+`Please ensure that the component exists!`;
+                        Notification.error(message, { autoClose: 3000 });
+                        zoomNodeOnNotificationHover(message, selected_node.getID(), engine);
                         nodesToHighlight.push(selected_node);
                         continue;
                     }
