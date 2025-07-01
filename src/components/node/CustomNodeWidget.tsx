@@ -10,8 +10,6 @@ import { Dialog } from '@jupyterlab/apputils';
 import { formDialogWidget } from '../../dialog/formDialogwidget';
 import { showFormDialog } from '../../dialog/FormDialog';
 import { CommentDialog } from '../../dialog/CommentDialog';
-import ReactTooltip from 'react-tooltip';
-import { marked } from 'marked';
 import Color from 'colorjs.io';
 import { commandIDs } from '../../commands/CommandIDs';
 import { 
@@ -24,7 +22,7 @@ import {
     setVariableComponentIcon, 
     getVariableComponentIcon } from '../../ui-components/icons';
 import  circuitBoardSvg from '../../../style/icons/circuit-board-bg.svg';
-import { LegacyRef, MutableRefObject } from "react";
+import { togglePreviewWidget } from '../../component_info_sidebar/previewHelper';
 
 
 
@@ -302,45 +300,17 @@ const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode })
     const [descriptionStr, setDescriptionStr] = React.useState("");
     const elementRef = React.useRef<HTMLElement>(null);
 
-    const handleDescription = async () => {
-        setShowDescription(!showDescription);
-        getDescriptionStr();
-        if (elementRef.current) {
-            ReactTooltip.show(elementRef.current);
-        }
+    const handleDescription = () => {
+        togglePreviewWidget(app, {
+            name: node.getOptions().name,
+            docstring: node['extras']['description'] ?? ''
+        });
     };
-
-    const getDescriptionStr = () => {
-        let dscrptStr = node['extras']['description'] ?? '***No description provided***';
-        setDescriptionStr(dscrptStr);
-    };
-
-    const hideErrorTooltip = () => {
-        delete node.getOptions().extras["tip"];
-        node.getOptions().extras["borderColor"] = "rgb(0,192,255)";
-    };
-
     return (
         <div style={{ position: "relative" }}>
-            {showDescription && <div className="description-tooltip">
-                <div data-no-drag style={{ cursor: "default" }}>
-                    <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={handleDescription}>
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <S.DescriptionName color={node.getOptions().color}>{node.getOptions().name}</S.DescriptionName>
-                    <div className="scrollable" onWheel={(e) => { e.stopPropagation(); e.currentTarget.scrollBy(e.deltaX, e.deltaY); }}>
-                        <p className="description-title">Description:</p>
-                        <div className="description-container">
-                            <div className="markdown-body" dangerouslySetInnerHTML={{ __html: marked(descriptionStr ?? '') }} />
-                        </div>
-                    </div>
-                </div>
-            </div>}
             <S.Node
                 className={"node library-node "+(node.isSelected() ? "selected" : "")}
                 onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
-                ref={(elementRef as LegacyRef<HTMLDivElement>)}
-                data-tip data-for={node.getOptions().id}
                 borderColor={node.getOptions().extras["borderColor"]}
                 data-default-node-name={node.getOptions().name}
                 selected={node.isSelected()}
@@ -352,53 +322,12 @@ const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode })
                     <S.TitleName>{node.getOptions().name}</S.TitleName>
                     <label data-no-drag>
                         <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
-                        <Toggle className='description' name='Description' checked={showDescription ?? false} onChange={handleDescription} />
+                        <Toggle className='description' name='Description' checked={false} onChange={handleDescription}
+                        />
                     </label>
                 </S.Title>
                 <PortsComponent node={node} engine={engine} app={app}/>
             </S.Node>
-            {(node.getOptions().extras["tip"] != undefined && node.getOptions().extras["tip"] != "") ?
-                <ReactTooltip
-                    id={node.getOptions().id}
-                    clickable
-                    place="bottom"
-                    className="error-tooltip"
-                    arrowColor="rgba(255, 0, 0, .9)"
-                    delayHide={100}
-                    delayUpdate={50}
-                    getContent={() =>
-                        <div data-no-drag className="error-container">
-                            <p className="error-title">Error</p>
-                            <div className="markdown-body" dangerouslySetInnerHTML={{ __html: marked(node.getOptions().extras["tip"] ?? '') }} />
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={hideErrorTooltip}>
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    }
-                    overridePosition={({ left, top }) => {
-                        const currentNode = node;
-                        const nodeDimension = { x: currentNode.width, y: currentNode.height };
-                        const nodePosition = { x: currentNode.getX(), y: currentNode.getY() };
-                        let newPositionX = nodePosition.x;
-                        let newPositionY = nodePosition.y;
-                        let offset = 0;
-
-                        if (!shell.leftCollapsed) {
-                            let leftSidebar = document.getElementById('jp-left-stack');
-                            offset = leftSidebar.clientWidth + 2;
-                        }
-
-                        newPositionX = newPositionX - 184 + offset + (nodeDimension.x / 2);
-                        newPositionY = newPositionY + 90 + nodeDimension.y;
-
-                        const tooltipPosition = engine.getRelativePoint(newPositionX, newPositionY);
-
-                        left = tooltipPosition.x;
-                        top = tooltipPosition.y;
-                        return { top, left };
-                    }}
-                />
-                : null}
         </div>
     );
 };
