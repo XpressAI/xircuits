@@ -15,25 +15,25 @@ const Container = styled.div`
   background: var(--jp-layout-color1);
 
   border-left: 1px solid var(--jp-border-color1);
-  box-shadow: inset 4px 0 6px rgba(0, 0, 0, 0.04);
+  box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.02);
 
   h3 {
-    margin: 0 0 20px;
-    font-size: 1.35rem;
+    margin: 0 0 16px;
+    font-size: 1.4rem;
     font-weight: 600;
-    line-height: 1.4;
+    line-height: 1.3;
     letter-spacing: 0.2px;
   }
 
   .docstring-box {
-    background: var(--jp-layout-color2);
-    border: 1px solid var(--jp-border-color2);
-    border-radius: 10px;
-    padding: 20px 22px;
-    line-height: 1.6;
-    font-size: 0.75rem;
-
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    background: var(--jp-layout-color1);        
+    border: 1px solid var(--jp-border-color2);  
+    border-left: 4px solid var(--jp-brand-color1, var(--jp-brand-color0));
+    border-radius: 4px;                         
+    padding: 16px 18px;
+    line-height: 1.55;
+    font-size: 0.85rem;
+    box-shadow: none;                         
   }
 
   .docstring-box strong,
@@ -43,7 +43,7 @@ const Container = styled.div`
   }
 
   ul {
-    margin: 8px 0 8px 24px;
+    margin: 8px 0 8px 22px;
     padding-inline-start: 0;
   }
 
@@ -56,11 +56,11 @@ const Container = styled.div`
   }
 
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
   }
   &::-webkit-scrollbar-thumb {
     background: var(--jp-layout-color3);
-    border-radius: 4px;
+    border-radius: 3px;
   }
 `;
 
