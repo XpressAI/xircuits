@@ -296,14 +296,13 @@ const WorkflowNode = ({ node, engine, app, handleDeletableNode }) => {
 };
 
 const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode }) => {
-    const [showDescription, setShowDescription] = React.useState(false);
-    const [descriptionStr, setDescriptionStr] = React.useState("");
-    const elementRef = React.useRef<HTMLElement>(null);
-
     const handleDescription = () => {
         togglePreviewWidget(app, {
+            node,
+            engine,
             name: node.getOptions().name,
-            docstring: node['extras']['description'] ?? ''
+            docstring: node['extras']['description'] ?? '',
+            filePath:node['extras']['path'] ?? ''
         });
     };
     return (

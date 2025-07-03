@@ -1,102 +1,162 @@
-// ComponentPreviewWidget.tsx
-import { ReactWidget } from '@jupyterlab/apputils';
+import { ReactWidget, ToolbarButtonComponent } from '@jupyterlab/apputils';
+import { JupyterFrontEnd } from '@jupyterlab/application';
+import { LabIcon } from '@jupyterlab/ui-components';
+import { DiagramEngine } from '@projectstorm/react-diagrams';
 import React from 'react';
-import { marked } from 'marked';
 import styled from '@emotion/styled';
-import { infoIcon } from '../ui-components/icons';
+import { marked } from 'marked';
+
+import { infoIcon, fitIcon, fileCodeIcon } from '../ui-components/icons';
+import { centerNodeInView } from '../helpers/notificationEffects';
 
 const Container = styled.div`
   height: 100%;
-  overflow-y: auto;
-  box-sizing: border-box;
-  padding: 24px 26px;
-
-  color: var(--jp-ui-font-color0);
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
   background: var(--jp-layout-color1);
+  color: var(--jp-ui-font-color0);
+  border-left: var(--jp-border-width) solid var(--jp-border-color1);
 
-  border-left: 1px solid var(--jp-border-color1);
-  box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.02);
-
-  h3 {
-    margin: 0 0 16px;
-    font-size: 1.4rem;
-    font-weight: 600;
-    line-height: 1.3;
-    letter-spacing: 0.2px;
+  .content {
+    flex: 1 1 auto;
+    padding: 24px 26px;
+    overflow-y: auto;
   }
 
   .docstring-box {
-    background: var(--jp-layout-color1);        
-    border: 1px solid var(--jp-border-color2);  
+    background: var(--jp-layout-color1);
+    border: 1px solid var(--jp-border-color2);
     border-left: 4px solid var(--jp-brand-color1, var(--jp-brand-color0));
-    border-radius: 4px;                         
+    border-radius: 4px;
     padding: 16px 18px;
     line-height: 1.55;
     font-size: 0.85rem;
-    box-shadow: none;                         
   }
 
-  .docstring-box strong,
-  .docstring-box b {
-    color: var(--jp-ui-font-color1);
+  h3 {
+    margin: 12px 0 8px;
+    font-size: 0.9rem;
     font-weight: 600;
+    color: var(--jp-ui-font-color1);
   }
 
-  ul {
-    margin: 8px 0 8px 22px;
-    padding-inline-start: 0;
+  /* Jupyter-style header */
+  .jp-SidePanel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
-
-  code {
-    font-family: var(--jp-code-font-family);
-    background: var(--jp-layout-color3);
-    padding: 2px 5px;
-    border-radius: 4px;
-    font-size: 85%;
-  }
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: var(--jp-layout-color3);
-    border-radius: 3px;
+  .jp-SidePanel-header h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
   }
 `;
 
-export interface IComponentInfo { name: string; docstring: string; }
+export interface IComponentInfo {
+  name: string;
+  docstring: string;
+  filePath?: string;
+  node?: any;
+  engine?: DiagramEngine;
+}
 
 export class ComponentPreviewWidget extends ReactWidget {
-  private _model: IComponentInfo | null = null;
+  private _app: JupyterFrontEnd;
+  private _model: IComponentInfo | null;
 
-  constructor(model: IComponentInfo | null = null) {
+  constructor(app: JupyterFrontEnd, model: IComponentInfo | null = null) {
     super();
+    this._app = app;
+    this._model = model;
+
     this.id = 'xircuits-doc-preview';
-    this.title.label = '';                 
     this.title.caption = 'Component Info';
     this.title.icon = infoIcon;
-    this.title.closable = false;           
-    this.setModel(model);
+    this.title.closable = false;
+    this.node.style.minWidth = '340px';
+
+    if (model) this.node.dataset.componentName = model.name;
   }
 
-  setModel(model: IComponentInfo | null) {
+  setApp(app: JupyterFrontEnd): void {
+    this._app = app;
+  }
+  setModel(model: IComponentInfo | null): void {
     this._model = model;
     if (model) this.node.dataset.componentName = model.name;
     else delete this.node.dataset.componentName;
     this.update();
   }
 
-  render() {
-    if (!this._model) {
-      return <Container>Please click the "ℹ" icon on any component to view its description here</Container>;
+  private handleOpenScript = () => {
+    const { node } = this._model ?? {};
+    if (!node) return;
+
+    const nodePath   = node.extras?.path;
+    const nodeLineNo = node.extras?.lineNo;
+    const nodeName   = node.name ?? node.getOptions?.().name;
+
+    if (nodePath && nodeLineNo && nodeName) {
+      this._app.commands.execute('Xircuit-editor:open-node-script', {
+        nodePath,
+        nodeLineNo,
+        nodeName
+      });
+    } else {
+      console.warn('Open-script: missing data', { nodePath, nodeLineNo, nodeName });
     }
+  };
+
+  private handleCenterNode = () => {
+    const { node, engine } = this._model ?? {};
+    if (!node || !engine) return;
+
+    engine.getModel().clearSelection();
+    node.setSelected(true);
+    centerNodeInView(engine, node.getID());
+  };
+
+  render(): JSX.Element {
     return (
-      <Container>
-        <h3>{this._model.name}</h3>
-        <div
-          className="docstring-box"
-          dangerouslySetInnerHTML={{ __html: marked(this._model.docstring || '_No docstring provided._') }}
-        />
+      <Container className="jp-SidePanel">
+        <header className="jp-SidePanel-header">
+          <h2>Component Preview</h2>
+
+          {/* minimal toolbar */}
+          <div className="jp-mod-minimal">
+            <ToolbarButtonComponent
+              icon={fileCodeIcon as LabIcon}
+              tooltip="Open script"
+              enabled={!!this._model?.node}
+              onClick={this.handleOpenScript}
+            />
+            <ToolbarButtonComponent
+              icon={fitIcon as LabIcon}
+              tooltip="Center node"
+              enabled={!!this._model?.node && !!this._model?.engine}
+              onClick={this.handleCenterNode}
+            />
+          </div>
+        </header>
+
+        <div className="content">
+          {this._model ? (
+            <>
+              <h3>{this._model.name}</h3>
+              <div
+                className="docstring-box"
+                dangerouslySetInnerHTML={{ __html: marked(this._model.docstring || '_No docstring provided._') }}
+              />
+            </>
+          ) : (
+            <p>
+              Please click the <strong>ℹ</strong> icon on any component to view its
+              description here.
+            </p>
+          )}
+        </div>
       </Container>
     );
   }
