@@ -140,71 +140,55 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			const modelStr = currentContext.model.toString();
 			if (!isJSON(modelStr)) {
 				// When context can't be parsed, just return
-				return
+				return;
 			}
 
 			try {
-				if (notInitialRender.current) {
-					const model: any = currentContext.model.toJSON();
-					let deserializedModel = xircuitsApp.customDeserializeModel(model, initialRender.current);
-					deserializedModel.registerListener({
-						// Detect changes when node is dropped or deleted
-						nodesUpdated: () => {
-							// Add delay for links to disappear 
-							const timeout = setTimeout(() => {
-								onChange();
-								setInitialize(false);
-							}, 10)
-							return () => clearTimeout(timeout)
+				// Deserialize the raw JSON, passing whether this is the first render
+				const model: any = currentContext.model.toJSON();
+				let deserializedModel = xircuitsApp.customDeserializeModel(model, initialRender.current);
+		
+				// Re-attach your node/link change listeners *before* setting the model
+				deserializedModel.registerListener({
+				nodesUpdated: () => {
+					// Delay so links can settle before serializing
+					const timeout = setTimeout(() => {
+						onChange();
+						setInitialize(false);
+					}, 10);
+					return () => clearTimeout(timeout);
+				},
+				linksUpdated: (event) => {
+					const timeout = setTimeout(() => {
+					event.link.registerListener({
+						sourcePortChanged: () => {
+						onChange();
 						},
-						linksUpdated: (event) => {
-
-							const timeout = setTimeout(() => {
-
-								event.link.registerListener({
-									/**
-									 * sourcePortChanged
-									 * Detect changes when link is connected
-									 */
-									sourcePortChanged: e => {
-										onChange();
-									},
-									/**
-									 * targetPortChanged
-									 * Detect changes when link is connected
-									 */
-									targetPortChanged: e => {
-										const sourceLink = e.entity as any;
-										app.commands.execute(commandIDs.connectLinkToObviousPorts, { draggedLink: sourceLink });
-										onChange();
-
-									},
-									/**
-									 * entityRemoved
-									 * Detect changes when new link is removed
-									 */
-									entityRemoved: e => {
-										onChange();
-									}
-								});
-							}, 100); // You can adjust the delay as needed
-							// Don’t forget to clear the timeout when unmounting or when the component is destroyed.
-							return () => clearTimeout(timeout);
+						targetPortChanged: (e) => {
+							const sourceLink = e.entity as any;
+							app.commands.execute(commandIDs.connectLinkToObviousPorts, { draggedLink: sourceLink });
+							onChange();
+						},
+						entityRemoved: () => {
+						onChange();
 						}
-					})
-					xircuitsApp.getDiagramEngine().setModel(deserializedModel);
-					
-					initialRender.current = false;
-				} else {
-					// Clear undo history when first time rendering
-					notInitialRender.current = true;
+					});
+					}, 100);
+					return () => clearTimeout(timeout);
+				}
+				});
+		
+				xircuitsApp.getDiagramEngine().setModel(deserializedModel);
+
+				// On the first load, clear undo history and register global engine listeners
+				if (initialRender.current) {
 					currentContext.model.sharedModel.clearUndoHistory();
-					// Register engine listener just once
 					xircuitsApp.getDiagramEngine().registerListener({
-						droppedLink: event => showComponentPanelFromLink(event),
+						droppedLink: (event) => showComponentPanelFromLink(event),
 						hidePanel: () => hidePanel(),
 						onChange: () => onChange()
-					})
+					});
+				initialRender.current = false;
 				}
 			} catch (e) {
 				showErrorMessage('Error', `An error occurred: ${e.message}`);
