@@ -162,28 +162,47 @@ const ZoomControls = styled.div<{visible: boolean}>`
 	  font-size: 14px;
 	}
   
-
-  span {
-  margin-left: auto;          /* ← push it all the way to the right */
-  color: white;
-  font-size: 12px;
-  }
+  	span {
+	  margin-left: auto;
+	  color: white;
+	  font-size: 12px;
+	}
   
 	.close-search {
-
-top: 4px;
-left: 50%;
-// transform: translateX(-50%);
-		
-			background: none;
-			border: none;
-			color: white;
-			font-size: 24px;
-			cursor: pointer;
-			line-height: 1;
+		top: 4px;
+		left: 50%;
+		background: none;
+		border: none;
+		color: white;
+		font-size: 24px;
+		cursor: pointer;
+		line-height: 1;
 	}
-  `;
+
+	/* Light theme override */
+	body.light-mode & {
+	  background: rgba(255,255,255,0.9);
+	  border: 1px solid rgba(0,0,0,0.1);
   
+	  input {
+		color: black;
+		background: rgba(0,0,0,0.05);
+	  }
+  
+	  button:not(.close-search) {
+		color: black;
+	  }
+  
+	  span {
+		color: black;
+	  }
+  
+	  .close-search {
+		color: black;
+	  }
+	}
+`;
+
 export const BodyWidget: FC<BodyWidgetProps> = ({
 	context,
 	xircuitsApp,
