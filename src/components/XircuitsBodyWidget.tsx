@@ -253,6 +253,14 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [matchedIndices, setMatchedIndices] = useState<number[]>([]);
 	const [currentMatchIndex, setCurrentMatchIndex] = useState<number>(-1);
 
+	const clearSearchFlags = () => {
+		const engine = xircuitsApp.getDiagramEngine();
+		engine.getModel().getNodes().forEach(node => {
+		  node.getOptions().extras.isMatch = false;
+		  node.getOptions().extras.isSelectedMatch = false;
+		});
+		engine.repaintCanvas();
+	  };
 
 	useEffect(() => {
 		const onKeyDown = (e: KeyboardEvent) => {
@@ -490,7 +498,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						}
 					})
 					xircuitsApp.getDiagramEngine().setModel(deserializedModel);
-					
+					clearSearchFlags();
 					initialRender.current = false;
 				} else {
 					// Clear undo history when first time rendering
@@ -987,6 +995,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	
 		// Trigger loading animation
 		await triggerLoadingAnimation(reloadPromise, { loadingMessage: 'Reloading all nodes...'});
+		clearSearchFlags();
 		console.log("Reload all complete.");
 	};
 
