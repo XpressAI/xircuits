@@ -90,7 +90,7 @@ export  class CustomPortModel extends DefaultPortModel  {
         if (port instanceof DefaultPortModel) {
             if(this.options.in === port.getOptions().in){
                 const targetNode = port.getNode();
-                const message = "In port cannot connected to another in port.";
+                const message = "Link cannot be created between inPorts.";
                 targetNode.getOptions().extras["borderColor"]="red";
                 targetNode.setSelected(true);
                 Notification.error(message, { autoClose: 3000 });
@@ -109,7 +109,7 @@ export  class CustomPortModel extends DefaultPortModel  {
         if (this.options.label.includes('▶') || port.getOptions().label.includes('▶')) {
             if (!this.canTriangleLinkToTriangle(this, port)) {
                 const targetNode = port.getNode();
-                const message = "Triangle must be linked to triangle.";
+                const message = "Flow ports (▶) can only connect to other flow ports (▶).";
                 targetNode.getOptions().extras["borderColor"]="red";
                 targetNode.setSelected(true);
                 Notification.error(message, { autoClose: 3000 });
@@ -128,7 +128,7 @@ export  class CustomPortModel extends DefaultPortModel  {
 
         if (checkLinkDirection == false){
             const targetNode = port.getNode();
-            const message = "Port should be created from outPort [right] to inPort [left].";
+            const message = "Link should be created from an outPort to an inPort.";
             targetNode.getOptions().extras["borderColor"]="red";
             targetNode.setSelected(true);
             Notification.error(message, { autoClose: 3000 });
@@ -289,7 +289,7 @@ export  class CustomPortModel extends DefaultPortModel  {
         let port = this as CustomPortModel
         if (Object.keys(port.getLinks()).length > 0) {
             const targetNode = port.getNode();
-            const message = "Xircuits only allows one link per InPort. Please delete the existing link before adding another.";
+            const message = "You can only create one link for this inPort. Please delete the existing link before adding another.";
             targetNode.getOptions().extras["borderColor"] = "red";
             targetNode.setSelected(true);
             Notification.error(message, { autoClose: 3000 });

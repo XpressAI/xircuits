@@ -574,7 +574,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				if (node.getOptions()["label"].startsWith("★") && Object.keys(node.getLinks()).length == 0) {
 					allNodes[i].getOptions().extras["borderColor"] = "red";
 					allNodes[i].setSelected(true);
-					const message = "Please make sure the [★]COMPULSORY InPorts are connected.";
+					const message = "Please make sure the [★]COMPULSORY inPorts are connected.";
 					Notification.error(message, { autoClose: 3000 });
 					zoomNodeOnNotificationHover(message, allNodes[i].getID(), engine);
 					return false;
