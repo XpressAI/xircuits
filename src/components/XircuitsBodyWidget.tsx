@@ -100,6 +100,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 }) => {
 	const xircuitLogger = new Log(app);
 
+	const [canvasLoaded, setCanvasLoaded] = useState(false);
 	const [saved, setSaved] = useState(false);
 	const [compiled, setCompiled] = useState(false);
 	const [initialize, setInitialize] = useState(true);
@@ -189,7 +190,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						onChange: () => onChange()
 					});
 				initialRender.current = false;
-				}
+				setCanvasLoaded(true);
+			}
 			} catch (e) {
 				showErrorMessage('Error', `An error occurred: ${e.message}`);
 			}
@@ -1258,52 +1260,56 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					onMouseDown={preventDefault}
 					onContextMenu={showCanvasContextMenu}
 					onClick={handleClick}>
-					<XircuitsCanvasWidget translate={translate} >
-						<CanvasWidget engine={xircuitsApp.getDiagramEngine()}/>
-						{/* Add Component Panel(ctrl + left-click, dropped link) */}
-						{isComponentPanelShown && (
-							<div
-								onMouseEnter={()=>setDontHidePanel(true)}
-								onMouseLeave={()=>setDontHidePanel(false)}
-								id='component-panel'
-								style={{
-									minHeight: 'auto',
-									height: 'auto',
-									boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
-									top: componentPanelPosition.y,
-									left: componentPanelPosition.x
-								}}
-								className="add-component-panel">
-								<ComponentsPanel
-									lab={app}
-									eng={xircuitsApp.getDiagramEngine()}
-									nodePosition={nodePosition}
-									linkData={looseLinkData}
-									isParameter={isParameterLink}
-									key="component-panel"
-								/>
-							</div>
-						)}
-						{/* Node Action Panel(left-click) */}
-						{contextMenuShown && (
-							<div
-								id='context-menu'
-								style={{
-									minHeight: 'auto',
-									height: 'auto',
-									boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
-									top: contextMenuPosition.y,
-									left: contextMenuPosition.x
-								}}
-								className="canvas-context-menu">
-								<CanvasContextMenu
-									app={app}
-									engine={xircuitsApp.getDiagramEngine()}
-									nodePosition={nodePosition}
-								/>
-							</div>
-						)}
-					</XircuitsCanvasWidget>
+					{/* Display only after canvas is fully rendered */}
+					<div style={{visibility: canvasLoaded ? 'visible' : 'hidden',
+						height: '100%', width: '100%' }}>
+						<XircuitsCanvasWidget translate={translate} >
+							<CanvasWidget engine={xircuitsApp.getDiagramEngine()}/>
+							{/* Add Component Panel(ctrl + left-click, dropped link) */}
+							{isComponentPanelShown && (
+								<div
+									onMouseEnter={()=>setDontHidePanel(true)}
+									onMouseLeave={()=>setDontHidePanel(false)}
+									id='component-panel'
+									style={{
+										minHeight: 'auto',
+										height: 'auto',
+										boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
+										top: componentPanelPosition.y,
+										left: componentPanelPosition.x
+									}}
+									className="add-component-panel">
+									<ComponentsPanel
+										lab={app}
+										eng={xircuitsApp.getDiagramEngine()}
+										nodePosition={nodePosition}
+										linkData={looseLinkData}
+										isParameter={isParameterLink}
+										key="component-panel"
+									/>
+								</div>
+							)}
+							{/* Node Action Panel(left-click) */}
+							{contextMenuShown && (
+								<div
+									id='context-menu'
+									style={{
+										minHeight: 'auto',
+										height: 'auto',
+										boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
+										top: contextMenuPosition.y,
+										left: contextMenuPosition.x
+									}}
+									className="canvas-context-menu">
+									<CanvasContextMenu
+										app={app}
+										engine={xircuitsApp.getDiagramEngine()}
+										nodePosition={nodePosition}
+									/>
+								</div>
+							)}
+						</XircuitsCanvasWidget>
+					</div>
 				</Layer>
 			</Content>
 		</Body>
