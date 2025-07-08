@@ -1,6 +1,5 @@
 import { Notification } from '@jupyterlab/apputils';
 import { requestAPI } from "../server/handler";
-
 let componentsCache = {
   data: null
 };
