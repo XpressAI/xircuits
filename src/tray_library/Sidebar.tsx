@@ -25,7 +25,6 @@ import { MenuSvg } from "@jupyterlab/ui-components";
 import { commandIDs } from "../commands/CommandIDs";
 import { NodePreview } from "./NodePreview";
 import { ellipsesIcon } from "@jupyterlab/ui-components";
-import { manualReload } from "./Component";
 
 
 export const Body = styled.div`
@@ -156,14 +155,16 @@ export default function Sidebar(props: SidebarProps) {
 
     }, [category, componentList]);
 
-    function handleRefreshOnClick() {
-        manualReload();
-        fetchComponentList();
+    async function handleRefreshOnClick(showError = true) {
+        const updated = await refreshComponentListCache(showError);
+        if (updated) {
+            fetchComponentList();       
+        }
     }
 
     useEffect(() => {
-        const refreshComponents = () => {
-            fetchComponentList();
+        const refreshComponents = (_sender, manual = true) => {
+        handleRefreshOnClick(manual);
         };
 
         factory.refreshComponentsSignal.connect(refreshComponents);
@@ -183,8 +184,8 @@ export default function Sidebar(props: SidebarProps) {
             factory.toggleDisplayNodesInLibrary.disconnect(toggleDisplayNodes);
         };
     }, []);
-
     
+
     useEffect(() => {
         const intervalId = setInterval(() => {
             fetchComponentList();

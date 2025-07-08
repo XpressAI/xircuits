@@ -34,6 +34,7 @@ import { commandIDs } from "./commands/CommandIDs";
 import { IEditorTracker } from '@jupyterlab/fileeditor';
 import { IMainMenu } from '@jupyterlab/mainmenu';
 import { handleInstall } from './context-menu/TrayContextMenu';
+import { refreshComponentListCache } from './tray_library/Component';
 
 const FACTORY = 'Xircuits editor';
 
@@ -101,6 +102,33 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     // Registering the widget factory
     app.docRegistry.addWidgetFactory(widgetFactory);
+    
+    let lastManualPySave = -Infinity;
+    app.commands.commandExecuted.connect((_, args) => {
+      if (args.id !== 'docmanager:save') { return; }
+
+      const widget = app.shell.currentWidget;
+      const ctx = docmanager.contextForWidget(widget as any);
+      if (ctx?.path.endsWith('.py')) {
+        lastManualPySave = performance.now(); 
+      }
+    });
+
+    editorTracker!.widgetAdded.connect((_, widget) => {
+      const ctx = widget.context;
+      if (!ctx.path.endsWith('.py')) { return; }
+
+      ctx.saveState.connect((_s, state) => {
+  if (state !== 'completed') { return; }
+
+  const isManual = performance.now() - lastManualPySave < 400;
+
+  widgetFactory.refreshComponentsSignal.emit(isManual);
+
+  lastManualPySave = -Infinity;
+});
+
+    });
 
     const tracker = new WidgetTracker<DocumentWidget>({
       namespace: "Xircuits Tracker"
@@ -297,7 +325,10 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         context.fileChanged.connect(async () => {
           if(context.path.startsWith("xai_components/")){
             console.info(`File ${context.path} changed. Reloading components...`);
-            await app.commands.execute(commandIDs.refreshComponentList);
+            const updated = await refreshComponentListCache(false);
+            if (updated) {
+              widgetFactory.refreshComponentsSignal.emit(false);
+            }
           }
         });
       }
