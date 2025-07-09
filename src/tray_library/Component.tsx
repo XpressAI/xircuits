@@ -14,6 +14,7 @@ export function initComponentFetcher(app: JupyterFrontEnd) {
 }
 
 export async function fetchComponents() {
+  console.log("Fetching all components... this might take a while.")
   try {
     const componentsResponse = await requestAPI<any>('components/');
     const components = componentsResponse["components"];
