@@ -34,6 +34,7 @@ import { commandIDs } from "./commands/CommandIDs";
 import { IEditorTracker } from '@jupyterlab/fileeditor';
 import { IMainMenu } from '@jupyterlab/mainmenu';
 import { handleInstall } from './context-menu/TrayContextMenu';
+import { initComponentFetcher } from './tray_library/Component';
 
 const FACTORY = 'Xircuits editor';
 
@@ -78,6 +79,9 @@ const xircuits: JupyterFrontEndPlugin<void> = {
   ) => {
 
     console.log('Xircuits is activated!');
+    
+    // Setup component fetcher for error toasts
+    initComponentFetcher(app);
 
     // Creating the widget factory to register it so the document manager knows about
     // our new DocumentWidget
