@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import subprocess, shutil  
 from pathlib import Path
 
 from .utils import is_empty, copy_from_installed_wheel
@@ -13,6 +14,18 @@ def init_xircuits():
     """
     package_name = 'xircuits'
     copy_from_installed_wheel(package_name, resource='.xircuits', dest_path='.xircuits')
+
+    tmp_dir = Path(os.getcwd()) / ".manifest_tmp"                    # 3) new temp folder name
+    manifest_repo = "https://github.com/XpressAI/xai-components-manifest.git"
+
+    subprocess.run(["git", "clone",manifest_repo,str(tmp_dir)], check=True)
+
+    # copy just the "components_manifest.jsonl" file into ./.xircuits
+    shutil.copyfile(
+        str(tmp_dir / "xai_components_manifest.jsonl"),
+        str(Path(os.getcwd()) / ".xircuits" / "xai_components_manifest.jsonl")
+    )
+
     component_library_path = Path(os.getcwd()) / "xai_components"
     if not component_library_path.exists():
         copy_from_installed_wheel('xai_components', '', 'xai_components')

@@ -71,25 +71,24 @@ def extract_library_info(lib_path, base_path, status="remote"):
 
     return lib_info
 
-def generate_component_library_config(base_path="xai_components", gitmodules_path=".gitmodules"):
+def generate_component_library_config(base_path="xai_components"):
 
-    if not os.path.exists(gitmodules_path):
-        # Construct the .xircuits/.gitmodules path
-        gitmodules_path = posixpath.join('.xircuits', '.gitmodules')
-    
+    manifest_path = posixpath.join('.xircuits', 'xai_components_manifest.jsonl')
     libraries = {}
     library_id_map = {}  # Map library IDs to library info
-    
     # Parse submodules first and set them as "remote"
-    if os.path.exists(gitmodules_path):
-        submodules = parse_gitmodules(gitmodules_path)
+    if os.path.exists(manifest_path):
+        with open(manifest_path, 'r') as f:
+            submodules = [json.loads(line) for line in f if line.strip()]
         for submodule in submodules:
             submodule_path = posixpath.normpath(submodule['path'])
+            os.makedirs(submodule_path, exist_ok=True)
             library_info = {
                 "name": posixpath.basename(submodule_path),
                 "library_id": submodule['library_id'],  # Use the library ID from the submodule info
                 "repository": submodule['url'],
                 "local_path": submodule_path,
+                "version_ref":submodule['git_ref'],
                 "status": "remote"
             }
             libraries[submodule_path] = library_info

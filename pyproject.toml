@@ -103,8 +103,6 @@ ignore = ["W002"]
 [project.scripts]
 xircuits = "xircuits.start_xircuits:main"
 
-[tool.hatch.build.hooks.custom]
-path = "xircuits/hatch_build_hook.py"
 
 [tool.hatch.build.targets.wheel]
 include = [
