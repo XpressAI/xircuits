@@ -1,44 +1,26 @@
-import { showDialog, Dialog } from '@jupyterlab/apputils';
+import { Notification } from '@jupyterlab/apputils';
 import { requestAPI } from "../server/handler";
-import React from 'react';
 
 let componentsCache = {
   data: null
 };
 
-export async function manualReload() {
-  await refreshComponentListCache(true);
-}
-
-export async function fetchComponents(isManualReload = false) {
+export async function fetchComponents() {
   console.log("Fetching all components... this might take a while.")
   try {
     const componentsResponse = await requestAPI<any>('components/');
     const components = componentsResponse["components"];
-    const error_msg = componentsResponse["error_msg"];
+    const error_info = componentsResponse["error_info"];
+    if (error_info) {
+      const uniqueId = `${error_info.full_path}\nLine:${error_info.line}`;
+      const formatted =`Error found in: ${uniqueId}\n${error_info.message}`;
 
-    if (error_msg && isManualReload) {
-      await showDialog({
-        title: 'Parse Component Failed',
-        body: (
-          <pre>{error_msg}</pre>
-        ),
-        buttons: [Dialog.warnButton({ label: 'OK' })]
-      });
+      Notification.error(formatted, { autoClose: 6000 });
     }
     console.log("Fetch complete.")
     return components;
   } catch (error) {
     console.error('Failed to get components', error);
-    if (isManualReload) {
-      // Show error popup only if this is a manual reload
-      await showDialog({
-        title: 'Network Error',
-        body: <pre>{String(error)}</pre>,
-        buttons: [Dialog.warnButton({ label: 'OK' })]
-      });
-    }
-    return [];
   }
 }
 
@@ -51,6 +33,6 @@ export async function ComponentList() {
   return componentsCache.data;
 }
 
-export async function refreshComponentListCache(isManualReload = false) {
-  componentsCache.data = await fetchComponents(isManualReload);
+export async function refreshComponentListCache() {
+  componentsCache.data = await fetchComponents();
 }
