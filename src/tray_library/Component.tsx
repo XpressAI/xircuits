@@ -1,6 +1,6 @@
 import { Notification } from '@jupyterlab/apputils';
 import { requestAPI } from "../server/handler";
-import { linkErrorToast } from '../helpers/errorToastLinks';   
+import { openFileAtLine } from '../helpers/fileOpenHelper';   
 import { JupyterFrontEnd }   from '@jupyterlab/application';   
 
 let componentsCache = {
@@ -23,9 +23,14 @@ export async function fetchComponents() {
       const uniqueId = `${error_info.full_path}:${error_info.line}`;
       const formatted =
         `Error found in: ${uniqueId}\n❌ ${error_info.message}`;
-
-      Notification.error(formatted, { autoClose: 6000 });
-      linkErrorToast(uniqueId, error_info.full_path, error_info.line, _app);
+        
+      Notification.error(formatted, {autoClose: 6000,
+          actions: [{
+            label: 'Open File',
+            caption: 'Open file',
+            callback: () => openFileAtLine(_app, error_info.full_path, error_info.line)
+          }]
+        });
     }
     console.log("Fetch complete.")
     return components;
