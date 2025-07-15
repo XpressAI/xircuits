@@ -7,11 +7,11 @@ let componentsCache = {
   data: null
 };
 
-let _app: JupyterFrontEnd | null = null;                       
-
+let _app: JupyterFrontEnd | null = null;
+    
 export function initComponentFetcher(app: JupyterFrontEnd) {   
   _app = app;
-}
+}                   
 
 export async function fetchComponents() {
   console.log("Fetching all components... this might take a while.")
@@ -20,17 +20,17 @@ export async function fetchComponents() {
     const components = componentsResponse["components"];
     const error_info = componentsResponse["error_info"];
     if (error_info) {
-      const uniqueId = `${error_info.full_path}:${error_info.line}`;
-      const formatted =
-        `Error found in: ${uniqueId}\n❌ ${error_info.message}`;
-        
+      const { full_path, line, end_lineno, message } = error_info;
+      const uniqueId = `${full_path}:${line}`;
+      const formatted =`Error found in: ${uniqueId}\n❌ ${message}`;
+
       Notification.error(formatted, {autoClose: 6000,
-          actions: [{
-            label: 'Open File',
-            caption: 'Open file',
-            callback: () => openFileAtLine(_app, error_info.full_path, error_info.line)
-          }]
-        });
+        actions: [{
+          label: 'Open File',
+          caption: 'Open file',
+          callback: () => {openFileAtLine(_app, full_path, { lineno: line, end_lineno });}
+        }]
+      });
     }
     console.log("Fetch complete.")
     return components;

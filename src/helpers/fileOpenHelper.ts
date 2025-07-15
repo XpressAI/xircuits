@@ -1,9 +1,14 @@
 import { JupyterFrontEnd } from '@jupyterlab/application';
 
+interface ILineRange {
+  lineno: number;
+  end_lineno: number;   
+}
+
 export async function openFileAtLine(
   app: JupyterFrontEnd,
   filePath: string,
-  line: number
+  range: ILineRange
 ): Promise<void> {
   const widget: any = await app.commands.execute('docmanager:open', {
     path: filePath,
@@ -11,12 +16,10 @@ export async function openFileAtLine(
   });
   await widget.context.ready;
 
-  const editor = widget?.content?.editor;
-  if (editor?.setCursorPosition) {
-    const pos = { line: line - 1, column: 0 };
-    editor.setCursorPosition(pos);
-    editor.revealPosition(pos);
-  }
+  await app.commands.execute('fileeditor:go-to-line', { line: range.end_lineno });
+
+  await new Promise(res => setTimeout(res, 10));
+  await app.commands.execute('fileeditor:go-to-line', { line: range.lineno });
 }
 
 export async function openNodeScript(

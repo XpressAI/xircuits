@@ -134,11 +134,19 @@ class ComponentsRouteHandler(APIHandler):
                     except Exception as e:
                         root = pathlib.Path(os.getcwd()).resolve()
                         rel_path = pathlib.Path(e.filename).resolve().relative_to(root)
-                        full_path = str(rel_path)  
-                        error_info = {
+                        full_path = str(rel_path)
+                        total_lines = 0
+                        if e.filename and os.path.exists(e.filename):
+                            try:
+                                with open(e.filename, "r", encoding="utf-8") as f:
+                                    total_lines = sum(1 for _ in f)
+                            except Exception:
+                                total_lines = e.lineno or 0 
 
+                        error_info = {
                             "file": os.path.relpath(e.filename, start=str(directory)) if e.filename else "unknown file",
                             "line": e.lineno or 0,
+                            "end_lineno": total_lines,
                             "message": f"SyntaxError: {e.msg}",
                             "full_path": full_path
                         }
