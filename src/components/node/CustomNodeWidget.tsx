@@ -315,11 +315,6 @@ const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode })
         setDescriptionStr(dscrptStr);
     };
 
-    const hideErrorTooltip = () => {
-        delete node.getOptions().extras["tip"];
-        node.getOptions().extras["borderColor"] = "rgb(0,192,255)";
-    };
-
     return (
         <div style={{ position: "relative" }}>
             {showDescription && <div className="description-tooltip">
@@ -357,48 +352,6 @@ const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode })
                 </S.Title>
                 <PortsComponent node={node} engine={engine} app={app}/>
             </S.Node>
-            {(node.getOptions().extras["tip"] != undefined && node.getOptions().extras["tip"] != "") ?
-                <ReactTooltip
-                    id={node.getOptions().id}
-                    clickable
-                    place="bottom"
-                    className="error-tooltip"
-                    arrowColor="rgba(255, 0, 0, .9)"
-                    delayHide={100}
-                    delayUpdate={50}
-                    getContent={() =>
-                        <div data-no-drag className="error-container">
-                            <p className="error-title">Error</p>
-                            <div className="markdown-body" dangerouslySetInnerHTML={{ __html: marked(node.getOptions().extras["tip"] ?? '') }} />
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={hideErrorTooltip}>
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    }
-                    overridePosition={({ left, top }) => {
-                        const currentNode = node;
-                        const nodeDimension = { x: currentNode.width, y: currentNode.height };
-                        const nodePosition = { x: currentNode.getX(), y: currentNode.getY() };
-                        let newPositionX = nodePosition.x;
-                        let newPositionY = nodePosition.y;
-                        let offset = 0;
-
-                        if (!shell.leftCollapsed) {
-                            let leftSidebar = document.getElementById('jp-left-stack');
-                            offset = leftSidebar.clientWidth + 2;
-                        }
-
-                        newPositionX = newPositionX - 184 + offset + (nodeDimension.x / 2);
-                        newPositionY = newPositionY + 90 + nodeDimension.y;
-
-                        const tooltipPosition = engine.getRelativePoint(newPositionX, newPositionY);
-
-                        left = tooltipPosition.x;
-                        top = tooltipPosition.y;
-                        return { top, left };
-                    }}
-                />
-                : null}
         </div>
     );
 };

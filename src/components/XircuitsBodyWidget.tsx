@@ -40,6 +40,8 @@ import { Notification } from '@jupyterlab/apputils';
 import { SplitLinkCommand } from './link/SplitLinkCommand';
 import { LinkSplitManager } from './link/LinkSplitManager';
 import { fitIcon, zoomInIcon, zoomOutIcon } from '../ui-components/icons';
+import { CustomPortModel } from "./port/CustomPortModel";
+import { showNodeCenteringNotification } from '../helpers/notificationEffects';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -176,6 +178,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const [isHoveringControls, setIsHoveringControls] = useState(false);
 
 	const isHoveringControlsRef = useRef(false);
+	const engine = xircuitsApp.getDiagramEngine();
 
 	useEffect(() => {
 	isHoveringControlsRef.current = isHoveringControls;
@@ -260,6 +263,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 						entityRemoved: () => {
 						onChange();
 						}
+
 					});
 					}, 100);
 					return () => clearTimeout(timeout);
@@ -267,6 +271,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				});
 		
 				xircuitsApp.getDiagramEngine().setModel(deserializedModel);
+				CustomPortModel.attachEngine(deserializedModel, engine);
 
 				// On the first load, clear undo history and register global engine listeners
 				if (initialRender.current) {
@@ -539,8 +544,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (lastNode['name'] != 'Finish') {
 			// When last node is not Finish node, check failed and show error tooltip
 			lastNode.getOptions().extras["borderColor"] = "red";
-			lastNode.getOptions().extras["tip"] = `Please make sure this **${lastNode['name']}** node end with **Finish** node`;
 			lastNode.setSelected(true);
+			const message = `Please make sure this "${lastNode['name']}" node ends with a "Finish" node.`;
+			showNodeCenteringNotification(message, lastNode.getID(), engine);
 			return false;
 		}
 		return true;
@@ -553,8 +559,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				let node = allNodes[i]["portsIn"][k]
 				if (node.getOptions()["label"].startsWith("★") && Object.keys(node.getLinks()).length == 0) {
 					allNodes[i].getOptions().extras["borderColor"] = "red";
-					allNodes[i].getOptions().extras["tip"] = "Please make sure the [★]COMPULSORY InPorts are connected ";
 					allNodes[i].setSelected(true);
+					const message = "Please make sure the [★]COMPULSORY InPorts are connected.";
+					showNodeCenteringNotification(message, allNodes[i].getID(), engine);
 					return false;
 				}
 			}
@@ -621,7 +628,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let allNodesConnected = checkAllNodesConnected();
 
 		if (!allNodesConnected) {
-			Notification.error("Please connect all the nodes before compiling.", { autoClose: 3000 });
+			const allNodes = getAllNodesFromStartToFinish();
+			const lastNode = allNodes[allNodes.length - 1];
+			const message = "Please connect all the nodes before compiling.";
+			showNodeCenteringNotification(message, lastNode.getID(), engine);
 			return;
 		}
 		const success = await commands.execute(commandIDs.compileFile, { componentList });
@@ -661,11 +671,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let allCompulsoryNodesConnected = checkAllCompulsoryInPortsConnected();
 
 		if (!allNodesConnected) {
-			Notification.error("Please connect all the nodes before running.", { autoClose: 3000 });
+			const all = getAllNodesFromStartToFinish();
+			const last = all[all.length - 1];
+			const message = "Please connect all the nodes before running.";
+			showNodeCenteringNotification(message, last.getID(), engine);
 			return;
 		}
 		if (!allCompulsoryNodesConnected) {
-			Notification.error("Please connect all [★]COMPULSORY InPorts.", { autoClose: 3000 });
 			return;
 		}
 

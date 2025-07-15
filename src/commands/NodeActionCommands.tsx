@@ -25,6 +25,7 @@ import { CustomDynaPortModel } from '../components/port/CustomDynaPortModel';
 import { fetchComponents } from '../tray_library/Component';
 import { BaseComponentLibrary } from '../tray_library/BaseComponentLib';
 import { commandIDs } from "./CommandIDs";
+import { showNodeCenteringNotification } from '../helpers/notificationEffects';
 
 /**
  * Add the commands for node actions.
@@ -290,8 +291,10 @@ export function addNodeActionCommands(
                     } catch (error) {
                         let path = selected_node.getOptions()["extras"].path;
                         console.log(`Error reloading component from path: ${path}. Error: ${error.message}`);
-                        selected_node.getOptions().extras["tip"] = `Component could not be loaded from path: \`${path}\`.\nPlease ensure that the component exists!`;
                         selected_node.getOptions().extras["borderColor"] = "red";
+                        const message =
+                        `Component could not be loaded from path: \`${path}\`.\nPlease ensure that the component exists!`;
+                        showNodeCenteringNotification(message, selected_node.getID(), engine);
                         nodesToHighlight.push(selected_node);
                         continue;
                     }
