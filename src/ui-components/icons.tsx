@@ -22,6 +22,7 @@ import infoSvg from '../../style/icons/info.svg';
 import fitSvg from '../../style/icons/fit.svg';
 import zoomInSvg from '../../style/icons/zoom-in.svg';
 import zoomOutSvg from '../../style/icons/zoom-out.svg';
+import fileCodeSvg from '../../style/icons/file-code.svg';
 
 
 export const xircuitsFaviconLink = 'https://raw.githubusercontent.com/XpressAI/xircuits/master/style/icons/xpress-logo.ico';
@@ -48,7 +49,7 @@ export const infoIcon = new LabIcon({ name: 'xircuits:infoIcon', svgstr: infoSvg
 export const fitIcon = new LabIcon({ name: 'xircuits:fitIcon', svgstr: fitSvg });
 export const zoomInIcon = new LabIcon({ name: 'xircuits:zoomInIcon', svgstr: zoomInSvg });
 export const zoomOutIcon = new LabIcon({ name: 'xircuits:zoomOutIcon', svgstr: zoomOutSvg });
-
+export const fileCodeIcon = new LabIcon({name: 'xircuits:fileCodeIcon', svgstr: fileCodeSvg });
 
 export function changeFavicon(src: string) {
     let head = document.head || document.getElementsByTagName('head')[0];
