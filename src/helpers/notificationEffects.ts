@@ -12,8 +12,8 @@ export function showNodeCenteringNotification(
     autoClose: 3000,
     actions: [
       {
-        label: 'Center Node',
-        caption: 'Center node on canvas',
+        label: 'Show Node',
+        caption: 'Show Node on canvas',
         callback: (event: MouseEvent) => {
           event.preventDefault(); 
           centerNodeInView(engine, nodeId);
