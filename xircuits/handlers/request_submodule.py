@@ -5,14 +5,15 @@ import json
 
 def get_submodule_config(user_query):
     
-    manifest_path = posixpath.join('.xircuits', 'xai_components_manifest.jsonl')
+    manifest_path = posixpath.join('.xircuits', "component_library_config.json")
     # load all entries
     with open(manifest_path, 'r', encoding='utf-8') as f:
-        subs = [json.loads(line) for line in f if line.strip()]
+        data = json.load(f)
+        subs = data.get('libraries', [])
 
     matches = [
         s for s in subs
-        if user_query in s.get('path', '') or user_query == s.get('library_id', '')
+        if user_query in s.get('local_path', '') or user_query == s.get('library_id', '')
     ]
     if len(matches) == 0:
         raise ValueError(
@@ -22,8 +23,8 @@ def get_submodule_config(user_query):
         raise ValueError(f"Multiple instances of '{user_query}' found.")
 
     entry = matches[0]
-    submodule_path = entry["path"]
-    submodule_url = entry["url"]
+    submodule_path = entry["local_path"]
+    submodule_url = entry["repository"]
 
     return submodule_path, submodule_url
 

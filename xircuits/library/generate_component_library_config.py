@@ -2,24 +2,9 @@ import os
 import posixpath
 import json
 import toml
+from pathlib import Path
 from configparser import ConfigParser
 
-def parse_gitmodules(gitmodules_path):
-    config = ConfigParser()
-    config.read(gitmodules_path)
-    modules = []
-    for section in config.sections():
-        path = config.get(section, 'path', fallback=None)
-        url = config.get(section, 'url', fallback=None)
-        # Extract the library ID from the path
-        library_id = path.replace('xai_components/xai_', '').upper()
-        if path and url:
-            modules.append({
-                'path': posixpath.normpath(path),
-                'url': url,
-                'library_id': library_id 
-            })
-    return modules
 
 def parse_toml_file(toml_path):
     try:
@@ -28,7 +13,8 @@ def parse_toml_file(toml_path):
         return data
     except Exception as e:
         print(f"Error parsing TOML file at {toml_path}: {e}")
-        return None 
+        return None
+
 
 def read_file_lines_to_list(file_path):
     if not os.path.exists(file_path):
@@ -36,16 +22,19 @@ def read_file_lines_to_list(file_path):
     with open(file_path, 'r') as file:
         return [line.strip() for line in file.readlines()]
 
+
 def is_installed_component(directory_path):
     # Check for an __init__.py file to determine if the directory is an installed component
     return os.path.isfile(os.path.join(directory_path, '__init__.py'))
+
 
 def extract_library_info(lib_path, base_path, status="remote"):
     # If __init__.py exists, confirm the component is installed
     if is_installed_component(lib_path):
         status = "installed"
 
-    library_id = posixpath.basename(lib_path).replace('xai_', '').replace('xai-', '').upper()
+    library_id = posixpath.basename(lib_path).replace(
+        'xai_', '').replace('xai-', '').upper()
     lib_info = {
         "name": posixpath.basename(lib_path),
         "library_id": library_id,
@@ -71,28 +60,35 @@ def extract_library_info(lib_path, base_path, status="remote"):
 
     return lib_info
 
+
 def generate_component_library_config(base_path="xai_components"):
 
-    manifest_path = posixpath.join('.xircuits', 'xai_components_manifest.jsonl')
+    manifest_path = posixpath.join(
+        os.getcwd(), ".remote_libs_manifest", 'index.json')
     libraries = {}
     library_id_map = {}  # Map library IDs to library info
     # Parse submodules first and set them as "remote"
     if os.path.exists(manifest_path):
-        with open(manifest_path, 'r') as f:
-            submodules = [json.loads(line) for line in f if line.strip()]
-        for submodule in submodules:
-            submodule_path = posixpath.normpath(submodule['path'])
+        with open(manifest_path, 'r', encoding='utf-8') as f: # array of {library_id, path, metadata}
+            index = json.load(f)
+        for entry in index:
+            # load each metadata file
+            meta_path = posixpath.join(
+                os.getcwd(), ".remote_libs_manifest", entry['metadata'])
+            meta = json.load(open(meta_path, 'r', encoding='utf-8'))
+            submodule_path = posixpath.normpath(meta['path'])
             os.makedirs(submodule_path, exist_ok=True)
             library_info = {
-                "name": posixpath.basename(submodule_path),
-                "library_id": submodule['library_id'],  # Use the library ID from the submodule info
-                "repository": submodule['url'],
-                "local_path": submodule_path,
-                "version_ref":submodule['git_ref'],
-                "status": "remote"
+                "name":         posixpath.basename(submodule_path),
+                "description":  meta.get("description"),
+                "library_id":   meta.get("library_id"),
+                "repository":   meta.get("url") or meta.get("repository"),
+                "local_path":   submodule_path,
+                "version_ref":  meta.get("git_ref"),
+                "status":       "remote"
             }
             libraries[submodule_path] = library_info
-            library_id_map[submodule['library_id']] = library_info
+            library_id_map[meta['library_id']] = library_info
 
     def explore_directory(directory, base_path):
         for item in os.listdir(directory):
@@ -112,12 +108,14 @@ def generate_component_library_config(base_path="xai_components"):
 
     return {"libraries": list(libraries.values())}
 
+
 def save_component_library_config(filename=".xircuits/component_library_config.json"):
     libraries_data = generate_component_library_config()
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, 'w') as json_file:
         json.dump(libraries_data, json_file, indent=4)
     return libraries_data
+
 
 def get_component_library_config(filename=".xircuits/component_library_config.json"):
     if os.path.exists(filename):
@@ -129,6 +127,7 @@ def get_component_library_config(filename=".xircuits/component_library_config.js
             return None
     else:
         return save_component_library_config(filename)
+
 
 if __name__ == "__main__":
     save_component_library_config()

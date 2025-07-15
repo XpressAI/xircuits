@@ -45,6 +45,9 @@ test = [
     "pytest-jupyter[server]>=0.6.0"
 ]
 
+[project.urls]
+manifest = "https://github.com/XpressAI/xai-components-manifest.git"
+
 [tool.hatch.version]
 source = "nodejs"
 
