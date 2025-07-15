@@ -100,7 +100,8 @@ class ComponentsRouteHandler(APIHandler):
     def get(self):
         components = []
         error_msg = ""
-
+        error_info = None
+        
         for id, c in DEFAULT_COMPONENTS.items():
             components.append({
                 "task": c["name"],
@@ -130,13 +131,28 @@ class ComponentsRouteHandler(APIHandler):
 
                     try:
                         components.extend(chain.from_iterable(self.extract_components(f, directory, python_path) for f in python_files if not f.name.startswith(".")))
-                    except Exception:
+                    except Exception as e:
+                        root = pathlib.Path(os.getcwd()).resolve()
+                        rel_path = pathlib.Path(e.filename).resolve().relative_to(root)
+                        full_path = str(rel_path)
+                        total_lines = 0
+                        if e.filename and os.path.exists(e.filename):
+                            try:
+                                with open(e.filename, "r", encoding="utf-8") as f:
+                                    total_lines = sum(1 for _ in f)
+                            except Exception:
+                                total_lines = e.lineno or 0 
+
+                        error_info = {
+                            "file": os.path.relpath(e.filename, start=str(directory)) if e.filename else "unknown file",
+                            "line": e.lineno or 0,
+                            "end_lineno": total_lines,
+                            "message": f"SyntaxError: {e.msg}",
+                            "full_path": full_path
+                        }
                         error_msg = traceback.format_exc()
-                        pass
-                    finally:
-                        components.extend(chain.from_iterable(self.extract_components(f, directory, python_path) for f in python_files if not f.name.startswith(".")))
-
-
+                        break
+                    
         components = list({(c["header"], c["task"]): c for c in components}.values())
 
         # Set up component colors according to palette
@@ -145,7 +161,8 @@ class ComponentsRouteHandler(APIHandler):
                 c["color"] = COLOR_PALETTE[idx % len(COLOR_PALETTE)]
 
         data = {"components": components,
-                "error_msg" : error_msg}
+                "error_msg" : error_msg,        
+                "error_info": error_info}
 
         self.finish(json.dumps(data))
         
