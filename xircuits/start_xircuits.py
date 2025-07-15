@@ -5,10 +5,13 @@ import subprocess
 import shutil
 import toml
 from pathlib import Path
+from importlib.metadata import metadata, PackageNotFoundError
 
 from .utils import is_empty, copy_from_installed_wheel
 from .library import list_component_library, install_library, fetch_library, save_component_library_config
 from .compiler import compile, recursive_compile
+from xircuits.handlers.config import get_config
+
 
 def init_xircuits():
     """
@@ -18,13 +21,8 @@ def init_xircuits():
     copy_from_installed_wheel(package_name, resource='.xircuits', dest_path='.xircuits')
 
     tmp_dir = Path(os.getcwd()) / ".remote_libs_manifest"
-
-    # get the manifest repo url form pyproject.toml
-    base = Path(__file__).resolve().parents[1]
-    cfg = toml.load(base / "pyproject.toml")
-    manifest_repo = cfg["tool"]["xircuits"]["manifest"]
-
-    subprocess.run(["git", "clone",manifest_repo,str(tmp_dir)], check=True)
+    cfg = get_config()
+    subprocess.run(["git", "clone",cfg['DEV']['MANIFEST'],str(tmp_dir)], check=True)
 
     component_library_path = Path(os.getcwd()) / "xai_components"
     if not component_library_path.exists():
