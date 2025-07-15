@@ -41,6 +41,8 @@ import { Notification } from '@jupyterlab/apputils';
 import { SplitLinkCommand } from './link/SplitLinkCommand';
 import { LinkSplitManager } from './link/LinkSplitManager';
 import { fitIcon, zoomInIcon, zoomOutIcon } from '../ui-components/icons';
+import { CustomPortModel } from "./port/CustomPortModel";
+import { showNodeCenteringNotification } from '../helpers/notificationEffects';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -225,6 +227,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 }) => {
 	const xircuitLogger = new Log(app);
 
+	const [canvasLoaded, setCanvasLoaded] = useState(false);
 	const [saved, setSaved] = useState(false);
 	const [compiled, setCompiled] = useState(false);
 	const [initialize, setInitialize] = useState(true);
@@ -245,6 +248,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const hideTimeout = useRef<ReturnType<typeof setTimeout>>();
 	const [isHoveringControls, setIsHoveringControls] = useState(false);
 
+	const engine = xircuitsApp.getDiagramEngine();
 	const isHoveringControlsRef = useRef(false);
 	const [showSearch, setShowSearch] = useState(false);
 	const [searchText, setSearchText] = useState('');
@@ -445,72 +449,60 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			const modelStr = currentContext.model.toString();
 			if (!isJSON(modelStr)) {
 				// When context can't be parsed, just return
-				return
+				return;
 			}
 
 			try {
-				if (notInitialRender.current) {
-					const model: any = currentContext.model.toJSON();
-					let deserializedModel = xircuitsApp.customDeserializeModel(model, initialRender.current);
-					deserializedModel.registerListener({
-						// Detect changes when node is dropped or deleted
-						nodesUpdated: () => {
-							// Add delay for links to disappear 
-							const timeout = setTimeout(() => {
-								onChange();
-								setInitialize(false);
-							}, 10)
-							return () => clearTimeout(timeout)
+				// Deserialize the raw JSON, passing whether this is the first render
+				const model: any = currentContext.model.toJSON();
+				let deserializedModel = xircuitsApp.customDeserializeModel(model, initialRender.current);
+		
+				// Re-attach your node/link change listeners *before* setting the model
+				deserializedModel.registerListener({
+				nodesUpdated: () => {
+					// Delay so links can settle before serializing
+					const timeout = setTimeout(() => {
+						onChange();
+						setInitialize(false);
+					}, 10);
+					return () => clearTimeout(timeout);
+				},
+				linksUpdated: (event) => {
+					const timeout = setTimeout(() => {
+					event.link.registerListener({
+						sourcePortChanged: () => {
+						onChange();
 						},
-						linksUpdated: (event) => {
-
-							const timeout = setTimeout(() => {
-
-								event.link.registerListener({
-									/**
-									 * sourcePortChanged
-									 * Detect changes when link is connected
-									 */
-									sourcePortChanged: e => {
-										onChange();
-									},
-									/**
-									 * targetPortChanged
-									 * Detect changes when link is connected
-									 */
-									targetPortChanged: e => {
-										const sourceLink = e.entity as any;
-										app.commands.execute(commandIDs.connectLinkToObviousPorts, { draggedLink: sourceLink });
-										onChange();
-
-									},
-									/**
-									 * entityRemoved
-									 * Detect changes when new link is removed
-									 */
-									entityRemoved: e => {
-										onChange();
-									}
-								});
-							}, 100); // You can adjust the delay as needed
-							// Don’t forget to clear the timeout when unmounting or when the component is destroyed.
-							return () => clearTimeout(timeout);
+						targetPortChanged: (e) => {
+							const sourceLink = e.entity as any;
+							app.commands.execute(commandIDs.connectLinkToObviousPorts, { draggedLink: sourceLink });
+							onChange();
+						},
+						entityRemoved: () => {
+						onChange();
 						}
-					})
-					xircuitsApp.getDiagramEngine().setModel(deserializedModel);
-					clearSearchFlags();
-					initialRender.current = false;
-				} else {
-					// Clear undo history when first time rendering
-					notInitialRender.current = true;
+
+					});
+					}, 100);
+					return () => clearTimeout(timeout);
+				}
+				});
+		
+				xircuitsApp.getDiagramEngine().setModel(deserializedModel);
+				clearSearchFlags();
+				CustomPortModel.attachEngine(deserializedModel, engine);
+
+				// On the first load, clear undo history and register global engine listeners
+				if (initialRender.current) {
 					currentContext.model.sharedModel.clearUndoHistory();
-					// Register engine listener just once
 					xircuitsApp.getDiagramEngine().registerListener({
-						droppedLink: event => showComponentPanelFromLink(event),
+						droppedLink: (event) => showComponentPanelFromLink(event),
 						hidePanel: () => hidePanel(),
 						onChange: () => onChange()
-					})
-				}
+					});
+				initialRender.current = false;
+				setCanvasLoaded(true);
+			}
 			} catch (e) {
 				showErrorMessage('Error', `An error occurred: ${e.message}`);
 			}
@@ -771,8 +763,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (lastNode['name'] != 'Finish') {
 			// When last node is not Finish node, check failed and show error tooltip
 			lastNode.getOptions().extras["borderColor"] = "red";
-			lastNode.getOptions().extras["tip"] = `Please make sure this **${lastNode['name']}** node end with **Finish** node`;
 			lastNode.setSelected(true);
+			const message = `Please make sure this "${lastNode['name']}" node ends with a "Finish" node.`;
+			showNodeCenteringNotification(message, lastNode.getID(), engine);
 			return false;
 		}
 		return true;
@@ -785,8 +778,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				let node = allNodes[i]["portsIn"][k]
 				if (node.getOptions()["label"].startsWith("★") && Object.keys(node.getLinks()).length == 0) {
 					allNodes[i].getOptions().extras["borderColor"] = "red";
-					allNodes[i].getOptions().extras["tip"] = "Please make sure the [★]COMPULSORY InPorts are connected ";
 					allNodes[i].setSelected(true);
+					const message = "Please make sure the [★]COMPULSORY InPorts are connected.";
+					showNodeCenteringNotification(message, allNodes[i].getID(), engine);
 					return false;
 				}
 			}
@@ -853,7 +847,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let allNodesConnected = checkAllNodesConnected();
 
 		if (!allNodesConnected) {
-			Notification.error("Please connect all the nodes before compiling.", { autoClose: 3000 });
+			const allNodes = getAllNodesFromStartToFinish();
+			const lastNode = allNodes[allNodes.length - 1];
+			const message = "Please connect all the nodes before compiling.";
+			showNodeCenteringNotification(message, lastNode.getID(), engine);
 			return;
 		}
 		const success = await commands.execute(commandIDs.compileFile, { componentList });
@@ -893,11 +890,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let allCompulsoryNodesConnected = checkAllCompulsoryInPortsConnected();
 
 		if (!allNodesConnected) {
-			Notification.error("Please connect all the nodes before running.", { autoClose: 3000 });
+			const all = getAllNodesFromStartToFinish();
+			const last = all[all.length - 1];
+			const message = "Please connect all the nodes before running.";
+			showNodeCenteringNotification(message, last.getID(), engine);
 			return;
 		}
 		if (!allCompulsoryNodesConnected) {
-			Notification.error("Please connect all [★]COMPULSORY InPorts.", { autoClose: 3000 });
 			return;
 		}
 
@@ -1656,52 +1655,56 @@ return (
 					onMouseDown={preventDefault}
 					onContextMenu={showCanvasContextMenu}
 					onClick={handleClick}>
-					<XircuitsCanvasWidget translate={translate} >
-						<CanvasWidget engine={xircuitsApp.getDiagramEngine()}/>
-						{/* Add Component Panel(ctrl + left-click, dropped link) */}
-						{isComponentPanelShown && (
-							<div
-								onMouseEnter={()=>setDontHidePanel(true)}
-								onMouseLeave={()=>setDontHidePanel(false)}
-								id='component-panel'
-								style={{
-									minHeight: 'auto',
-									height: 'auto',
-									boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
-									top: componentPanelPosition.y,
-									left: componentPanelPosition.x
-								}}
-								className="add-component-panel">
-								<ComponentsPanel
-									lab={app}
-									eng={xircuitsApp.getDiagramEngine()}
-									nodePosition={nodePosition}
-									linkData={looseLinkData}
-									isParameter={isParameterLink}
-									key="component-panel"
-								/>
-							</div>
-						)}
-						{/* Node Action Panel(left-click) */}
-						{contextMenuShown && (
-							<div
-								id='context-menu'
-								style={{
-									minHeight: 'auto',
-									height: 'auto',
-									boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
-									top: contextMenuPosition.y,
-									left: contextMenuPosition.x
-								}}
-								className="canvas-context-menu">
-								<CanvasContextMenu
-									app={app}
-									engine={xircuitsApp.getDiagramEngine()}
-									nodePosition={nodePosition}
-								/>
-							</div>
-						)}
-					</XircuitsCanvasWidget>
+					{/* Display only after canvas is fully rendered */}
+					<div style={{visibility: canvasLoaded ? 'visible' : 'hidden',
+						height: '100%', width: '100%' }}>
+						<XircuitsCanvasWidget translate={translate} >
+							<CanvasWidget engine={xircuitsApp.getDiagramEngine()}/>
+							{/* Add Component Panel(ctrl + left-click, dropped link) */}
+							{isComponentPanelShown && (
+								<div
+									onMouseEnter={()=>setDontHidePanel(true)}
+									onMouseLeave={()=>setDontHidePanel(false)}
+									id='component-panel'
+									style={{
+										minHeight: 'auto',
+										height: 'auto',
+										boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
+										top: componentPanelPosition.y,
+										left: componentPanelPosition.x
+									}}
+									className="add-component-panel">
+									<ComponentsPanel
+										lab={app}
+										eng={xircuitsApp.getDiagramEngine()}
+										nodePosition={nodePosition}
+										linkData={looseLinkData}
+										isParameter={isParameterLink}
+										key="component-panel"
+									/>
+								</div>
+							)}
+							{/* Node Action Panel(left-click) */}
+							{contextMenuShown && (
+								<div
+									id='context-menu'
+									style={{
+										minHeight: 'auto',
+										height: 'auto',
+										boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
+										top: contextMenuPosition.y,
+										left: contextMenuPosition.x
+									}}
+									className="canvas-context-menu">
+									<CanvasContextMenu
+										app={app}
+										engine={xircuitsApp.getDiagramEngine()}
+										nodePosition={nodePosition}
+									/>
+								</div>
+							)}
+						</XircuitsCanvasWidget>
+					</div>
 				</Layer>
 			</Content>
 

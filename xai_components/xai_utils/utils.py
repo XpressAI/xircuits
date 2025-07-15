@@ -1,3 +1,8 @@
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
+
+import dill
+
 from xai_components.base import InArg, OutArg, InCompArg, Component, xai_component, secret, dynalist, dynatuple, BaseComponent, SubGraphExecutor
 
 import os
@@ -726,6 +731,54 @@ class RunParallelThread(Component):
         x.add_done_callback(lambda x: x.result())
 
         self.futures.value.append(x)
+
+
+def run_body_serialized(payload):
+    """
+    Unpickles and runs a body (subgraph) with its context.
+
+    Parameters:
+        payload (bytes): Pickled tuple of (body, ctx)
+    """
+    body, ctx = dill.loads(payload)
+    SubGraphExecutor(body).do(ctx)
+
+
+@xai_component(color='blue')
+class RunParallelProcess(Component):
+    """
+    Executes a given body in separate processes using multiprocessing and dill.
+
+    ##### inPorts:
+    - n_workers (int): Number of worker processes to use for executing the body in parallel.
+
+    ##### outPorts:
+    - futures (list): Futures representing parallel executions.
+
+    ##### Branches:
+    - body: The body (subgraph) to be run in each process.
+    """
+    n_workers: InArg[int]
+    futures: OutArg[list]
+    body: BaseComponent
+
+    def __init__(self):
+        super().__init__()
+        self.futures.value = []
+
+    def execute(self, ctx) -> None:
+        from copy import deepcopy
+
+        ctx_mp = get_context("spawn")
+        executor = ProcessPoolExecutor(max_workers=self.n_workers.value, mp_context=ctx_mp)
+
+        # Serialize the work
+        payload = dill.dumps((deepcopy(self.body), deepcopy(ctx)))
+        future = executor.submit(run_body_serialized, payload)
+        future.add_done_callback(lambda x: x.result())
+
+        self.futures.value.append(future)
+
 
 @xai_component(color='blue')
 class AwaitFutures(Component):
