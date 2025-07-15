@@ -22,7 +22,7 @@ import { PointModel } from '@projectstorm/react-diagrams';
 import { Point } from '@projectstorm/geometry';
 import { createArgumentNode, createLiteralNode, handleArgumentInput, handleLiteralInput } from '../tray_library/GeneralComponentLib';
 import { CustomDynaPortModel } from '../components/port/CustomDynaPortModel';
-import { manualReload } from '../tray_library/Component';
+import { fetchComponents } from '../tray_library/Component';
 import { BaseComponentLibrary } from '../tray_library/BaseComponentLib';
 import { commandIDs } from "./CommandIDs";
 import { showNodeCenteringNotification } from '../helpers/notificationEffects';
@@ -230,8 +230,8 @@ export function addNodeActionCommands(
     commands.addCommand(commandIDs.reloadNode, {
         execute: async () => {
 
-            await manualReload();
-
+            await fetchComponents();
+            
             const widget = tracker.currentWidget?.content as XircuitsPanel;
             const engine = widget.xircuitsApp.getDiagramEngine();
             const model = engine.getModel();
