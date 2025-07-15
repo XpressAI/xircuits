@@ -20,10 +20,9 @@ def init_xircuits():
     tmp_dir = Path(os.getcwd()) / ".remote_libs_manifest"
 
     # get the manifest repo url form pyproject.toml
-    here = Path(__file__).resolve().parents[1]
-    pyproject_path = here / "pyproject.toml"
-    _config = toml.load(pyproject_path)
-    manifest_repo = _config["project"]["urls"]["manifest"]
+    base = Path(__file__).resolve().parents[1]
+    cfg = toml.load(base / "pyproject.toml")
+    manifest_repo = cfg["tool"]["xircuits"]["manifest"]
 
     subprocess.run(["git", "clone",manifest_repo,str(tmp_dir)], check=True)
 

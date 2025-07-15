@@ -45,7 +45,7 @@ test = [
     "pytest-jupyter[server]>=0.6.0"
 ]
 
-[project.urls]
+[tool.xircuits]
 manifest = "https://github.com/XpressAI/xai-components-manifest.git"
 
 [tool.hatch.version]
