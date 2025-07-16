@@ -3,7 +3,7 @@ import posixpath
 import json
 
 
-def get_submodule_config(user_query):
+def get_remote_config(user_query):
     
     manifest_path = posixpath.join('.xircuits', "component_library_config.json")
     # load all entries
@@ -17,27 +17,27 @@ def get_submodule_config(user_query):
     ]
     if len(matches) == 0:
         raise ValueError(
-            f"{user_query} component library submodule not found.")
+            f"{user_query} component library remote not found.")
 
     if len(matches) > 1:
         raise ValueError(f"Multiple instances of '{user_query}' found.")
 
     entry = matches[0]
-    submodule_path = entry["local_path"]
-    submodule_url = entry["repository"]
+    remote_path = entry["local_path"]
+    remote_url = entry["repository"]
 
-    return submodule_path, submodule_url
+    return remote_path, remote_url
 
 
-def request_submodule_library(component_library_query) -> (bool, str):
+def request_remote_library(component_library_query) -> (bool, str):
     try:
-        submodule_path, submodule_url = get_submodule_config(
+        remote_path, remote_url = get_remote_config(
             component_library_query)
-        print("Cloning " + submodule_path + " from " + submodule_url)
+        print("Cloning " + remote_path + " from " + remote_url)
 
         # Manually clone using the git CLI
         result = subprocess.run(
-            ["git", "clone", submodule_url, submodule_path],
+            ["git", "clone", remote_url, remote_path],
             capture_output=True,
             text=True
         )
@@ -47,6 +47,6 @@ def request_submodule_library(component_library_query) -> (bool, str):
             return False, result.stderr
         else:
             print(result.stdout)
-            return True, f"Successfully cloned {submodule_path}."
+            return True, f"Successfully cloned {remote_path}."
     except ValueError as e:
         return False, str(e)

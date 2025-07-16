@@ -67,7 +67,7 @@ def generate_component_library_config(base_path="xai_components"):
         os.getcwd(), ".remote_libs_manifest", 'index.json')
     libraries = {}
     library_id_map = {}  # Map library IDs to library info
-    # Parse submodules first and set them as "remote"
+    # Parse remotes first and set them as "remote"
     if os.path.exists(manifest_path):
         with open(manifest_path, 'r', encoding='utf-8') as f: # array of {library_id, path, metadata}
             index = json.load(f)
@@ -76,18 +76,18 @@ def generate_component_library_config(base_path="xai_components"):
             meta_path = posixpath.join(
                 os.getcwd(), ".remote_libs_manifest", entry['metadata'])
             meta = json.load(open(meta_path, 'r', encoding='utf-8'))
-            submodule_path = posixpath.normpath(meta['path'])
-            os.makedirs(submodule_path, exist_ok=True)
+            remote_path = posixpath.normpath(meta['path'])
+            os.makedirs(remote_path, exist_ok=True)
             library_info = {
-                "name":         posixpath.basename(submodule_path),
+                "name":         posixpath.basename(remote_path),
                 "description":  meta.get("description"),
                 "library_id":   meta.get("library_id"),
                 "repository":   meta.get("url") or meta.get("repository"),
-                "local_path":   submodule_path,
+                "local_path":   remote_path,
                 "version_ref":  meta.get("git_ref"),
                 "status":       "remote"
             }
-            libraries[submodule_path] = library_info
+            libraries[remote_path] = library_info
             library_id_map[meta['library_id']] = library_info
 
     def explore_directory(directory, base_path):
