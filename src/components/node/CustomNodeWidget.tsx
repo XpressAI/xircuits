@@ -29,8 +29,16 @@ import { LegacyRef, MutableRefObject } from "react";
 
 
 export namespace S {
-    export const Node = styled.div<{ borderColor: string, background: string; selected: boolean; }>`
-        box-shadow: 1px 1px 10px ${(p) => p.selected ? '3px rgb(0 192 255 / 0.5)' : '0px rgb(0 0 0 / 0.5)'};
+    export const Node = styled.div<{ borderColor: string, background: string; selected: boolean;  match?: boolean; selectedMatch?: boolean; }>`
+        box-shadow: ${p =>
+            p.selectedMatch
+                ? '1px 1px 10px #3399ff'
+            : p.match
+                ? '1px 1px 10px orange'
+            : p.selected
+                ? '1px 1px 10px rgb(0 192 255 / 0.5)'
+            : 'none'
+            };
         cursor: grab;
         border-radius: 5px;
         font-family: sans-serif;
@@ -237,6 +245,8 @@ const ParameterNode = ({ node, engine, app }) => {
             borderColor={node.getOptions().extras["borderColor"]}
             data-default-node-name={node.getOptions().name}
             selected={node.isSelected()}
+            match={node.getOptions().extras.isMatch}
+            selectedMatch={node.getOptions().extras.isSelectedMatch}
             background={node.getOptions().color}
             onDoubleClick={handleEditParameter}
         >
@@ -258,6 +268,8 @@ const StartFinishNode = ({ node, engine, handleDeletableNode, app }) => (
         data-default-node-name={node.getOptions().name}
         selected={node.isSelected()}
         background={node.getOptions().color}
+        match={node.getOptions().extras.isMatch}
+        selectedMatch={node.getOptions().extras.isSelectedMatch}
     >
         <S.Title background={node.getOptions().color}
 >
@@ -281,6 +293,8 @@ const WorkflowNode = ({ node, engine, app, handleDeletableNode }) => {
                 data-default-node-name={node.getOptions().name}
                 selected={node.isSelected()}
                 background={node.getOptions().color}
+                match={node.getOptions().extras.isMatch}
+                selectedMatch={node.getOptions().extras.isSelectedMatch}
                 className={"node workflow-node "+(node.isSelected() ? "selected" : "")}
             >
                 <S.Title background={node.getOptions().color}
@@ -340,6 +354,8 @@ const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode })
                 data-default-node-name={node.getOptions().name}
                 selected={node.isSelected()}
                 background={node.getOptions().color}
+                match={node.getOptions().extras.isMatch}
+                selectedMatch={node.getOptions().extras.isSelectedMatch}
             >
                 <S.Title background={node.getOptions().color}
 >
@@ -357,6 +373,21 @@ const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode })
 };
 
 export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
+    
+    private _repaintHandle: { deregister: () => void };
+
+    componentDidMount() {
+      // registerListener returns a handle with a `.deregister()` method
+        this._repaintHandle = this.props.engine.registerListener({
+        repaintCanvas: () => this.forceUpdate()
+        });
+    }
+
+    componentWillUnmount() {
+      // pass that same handle back to deregisterListener
+        this.props.engine.deregisterListener(this._repaintHandle);
+    }
+    
     handleDeletableNode = (key, event) => {
         this.setState({
             [key]: event.target.checked ? this.props.node.setLocked(true) : this.props.node.setLocked(false),

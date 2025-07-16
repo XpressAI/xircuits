@@ -104,3 +104,31 @@ export function zoomIn(engine: DiagramEngine): void {
 export function zoomOut(engine: DiagramEngine): void {
     zoomBy(engine, 0.85);
 }
+
+/**
+ * Centers the viewport on the given node without changing the zoom level.
+ * @param engine  The DiagramEngine instance
+ * @param node    The node to center (must support getPosition and getSize)
+ */
+export function centerNodeInView(engine: DiagramEngine, node: any): void {
+    const model = engine.getModel();
+    const zoom = model.getZoomLevel() / 100;
+
+    const { x, y } = node.getPosition();
+    const { width = 150, height = 100 } = node.getSize?.() ?? {};
+
+    const nodeCenterX = x + width / 2;
+    const nodeCenterY = y + height / 2;
+
+    const contentWidget = (engine as any).canvas.closest(
+        '.lm-Widget[role="region"][aria-label="main area content"]'
+    ) as HTMLElement;
+
+    const { width: vpW, height: vpH } = contentWidget.getBoundingClientRect();
+
+    const offsetX = vpW / 2 - nodeCenterX * zoom;
+    const offsetY = vpH / 2 - nodeCenterY * zoom;
+
+    model.setOffset(offsetX, offsetY);
+    engine.repaintCanvas();
+}

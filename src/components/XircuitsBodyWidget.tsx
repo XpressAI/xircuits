@@ -26,7 +26,8 @@ import {
 	countVisibleMenuOptions,
 	getMenuOptionsVisibility,
 } from "../context-menu/CanvasContextMenu";
-import { delayedZoomToFit, zoomIn, zoomOut } from '../helpers/zoom';
+import { delayedZoomToFit, zoomIn, zoomOut, centerNodeInView } from '../helpers/zoom';
+import { searchModel, SearchResult } from '../helpers/search';
 import { cancelDialog, GeneralComponentLibrary } from "../tray_library/GeneralComponentLib";
 import { AdvancedComponentLibrary, fetchNodeByName } from "../tray_library/AdvanceComponentLib";
 import { lowPowerMode, setLowPowerMode } from "./state/powerModeState";
@@ -134,6 +135,76 @@ const ZoomControls = styled.div<{visible: boolean}>`
 	
 	`;
 
+	const SearchOverlay = styled.div<{visible: boolean}>`
+	position: fixed;
+	top: 10px;
+	right: 10px;
+	background: rgba(0,0,0,0.8);
+  	padding: 8px;    /* ← extra right padding for the close button */
+	border-radius: 4px;
+	display: ${({visible}) => visible ? 'flex' : 'none'};
+	align-items: center;
+	gap: 4px;
+	z-index: 10000;
+  
+	input {
+	  padding: 4px 6px;
+	  border-radius: 2px;
+	  border: none;
+	  outline: none;
+	  width: 140px;
+	}
+  
+	button:not(.close-search) {
+	  background: none;
+	  border: none;
+	  color: white;
+	  cursor: pointer;
+	  padding: 4px;
+	  font-size: 14px;
+	}
+  
+  	span {
+	  margin-left: auto;
+	  color: white;
+	  font-size: 12px;
+	}
+  
+	.close-search {
+		top: 4px;
+		left: 50%;
+		background: none;
+		border: none;
+		color: white;
+		font-size: 24px;
+		cursor: pointer;
+		line-height: 1;
+	}
+
+	/* Light theme override */
+	body.light-mode & {
+	  background: rgba(255,255,255,0.9);
+	  border: 1px solid rgba(0,0,0,0.1);
+  
+	  input {
+		color: black;
+		background: rgba(0,0,0,0.05);
+	  }
+  
+	  button:not(.close-search) {
+		color: black;
+	  }
+  
+	  span {
+		color: black;
+	  }
+  
+	  .close-search {
+		color: black;
+	  }
+	}
+`;
+
 export const BodyWidget: FC<BodyWidgetProps> = ({
 	context,
 	xircuitsApp,
@@ -177,12 +248,159 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const hideTimeout = useRef<ReturnType<typeof setTimeout>>();
 	const [isHoveringControls, setIsHoveringControls] = useState(false);
 
-	const isHoveringControlsRef = useRef(false);
 	const engine = xircuitsApp.getDiagramEngine();
+	const isHoveringControlsRef = useRef(false);
+	const [showSearch, setShowSearch] = useState(false);
+	const [searchText, setSearchText] = useState('');
+	const [matchCount, setMatchCount] = useState(0);
+	const [currentMatch, setCurrentMatch] = useState(0);
+	const [matchedIndices, setMatchedIndices] = useState<number[]>([]);
+	const [currentMatchIndex, setCurrentMatchIndex] = useState<number>(-1);
+
+	const clearSearchFlags = () => {
+		const engine = xircuitsApp.getDiagramEngine();
+		engine.getModel().getNodes().forEach(node => {
+		  node.getOptions().extras.isMatch = false;
+		  node.getOptions().extras.isSelectedMatch = false;
+		});
+		engine.repaintCanvas();
+	  };
 
 	useEffect(() => {
-	isHoveringControlsRef.current = isHoveringControls;
-	}, [isHoveringControls]);
+		const onKeyDown = (e: KeyboardEvent) => {
+		const key = e.key.toLowerCase();
+		  // only handle in the active Xircuits canvas
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
+		if ((e.ctrlKey || e.metaKey) && key === 'f') {
+			e.preventDefault();
+			setShowSearch(s => !s);
+		}
+		if (e.key === 'Escape') {
+			setShowSearch(false);
+		}
+		};
+		document.addEventListener('keydown', onKeyDown);
+		return () => document.removeEventListener('keydown', onKeyDown);
+	}, [shell, widgetId]);
+
+	// Execute search command
+	const searchInputRef = useRef<HTMLInputElement>(null);
+
+	const executeSearch = useCallback((text: string) => {
+		const engine = xircuitsApp.getDiagramEngine();
+		const model = engine.getModel();
+		const nodes = model.getNodes();
+	
+		// Deselect all
+		nodes.forEach(node => {
+			node.setSelected(false);
+			node.getOptions().extras.isMatch = false;
+			node.getOptions().extras.isSelectedMatch = false;
+		});
+	
+		const query = text.trim();
+		if (!query) {
+		setMatchCount(0);
+		setCurrentMatch(0);
+		setMatchedIndices([]);
+		setCurrentMatchIndex(-1);
+		engine.repaintCanvas();
+		return;
+		}
+	
+		const result: SearchResult = searchModel(model, query);
+		setMatchCount(result.count);
+		setMatchedIndices(result.indices);
+	
+		if (result.indices.length > 0) {
+			result.indices.forEach((index, i) => {
+			const matchNode = nodes[index];
+			matchNode.getOptions().extras.isMatch = true;
+			matchNode.getOptions().extras.isSelectedMatch = i === 0;
+			});
+		
+			const first = nodes[result.indices[0]];
+			first.setSelected(true);
+			centerNodeInView(engine, first);
+			engine.repaintCanvas();
+			setCurrentMatch(1);
+			setCurrentMatchIndex(0);
+		} else {
+		setCurrentMatch(0);
+		setCurrentMatchIndex(-1);
+		}
+	
+		searchInputRef.current?.focus();
+	}, [xircuitsApp]);
+	
+	const navigateMatch = (direction: 'next' | 'prev') => {
+		const engine = xircuitsApp.getDiagramEngine();
+		const model = engine.getModel();
+		const nodes = model.getNodes();
+	
+		if (matchedIndices.length === 0) return;
+	
+		let newIndex = currentMatchIndex;
+		if (direction === 'next') {
+		newIndex = (currentMatchIndex + 1) % matchedIndices.length;
+		} else {
+		newIndex = (currentMatchIndex - 1 + matchedIndices.length) % matchedIndices.length;
+		}
+	
+		const matchedIndex = matchedIndices[newIndex];
+		const matchedNode = nodes.find((_, idx) => idx === matchedIndex);
+	
+		nodes.forEach(node => {
+			node.setSelected(false);
+			node.getOptions().extras.isSelectedMatch = false;
+		});
+		matchedNode.setSelected(true);
+		matchedNode.getOptions().extras.isSelectedMatch = true;
+		centerNodeInView(xircuitsApp.getDiagramEngine(), matchedNode);
+		engine.repaintCanvas();
+	
+		setCurrentMatch(newIndex + 1);
+		setCurrentMatchIndex(newIndex);
+	};
+	
+	// On input change
+	const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setSearchText(e.target.value);
+	};
+	
+	useEffect(() => {
+		if (!showSearch) { return; }
+		const handle = setTimeout(() => {
+			executeSearch(searchText);
+		}, 0);
+		return () => clearTimeout(handle);
+		}, [searchText, showSearch, executeSearch]);
+		
+		// whenever we open the search, force-focus the input
+		useEffect(() => {
+		if (showSearch) {
+		searchInputRef.current?.focus();
+		}
+			}, [showSearch]);
+
+		useEffect(() => {
+		isHoveringControlsRef.current = isHoveringControls;
+		}, [isHoveringControls]);
+	
+	useEffect(() => {
+	if (!showSearch) {
+    const engine = xircuitsApp.getDiagramEngine();
+    const nodes = engine.getModel().getNodes();
+    nodes.forEach(node => {
+	node.getOptions().extras.isMatch = false;
+	node.getOptions().extras.isSelectedMatch = false;
+    });
+    engine.repaintCanvas();
+}
+}, [showSearch]);
 
 	const handleMouseMoveCanvas = useCallback(() => {
 	setShowZoom(true);
@@ -271,6 +489,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				});
 		
 				xircuitsApp.getDiagramEngine().setModel(deserializedModel);
+				clearSearchFlags();
 				CustomPortModel.attachEngine(deserializedModel, engine);
 
 				// On the first load, clear undo history and register global engine listeners
@@ -775,6 +994,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	
 		// Trigger loading animation
 		await triggerLoadingAnimation(reloadPromise, { loadingMessage: 'Reloading all nodes...'});
+		clearSearchFlags();
 		console.log("Reload all complete.");
 	};
 
@@ -1359,8 +1579,63 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		};
 	}, [xircuitsApp.getDiagramEngine().getCanvas()?.firstChild]);
 
-	return (
-		<Body>
+return (
+  <Body>
+    {/* Search Overlay */}
+    <SearchOverlay
+	visible={showSearch}
+	onMouseDownCapture={e => {
+	  // only stop propagation if they clicked the backdrop, not the buttons
+	if ((e.target as HTMLElement).tagName === 'INPUT') {
+		e.stopPropagation();
+	}
+	}}
+	onClick={e => {
+	  // refocus the input if they clicked anywhere _inside_ the overlay
+	searchInputRef.current?.focus();
+	}}
+		>
+	<input
+	ref={searchInputRef}
+	type="text"
+	value={searchText}
+	onChange={onSearchChange}
+	placeholder="Search..."
+	autoFocus
+	onKeyDownCapture={e => e.stopPropagation()}
+	onKeyDown={e => e.stopPropagation()}
+	onKeyUp={e => e.stopPropagation()}
+		/>
+		<button
+			onClick={(e) => {
+				e.stopPropagation();
+				navigateMatch("prev");
+			}}
+			>
+			&uarr;
+			</button>
+
+			<button
+			onClick={(e) => {
+				e.stopPropagation();
+				navigateMatch("next");
+			}}
+			>
+			&darr;
+			</button>
+			<span onMouseDown={e => e.stopPropagation()}>{currentMatch} of {matchCount}</span>
+			<button
+			className="close-search"
+			onClick={e => {
+			e.stopPropagation();
+			setShowSearch(false);
+			}}
+			title="Close search"
+		>
+    ×
+  	</button>
+    </SearchOverlay>
+
 			<Content>
 				{isLoading && (
 				<div className="loading-indicator">
