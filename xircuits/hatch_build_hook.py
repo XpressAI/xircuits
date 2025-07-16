@@ -5,4 +5,4 @@ class XircuitsBuildHook(BuildHookInterface):
     PLUGIN_NAME = 'xircuits'
 
     def initialize(self, version, build_data):
-        shutil.copyfile('.gitmodules', 'xircuits/.xircuits/.gitmodules')
+        pass

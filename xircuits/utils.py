@@ -4,7 +4,7 @@ import shutil
 import importlib_resources
 
 def is_empty(directory):
-    # will return true for uninitialized submodules
+    # will return true for uninitialized remotes
     return not os.path.exists(directory) or not os.listdir(directory)
 
 def is_valid_url(url):

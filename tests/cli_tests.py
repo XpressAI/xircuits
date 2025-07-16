@@ -295,7 +295,7 @@ def test_10_error_handling_invalid_command():
 def test_11_install_invalid_library():
     stdout, stderr, return_code = run_command("xircuits install non_existing_library")
 
-    expected_error_message = "component library submodule not found"
+    expected_error_message = "component library remote not found"
     assert expected_error_message in stdout or expected_error_message in stderr, \
         f"Expected error message '{expected_error_message}' not found in output"
 
