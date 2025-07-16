@@ -5,9 +5,11 @@ import { DiagramEngine } from '@projectstorm/react-diagrams';
 import React from 'react';
 import styled from '@emotion/styled';
 import { marked } from 'marked';
-
-import { infoIcon, fitIcon, fileCodeIcon } from '../ui-components/icons';
+import { infoIcon, fitIcon, fileCodeIcon, workflowComponentIcon } from '../ui-components/icons';
 import { centerNodeInView } from '../helpers/notificationEffects';
+import { caretLeftIcon, caretRightIcon } from '@jupyterlab/ui-components';
+import { togglePreviewWidget } from '../component_info_sidebar/previewHelper';
+import { NodeModel } from '@projectstorm/react-diagrams';
 
 const Container = styled.div`
   height: 100%;
@@ -40,15 +42,8 @@ const Container = styled.div`
     font-weight: 600;
     color: var(--jp-ui-font-color1);
   }
-
-  /* Jupyter-style header */
-  .jp-SidePanel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .jp-SidePanel-header h2 {
-    font-size: 1rem;
+  .jp-SidePanel-header  {
+    font-size: 0.8rem;
     font-weight: 700;
     margin: 0;
   }
@@ -60,6 +55,33 @@ export interface IComponentInfo {
   filePath?: string;
   node?: any;
   engine?: DiagramEngine;
+}
+
+function getConnectedNodes(node: NodeModel): NodeModel[] {
+  const HIDDEN_NODES = new Set(['Start', 'Finish']);
+  const neighbours = new Set<NodeModel>();
+
+  neighbours.add(node);
+
+  Object.values(node.getPorts()).forEach(port => {
+    Object.values(port.getLinks()).forEach(link => {
+      const otherPort =
+        link.getSourcePort() === port
+          ? link.getTargetPort()
+          : link.getSourcePort();
+
+      const otherNode = otherPort?.getParent();
+      if (
+        otherNode &&
+        otherNode !== node &&
+        !HIDDEN_NODES.has((otherNode as any).getOptions().name)
+      ) {
+        neighbours.add(otherNode);
+      }
+    });
+  });
+
+  return Array.from(neighbours).sort((a, b) => a.getX() - b.getX());
 }
 
 export class ComponentPreviewWidget extends ReactWidget {
@@ -118,28 +140,113 @@ export class ComponentPreviewWidget extends ReactWidget {
     centerNodeInView(engine, node.getID());
   };
 
+  private handleOpenWorkflow = () => {
+  const { node } = this._model ?? {};
+  if (!node) return;
+
+  let workflowPath: string | undefined = node.extras?.path;
+  if (workflowPath?.endsWith('.py')) {
+    workflowPath = workflowPath.replace(/\.py$/, '.xircuits');
+  }
+
+  if (workflowPath) {
+    this._app.commands.execute('Xircuit-editor:open-xircuits-workflow', {
+      nodePath: node.extras?.path,      
+      nodeName: node.name,              
+      nodeLineNo: node.extras?.lineNo  
+    }).catch(err => console.error('Failed to open workflow:', err));
+  } else {
+    console.warn('Open‑workflow: no valid path found', {
+      originalPath: node.extras?.path
+    });
+    }
+  };
+
+  private isWorkflowNode = (): boolean => {
+    const node = this._model?.node;
+    if (!node) return false;
+
+    const nodeType = node.extras?.type
+      ?? node.getOptions?.().extras?.type
+      ?? '';
+
+  return nodeType === 'xircuits_workflow';
+  };
+
+  
+  private navigate = (step: -1 | 1) => {
+    const { node } = this._model ?? {};
+    if (!node) return;
+
+    const nodes = getConnectedNodes(node);             
+    if (nodes.length <= 1) return;                     
+
+    const idx = nodes.findIndex(n => n.getID() === node.getID());
+    if (idx === -1) return;
+
+    const nextIdx = idx + step;
+    if (nextIdx < 0 || nextIdx >= nodes.length) return; 
+
+    const next = nodes[nextIdx] as any;
+
+    togglePreviewWidget(this._app, {
+      node: next,
+      engine: this._model?.engine,
+      name: next.getOptions().name,
+      docstring: next.extras?.description ?? '',
+      filePath: next.extras?.path ?? ''
+    }, true);
+
+    this._model?.engine?.getModel().clearSelection();
+    next.setSelected(true);
+    centerNodeInView(this._model?.engine!, next.getID());
+  };
+
   render(): JSX.Element {
     return (
       <Container className="jp-SidePanel">
-        <header className="jp-SidePanel-header">
-          <h2>Component Preview</h2>
+        <div className="jp-SidePanel-header">
+          <h2 className="jp-text-truncated">Component Preview</h2>
+        </div>
 
-          {/* minimal toolbar */}
-          <div className="jp-mod-minimal">
+        <div
+          className="jp-Toolbar jp-SidePanel-toolbar"
+          aria-label="Component preview toolbar"
+          style={{ minHeight: 'var(--jp-private-toolbar-height)' }}
+        >
+          <ToolbarButtonComponent
+            icon={caretLeftIcon}
+            tooltip="Previous node"
+            enabled={!!this._model?.node}
+            onClick={() => this.navigate(-1)}
+          />
+          <ToolbarButtonComponent
+            icon={caretRightIcon}
+            tooltip="Next node"
+            enabled={!!this._model?.node}
+            onClick={() => this.navigate(1)}
+          />
+          <ToolbarButtonComponent
+            icon={fileCodeIcon as LabIcon}
+            tooltip="Open script"
+            enabled={!!this._model?.node}
+            onClick={this.handleOpenScript}
+          />
+          <ToolbarButtonComponent
+            icon={fitIcon as LabIcon}
+            tooltip="Center node"
+            enabled={!!this._model?.node && !!this._model?.engine}
+            onClick={this.handleCenterNode}
+          />
+          {this.isWorkflowNode() && (
             <ToolbarButtonComponent
-              icon={fileCodeIcon as LabIcon}
-              tooltip="Open script"
-              enabled={!!this._model?.node}
-              onClick={this.handleOpenScript}
+              icon={workflowComponentIcon as LabIcon}
+              tooltip="Open workflow"
+              enabled
+              onClick={this.handleOpenWorkflow}
             />
-            <ToolbarButtonComponent
-              icon={fitIcon as LabIcon}
-              tooltip="Center node"
-              enabled={!!this._model?.node && !!this._model?.engine}
-              onClick={this.handleCenterNode}
-            />
-          </div>
-        </header>
+          )}
+        </div>
 
         <div className="content">
           {this._model ? (
@@ -153,7 +260,7 @@ export class ComponentPreviewWidget extends ReactWidget {
           ) : (
             <p>
               Please click the <strong>ℹ</strong> icon on any component to view its
-              description here.
+                description here.
             </p>
           )}
         </div>
