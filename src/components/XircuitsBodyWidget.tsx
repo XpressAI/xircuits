@@ -830,6 +830,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
+		checkAllCompulsoryInPortsConnected();  
 		onChange()
 		setInitialize(true);
 		setSaved(true);
@@ -853,6 +854,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			showNodeCenteringNotification(message, lastNode.getID(), engine);
 			return;
 		}
+		checkAllCompulsoryInPortsConnected();  
 		const success = await commands.execute(commandIDs.compileFile, { componentList });
 
 		if (success) {
