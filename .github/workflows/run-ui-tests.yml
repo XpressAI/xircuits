@@ -86,6 +86,7 @@ jobs:
         nohup jupyter lab --ServerApp.token='' --ServerApp.password='' --LabApp.default_url='/lab?reset' > jupyter.log 2>&1 &
         sleep 10
         cd ui-tests/tests
+        xvfb-run -a python3 zoom-buttons-test.py
         xvfb-run -a python3 connecting-args-test.py
         xvfb-run -a python3 parameter-names-autoshift.py
         xvfb-run -a python3 parameter-names-despawn.py
@@ -94,7 +95,7 @@ jobs:
         xvfb-run -a python3 remote_run_arguments_test.py
         xvfb-run -a python3 connecting-nodes-test.py
         xvfb-run -a python3 editing-literal-nodes-test.py
-
+        
 
       
     - uses: actions/upload-artifact@v4

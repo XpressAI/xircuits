@@ -95,6 +95,7 @@ export const FixedZoomButton = styled.button`
 	padding: 0;
 	cursor: pointer;
 	color: white;
+	line-height: 0;
 
 	box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 	transition: all .3s ease;
@@ -105,7 +106,7 @@ export const FixedZoomButton = styled.button`
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
 
-	svg { width: 12px; height: 12px; color: inherit; }
+	svg { display: block; width: 12px; height: 12px; color: inherit; }
 
 	/* Light theme override */
 	body.light-mode & {
