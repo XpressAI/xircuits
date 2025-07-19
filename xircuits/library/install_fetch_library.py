@@ -121,3 +121,19 @@ def fetch_library(library_name: str):
             print(message)
     else:
         print(f"{library_name} library already exists in {component_library_path}.")
+
+def uninstall_library(library_name: str) -> None:
+    """
+    Remove the component‑library directory and refresh list.
+    """
+    lib_path = Path(build_component_library_path(library_name))
+
+    if not lib_path.exists():
+        print(f"Library '{library_name}' not found.")
+        return
+
+    try:
+        shutil.rmtree(lib_path)
+        print(f"Library '{library_name}' uninstalled.")
+    except Exception as e:
+        print(f"Failed to uninstall '{library_name}': {e}")

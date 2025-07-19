@@ -1,4 +1,4 @@
 from .list_library import list_component_library
-from .install_fetch_library import install_library, fetch_library, get_library_config, build_library_file_path_from_config
+from .install_fetch_library import install_library, fetch_library, get_library_config, build_library_file_path_from_config, uninstall_library
 from .generate_component_library_config import save_component_library_config, get_component_library_config
 from .create_library import create_or_update_library

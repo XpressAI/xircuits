@@ -5,7 +5,7 @@ import tornado
 import posixpath
 from http import HTTPStatus
 from jupyter_server.base.handlers import APIHandler
-from xircuits.library import install_library, fetch_library, build_library_file_path_from_config, save_component_library_config, get_component_library_config, create_or_update_library
+from xircuits.library import install_library, uninstall_library, fetch_library, build_library_file_path_from_config, save_component_library_config, get_component_library_config, create_or_update_library
 
 class InstallLibraryRouteHandler(APIHandler):
     @tornado.web.authenticated
@@ -26,6 +26,29 @@ class InstallLibraryRouteHandler(APIHandler):
             message = str(e)
             print(message)
             self.finish(json.dumps({"error": message}))
+        except Exception as e:
+            self.set_status(HTTPStatus.INTERNAL_SERVER_ERROR)
+            message = f"An unexpected error occurred: {traceback.format_exc()}"
+            print(message)
+            self.finish(json.dumps({"error": message}))
+
+class UninstallLibraryRouteHandler(APIHandler):
+    @tornado.web.authenticated
+    def post(self):
+        input_data = self.get_json_body()
+        library_name = input_data.get("libraryName")
+
+        if not library_name:
+            self.set_status(HTTPStatus.BAD_REQUEST)
+            self.finish(json.dumps({"error": "Library name is required"}))
+            return
+
+        try:
+            uninstall_library(library_name.lower())
+            self.finish(json.dumps({"status": "OK", "message": f"Library {library_name} uninstalled."}))
+        except FileNotFoundError:
+            self.set_status(HTTPStatus.NOT_FOUND)
+            self.finish(json.dumps({"error": f"Library '{library_name}' not found."}))
         except Exception as e:
             self.set_status(HTTPStatus.INTERNAL_SERVER_ERROR)
             message = f"An unexpected error occurred: {traceback.format_exc()}"

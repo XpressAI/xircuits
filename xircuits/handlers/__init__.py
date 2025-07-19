@@ -4,7 +4,7 @@ from .compile_xircuits import CompileXircuitsFileRouteHandler, CompileRecursiveX
 from .components import ComponentsRouteHandler
 from .config import RunConfigRouteHandler, SplitModeConfigHandler
 from .debugger import DebuggerRouteHandler
-from .request_library import InstallLibraryRouteHandler, FetchLibraryRouteHandler, GetLibraryDirectoryRouteHandler, GetLibraryReadmeRouteHandler, GetLibraryExampleRouteHandler, ReloadComponentLibraryConfigHandler, GetComponentLibraryConfigHandler, CreateNewLibraryHandler
+from .request_library import InstallLibraryRouteHandler, FetchLibraryRouteHandler, UninstallLibraryRouteHandler, GetLibraryDirectoryRouteHandler, GetLibraryReadmeRouteHandler, GetLibraryExampleRouteHandler, ReloadComponentLibraryConfigHandler, GetComponentLibraryConfigHandler, CreateNewLibraryHandler
 
 
 def setup_handlers(web_app, url_path):
@@ -49,6 +49,9 @@ def setup_handlers(web_app, url_path):
             url_path_join(base_url, url_path, "library/fetch"),
             FetchLibraryRouteHandler
         ),
+        (
+            url_path_join(base_url, url_path, "library/uninstall"),
+            UninstallLibraryRouteHandler),
         (
             url_path_join(base_url, url_path, "library/install"),
             InstallLibraryRouteHandler

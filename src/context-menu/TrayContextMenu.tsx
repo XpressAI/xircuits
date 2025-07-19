@@ -5,7 +5,7 @@ import { startRunOutputStr } from '../components/runner/RunOutput';
 import '../../style/ContextMenu.css';
 import { buildLocalFilePath, fetchLibraryConfig } from '../tray_library/ComponentLibraryConfig';
 import { commandIDs } from "../commands/CommandIDs";
-import { downloadIcon, linkIcon, folderIcon, textEditorIcon, kernelIcon } from "@jupyterlab/ui-components";
+import { downloadIcon, linkIcon, folderIcon, textEditorIcon, kernelIcon, deleteIcon } from "@jupyterlab/ui-components";
 import { Notification } from '@jupyterlab/apputils';
 import { normalizeLibraryName } from '../tray_library/ComponentLibraryConfig';
 
@@ -165,6 +165,21 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigg
         }
     };
 
+    const handleUninstall = async (libraryName: string) => {
+        if (!confirm(`Uninstall ${libraryName}?`)) return;
+
+        try {
+            await requestAPI<any>('library/uninstall', {
+            method: 'POST',
+            body: JSON.stringify({ libraryName })
+            });
+            Notification.success(`Library ${libraryName} uninstalled.`, { autoClose: 3000 });
+            refreshTrigger();
+        } catch (err) {
+            Notification.error(`Failed to uninstall ${libraryName}: ${err}`, { autoClose: false });
+        }
+        };
+
     if (!visible) {
         return null;
     }
@@ -211,6 +226,9 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigg
                     )}
                     {validOptions.showPageInNewTab && (
                       <Option icon={linkIcon.react} label="Open Repository" onClick={() => handleShowPageInNewTab(libraryName)} />
+                    )}
+                    {validOptions.showPageInNewTab && (
+                      <Option icon={deleteIcon.react} label={`Uninstall ${libraryName}`} onClick={() => handleUninstall(libraryName)} />
                     )}
                 </>
             )}
