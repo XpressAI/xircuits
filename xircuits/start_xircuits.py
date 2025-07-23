@@ -6,6 +6,7 @@ from pathlib import Path
 from .utils import is_empty, copy_from_installed_wheel
 from .library import list_component_library, install_library, fetch_library, save_component_library_config
 from .compiler import compile, recursive_compile
+from .compiler.validation import enforce_compulsory_ports
 
 def init_xircuits():
     """
@@ -100,6 +101,8 @@ def cmd_compile(args, extra_args=[]):
     component_paths = {}
     if args.python_paths_file:
         component_paths = json.load(args.python_paths_file)
+    
+    enforce_compulsory_ports(args.source_file)
     
     if args.recursive:
         # Pass the user-specified out_file (if any) to recursive_compile
