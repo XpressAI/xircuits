@@ -29,21 +29,23 @@ export function isParamNode(n: any): boolean {
 
 
 export function getMainPath(node: NodeModel): NodeModel[] {
-  let head: any = node;
+  const back: NodeModel[] = [];
+  let cur: any = node;
   while (true) {
-    const prev = getPrevNode(head);
+    const prev = getPrevNode(cur);
     if (!prev) break;
-    head = prev;
+    back.push(prev);
+    cur = prev;
   }
+  back.reverse();
 
-  const chainAll: NodeModel[] = [];
-  let cur: any = head;
-  while (cur) {
-    chainAll.push(cur);
+  const forward: NodeModel[] = [];
+  cur = node;
+  while (true) {
     const next = getNextNode(cur);
     if (!next) break;
+    forward.push(next);
     cur = next;
   }
-
-  return chainAll.filter(n => !isParamNode(n));
+  return [...back, node, ...forward].filter(n => !isParamNode(n));
 }
