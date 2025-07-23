@@ -756,6 +756,22 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		});
 	}
 
+	const getNodesConnectedOnAtLeastOneSide = (): NodeModel[] => {
+		const nodes = engine.getModel().getNodes();
+
+		return nodes.filter((node: any) => {
+			const inPorts  = node.portsIn  ?? [];
+			const outPorts = node.portsOut ?? [];
+
+			const allPorts = (inPorts.length || outPorts.length)
+			? [...inPorts, ...outPorts]
+			: Object.values(node.getPorts?.() ?? {});
+
+			const hasAny = allPorts.some((p: any) => Object.keys(p.getLinks()).length > 0);
+			return hasAny;
+		});
+		};
+		
 	const checkAllNodesConnected = (): boolean | null => {
 		let allNodes = getAllNodesFromStartToFinish();
 		let lastNode = allNodes[allNodes.length - 1];
@@ -772,7 +788,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}
 
 	const checkAllCompulsoryInPortsConnected = (): boolean | null => {
-		let allNodes = getAllNodesFromStartToFinish();
+		let allNodes = getNodesConnectedOnAtLeastOneSide();
 		for (let i = 0; i < allNodes.length; i++) {
 			for (let k = 0; k < allNodes[i]["portsIn"].length; k++) {
 				let node = allNodes[i]["portsIn"][k]
