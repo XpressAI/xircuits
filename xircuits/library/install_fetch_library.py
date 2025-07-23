@@ -8,6 +8,8 @@ from ..utils import is_valid_url, is_empty
 from ..handlers.request_submodule import request_submodule_library
 from ..handlers.request_folder import clone_from_github_url
 
+CORE_LIBS = {"xai_events", "xai_template", "xai_controlflow", "xai_utils"}
+
 def build_component_library_path(component_library_query: str) -> str:
     if "xai" not in component_library_query:
         component_library_query = "xai_" + component_library_query
@@ -121,3 +123,30 @@ def fetch_library(library_name: str):
             print(message)
     else:
         print(f"{library_name} library already exists in {component_library_path}.")
+
+def uninstall_library(library_name: str) -> None:
+    """
+    Remove the component-library directory unless it's a core library.
+    """
+
+    raw = library_name.strip().lower()
+
+    if "xai" not in raw:
+        raw = "xai_" + raw
+
+    short_name = raw.split("/")[-1]
+
+    if short_name in CORE_LIBS:
+        raise RuntimeError(f"'{short_name}' is a core library and cannot be uninstalled.")
+
+    lib_path = Path(build_component_library_path(short_name))
+
+    if not lib_path.exists():
+        print(f"Library '{short_name}' not found.")
+        return
+
+    try:
+        shutil.rmtree(lib_path)
+        print(f"Library '{short_name}' uninstalled.")
+    except Exception as e:
+        print(f"Failed to uninstall '{short_name}': {e}")

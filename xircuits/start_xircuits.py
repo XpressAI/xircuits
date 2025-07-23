@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 from .utils import is_empty, copy_from_installed_wheel
-from .library import list_component_library, install_library, fetch_library, save_component_library_config
+from .library import list_component_library, install_library, fetch_library, save_component_library_config, uninstall_library
 from .compiler import compile, recursive_compile
 from .compiler.validation import enforce_compulsory_ports
 
@@ -97,6 +97,13 @@ def cmd_fetch_library(args, extra_args=[]):
 def cmd_install_library(args, extra_args=[]):
     install_library(args.library_name.lower())
 
+def cmd_uninstall_library(args, extra_args=[]):
+    try:
+        uninstall_library(args.library_name.lower())
+    except RuntimeError as e:
+        print(e)
+
+
 def cmd_compile(args, extra_args=[]):
     component_paths = {}
     if args.python_paths_file:
@@ -180,6 +187,11 @@ def main():
     fetch_parser = subparsers.add_parser('fetch-only', help='Fetch a library for Xircuits. Does not install.')
     fetch_parser.add_argument('library_name', type=str, help='Name of the library to fetch')
     fetch_parser.set_defaults(func=cmd_fetch_library)
+
+    # 'uninstall' command.
+    uninstall_parser = subparsers.add_parser('uninstall', help='Uninstall a component library for Xircuits.')
+    uninstall_parser.add_argument('library_name', type=str, help='Name of the library to uninstall')
+    uninstall_parser.set_defaults(func=cmd_uninstall_library)
 
     # 'examples' command.
     examples_parser = subparsers.add_parser('examples', help='Get example workflows for Xircuits.')
