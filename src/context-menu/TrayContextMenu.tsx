@@ -66,6 +66,8 @@ export interface TrayContextMenuProps {
     onClose: () => void;
 }
 
+const CORE_LIBS = new Set([ "xai_events", "xai_template", "xai_controlflow", "xai_utils" ]);
+
 const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigger, onClose }: TrayContextMenuProps) => {
     const trayContextMenuRef = useRef<HTMLDivElement>(null);
     const [validOptions, setValidOptions] = useState({
@@ -184,6 +186,8 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigg
         return null;
     }
 
+    const isCore = CORE_LIBS.has(libraryName.toLowerCase());
+
     function addHoverClass(e){
         e.currentTarget.classList.add("lm-mod-active");
     }
@@ -227,7 +231,7 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigg
                     {validOptions.showPageInNewTab && (
                       <Option icon={linkIcon.react} label="Open Repository" onClick={() => handleShowPageInNewTab(libraryName)} />
                     )}
-                    {validOptions.showPageInNewTab && (
+                    {!isCore && (
                       <Option icon={deleteIcon.react} label={`Uninstall ${libraryName}`} onClick={() => handleUninstall(libraryName)} />
                     )}
                 </>

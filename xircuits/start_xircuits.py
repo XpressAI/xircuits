@@ -97,7 +97,11 @@ def cmd_install_library(args, extra_args=[]):
     install_library(args.library_name.lower())
 
 def cmd_uninstall_library(args, extra_args=[]):
-    uninstall_library(args.library_name.lower())
+    try:
+        uninstall_library(args.library_name.lower())
+    except RuntimeError as e:
+        print(e)
+
 
 def cmd_compile(args, extra_args=[]):
     component_paths = {}
