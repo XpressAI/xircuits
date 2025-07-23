@@ -1,15 +1,15 @@
 import { ReactWidget, ToolbarButtonComponent } from '@jupyterlab/apputils';
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import { LabIcon } from '@jupyterlab/ui-components';
+import { LabIcon, caretLeftIcon, caretRightIcon } from '@jupyterlab/ui-components';
 import { DiagramEngine } from '@projectstorm/react-diagrams';
 import React from 'react';
 import styled from '@emotion/styled';
 import { marked } from 'marked';
 import { infoIcon, fitIcon, fileCodeIcon, workflowComponentIcon } from '../ui-components/icons';
 import { centerNodeInView } from '../helpers/notificationEffects';
-import { caretLeftIcon, caretRightIcon } from '@jupyterlab/ui-components';
-import { togglePreviewWidget } from '../component_info_sidebar/previewHelper';
+import { togglePreviewWidget } from './previewHelper';
 import { NodeModel } from '@projectstorm/react-diagrams';
+import { getMainPath } from './nodeNavigation';
 
 const Container = styled.div`
   height: 100%;
@@ -29,7 +29,6 @@ const Container = styled.div`
   .docstring-box {
     background: var(--jp-layout-color1);
     border: 1px solid var(--jp-border-color2);
-    border-left: 4px solid var(--jp-brand-color1, var(--jp-brand-color0));
     border-radius: 4px;
     padding: 16px 18px;
     line-height: 1.55;
@@ -57,33 +56,6 @@ export interface IComponentInfo {
   engine?: DiagramEngine;
 }
 
-function getConnectedNodes(node: NodeModel): NodeModel[] {
-  const HIDDEN_NODES = new Set(['Start', 'Finish']);
-  const neighbours = new Set<NodeModel>();
-
-  neighbours.add(node);
-
-  Object.values(node.getPorts()).forEach(port => {
-    Object.values(port.getLinks()).forEach(link => {
-      const otherPort =
-        link.getSourcePort() === port
-          ? link.getTargetPort()
-          : link.getSourcePort();
-
-      const otherNode = otherPort?.getParent();
-      if (
-        otherNode &&
-        otherNode !== node &&
-        !HIDDEN_NODES.has((otherNode as any).getOptions().name)
-      ) {
-        neighbours.add(otherNode);
-      }
-    });
-  });
-
-  return Array.from(neighbours).sort((a, b) => a.getX() - b.getX());
-}
-
 export class ComponentPreviewWidget extends ReactWidget {
   private _app: JupyterFrontEnd;
   private _model: IComponentInfo | null;
@@ -97,18 +69,29 @@ export class ComponentPreviewWidget extends ReactWidget {
     this.title.caption = 'Component Info';
     this.title.icon = infoIcon;
     this.title.closable = false;
-    this.node.style.minWidth = '340px';
 
-    if (model) this.node.dataset.componentName = model.name;
+    if (model?.node) {
+      this.node.dataset.componentName = model.name;
+      this.node.dataset.componentId   = model.node.getID();
+    } else {
+      delete this.node.dataset.componentName;
+      delete this.node.dataset.componentId;
+    }
   }
 
   setApp(app: JupyterFrontEnd): void {
     this._app = app;
   }
+
   setModel(model: IComponentInfo | null): void {
     this._model = model;
-    if (model) this.node.dataset.componentName = model.name;
-    else delete this.node.dataset.componentName;
+    if (model?.node) {
+      this.node.dataset.componentName = model.name;
+      this.node.dataset.componentId   = model.node.getID();
+    } else {
+      delete this.node.dataset.componentName;
+      delete this.node.dataset.componentId;
+    }
     this.update();
   }
 
@@ -141,24 +124,24 @@ export class ComponentPreviewWidget extends ReactWidget {
   };
 
   private handleOpenWorkflow = () => {
-  const { node } = this._model ?? {};
-  if (!node) return;
+    const { node } = this._model ?? {};
+    if (!node) return;
 
-  let workflowPath: string | undefined = node.extras?.path;
-  if (workflowPath?.endsWith('.py')) {
-    workflowPath = workflowPath.replace(/\.py$/, '.xircuits');
-  }
+    let workflowPath: string | undefined = node.extras?.path;
+    if (workflowPath?.endsWith('.py')) {
+      workflowPath = workflowPath.replace(/\.py$/, '.xircuits');
+    }
 
-  if (workflowPath) {
-    this._app.commands.execute('Xircuit-editor:open-xircuits-workflow', {
-      nodePath: node.extras?.path,      
-      nodeName: node.name,              
-      nodeLineNo: node.extras?.lineNo  
-    }).catch(err => console.error('Failed to open workflow:', err));
-  } else {
-    console.warn('Open‑workflow: no valid path found', {
-      originalPath: node.extras?.path
-    });
+    if (workflowPath) {
+      this._app.commands.execute('Xircuit-editor:open-xircuits-workflow', {
+        nodePath: node.extras?.path,
+        nodeName: node.name,
+        nodeLineNo: node.extras?.lineNo
+      }).catch(err => console.error('Failed to open workflow:', err));
+    } else {
+      console.warn('Open‑workflow: no valid path found', {
+        originalPath: node.extras?.path
+      });
     }
   };
 
@@ -170,22 +153,21 @@ export class ComponentPreviewWidget extends ReactWidget {
       ?? node.getOptions?.().extras?.type
       ?? '';
 
-  return nodeType === 'xircuits_workflow';
+    return nodeType === 'xircuits_workflow';
   };
 
-  
   private navigate = (step: -1 | 1) => {
     const { node } = this._model ?? {};
     if (!node) return;
 
-    const nodes = getConnectedNodes(node);             
-    if (nodes.length <= 1) return;                     
+    const nodes = getMainPath(node);
+    if (nodes.length <= 1) return;
 
-    const idx = nodes.findIndex(n => n.getID() === node.getID());
+    const idx = nodes.findIndex((n: NodeModel) => n.getID() === node.getID());
     if (idx === -1) return;
 
     const nextIdx = idx + step;
-    if (nextIdx < 0 || nextIdx >= nodes.length) return; 
+    if (nextIdx < 0 || nextIdx >= nodes.length) return;
 
     const next = nodes[nextIdx] as any;
 
@@ -252,15 +234,39 @@ export class ComponentPreviewWidget extends ReactWidget {
           {this._model ? (
             <>
               <h3>{this._model.name}</h3>
-              <div
-                className="docstring-box"
-                dangerouslySetInnerHTML={{ __html: marked(this._model.docstring || '_No docstring provided._') }}
-              />
+
+              {this._model.name === 'Start' && (
+                <div className="docstring-box">
+                  <p><em>This is the <strong>start</strong> of your workflow.</em></p>
+                </div>
+              )}
+
+              {this._model.name === 'Finish' && (
+                <div className="docstring-box">
+                  <p><em>This is the <strong>end</strong> of your workflow.</em></p>
+                </div>
+              )}
+
+              {this.isWorkflowNode() && (
+                <div className="docstring-box">
+                  <p><em>
+                    Sub‑workflow component – click <strong>Open workflow</strong> in the preview to inspect
+                    the inner graph.
+                  </em></p>
+                </div>
+              )}
+
+              {!['Start', 'Finish'].includes(this._model.name) && !this.isWorkflowNode() && (
+                <div
+                  className="docstring-box"
+                  dangerouslySetInnerHTML={{ __html: marked(this._model.docstring || '_No docstring provided._') }}
+                />
+              )}
             </>
           ) : (
             <p>
               Please click the <strong>ℹ</strong> icon on any component to view its
-                description here.
+              description here.
             </p>
           )}
         </div>

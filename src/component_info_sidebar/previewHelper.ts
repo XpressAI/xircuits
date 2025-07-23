@@ -1,8 +1,8 @@
 import { JupyterFrontEnd, ILabShell } from '@jupyterlab/application';
 import { ComponentPreviewWidget, IComponentInfo } from './ComponentPreviewWidget';
+import { IXircuitsDocTracker } from '../index';
 
 const PREVIEW_ID = 'xircuits-doc-preview';
-const MIN_WIDTH  = '340px';
 
 export function togglePreviewWidget(
   app: JupyterFrontEnd,
@@ -24,22 +24,58 @@ export function togglePreviewWidget(
 
   if (!widget) {
     widget = new ComponentPreviewWidget(app, model);
-    widget.node.style.minWidth = MIN_WIDTH;
     shell.add(widget, 'right', { rank: 0 });
   }
 
-  if (
-    rightCollapsed ||
-    widget.node.dataset.componentName !== model.name
-  ) {
+  const prevName = widget.node.dataset.componentName;
+  const prevId   = widget.node.dataset.componentId;
+  const newId    = model.node?.getID?.();
+
+  const sameNode =
+    !rightCollapsed &&
+    prevName === model.name &&
+    prevId === newId;
+
+  if (!sameNode) {
     widget.setApp(app);
     widget.setModel(model);
-  }
-  else if (!neverCollapse) {
+  } else if (!neverCollapse) {
     shell.collapseRight();
     return;
   }
 
   shell.expandRight();
   shell.activateById(widget.id);
+}
+
+export function registerPreviewResetOnCanvasChange(
+  app: JupyterFrontEnd,
+  tracker: IXircuitsDocTracker
+): void {
+  const shell = app.shell as ILabShell;
+
+  tracker.currentChanged.connect((_trk, panel) => {
+    if (!panel) {
+      resetPreview(shell);
+      return;
+    }
+
+    const currentPath = panel.context.path;
+    const lastPath    = (shell as any)._xirLastPath;
+
+    if (currentPath !== lastPath) {
+      (shell as any)._xirLastPath = currentPath;
+      resetPreview(shell);
+      shell.collapseRight();
+    }
+  });
+}
+
+function resetPreview(shell: ILabShell): void {
+  const widget = Array.from(shell.widgets('right'))
+    .find(w => w.id === 'xircuits-doc-preview') as ComponentPreviewWidget | undefined;
+
+  if (widget) {
+    widget.setModel(null);
+  }
 }

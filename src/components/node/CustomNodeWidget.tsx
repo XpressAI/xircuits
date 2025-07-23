@@ -270,27 +270,40 @@ const StartFinishNode = ({ node, engine, handleDeletableNode, app }) => (
 );
 
 const WorkflowNode = ({ node, engine, app, handleDeletableNode }) => {
+    const handleDescription = () => {
+        togglePreviewWidget(app, {
+        node,
+        engine,
+        name: node.getOptions().name,
+        docstring:
+            node.extras?.description ??
+            '_Sub‑workflow component – click **Open workflow** in the preview to inspect the inner graph._',
+        filePath: node.extras?.path ?? ''
+        });
+    };
+
     return (
         <div style={{ position: "relative" }}>
-            <S.WorkflowNode
-                onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
-                data-tip data-for={node.getOptions().id}
-                borderColor={node.getOptions().extras["borderColor"]}
-                data-default-node-name={node.getOptions().name}
-                selected={node.isSelected()}
-                background={node.getOptions().color}
-                className={"node workflow-node "+(node.isSelected() ? "selected" : "")}
-            >
-                <S.Title background={node.getOptions().color}
+        <S.WorkflowNode
+            onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
+            data-tip data-for={node.getOptions().id}
+            borderColor={node.getOptions().extras["borderColor"]}
+            data-default-node-name={node.getOptions().name}
+            selected={node.isSelected()}
+            background={node.getOptions().color}
+            className={"node workflow-node "+(node.isSelected() ? "selected" : "")}
+        >
+            <S.Title background={node.getOptions().color}
 >
-                    <S.IconContainer>{getNodeIcon('workflow')}</S.IconContainer>
-                    <S.TitleName>{node.getOptions().name}</S.TitleName>
-                    <label data-no-drag>
-                        <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
-                    </label>
-                </S.Title>
-                <PortsComponent node={node} engine={engine}  app={app}/>
-            </S.WorkflowNode>
+            <S.IconContainer>{getNodeIcon('workflow')}</S.IconContainer>
+            <S.TitleName>{node.getOptions().name}</S.TitleName>
+            <label data-no-drag>
+                <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
+                <Toggle className="description" name="Description" checked={false} onChange={handleDescription} />
+            </label>
+            </S.Title>
+            <PortsComponent node={node} engine={engine}  app={app}/>
+        </S.WorkflowNode>
         </div>
     );
 };
