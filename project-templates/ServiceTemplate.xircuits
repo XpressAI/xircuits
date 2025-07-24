@@ -1,12 +1,12 @@
 {
     "id": "46e546d2-5375-44fc-ac26-0871905c4c62",
-    "offsetX": 53.517235092467104,
+    "offsetX": 53.759422592467104,
     "offsetY": 265.35296158951127,
     "zoom": 78.74501035550705,
     "gridSize": 0,
     "layers": [
         {
-            "id": "15642989-8bff-4459-a64e-92a36c2daf97",
+            "id": "b360b525-530f-432b-a120-72446549bd9f",
             "type": "diagram-links",
             "isSvg": true,
             "transformed": true,
@@ -658,7 +658,7 @@
             }
         },
         {
-            "id": "e3acc2ac-c4eb-47a3-bfb8-0eacc7568a72",
+            "id": "3cdbf0c6-0382-4a9d-9dc8-af44665a5354",
             "type": "diagram-nodes",
             "isSvg": false,
             "transformed": true,
@@ -727,13 +727,13 @@
                     "selected": false,
                     "extras": {
                         "type": "comment",
-                        "commentInput": "Demonstrates a basic POST endpoint that echoes back the JSON you send\n(or specific fields). For example:\n\ncurl 127.0.0.1:8080/body-example spam=eggs another=field yes:=true\n\nwill return the same payload as JSON.",
+                        "commentInput": "Demonstrates a basic POST endpoint that echoes back the JSON you send\n(or specific fields). For example:\n\ncurl -X POST 127.0.0.1:8080/body-example \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"spam\":\"eggs\", \"another\":\"field\", \"yes\":true}'\n\nwill return the same payload as JSON.",
                         "isMatch": false,
                         "isSelectedMatch": false,
                         "borderColor": "red"
                     },
                     "x": 72.69247515861825,
-                    "y": 599.2625589373126,
+                    "y": 570.0543590829183,
                     "ports": [],
                     "name": "Comment:",
                     "color": "rgb(255,255,255)",
