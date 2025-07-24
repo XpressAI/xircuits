@@ -283,17 +283,23 @@ export function addNodeActionCommands(
                 } else if (selected_node.name == "Finish") {
                     node = BaseComponentLibrary('Finish');
                 } else {
+                    const extras = selected_node.getOptions().extras ?? {};
+                    const path = extras.path || '' .trim();
+                    const isComment = extras.type === 'comment';
+
+                    if (!path || isComment) {
+                        continue;
+                    }
                     // For other nodes, fetch from AdvancedComponentLibrary
                     try {
                         let current_node = await fetchNodeByName(selected_node.name);
                         node = AdvancedComponentLibrary({ model: current_node });
                         node.setPosition(selected_node.getX(), selected_node.getY());
                     } catch (error) {
-                        let path = selected_node.getOptions()["extras"].path;
                         console.log(`Error reloading component from path: ${path}. Error: ${error.message}`);
                         selected_node.getOptions().extras["borderColor"] = "red";
                         const message =
-                        `Component could not be loaded from path: \`${path}\`.\nPlease ensure that the component exists!`;
+                            `Component could not be loaded from path: \`${path}\`.\nPlease ensure that the component exists!`;
                         showNodeCenteringNotification(message, selected_node.getID(), engine);
                         nodesToHighlight.push(selected_node);
                         continue;
