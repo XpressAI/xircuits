@@ -284,8 +284,8 @@ export function addNodeActionCommands(
                     node = BaseComponentLibrary('Finish');
                 } else {
                     const extras = selected_node.getOptions().extras ?? {};
-                    const path = (extras.path || extras.pyFile || extras.componentPath || '').trim();
-                    const isComment = extras.type === 'comment' || selected_node.name.startsWith('Comment');
+                    const path = extras.path || '' .trim();
+                    const isComment = extras.type === 'comment';
 
                     if (!path || isComment) {
                         continue;
