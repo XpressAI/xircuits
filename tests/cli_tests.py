@@ -660,3 +660,40 @@ def test_29_compile_non_recursive_mode_with_install():
     # Check that the compiled outer file was created.
     assert os.path.exists(outer_py), f"Expected compiled file {outer_py} not found."
     assert not os.path.exists(sub_py), f"Sub-workflow file {sub_py} should not be compiled in non-recursive mode."
+
+def test_30_uninstall_normal_library():
+    """Install a library then uninstall it successfully"""
+    run_command("xircuits init")
+    lib = "flask"
+
+    stdout, stderr, rc = run_command(f"xircuits install {lib}", timeout=60)
+    lib_dir = Path("xai_components") / f"xai_{lib}"
+    assert lib_dir.exists(), f"{lib_dir} should exist after install"
+
+    stdout, stderr, rc = run_command(f"xircuits uninstall {lib}")
+    removed_msg = f"library 'xai_{lib}' uninstalled."
+    assert removed_msg.lower() in stdout.lower(), f"Expected '{removed_msg}'"
+    assert not lib_dir.exists(), "Library folder still present after uninstall"
+
+def test_31_uninstall_non_existing_library():
+    """Attempt to uninstall a library that does not exist"""
+    run_command("xircuits init")
+
+    stdout, stderr, rc = run_command("xircuits uninstall no_lib")
+    output = stdout + stderr
+    assert "not found" in output.lower(), "Expected 'not found' message"
+
+
+def test_32_uninstall_core_library():
+    """Attempt to uninstall a protected core library"""
+    run_command("xircuits init")
+
+    core_lib = "xai_events"
+    stdout, stderr, rc = run_command("xircuits uninstall events")
+    output = stdout + stderr
+    
+    expected = "is a core library and cannot be uninstalled"
+    assert expected in output.lower(), f"Expected core‑lib protection message '{expected}'"
+
+    core_dir = Path("xai_components") / core_lib
+    assert core_dir.exists(), f"{core_dir} should still exist after failed uninstall"
