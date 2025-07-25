@@ -5,7 +5,7 @@ import { DiagramEngine } from '@projectstorm/react-diagrams';
 import React from 'react';
 import styled from '@emotion/styled';
 import { marked } from 'marked';
-import { infoIcon, fitIcon, fileCodeIcon, workflowComponentIcon } from '../ui-components/icons';
+import { infoIcon, fitIcon, fileCodeIcon, workflowComponentIcon, xircuitsIcon } from '../ui-components/icons';
 import { centerNodeInView } from '../helpers/notificationEffects';
 import { togglePreviewWidget } from './previewHelper';
 import { NodeModel } from '@projectstorm/react-diagrams';
@@ -26,25 +26,40 @@ const Container = styled.div`
     overflow-y: auto;
   }
 
-  .docstring-box {
-    background: var(--jp-layout-color1);
-    border: 1px solid var(--jp-border-color2);
-    border-radius: 4px;
-    padding: 16px 18px;
-    line-height: 1.55;
-    font-size: 0.85rem;
-  }
-
   h3 {
     margin: 12px 0 8px;
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--jp-ui-font-color1);
   }
+
   .jp-SidePanel-header  {
     font-size: 0.8rem;
     font-weight: 700;
     margin: 0;
+  }
+
+  .empty-state {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.45;
+    filter: grayscale(100%);
+    user-select: none;
+    pointer-events: none;
+    text-align: center;
+  }
+  .empty-state svg {
+    width: 120px;
+    height: 120px;
+  }
+  .empty-state p {
+    margin-top: 12px;
+    font-size: 0.8rem;
+    color: var(--jp-ui-font-color2);
+    opacity: 0.8;
   }
 `;
 
@@ -236,38 +251,33 @@ export class ComponentPreviewWidget extends ReactWidget {
               <h3>{this._model.name}</h3>
 
               {this._model.name === 'Start' && (
-                <div className="docstring-box">
-                  <p><em>This is the <strong>start</strong> of your workflow.</em></p>
-                </div>
+                <p><em>This is the <strong>start</strong> of your workflow.</em></p>
               )}
 
               {this._model.name === 'Finish' && (
-                <div className="docstring-box">
-                  <p><em>This is the <strong>end</strong> of your workflow.</em></p>
-                </div>
+                <p><em>This is the <strong>end</strong> of your workflow.</em></p>
               )}
 
               {this.isWorkflowNode() && (
-                <div className="docstring-box">
-                  <p><em>
+                <p>
+                  <em>
                     Sub‑workflow component – click <strong>Open workflow</strong> in the preview to inspect
                     the inner graph.
-                  </em></p>
-                </div>
+                  </em>
+                </p>
               )}
 
               {!['Start', 'Finish'].includes(this._model.name) && !this.isWorkflowNode() && (
                 <div
-                  className="docstring-box"
                   dangerouslySetInnerHTML={{ __html: marked(this._model.docstring || '_No docstring provided._') }}
                 />
               )}
             </>
           ) : (
-            <p>
-              Please click the <strong>ℹ</strong> icon on any component to view its
-              description here.
-            </p>
+            <div className="empty-state">
+              <xircuitsIcon.react />
+              <p>Select a component to see its details</p>
+            </div>
           )}
         </div>
       </Container>
