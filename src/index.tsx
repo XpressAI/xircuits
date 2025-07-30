@@ -34,6 +34,8 @@ import { commandIDs } from "./commands/CommandIDs";
 import { IEditorTracker } from '@jupyterlab/fileeditor';
 import { IMainMenu } from '@jupyterlab/mainmenu';
 import { handleInstall } from './context-menu/TrayContextMenu';
+import { ComponentPreviewWidget } from './component_info_sidebar/ComponentPreviewWidget';
+import {registerPreviewResetOnCanvasChange } from './component_info_sidebar/previewHelper';
 
 const FACTORY = 'Xircuits editor';
 
@@ -159,8 +161,14 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     restorer.add(sidebarWidget, sidebarWidget.id);
     app.shell.add(sidebarWidget, "left");
 
+    const previewWidget = new ComponentPreviewWidget(null);   
+    previewWidget.id = 'xircuits-doc-preview';               
+    app.shell.add(previewWidget, 'right', { rank: 1 });
+    restorer.add(previewWidget, previewWidget.id);
+
     // Additional commands for node action
     addNodeActionCommands(app, tracker, translator);
+    registerPreviewResetOnCanvasChange(app, tracker);
 
     // Additional commands for chat actions
     addLibraryActionCommands(app, tracker, translator, widgetFactory);

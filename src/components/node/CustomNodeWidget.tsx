@@ -10,8 +10,6 @@ import { Dialog } from '@jupyterlab/apputils';
 import { formDialogWidget } from '../../dialog/formDialogwidget';
 import { showFormDialog } from '../../dialog/FormDialog';
 import { CommentDialog } from '../../dialog/CommentDialog';
-import ReactTooltip from 'react-tooltip';
-import { marked } from 'marked';
 import Color from 'colorjs.io';
 import { commandIDs } from '../../commands/CommandIDs';
 import { 
@@ -24,7 +22,7 @@ import {
     setVariableComponentIcon, 
     getVariableComponentIcon } from '../../ui-components/icons';
 import  circuitBoardSvg from '../../../style/icons/circuit-board-bg.svg';
-import { LegacyRef, MutableRefObject } from "react";
+import { togglePreviewWidget } from '../../component_info_sidebar/previewHelper';
 
 
 
@@ -284,6 +282,18 @@ const StartFinishNode = ({ node, engine, handleDeletableNode, app }) => (
 );
 
 const WorkflowNode = ({ node, engine, app, handleDeletableNode }) => {
+    const handleDescription = () => {
+        togglePreviewWidget(app, {
+        node,
+        engine,
+        name: node.getOptions().name,
+        docstring:
+            node.extras?.description ??
+            '_Sub‑workflow component – click **Open workflow** in the preview to inspect the inner graph._',
+        filePath: node.extras?.path ?? ''
+        });
+    };
+
     return (
         <div style={{ position: "relative" }}>
             <S.WorkflowNode
@@ -298,58 +308,36 @@ const WorkflowNode = ({ node, engine, app, handleDeletableNode }) => {
                 className={"node workflow-node "+(node.isSelected() ? "selected" : "")}
             >
                 <S.Title background={node.getOptions().color}
+
 >
-                    <S.IconContainer>{getNodeIcon('workflow')}</S.IconContainer>
-                    <S.TitleName>{node.getOptions().name}</S.TitleName>
-                    <label data-no-drag>
-                        <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
-                    </label>
-                </S.Title>
-                <PortsComponent node={node} engine={engine}  app={app}/>
-            </S.WorkflowNode>
+            <S.IconContainer>{getNodeIcon('workflow')}</S.IconContainer>
+            <S.TitleName>{node.getOptions().name}</S.TitleName>
+            <label data-no-drag>
+                <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
+                <Toggle className="description" name="Description" checked={false} onChange={handleDescription} />
+            </label>
+            </S.Title>
+            <PortsComponent node={node} engine={engine}  app={app}/>
+        </S.WorkflowNode>
         </div>
     );
 };
 
 const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode }) => {
-    const [showDescription, setShowDescription] = React.useState(false);
-    const [descriptionStr, setDescriptionStr] = React.useState("");
-    const elementRef = React.useRef<HTMLElement>(null);
-
-    const handleDescription = async () => {
-        setShowDescription(!showDescription);
-        getDescriptionStr();
-        if (elementRef.current) {
-            ReactTooltip.show(elementRef.current);
-        }
+    const handleDescription = () => {
+        togglePreviewWidget(app, {
+            node,
+            engine,
+            name: node.getOptions().name,
+            docstring: node['extras']['description'] ?? '',
+            filePath:node['extras']['path'] ?? ''
+        });
     };
-
-    const getDescriptionStr = () => {
-        let dscrptStr = node['extras']['description'] ?? '***No description provided***';
-        setDescriptionStr(dscrptStr);
-    };
-
     return (
         <div style={{ position: "relative" }}>
-            {showDescription && <div className="description-tooltip">
-                <div data-no-drag style={{ cursor: "default" }}>
-                    <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={handleDescription}>
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <S.DescriptionName color={node.getOptions().color}>{node.getOptions().name}</S.DescriptionName>
-                    <div className="scrollable" onWheel={(e) => { e.stopPropagation(); e.currentTarget.scrollBy(e.deltaX, e.deltaY); }}>
-                        <p className="description-title">Description:</p>
-                        <div className="description-container">
-                            <div className="markdown-body" dangerouslySetInnerHTML={{ __html: marked(descriptionStr ?? '') }} />
-                        </div>
-                    </div>
-                </div>
-            </div>}
             <S.Node
                 className={"node library-node "+(node.isSelected() ? "selected" : "")}
                 onMouseDown={addGrabbing} onMouseUp={removeGrabbing}
-                ref={(elementRef as LegacyRef<HTMLDivElement>)}
-                data-tip data-for={node.getOptions().id}
                 borderColor={node.getOptions().extras["borderColor"]}
                 data-default-node-name={node.getOptions().name}
                 selected={node.isSelected()}
@@ -363,7 +351,8 @@ const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode })
                     <S.TitleName>{node.getOptions().name}</S.TitleName>
                     <label data-no-drag>
                         <Toggle className='lock' checked={node.isLocked() ?? false} onChange={event => handleDeletableNode('nodeDeletable', event)} />
-                        <Toggle className='description' name='Description' checked={showDescription ?? false} onChange={handleDescription} />
+                        <Toggle className='description' name='Description' checked={false} onChange={handleDescription}
+                        />
                     </label>
                 </S.Title>
                 <PortsComponent node={node} engine={engine} app={app}/>
