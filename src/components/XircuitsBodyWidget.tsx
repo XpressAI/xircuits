@@ -26,7 +26,8 @@ import {
 	countVisibleMenuOptions,
 	getMenuOptionsVisibility,
 } from "../context-menu/CanvasContextMenu";
-import { delayedZoomToFit, zoomIn, zoomOut } from '../helpers/zoom';
+import { delayedZoomToFit, zoomIn, zoomOut, centerNodeInView } from '../helpers/zoom';
+import { searchModel, SearchResult } from '../helpers/search';
 import { cancelDialog, GeneralComponentLibrary } from "../tray_library/GeneralComponentLib";
 import { AdvancedComponentLibrary, fetchNodeByName } from "../tray_library/AdvanceComponentLib";
 import { lowPowerMode, setLowPowerMode } from "./state/powerModeState";
@@ -40,6 +41,8 @@ import { Notification } from '@jupyterlab/apputils';
 import { SplitLinkCommand } from './link/SplitLinkCommand';
 import { LinkSplitManager } from './link/LinkSplitManager';
 import { fitIcon, zoomInIcon, zoomOutIcon } from '../ui-components/icons';
+import { CustomPortModel } from "./port/CustomPortModel";
+import { showNodeCenteringNotification } from '../helpers/notificationEffects';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -92,6 +95,7 @@ export const FixedZoomButton = styled.button`
 	padding: 0;
 	cursor: pointer;
 	color: white;
+	line-height: 0;
 
 	box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 	transition: all .3s ease;
@@ -102,7 +106,7 @@ export const FixedZoomButton = styled.button`
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
 
-	svg { width: 12px; height: 12px; color: inherit; }
+	svg { display: block; width: 12px; height: 12px; color: inherit; }
 
 	/* Light theme override */
 	body.light-mode & {
@@ -132,6 +136,76 @@ const ZoomControls = styled.div<{visible: boolean}>`
 	
 	`;
 
+	const SearchOverlay = styled.div<{visible: boolean}>`
+	position: fixed;
+	top: 10px;
+	right: 10px;
+	background: rgba(0,0,0,0.8);
+  	padding: 8px;    /* ← extra right padding for the close button */
+	border-radius: 4px;
+	display: ${({visible}) => visible ? 'flex' : 'none'};
+	align-items: center;
+	gap: 4px;
+	z-index: 10000;
+  
+	input {
+	  padding: 4px 6px;
+	  border-radius: 2px;
+	  border: none;
+	  outline: none;
+	  width: 140px;
+	}
+  
+	button:not(.close-search) {
+	  background: none;
+	  border: none;
+	  color: white;
+	  cursor: pointer;
+	  padding: 4px;
+	  font-size: 14px;
+	}
+  
+  	span {
+	  margin-left: auto;
+	  color: white;
+	  font-size: 12px;
+	}
+  
+	.close-search {
+		top: 4px;
+		left: 50%;
+		background: none;
+		border: none;
+		color: white;
+		font-size: 24px;
+		cursor: pointer;
+		line-height: 1;
+	}
+
+	/* Light theme override */
+	body.light-mode & {
+	  background: rgba(255,255,255,0.9);
+	  border: 1px solid rgba(0,0,0,0.1);
+  
+	  input {
+		color: black;
+		background: rgba(0,0,0,0.05);
+	  }
+  
+	  button:not(.close-search) {
+		color: black;
+	  }
+  
+	  span {
+		color: black;
+	  }
+  
+	  .close-search {
+		color: black;
+	  }
+	}
+`;
+
 export const BodyWidget: FC<BodyWidgetProps> = ({
 	context,
 	xircuitsApp,
@@ -154,6 +228,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 }) => {
 	const xircuitLogger = new Log(app);
 
+	const [canvasLoaded, setCanvasLoaded] = useState(false);
 	const [saved, setSaved] = useState(false);
 	const [compiled, setCompiled] = useState(false);
 	const [initialize, setInitialize] = useState(true);
@@ -174,11 +249,159 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	const hideTimeout = useRef<ReturnType<typeof setTimeout>>();
 	const [isHoveringControls, setIsHoveringControls] = useState(false);
 
+	const engine = xircuitsApp.getDiagramEngine();
 	const isHoveringControlsRef = useRef(false);
+	const [showSearch, setShowSearch] = useState(false);
+	const [searchText, setSearchText] = useState('');
+	const [matchCount, setMatchCount] = useState(0);
+	const [currentMatch, setCurrentMatch] = useState(0);
+	const [matchedIndices, setMatchedIndices] = useState<number[]>([]);
+	const [currentMatchIndex, setCurrentMatchIndex] = useState<number>(-1);
+
+	const clearSearchFlags = () => {
+		const engine = xircuitsApp.getDiagramEngine();
+		engine.getModel().getNodes().forEach(node => {
+		  node.getOptions().extras.isMatch = false;
+		  node.getOptions().extras.isSelectedMatch = false;
+		});
+		engine.repaintCanvas();
+	  };
 
 	useEffect(() => {
-	isHoveringControlsRef.current = isHoveringControls;
-	}, [isHoveringControls]);
+		const onKeyDown = (e: KeyboardEvent) => {
+		const key = e.key.toLowerCase();
+		  // only handle in the active Xircuits canvas
+		if (shell.currentWidget?.id !== widgetId) {
+			return;
+		}
+
+		if ((e.ctrlKey || e.metaKey) && key === 'f') {
+			e.preventDefault();
+			setShowSearch(s => !s);
+		}
+		if (e.key === 'Escape') {
+			setShowSearch(false);
+		}
+		};
+		document.addEventListener('keydown', onKeyDown);
+		return () => document.removeEventListener('keydown', onKeyDown);
+	}, [shell, widgetId]);
+
+	// Execute search command
+	const searchInputRef = useRef<HTMLInputElement>(null);
+
+	const executeSearch = useCallback((text: string) => {
+		const engine = xircuitsApp.getDiagramEngine();
+		const model = engine.getModel();
+		const nodes = model.getNodes();
+	
+		// Deselect all
+		nodes.forEach(node => {
+			node.setSelected(false);
+			node.getOptions().extras.isMatch = false;
+			node.getOptions().extras.isSelectedMatch = false;
+		});
+	
+		const query = text.trim();
+		if (!query) {
+		setMatchCount(0);
+		setCurrentMatch(0);
+		setMatchedIndices([]);
+		setCurrentMatchIndex(-1);
+		engine.repaintCanvas();
+		return;
+		}
+	
+		const result: SearchResult = searchModel(model, query);
+		setMatchCount(result.count);
+		setMatchedIndices(result.indices);
+	
+		if (result.indices.length > 0) {
+			result.indices.forEach((index, i) => {
+			const matchNode = nodes[index];
+			matchNode.getOptions().extras.isMatch = true;
+			matchNode.getOptions().extras.isSelectedMatch = i === 0;
+			});
+		
+			const first = nodes[result.indices[0]];
+			first.setSelected(true);
+			centerNodeInView(engine, first);
+			engine.repaintCanvas();
+			setCurrentMatch(1);
+			setCurrentMatchIndex(0);
+		} else {
+		setCurrentMatch(0);
+		setCurrentMatchIndex(-1);
+		}
+	
+		searchInputRef.current?.focus();
+	}, [xircuitsApp]);
+	
+	const navigateMatch = (direction: 'next' | 'prev') => {
+		const engine = xircuitsApp.getDiagramEngine();
+		const model = engine.getModel();
+		const nodes = model.getNodes();
+	
+		if (matchedIndices.length === 0) return;
+	
+		let newIndex = currentMatchIndex;
+		if (direction === 'next') {
+		newIndex = (currentMatchIndex + 1) % matchedIndices.length;
+		} else {
+		newIndex = (currentMatchIndex - 1 + matchedIndices.length) % matchedIndices.length;
+		}
+	
+		const matchedIndex = matchedIndices[newIndex];
+		const matchedNode = nodes.find((_, idx) => idx === matchedIndex);
+	
+		nodes.forEach(node => {
+			node.setSelected(false);
+			node.getOptions().extras.isSelectedMatch = false;
+		});
+		matchedNode.setSelected(true);
+		matchedNode.getOptions().extras.isSelectedMatch = true;
+		centerNodeInView(xircuitsApp.getDiagramEngine(), matchedNode);
+		engine.repaintCanvas();
+	
+		setCurrentMatch(newIndex + 1);
+		setCurrentMatchIndex(newIndex);
+	};
+	
+	// On input change
+	const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setSearchText(e.target.value);
+	};
+	
+	useEffect(() => {
+		if (!showSearch) { return; }
+		const handle = setTimeout(() => {
+			executeSearch(searchText);
+		}, 0);
+		return () => clearTimeout(handle);
+		}, [searchText, showSearch, executeSearch]);
+		
+		// whenever we open the search, force-focus the input
+		useEffect(() => {
+		if (showSearch) {
+		searchInputRef.current?.focus();
+		}
+			}, [showSearch]);
+
+		useEffect(() => {
+		isHoveringControlsRef.current = isHoveringControls;
+		}, [isHoveringControls]);
+	
+	useEffect(() => {
+	if (!showSearch) {
+    const engine = xircuitsApp.getDiagramEngine();
+    const nodes = engine.getModel().getNodes();
+    nodes.forEach(node => {
+	node.getOptions().extras.isMatch = false;
+	node.getOptions().extras.isSelectedMatch = false;
+    });
+    engine.repaintCanvas();
+}
+}, [showSearch]);
 
 	const handleMouseMoveCanvas = useCallback(() => {
 	setShowZoom(true);
@@ -227,72 +450,60 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			const modelStr = currentContext.model.toString();
 			if (!isJSON(modelStr)) {
 				// When context can't be parsed, just return
-				return
+				return;
 			}
 
 			try {
-				if (notInitialRender.current) {
-					const model: any = currentContext.model.toJSON();
-					let deserializedModel = xircuitsApp.customDeserializeModel(model, initialRender.current);
-					deserializedModel.registerListener({
-						// Detect changes when node is dropped or deleted
-						nodesUpdated: () => {
-							// Add delay for links to disappear 
-							const timeout = setTimeout(() => {
-								onChange();
-								setInitialize(false);
-							}, 10)
-							return () => clearTimeout(timeout)
+				// Deserialize the raw JSON, passing whether this is the first render
+				const model: any = currentContext.model.toJSON();
+				let deserializedModel = xircuitsApp.customDeserializeModel(model, initialRender.current);
+		
+				// Re-attach your node/link change listeners *before* setting the model
+				deserializedModel.registerListener({
+				nodesUpdated: () => {
+					// Delay so links can settle before serializing
+					const timeout = setTimeout(() => {
+						onChange();
+						setInitialize(false);
+					}, 10);
+					return () => clearTimeout(timeout);
+				},
+				linksUpdated: (event) => {
+					const timeout = setTimeout(() => {
+					event.link.registerListener({
+						sourcePortChanged: () => {
+						onChange();
 						},
-						linksUpdated: (event) => {
-
-							const timeout = setTimeout(() => {
-
-								event.link.registerListener({
-									/**
-									 * sourcePortChanged
-									 * Detect changes when link is connected
-									 */
-									sourcePortChanged: e => {
-										onChange();
-									},
-									/**
-									 * targetPortChanged
-									 * Detect changes when link is connected
-									 */
-									targetPortChanged: e => {
-										const sourceLink = e.entity as any;
-										app.commands.execute(commandIDs.connectLinkToObviousPorts, { draggedLink: sourceLink });
-										onChange();
-
-									},
-									/**
-									 * entityRemoved
-									 * Detect changes when new link is removed
-									 */
-									entityRemoved: e => {
-										onChange();
-									}
-								});
-							}, 100); // You can adjust the delay as needed
-							// Don’t forget to clear the timeout when unmounting or when the component is destroyed.
-							return () => clearTimeout(timeout);
+						targetPortChanged: (e) => {
+							const sourceLink = e.entity as any;
+							app.commands.execute(commandIDs.connectLinkToObviousPorts, { draggedLink: sourceLink });
+							onChange();
+						},
+						entityRemoved: () => {
+						onChange();
 						}
-					})
-					xircuitsApp.getDiagramEngine().setModel(deserializedModel);
-					
-					initialRender.current = false;
-				} else {
-					// Clear undo history when first time rendering
-					notInitialRender.current = true;
+
+					});
+					}, 100);
+					return () => clearTimeout(timeout);
+				}
+				});
+		
+				xircuitsApp.getDiagramEngine().setModel(deserializedModel);
+				clearSearchFlags();
+				CustomPortModel.attachEngine(deserializedModel, engine);
+
+				// On the first load, clear undo history and register global engine listeners
+				if (initialRender.current) {
 					currentContext.model.sharedModel.clearUndoHistory();
-					// Register engine listener just once
 					xircuitsApp.getDiagramEngine().registerListener({
-						droppedLink: event => showComponentPanelFromLink(event),
+						droppedLink: (event) => showComponentPanelFromLink(event),
 						hidePanel: () => hidePanel(),
 						onChange: () => onChange()
-					})
-				}
+					});
+				initialRender.current = false;
+				setCanvasLoaded(true);
+			}
 			} catch (e) {
 				showErrorMessage('Error', `An error occurred: ${e.message}`);
 			}
@@ -546,6 +757,22 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		});
 	}
 
+	const getNodesConnectedOnAtLeastOneSide = (): NodeModel[] => {
+		const nodes = engine.getModel().getNodes();
+
+		return nodes.filter((node: any) => {
+			const inPorts  = node.portsIn  ?? [];
+			const outPorts = node.portsOut ?? [];
+
+			const allPorts = (inPorts.length || outPorts.length)
+			? [...inPorts, ...outPorts]
+			: Object.values(node.getPorts?.() ?? {});
+
+			const hasAny = allPorts.some((p: any) => Object.keys(p.getLinks()).length > 0);
+			return hasAny;
+		});
+		};
+		
 	const checkAllNodesConnected = (): boolean | null => {
 		let allNodes = getAllNodesFromStartToFinish();
 		let lastNode = allNodes[allNodes.length - 1];
@@ -553,22 +780,24 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (lastNode['name'] != 'Finish') {
 			// When last node is not Finish node, check failed and show error tooltip
 			lastNode.getOptions().extras["borderColor"] = "red";
-			lastNode.getOptions().extras["tip"] = `Please make sure this **${lastNode['name']}** node end with **Finish** node`;
 			lastNode.setSelected(true);
+			const message = `Please make sure this "${lastNode['name']}" node ends with a "Finish" node.`;
+			showNodeCenteringNotification(message, lastNode.getID(), engine);
 			return false;
 		}
 		return true;
 	}
 
 	const checkAllCompulsoryInPortsConnected = (): boolean | null => {
-		let allNodes = getAllNodesFromStartToFinish();
+		let allNodes = getNodesConnectedOnAtLeastOneSide();
 		for (let i = 0; i < allNodes.length; i++) {
 			for (let k = 0; k < allNodes[i]["portsIn"].length; k++) {
 				let node = allNodes[i]["portsIn"][k]
 				if (node.getOptions()["label"].startsWith("★") && Object.keys(node.getLinks()).length == 0) {
 					allNodes[i].getOptions().extras["borderColor"] = "red";
-					allNodes[i].getOptions().extras["tip"] = "Please make sure the [★]COMPULSORY InPorts are connected ";
 					allNodes[i].setSelected(true);
+					const message = "Please make sure the [★]COMPULSORY InPorts are connected.";
+					showNodeCenteringNotification(message, allNodes[i].getID(), engine);
 					return false;
 				}
 			}
@@ -618,6 +847,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		if (shell.currentWidget?.id !== widgetId) {
 			return;
 		}
+		checkAllCompulsoryInPortsConnected();  
 		onChange()
 		setInitialize(true);
 		setSaved(true);
@@ -635,9 +865,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let allNodesConnected = checkAllNodesConnected();
 
 		if (!allNodesConnected) {
-			Notification.error("Please connect all the nodes before compiling.", { autoClose: 3000 });
+			const allNodes = getAllNodesFromStartToFinish();
+			const lastNode = allNodes[allNodes.length - 1];
+			const message = "Please connect all the nodes before compiling.";
+			showNodeCenteringNotification(message, lastNode.getID(), engine);
 			return;
 		}
+		checkAllCompulsoryInPortsConnected();  
 		const success = await commands.execute(commandIDs.compileFile, { componentList });
 
 		if (success) {
@@ -675,11 +909,13 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		let allCompulsoryNodesConnected = checkAllCompulsoryInPortsConnected();
 
 		if (!allNodesConnected) {
-			Notification.error("Please connect all the nodes before running.", { autoClose: 3000 });
+			const all = getAllNodesFromStartToFinish();
+			const last = all[all.length - 1];
+			const message = "Please connect all the nodes before running.";
+			showNodeCenteringNotification(message, last.getID(), engine);
 			return;
 		}
 		if (!allCompulsoryNodesConnected) {
-			Notification.error("Please connect all [★]COMPULSORY InPorts.", { autoClose: 3000 });
 			return;
 		}
 
@@ -777,6 +1013,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	
 		// Trigger loading animation
 		await triggerLoadingAnimation(reloadPromise, { loadingMessage: 'Reloading all nodes...'});
+		clearSearchFlags();
 		console.log("Reload all complete.");
 	};
 
@@ -1361,8 +1598,63 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		};
 	}, [xircuitsApp.getDiagramEngine().getCanvas()?.firstChild]);
 
-	return (
-		<Body>
+return (
+  <Body>
+    {/* Search Overlay */}
+    <SearchOverlay
+	visible={showSearch}
+	onMouseDownCapture={e => {
+	  // only stop propagation if they clicked the backdrop, not the buttons
+	if ((e.target as HTMLElement).tagName === 'INPUT') {
+		e.stopPropagation();
+	}
+	}}
+	onClick={e => {
+	  // refocus the input if they clicked anywhere _inside_ the overlay
+	searchInputRef.current?.focus();
+	}}
+		>
+	<input
+	ref={searchInputRef}
+	type="text"
+	value={searchText}
+	onChange={onSearchChange}
+	placeholder="Search..."
+	autoFocus
+	onKeyDownCapture={e => e.stopPropagation()}
+	onKeyDown={e => e.stopPropagation()}
+	onKeyUp={e => e.stopPropagation()}
+		/>
+		<button
+			onClick={(e) => {
+				e.stopPropagation();
+				navigateMatch("prev");
+			}}
+			>
+			&uarr;
+			</button>
+
+			<button
+			onClick={(e) => {
+				e.stopPropagation();
+				navigateMatch("next");
+			}}
+			>
+			&darr;
+			</button>
+			<span onMouseDown={e => e.stopPropagation()}>{currentMatch} of {matchCount}</span>
+			<button
+			className="close-search"
+			onClick={e => {
+			e.stopPropagation();
+			setShowSearch(false);
+			}}
+			title="Close search"
+		>
+    ×
+  	</button>
+    </SearchOverlay>
+
 			<Content>
 				{isLoading && (
 				<div className="loading-indicator">
@@ -1382,52 +1674,56 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					onMouseDown={preventDefault}
 					onContextMenu={showCanvasContextMenu}
 					onClick={handleClick}>
-					<XircuitsCanvasWidget translate={translate} >
-						<CanvasWidget engine={xircuitsApp.getDiagramEngine()}/>
-						{/* Add Component Panel(ctrl + left-click, dropped link) */}
-						{isComponentPanelShown && (
-							<div
-								onMouseEnter={()=>setDontHidePanel(true)}
-								onMouseLeave={()=>setDontHidePanel(false)}
-								id='component-panel'
-								style={{
-									minHeight: 'auto',
-									height: 'auto',
-									boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
-									top: componentPanelPosition.y,
-									left: componentPanelPosition.x
-								}}
-								className="add-component-panel">
-								<ComponentsPanel
-									lab={app}
-									eng={xircuitsApp.getDiagramEngine()}
-									nodePosition={nodePosition}
-									linkData={looseLinkData}
-									isParameter={isParameterLink}
-									key="component-panel"
-								/>
-							</div>
-						)}
-						{/* Node Action Panel(left-click) */}
-						{contextMenuShown && (
-							<div
-								id='context-menu'
-								style={{
-									minHeight: 'auto',
-									height: 'auto',
-									boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
-									top: contextMenuPosition.y,
-									left: contextMenuPosition.x
-								}}
-								className="canvas-context-menu">
-								<CanvasContextMenu
-									app={app}
-									engine={xircuitsApp.getDiagramEngine()}
-									nodePosition={nodePosition}
-								/>
-							</div>
-						)}
-					</XircuitsCanvasWidget>
+					{/* Display only after canvas is fully rendered */}
+					<div style={{visibility: canvasLoaded ? 'visible' : 'hidden',
+						height: '100%', width: '100%' }}>
+						<XircuitsCanvasWidget translate={translate} >
+							<CanvasWidget engine={xircuitsApp.getDiagramEngine()}/>
+							{/* Add Component Panel(ctrl + left-click, dropped link) */}
+							{isComponentPanelShown && (
+								<div
+									onMouseEnter={()=>setDontHidePanel(true)}
+									onMouseLeave={()=>setDontHidePanel(false)}
+									id='component-panel'
+									style={{
+										minHeight: 'auto',
+										height: 'auto',
+										boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
+										top: componentPanelPosition.y,
+										left: componentPanelPosition.x
+									}}
+									className="add-component-panel">
+									<ComponentsPanel
+										lab={app}
+										eng={xircuitsApp.getDiagramEngine()}
+										nodePosition={nodePosition}
+										linkData={looseLinkData}
+										isParameter={isParameterLink}
+										key="component-panel"
+									/>
+								</div>
+							)}
+							{/* Node Action Panel(left-click) */}
+							{contextMenuShown && (
+								<div
+									id='context-menu'
+									style={{
+										minHeight: 'auto',
+										height: 'auto',
+										boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
+										top: contextMenuPosition.y,
+										left: contextMenuPosition.x
+									}}
+									className="canvas-context-menu">
+									<CanvasContextMenu
+										app={app}
+										engine={xircuitsApp.getDiagramEngine()}
+										nodePosition={nodePosition}
+									/>
+								</div>
+							)}
+						</XircuitsCanvasWidget>
+					</div>
 				</Layer>
 			</Content>
 

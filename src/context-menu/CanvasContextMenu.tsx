@@ -13,67 +13,6 @@ export interface CanvasContextMenuProps {
 	nodePosition?: {x: number, y: number};
 }
 
-function zoomToFit(engine: DiagramEngine, padding = 40): void {
-    const model = engine.getModel();
-    const nodes = model.getNodes();
-    if (nodes.length === 0) {
-        return;
-    }
-
-    // Reset zoom & offset
-    model.setZoomLevel(100);
-    model.setOffset(0, 0);
-
-    // Compute bounding box of all nodes
-    let minX = Infinity, minY = Infinity;
-    let maxX = -Infinity, maxY = -Infinity;
-
-    for (const node of nodes) {
-        const { x, y } = node.getPosition();
-        const { width = 150, height = 100 } = (node as any).getSize?.() ?? {};
-
-        minX = Math.min(minX, x);
-        minY = Math.min(minY, y);
-        maxX = Math.max(maxX, x + width);
-        maxY = Math.max(maxY, y + height);
-    }
-
-    // Expand by padding
-    minX -= padding;
-    minY -= padding;
-    maxX += padding;
-    maxY += padding;
-
-    const contentWidth  = maxX - minX;
-    const contentHeight = maxY - minY;
-
-    // Find the viewport (notebook content region)
-    const contentWidget = (engine as any).canvas.closest(
-        '.lm-Widget[role="region"][aria-label="notebook content"]'
-    ) as HTMLElement;
-
-    const { width: vpW, height: vpH } = contentWidget.getBoundingClientRect();
-    console.log('Final viewport size:', { vpW, vpH });
-    // Determine appropriate zoom level (5%–150%)
-    const rawZoom = Math.min(vpW / contentWidth, vpH / contentHeight);
-    const zoom    = Math.max(0.05, Math.min(1.5, rawZoom * 0.995));
-    model.setZoomLevel(zoom * 100);
-
-    // Center content in viewport
-    const centerX = minX + contentWidth  / 2;
-    const centerY = minY + contentHeight / 2;
-    const offsetX = vpW / 2 - centerX * zoom;
-    const offsetY = vpH / 2 - centerY * zoom;
-    model.setOffset(offsetX, offsetY);
-
-    engine.repaintCanvas();
-}
-
-export function delayedZoomToFit(engine: DiagramEngine, padding = 300): void {
-    requestAnimationFrame(() => {
-        setTimeout(() => zoomToFit(engine, padding), 500);
-    });
-}
 
 export class CanvasContextMenu extends React.Component<CanvasContextMenuProps> {
 	hideCanvasContextMenu() {
