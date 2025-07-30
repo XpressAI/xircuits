@@ -5,7 +5,7 @@ import shutil
 import json
 from pathlib import Path
 from ..utils import is_valid_url, is_empty
-from ..handlers.request_submodule import request_submodule_library
+from ..handlers.request_submodule import request_remote_library
 from ..handlers.request_folder import clone_from_github_url
 
 CORE_LIBS = {"xai_events", "xai_template", "xai_controlflow", "xai_utils"}
@@ -88,7 +88,7 @@ def install_library(library_name: str):
     component_library_path = get_component_library_path(library_name)
 
     if not Path(component_library_path).is_dir() or is_empty(component_library_path):
-        success, message = request_submodule_library(component_library_path)
+        success, message = request_remote_library(component_library_path)
         if not success:
             print(message)
             return
@@ -116,7 +116,7 @@ def fetch_library(library_name: str):
     component_library_path = get_component_library_path(library_name)
 
     if not Path(component_library_path).is_dir() or is_empty(component_library_path):
-        success, message = request_submodule_library(component_library_path)
+        success, message = request_remote_library(component_library_path)
         if success:
             print(f"{library_name} library fetched and stored in {component_library_path}.")
         else:
