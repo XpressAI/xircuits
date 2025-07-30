@@ -32,7 +32,8 @@ dependencies = [
     "requests",
     "toml",
     "importlib_resources",
-    "asgiref"
+    "asgiref",
+    "dill"
 ]
 dynamic = ["version", "description", "authors", "urls", "keywords"]
 

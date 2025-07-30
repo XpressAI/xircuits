@@ -29,8 +29,16 @@ import { LegacyRef, MutableRefObject } from "react";
 
 
 export namespace S {
-    export const Node = styled.div<{ borderColor: string, background: string; selected: boolean; }>`
-        box-shadow: 1px 1px 10px ${(p) => p.selected ? '3px rgb(0 192 255 / 0.5)' : '0px rgb(0 0 0 / 0.5)'};
+    export const Node = styled.div<{ borderColor: string, background: string; selected: boolean;  match?: boolean; selectedMatch?: boolean; }>`
+        box-shadow: ${p =>
+            p.selectedMatch
+                ? '1px 1px 10px #3399ff'
+            : p.match
+                ? '1px 1px 10px orange'
+            : p.selected
+                ? '1px 1px 10px rgb(0 192 255 / 0.5)'
+            : 'none'
+            };
         cursor: grab;
         border-radius: 5px;
         font-family: sans-serif;
@@ -237,6 +245,8 @@ const ParameterNode = ({ node, engine, app }) => {
             borderColor={node.getOptions().extras["borderColor"]}
             data-default-node-name={node.getOptions().name}
             selected={node.isSelected()}
+            match={node.getOptions().extras.isMatch}
+            selectedMatch={node.getOptions().extras.isSelectedMatch}
             background={node.getOptions().color}
             onDoubleClick={handleEditParameter}
         >
@@ -258,6 +268,8 @@ const StartFinishNode = ({ node, engine, handleDeletableNode, app }) => (
         data-default-node-name={node.getOptions().name}
         selected={node.isSelected()}
         background={node.getOptions().color}
+        match={node.getOptions().extras.isMatch}
+        selectedMatch={node.getOptions().extras.isSelectedMatch}
     >
         <S.Title background={node.getOptions().color}
 >
@@ -281,6 +293,8 @@ const WorkflowNode = ({ node, engine, app, handleDeletableNode }) => {
                 data-default-node-name={node.getOptions().name}
                 selected={node.isSelected()}
                 background={node.getOptions().color}
+                match={node.getOptions().extras.isMatch}
+                selectedMatch={node.getOptions().extras.isSelectedMatch}
                 className={"node workflow-node "+(node.isSelected() ? "selected" : "")}
             >
                 <S.Title background={node.getOptions().color}
@@ -315,11 +329,6 @@ const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode })
         setDescriptionStr(dscrptStr);
     };
 
-    const hideErrorTooltip = () => {
-        delete node.getOptions().extras["tip"];
-        node.getOptions().extras["borderColor"] = "rgb(0,192,255)";
-    };
-
     return (
         <div style={{ position: "relative" }}>
             {showDescription && <div className="description-tooltip">
@@ -345,6 +354,8 @@ const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode })
                 data-default-node-name={node.getOptions().name}
                 selected={node.isSelected()}
                 background={node.getOptions().color}
+                match={node.getOptions().extras.isMatch}
+                selectedMatch={node.getOptions().extras.isSelectedMatch}
             >
                 <S.Title background={node.getOptions().color}
 >
@@ -357,53 +368,26 @@ const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode })
                 </S.Title>
                 <PortsComponent node={node} engine={engine} app={app}/>
             </S.Node>
-            {(node.getOptions().extras["tip"] != undefined && node.getOptions().extras["tip"] != "") ?
-                <ReactTooltip
-                    id={node.getOptions().id}
-                    clickable
-                    place="bottom"
-                    className="error-tooltip"
-                    arrowColor="rgba(255, 0, 0, .9)"
-                    delayHide={100}
-                    delayUpdate={50}
-                    getContent={() =>
-                        <div data-no-drag className="error-container">
-                            <p className="error-title">Error</p>
-                            <div className="markdown-body" dangerouslySetInnerHTML={{ __html: marked(node.getOptions().extras["tip"] ?? '') }} />
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={hideErrorTooltip}>
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    }
-                    overridePosition={({ left, top }) => {
-                        const currentNode = node;
-                        const nodeDimension = { x: currentNode.width, y: currentNode.height };
-                        const nodePosition = { x: currentNode.getX(), y: currentNode.getY() };
-                        let newPositionX = nodePosition.x;
-                        let newPositionY = nodePosition.y;
-                        let offset = 0;
-
-                        if (!shell.leftCollapsed) {
-                            let leftSidebar = document.getElementById('jp-left-stack');
-                            offset = leftSidebar.clientWidth + 2;
-                        }
-
-                        newPositionX = newPositionX - 184 + offset + (nodeDimension.x / 2);
-                        newPositionY = newPositionY + 90 + nodeDimension.y;
-
-                        const tooltipPosition = engine.getRelativePoint(newPositionX, newPositionY);
-
-                        left = tooltipPosition.x;
-                        top = tooltipPosition.y;
-                        return { top, left };
-                    }}
-                />
-                : null}
         </div>
     );
 };
 
 export class CustomNodeWidget extends React.Component<DefaultNodeProps> {
+    
+    private _repaintHandle: { deregister: () => void };
+
+    componentDidMount() {
+      // registerListener returns a handle with a `.deregister()` method
+        this._repaintHandle = this.props.engine.registerListener({
+        repaintCanvas: () => this.forceUpdate()
+        });
+    }
+
+    componentWillUnmount() {
+      // pass that same handle back to deregisterListener
+        this.props.engine.deregisterListener(this._repaintHandle);
+    }
+    
     handleDeletableNode = (key, event) => {
         this.setState({
             [key]: event.target.checked ? this.props.node.setLocked(true) : this.props.node.setLocked(false),

@@ -98,7 +98,6 @@ body.light-mode .xircuits-canvas {
 }
 
 body.light-mode .xircuits-canvas .node, body.light-mode #xircuits-component-sidebar .node, body.light-mode #sidebar-tooltip .node {
-  box-shadow: none;
   border-color: oklch(0.8 0 0 / 1);
 }
 

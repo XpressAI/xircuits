@@ -714,14 +714,14 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     registerTemplateButton(
       'xircuits:open-agent-example',
       'Agent',
-      'xai_components/xai_agent/examples/agent_example.xircuits',
-      ['AGENT', 'OPENAI'],
+      'project-templates/AgentTemplate.xircuits',
+      ['AGENT','OPENAI','CONVERSE'],
       2
     );
-        registerTemplateButton(
+    registerTemplateButton(
       'xircuits:open-flask-example',
       'Service',
-      'xai_components/xai_flask/examples/InlineExample.xircuits',
+      'project-templates/ServiceTemplate.xircuits',
       ['FLASK'],
       3
     );
