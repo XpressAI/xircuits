@@ -58,8 +58,8 @@ const Container = styled.div`
   .empty-state p {
     margin-top: 12px;
     font-size: 0.8rem;
-    color: var(--jp-ui-font-color2);
-    opacity: 0.8;
+    color: var(--jp-ui-font-color1);
+    opacity: 0.9;
   }
 `;
 
