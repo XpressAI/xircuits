@@ -276,7 +276,7 @@ export class ComponentPreviewWidget extends ReactWidget {
           ) : (
             <div className="empty-state">
               <xircuitsIcon.react />
-              <p>Select a component to see its details</p>
+              <p>Select a component's `i` icon to show its detail here.</p>
             </div>
           )}
         </div>
