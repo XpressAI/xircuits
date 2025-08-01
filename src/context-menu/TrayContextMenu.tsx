@@ -186,7 +186,10 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigg
         return null;
     }
 
-    const isCore = CORE_LIBS.has(libraryName.toLowerCase());
+    const normalizedName = normalizeLibraryName(libraryName).split('/').pop();
+    const isCore = CORE_LIBS.has(normalizedName);
+
+
 
     function addHoverClass(e){
         e.currentTarget.classList.add("lm-mod-active");
