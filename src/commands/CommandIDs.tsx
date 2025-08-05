@@ -44,5 +44,6 @@ export const commandIDs = {
   createNewXircuitInCurrentDir: "Xircuit-filebrowser:create-new-in-current-dir",
   helpOpenResource: "xircuits-help:open-resource",
   openXircuitsConfiguration: "xircuits-config:open-config",
-  fetchRemoteRunConfig: "xircuits-config:fetch-remote-config"
+  fetchRemoteRunConfig: "xircuits-config:fetch-remote-config",
+  fetchExamples: "xircuits-examples:fetch-xircuits-examples"
 };
