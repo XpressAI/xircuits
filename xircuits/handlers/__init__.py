@@ -5,7 +5,7 @@ from .components import ComponentsRouteHandler
 from .config import RunConfigRouteHandler, SplitModeConfigHandler
 from .debugger import DebuggerRouteHandler
 from .request_library import InstallLibraryRouteHandler, FetchLibraryRouteHandler, UninstallLibraryRouteHandler, GetLibraryDirectoryRouteHandler, GetLibraryReadmeRouteHandler, GetLibraryExampleRouteHandler, ReloadComponentLibraryConfigHandler, GetComponentLibraryConfigHandler, CreateNewLibraryHandler
-
+from .request_examples import FetchExamplesRouteHandler
 
 def setup_handlers(web_app, url_path):
     host_pattern = ".*$"
@@ -28,6 +28,10 @@ def setup_handlers(web_app, url_path):
         (
             url_path_join(base_url, url_path, "components/"),
             ComponentsRouteHandler
+        ),
+        (
+            url_path_join(base_url, url_path, "examples/"),
+            FetchExamplesRouteHandler
         ),
         (
             url_path_join(base_url, url_path, "file/compile"),

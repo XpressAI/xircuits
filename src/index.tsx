@@ -599,6 +599,13 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         return new Set();
       }
     }
+    app.commands.addCommand(commandIDs.fetchExamples, {
+      label: 'Fetch Example Workflows',
+      caption: 'Fetch example workflows into the examples directory',
+      execute: async () => {
+        await requestAPI('examples/', { method: 'POST' });
+      }
+    });
 
     function registerTemplateButton(
       id: string,
@@ -632,15 +639,15 @@ const xircuits: JupyterFrontEndPlugin<void> = {
             installedLibs.add(lib);
             }
 
+          // Currently the templates are stored at the `examples` dir
+          await app.commands.execute(commandIDs.fetchExamples);
+
           const model = await app.serviceManager.contents.copy(
             examplePath,
-            currentPath || ''          
+            currentPath || ''
           );
 
           const finalPath = model.path;    
-
-          // small delay to avoid the empty-canvas race
-          await new Promise(res => setTimeout(res, 200));
 
           // Open the file and refresh the component list
           await app.commands.execute('docmanager:open', { path: finalPath });
@@ -722,14 +729,14 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     registerTemplateButton(
       'xircuits:open-agent-example',
       'Agent',
-      'project-templates/AgentTemplate.xircuits',
+      'examples/AgentTemplate.xircuits',
       ['AGENT','OPENAI','CONVERSE'],
       2
     );
     registerTemplateButton(
       'xircuits:open-flask-example',
       'Service',
-      'project-templates/ServiceTemplate.xircuits',
+      'examples/ServiceTemplate.xircuits',
       ['FLASK'],
       3
     );
