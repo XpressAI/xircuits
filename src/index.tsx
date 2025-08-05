@@ -595,7 +595,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       label: 'Fetch Example Workflows',
       caption: 'Fetch example workflows into the examples directory',
       execute: async () => {
-        await requestAPI('examples', { method: 'POST' });
+        await requestAPI('examples/', { method: 'POST' });
       }
     });
 
