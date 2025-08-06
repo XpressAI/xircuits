@@ -1,43 +1,72 @@
 import { ReactWidget, ToolbarButtonComponent } from '@jupyterlab/apputils';
 import { JupyterFrontEnd } from '@jupyterlab/application';
-import { LabIcon, caretLeftIcon, caretRightIcon } from '@jupyterlab/ui-components';
-import { DiagramEngine } from '@projectstorm/react-diagrams';
+import { LabIcon, caretLeftIcon, caretRightIcon, caretDownIcon } from '@jupyterlab/ui-components';
+import { DiagramEngine, NodeModel } from '@projectstorm/react-diagrams';
 import React from 'react';
 import styled from '@emotion/styled';
 import { marked } from 'marked';
 import { infoIcon, fitIcon, fileCodeIcon, workflowComponentIcon, xircuitsIcon } from '../ui-components/icons';
 import { centerNodeInView } from '../helpers/notificationEffects';
 import { togglePreviewWidget } from './previewHelper';
-import { NodeModel } from '@projectstorm/react-diagrams';
 import { getMainPath } from './nodeNavigation';
+import { collectParamIO } from './portPreview';
 
 const Container = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  overflow: hidden;
   background: var(--jp-layout-color1);
   color: var(--jp-ui-font-color0);
   border-left: var(--jp-border-width) solid var(--jp-border-color1);
 
+  .jp-SidePanel-header,
+  .jp-SidePanel-header h2,
+  .title {
+    font-size: 0.85rem;   
+    font-weight: 700;     
+    line-height: 1;
+    margin: 0;
+    text-transform: none; 
+  }
+
+  .header-bar {
+    height: var(--jp-private-toolbar-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    border-bottom: var(--jp-border-width) solid var(--jp-border-color2);
+  }
+
+  .toolbar-buttons {
+    display: flex;
+    gap: 4px;
+  }
+
   .content {
     flex: 1 1 auto;
-    padding: 24px 26px;
+    padding: 20px 24px 20px 0;
     overflow-y: auto;
   }
 
-  h3 {
-    margin: 12px 0 8px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--jp-ui-font-color1);
+  .section-toggle {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 900;
+    font-size: 0.8rem;
+    margin: 2px 0;
   }
 
-  .jp-SidePanel-header  {
-    font-size: 0.8rem;
-    font-weight: 700;
-    margin: 0;
+  .arrow {
+    display: inline-flex;
+    margin-right: 4px;
+    border-radius: 4px;
+    padding: 2px;
+    transition: background 0.2s;
   }
+  .arrow:hover { background: var(--jp-layout-color2); }
 
   .empty-state {
     height: 100%;
@@ -60,7 +89,53 @@ const Container = styled.div`
     font-size: 0.8rem;
     color: var(--jp-ui-font-color1);
     opacity: 0.9;
+    }
+
+    .jp-SidePanel-header,           
+  .header-bar {                    
+    height: var(--jp-private-toolbar-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px !important;     
+    border-bottom: var(--jp-border-width) solid var(--jp-border-color2);
+    box-sizing: border-box;
   }
+
+  .jp-SidePanel-header::before {
+    content: none !important;
+  }
+
+  .jp-SidePanel-header h2,
+  .title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1;
+    margin: 0;
+    padding: 0;                   
+  }
+
+  .section-toggle {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 900;
+  font-size: 0.8rem;
+  margin: 2px 0;
+}
+
+.section-content {
+  margin-left: 40px;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+}
+
+.section-content-compact {
+  margin-left: 18px;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+}
+
 `;
 
 export interface IComponentInfo {
@@ -75,6 +150,10 @@ export class ComponentPreviewWidget extends ReactWidget {
   private _app: JupyterFrontEnd;
   private _model: IComponentInfo | null;
 
+  private _docCollapsed = false;
+  private _inCollapsed = false;
+  private _outCollapsed = false;
+
   constructor(app: JupyterFrontEnd, model: IComponentInfo | null = null) {
     super();
     this._app = app;
@@ -84,7 +163,7 @@ export class ComponentPreviewWidget extends ReactWidget {
     this.title.caption = 'Component Info';
     this.title.icon = infoIcon;
     this.title.closable = false;
-
+    
     if (model?.node) {
       this.node.dataset.componentName = model.name;
       this.node.dataset.componentId   = model.node.getID();
@@ -199,67 +278,176 @@ export class ComponentPreviewWidget extends ReactWidget {
     centerNodeInView(this._model?.engine!, next.getID());
   };
 
+  private renderDocstring(): JSX.Element | null {
+    if (
+      !this._model?.docstring?.trim() ||
+      ['Start', 'Finish'].includes(this._model.name) ||
+      this.isWorkflowNode()
+    ) return null;
+
+    const ArrowDoc = this._docCollapsed ? caretRightIcon.react : caretDownIcon.react;
+
+    return (
+      <>
+        <div
+          className="section-toggle"
+          onClick={() => {
+            this._docCollapsed = !this._docCollapsed;
+            this.update();
+          }}
+        >
+          <span className="arrow">
+            <ArrowDoc width="12" height="12" tag="span" />
+          </span>
+          &nbsp;Docstring
+        </div>
+        {!this._docCollapsed && (
+          <div
+            className="section-content"
+            dangerouslySetInnerHTML={{ __html: marked(this._model.docstring) }}
+          />
+        )}
+      </>
+    );
+  }
+
+  private renderInputs(inputs: string[]): JSX.Element | null {
+    if (inputs.length === 0) return null;
+
+    const ArrowIn = this._inCollapsed ? caretRightIcon.react : caretDownIcon.react;
+    const inputsMd = inputs.join('\n');
+
+    return (
+      <>
+        <div
+          className="section-toggle"
+          onClick={() => {
+            this._inCollapsed = !this._inCollapsed;
+            this.update();
+          }}
+        >
+          <span className="arrow">
+            <ArrowIn width="12" height="12" tag="span" />
+          </span>
+          &nbsp;Inputs ({inputs.length})
+        </div>
+        {!this._inCollapsed && (
+          <div
+            className="section-content-compact"
+            dangerouslySetInnerHTML={{ __html: marked(inputsMd) }}
+          />
+        )}
+      </>
+    );
+  }
+
+  private renderOutputs(outputs: string[]): JSX.Element | null {
+    if (outputs.length === 0) return null;
+
+    const ArrowOut = this._outCollapsed ? caretRightIcon.react : caretDownIcon.react;
+    const outputsMd = outputs.join('\n');
+
+    return (
+      <>
+        <div
+          className="section-toggle"
+          onClick={() => {
+            this._outCollapsed = !this._outCollapsed;
+            this.update();
+          }}
+        >
+          <span className="arrow">
+            <ArrowOut width="12" height="12" tag="span" />
+          </span>
+          &nbsp;Outputs ({outputs.length})
+        </div>
+        {!this._outCollapsed && (
+          <div
+            className="section-content-compact"
+            dangerouslySetInnerHTML={{ __html: marked(outputsMd) }}
+          />
+        )}
+      </>
+    );
+  }
+  
   render(): JSX.Element {
+    const { inputs, outputs } = this._model?.node
+      ? collectParamIO(this._model.node)
+      : { inputs: [], outputs: [] };
+
+    const inputsMd = inputs.join('\n');
+    const outputsMd = outputs.join('\n');
+
+    const ArrowDoc = this._docCollapsed ? caretRightIcon.react : caretDownIcon.react;
+    const ArrowIn  = this._inCollapsed  ? caretRightIcon.react : caretDownIcon.react;
+    const ArrowOut = this._outCollapsed ? caretRightIcon.react : caretDownIcon.react;
+
     return (
       <Container className="jp-SidePanel">
         <div className="jp-SidePanel-header">
           <h2 className="jp-text-truncated">Component Preview</h2>
         </div>
 
-        <div
-          className="jp-Toolbar jp-SidePanel-toolbar"
-          aria-label="Component preview toolbar"
-          style={{ minHeight: 'var(--jp-private-toolbar-height)' }}
-        >
-          <ToolbarButtonComponent
-            icon={caretLeftIcon}
-            tooltip="Previous node"
-            enabled={!!this._model?.node}
-            onClick={() => this.navigate(-1)}
-          />
-          <ToolbarButtonComponent
-            icon={caretRightIcon}
-            tooltip="Next node"
-            enabled={!!this._model?.node}
-            onClick={() => this.navigate(1)}
-          />
-          <ToolbarButtonComponent
-            icon={fileCodeIcon as LabIcon}
-            tooltip="Open script"
-            enabled={!!this._model?.node}
-            onClick={this.handleOpenScript}
-          />
-          <ToolbarButtonComponent
-            icon={fitIcon as LabIcon}
-            tooltip="Center node"
-            enabled={!!this._model?.node && !!this._model?.engine}
-            onClick={this.handleCenterNode}
-          />
-          {this.isWorkflowNode() && (
+        {/* ---------------------------- header --------------------------- */}
+        <div className="header-bar">
+          <span className="title">
+            {(this._model?.node as any)?.getOptions?.()?.name ?? ''}
+          </span>
+
+          <div className="toolbar-buttons">
             <ToolbarButtonComponent
-              icon={workflowComponentIcon as LabIcon}
-              tooltip="Open workflow"
-              enabled
-              onClick={this.handleOpenWorkflow}
+              icon={caretLeftIcon}
+              tooltip="Previous node"
+              enabled={!!this._model?.node}
+              onClick={() => this.navigate(-1)}
             />
-          )}
+            <ToolbarButtonComponent
+              icon={caretRightIcon}
+              tooltip="Next node"
+              enabled={!!this._model?.node}
+              onClick={() => this.navigate(1)}
+            />
+            <ToolbarButtonComponent
+              icon={fileCodeIcon as LabIcon}
+              tooltip="Open script"
+              enabled={!!this._model?.node}
+              onClick={this.handleOpenScript}
+            />
+            <ToolbarButtonComponent
+              icon={fitIcon as LabIcon}
+              tooltip="Center node"
+              enabled={!!this._model?.node && !!this._model?.engine}
+              onClick={this.handleCenterNode}
+            />
+            {this.isWorkflowNode() && (
+              <ToolbarButtonComponent
+                icon={workflowComponentIcon as LabIcon}
+                tooltip="Open workflow"
+                enabled
+                onClick={this.handleOpenWorkflow}
+              />
+            )}
+          </div>
         </div>
 
         <div className="content">
           {this._model ? (
             <>
-              <h3>{this._model.name}</h3>
-
               {this._model.name === 'Start' && (
-                <p><em>This is the <strong>start</strong> of your workflow.</em></p>
+                <p style={{ marginLeft: '40px' }}>
+                  <em>This is the <strong>start</strong> of your workflow.</em>
+                </p>
               )}
 
               {this._model.name === 'Finish' && (
-                <p><em>This is the <strong>end</strong> of your workflow.</em></p>
+                <p style={{ marginLeft: '40px' }}>
+                  <em>This is the <strong>end</strong> of your workflow.</em>
+                </p>
               )}
 
               {this.isWorkflowNode() && (
-                <p>
+                <p style={{ marginLeft: '40px' }}>
                   <em>
                     Sub‑workflow component – click <strong>Open workflow</strong> in the preview to inspect
                     the inner graph.
@@ -267,11 +455,15 @@ export class ComponentPreviewWidget extends ReactWidget {
                 </p>
               )}
 
-              {!['Start', 'Finish'].includes(this._model.name) && !this.isWorkflowNode() && (
-                <div
-                  dangerouslySetInnerHTML={{ __html: marked(this._model.docstring || '_No docstring provided._') }}
-                />
-              )}
+              {/* Docstring */}
+                {this.renderDocstring()}
+
+              {/* Inputs */}
+                {this.renderInputs(inputs)}
+
+              {/* Outputs */}
+                {this.renderOutputs(outputs)}
+
             </>
           ) : (
             <div className="empty-state">
