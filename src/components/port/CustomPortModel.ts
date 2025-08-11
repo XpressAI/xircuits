@@ -52,11 +52,6 @@ export  class CustomPortModel extends DefaultPortModel  {
             return this._engine;
         }
 
-        static attachEngine(model: DiagramModel, engine: DiagramEngine): void {
-            model.getNodes().forEach(node =>
-            Object.values(node.getPorts()).forEach((p: any) => p.setEngine?.(engine))
-            );
-        }
     serialize() {
         return {
             ...super.serialize(),
