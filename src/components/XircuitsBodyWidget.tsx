@@ -470,6 +470,10 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				},
 				linksUpdated: (event) => {
 					const timeout = setTimeout(() => {
+					const sp = event.link.getSourcePort?.();
+					const tp = event.link.getTargetPort?.();
+					(sp as any)?.setEngine?.(engine);
+					(tp as any)?.setEngine?.(engine);
 					event.link.registerListener({
 						sourcePortChanged: () => {
 						onChange();
@@ -491,8 +495,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		
 				xircuitsApp.getDiagramEngine().setModel(deserializedModel);
 				clearSearchFlags();
-				CustomPortModel.attachEngine(deserializedModel, engine);
-
+				
 				// On the first load, clear undo history and register global engine listeners
 				if (initialRender.current) {
 					currentContext.model.sharedModel.clearUndoHistory();
