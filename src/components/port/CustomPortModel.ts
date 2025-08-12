@@ -2,8 +2,8 @@ import { DefaultPortModel, DefaultPortModelOptions } from "@projectstorm/react-d
 import { DeserializeEvent} from '@projectstorm/react-canvas-core';
 import {PortModel} from "@projectstorm/react-diagrams-core";
 import { CustomLinkModel } from "../link/CustomLinkModel";
-import { DiagramEngine, DiagramModel } from "@projectstorm/react-diagrams";
-import { showNodeCenteringNotification } from '../../helpers/notificationEffects';
+import { DiagramModel } from "@projectstorm/react-diagrams";
+import { emitPortNotice } from '../../helpers/portNoticeBus';
 
 /**
  * @author wenfeng xu
@@ -30,8 +30,6 @@ export  class CustomPortModel extends DefaultPortModel  {
     portType: string;
     dataType: string;
     extras: object;
-    private _engine?: DiagramEngine;
-    
 
     constructor(options: CustomPortModelOptions) {
         super({
@@ -43,14 +41,6 @@ export  class CustomPortModel extends DefaultPortModel  {
         this.dataType = options.dataType || "";
         this.extras = options.extras || {};
     }
-
-        setEngine(engine: DiagramEngine) {
-        this._engine = engine;
-        }
-
-        getEngine(): DiagramEngine | undefined {
-            return this._engine;
-        }
 
     serialize() {
         return {
@@ -70,6 +60,21 @@ export  class CustomPortModel extends DefaultPortModel  {
         this.extras=event.data.extras;
     }
 
+    private getDiagramModel(): DiagramModel | undefined {
+        let cur: any = this.getNode?.();
+        while (cur && typeof cur.getParent === 'function') {
+            cur = cur.getParent();
+            if (cur && typeof cur.getNodes === 'function' && typeof cur.getLinks === 'function') {
+            return cur as DiagramModel;
+            }
+        }
+        return undefined;
+    }
+
+    get modelId(): string | undefined {
+        return this.getDiagramModel()?.getID?.();
+    }
+
     canLinkToPort(port: CustomPortModel): boolean {
         // No self connections allowed
         if(port === this) return false;
@@ -80,8 +85,7 @@ export  class CustomPortModel extends DefaultPortModel  {
                 const message = "Cannot link two ports of the same type (in→in or out→out).";
                 targetNode.getOptions().extras["borderColor"]="red";
                 targetNode.setSelected(true);
-                const engine = this.getEngine?.();
-                showNodeCenteringNotification(message, targetNode.getID(), this.getEngine?.());
+                emitPortNotice({ message, nodeId: targetNode.getID(), modelId: this.modelId });
                 console.log(message);
                 return false;
             }
@@ -99,7 +103,7 @@ export  class CustomPortModel extends DefaultPortModel  {
                 const message = "Flow ports (▶) can only connect to other flow ports (▶).";
                 targetNode.getOptions().extras["borderColor"]="red";
                 targetNode.setSelected(true);
-                showNodeCenteringNotification(message, targetNode.getID(), this.getEngine?.());
+                emitPortNotice({ message, nodeId: targetNode.getID(), modelId: this.modelId });
                 console.log("triangle to triangle failed.");
                 return false;
             }
@@ -117,7 +121,7 @@ export  class CustomPortModel extends DefaultPortModel  {
             const message = "Link should be created from an outPort to an inPort.";
             targetNode.getOptions().extras["borderColor"]="red";
             targetNode.setSelected(true);
-            showNodeCenteringNotification(message, targetNode.getID(), this.getEngine?.());
+            emitPortNotice({ message, nodeId: targetNode.getID(), modelId: this.modelId });
             console.log(message);
             return false;
         }
@@ -152,7 +156,7 @@ export  class CustomPortModel extends DefaultPortModel  {
                 const message = `Port ${thisLabel} linked is not a parameter, please link a ${thisLabel} node to it.`;
                 targetNode.getOptions().extras["borderColor"] = "red";
                 targetNode.setSelected(true);
-                showNodeCenteringNotification(message, targetNode.getID(), this.getEngine?.());
+                emitPortNotice({ message, nodeId: targetNode.getID(), modelId: this.modelId });
                 return false;
             }
         }
@@ -169,7 +173,7 @@ export  class CustomPortModel extends DefaultPortModel  {
             const message = `Incorrect data type. Port ${thisLabel} is of type "${targetDataType}". You have provided type "${sourceDataType}".`;
             targetNode.getOptions().extras["borderColor"] = "red";
             targetNode.setSelected(true);
-            showNodeCenteringNotification(message, targetNode.getID(), this.getEngine?.());           
+            emitPortNotice({ message, nodeId: targetNode.getID(), modelId: this.modelId });
             return false;
         }
         
@@ -275,7 +279,7 @@ export  class CustomPortModel extends DefaultPortModel  {
             const message = "You can only create one link for this inPort. Please delete the existing link before adding another.";
             targetNode.getOptions().extras["borderColor"] = "red";
             targetNode.setSelected(true);
-            showNodeCenteringNotification(message, targetNode.getID(), this.getEngine?.());
+            emitPortNotice({ message, nodeId: targetNode.getID(), modelId: this.modelId });
             return false;
         }
         return true;
