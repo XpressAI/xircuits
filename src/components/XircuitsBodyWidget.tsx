@@ -41,8 +41,8 @@ import { Notification } from '@jupyterlab/apputils';
 import { SplitLinkCommand } from './link/SplitLinkCommand';
 import { LinkSplitManager } from './link/LinkSplitManager';
 import { fitIcon, zoomInIcon, zoomOutIcon } from '../ui-components/icons';
-import { CustomPortModel } from "./port/CustomPortModel";
 import { showNodeCenteringNotification } from '../helpers/notificationEffects';
+import { useNodeNotice } from '../helpers/useNodeNotice';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -470,10 +470,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				},
 				linksUpdated: (event) => {
 					const timeout = setTimeout(() => {
-					const sp = event.link.getSourcePort?.();
-					const tp = event.link.getTargetPort?.();
-					(sp as any)?.setEngine?.(engine);
-					(tp as any)?.setEngine?.(engine);
 					event.link.registerListener({
 						sourcePortChanged: () => {
 						onChange();
@@ -519,6 +515,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			currentContext.model.contentChanged.disconnect(changeHandler);
 		};
 	}, []);
+
+	const getEngine = useCallback(() => xircuitsApp.getDiagramEngine(), [xircuitsApp]);
+  	useNodeNotice(getEngine);
 
 	const isJSON = (str) => {
 		try {
