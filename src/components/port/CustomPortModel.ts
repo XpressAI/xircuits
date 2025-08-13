@@ -61,11 +61,11 @@ export  class CustomPortModel extends DefaultPortModel  {
     }
 
     private getDiagramModel(): DiagramModel | undefined {
-        let cur: any = this.getNode?.();
-        while (cur && typeof cur.getParent === 'function') {
-            cur = cur.getParent();
-            if (cur && typeof cur.getNodes === 'function' && typeof cur.getLinks === 'function') {
-            return cur as DiagramModel;
+        let currentParent: any = this.getNode?.();
+        while (currentParent && typeof currentParent.getParent === 'function') {
+            currentParent = currentParent.getParent();
+            if (currentParent && typeof currentParent.getNodes === 'function' && typeof currentParent.getLinks === 'function') {
+            return currentParent as DiagramModel;
             }
         }
         return undefined;
