@@ -1,5 +1,11 @@
 import type { NodeModel, PortModel, LinkModel } from '@projectstorm/react-diagrams';
 
+export interface IONode {
+  label?: string;
+  children?: IONode[];
+  valueBlock?: string;
+}
+
 const isParamPort = (p: PortModel) =>
   ((p.getOptions() as any).name as string).startsWith('parameter');
 
@@ -31,77 +37,97 @@ const portDisplayName = (p: PortModel) => {
   return opt.varName ?? opt.label ?? opt.name;
 };
 
-const portDisplayType = (p: PortModel) => {
-  const t: string | undefined = (p.getOptions() as any).dataType;
-  return t ?? '';
-};
+const portDisplayType = (p: PortModel) =>
+  (p.getOptions() as any).dataType ?? '';
 
 const portLabel = (p?: PortModel) =>
   (p?.getOptions() as any)?.label ?? undefined;
 
-function describeInputMd(p: PortModel): string {
-  const links = Object.values(p.getLinks()) as LinkModel[];
+function buildInputTree(p: PortModel): IONode {
   const name = portDisplayName(p);
   const dtype = portDisplayType(p);
 
+  const root: IONode = {
+    label: `${name} (${dtype})`,
+    children: []
+  };
+
+  const links = Object.values(p.getLinks()) as LinkModel[];
   if (links.length === 0) {
-    return `- **${name}** (${dtype})<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ *(unlinked)*`;
+    root.children!.push({ label: '(unlinked)' });
+    return root;
   }
 
   const l = links[0];
-  const peerPort = l.getSourcePort() === p ? l.getTargetPort() : l.getSourcePort();
+  const peerPort =
+    l.getSourcePort() === p ? l.getTargetPort() : l.getSourcePort();
   const peerNode = peerPort?.getParent();
 
   const peerName = (peerNode as any)?.getOptions?.()?.name ?? 'Unknown';
   const peerType = nodeType(peerNode);
 
+  const peer: IONode = {
+    label: `${peerName} (${peerType})`
+  };
+  root.children!.push(peer);
+
   const raw = portLabel(peerPort) ?? nodeValue(peerNode) ?? '';
-  const val = raw.replace(/\n/g, '<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
-  
-  return (
-    `- **${name}** (${dtype})<br>` +
-    `&nbsp;&nbsp;&nbsp;&nbsp;↳ ${peerName} (${peerType})<br>` +
-    `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• ${val}`
-  );
-}
-
-function describeOutputMd(p: PortModel): string[] {
-  const name = portDisplayName(p);
-  const dtype = portDisplayType(p);
-  const links = Object.values(p.getLinks()) as LinkModel[];
-
-  if (links.length === 0) {
-    return [`- **${name}** (${dtype})<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ *(unlinked)*`];
+  if (raw.trim().length > 0) {
+    peer.valueBlock = raw; 
   }
 
-  return links.map(l => {
-    const peerPort = l.getSourcePort() === p ? l.getTargetPort() : l.getSourcePort();
+  return root;
+}
+
+function buildOutputTree(p: PortModel): IONode {
+  const name = portDisplayName(p);
+  const dtype = portDisplayType(p);
+
+  const root: IONode = {
+    label: `${name} (${dtype})`,
+    children: []
+  };
+
+  const links = Object.values(p.getLinks()) as LinkModel[];
+  if (links.length === 0) {
+    root.children!.push({ label: '(unlinked)' });
+    return root;
+  }
+
+  links.forEach(l => {
+    const peerPort =
+      l.getSourcePort() === p ? l.getTargetPort() : l.getSourcePort();
     const peerNode = peerPort?.getParent();
+
     const peerName = (peerNode as any)?.getOptions?.()?.name ?? 'Unknown';
     const peerType = nodeType(peerNode);
 
     const inName = portDisplayName(peerPort);
     const inType = portDisplayType(peerPort);
 
-    return (
-      `- **${name}** (${dtype})<br>` +
-      `&nbsp;&nbsp;&nbsp;&nbsp;↳ ${peerName} (${peerType})<br>` +
-      `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• ${inName} (${inType})`
-    );
+    const peer: IONode = {
+      label: `${peerName} (${peerType})`,
+      children: [{ label: `${inName} (${inType})` }]
+    };
 
+    root.children!.push(peer);
   });
+
+  return root;
 }
 
-export function collectParamIO(node: NodeModel): { inputs: string[]; outputs: string[] } {
-  const inputs: string[] = [];
-  const outputs: string[] = [];
+export function collectParamIO(
+  node: NodeModel
+): { inputs: IONode[]; outputs: IONode[] } {
+  const inputs: IONode[] = [];
+  const outputs: IONode[] = [];
 
   (node as any).portsIn.forEach((p: PortModel) => {
-    if (isParamPort(p)) inputs.push(describeInputMd(p));
+    if (isParamPort(p)) inputs.push(buildInputTree(p));
   });
 
   (node as any).portsOut.forEach((p: PortModel) => {
-    if (isParamPort(p)) describeOutputMd(p).forEach(o => outputs.push(o));
+    if (isParamPort(p)) outputs.push(buildOutputTree(p));
   });
 
   return { inputs, outputs };

@@ -6,3 +6,4 @@ import './ContextMenu.css';
 import './Comment.css';
 import './ComponentInfo.css';
 import './description-markdown.css';
+import './ComponentPreviewWidget.css';
