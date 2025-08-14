@@ -427,21 +427,22 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		zoomOut(xircuitsApp.getDiagramEngine());
 		}, [xircuitsApp]);
 	
-	const onChange = useCallback(
-		(): void => {
-			if (contextRef.current.isReady) {
-				let currentModel = xircuitsApp.getDiagramEngine().getModel().serialize();
-				contextRef.current.model.fromString(
-					JSON.stringify(currentModel, null, 4)
-				);
-				setSaved(false);
-			}
-		}, []);
+	const onChange = useCallback(() => {
+		if (contextRef.current.isReady) {
+	        contextRef.current.model.dirty = true;
+		}
+		setSaved(false);
+	}, []);
 
-	function replacer(key, value) {
-		if (key == "x" || key == "y") return Math.round((value + Number.EPSILON) * 1000) / 1000;
-		return value;
-	}
+	const serializeModel = useCallback(() => {
+		if (contextRef.current.isReady) {
+			let currentModel = xircuitsApp.getDiagramEngine().getModel().serialize();
+			contextRef.current.model.fromString(
+				JSON.stringify(currentModel, null, 4)
+			);
+			setSaved(false);
+		}
+	}, []);
 
 	useEffect(() => {
 		const currentContext = contextRef.current;
@@ -850,7 +851,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			return;
 		}
 		checkAllCompulsoryInPortsConnected();  
-		onChange()
+		serializeModel();
 		setInitialize(true);
 		setSaved(true);
 		await commands.execute(commandIDs.saveDocManager);
