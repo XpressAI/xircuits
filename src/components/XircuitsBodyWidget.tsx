@@ -41,8 +41,8 @@ import { Notification } from '@jupyterlab/apputils';
 import { SplitLinkCommand } from './link/SplitLinkCommand';
 import { LinkSplitManager } from './link/LinkSplitManager';
 import { fitIcon, zoomInIcon, zoomOutIcon } from '../ui-components/icons';
-import { CustomPortModel } from "./port/CustomPortModel";
 import { showNodeCenteringNotification } from '../helpers/notificationEffects';
+import { useNodeNotice } from '../helpers/useNodeNotice';
 
 export interface BodyWidgetProps {
 	context: DocumentRegistry.Context;
@@ -491,8 +491,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		
 				xircuitsApp.getDiagramEngine().setModel(deserializedModel);
 				clearSearchFlags();
-				CustomPortModel.attachEngine(deserializedModel, engine);
-
+				
 				// On the first load, clear undo history and register global engine listeners
 				if (initialRender.current) {
 					currentContext.model.sharedModel.clearUndoHistory();
@@ -516,6 +515,9 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			currentContext.model.contentChanged.disconnect(changeHandler);
 		};
 	}, []);
+
+	const getEngine = useCallback(() => xircuitsApp.getDiagramEngine(), [xircuitsApp]);
+  	useNodeNotice(getEngine);
 
 	const isJSON = (str) => {
 		try {

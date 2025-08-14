@@ -6,28 +6,29 @@ export function showNodeCenteringNotification(
   nodeId: string,
   engine?: DiagramEngine
 ) {
-  if (!engine) return;
+  const options: any = { autoClose: 3000 };
 
-  Notification.error(message, {
-    autoClose: 3000,
-    actions: [
+  if (engine) {
+    options.actions = [
       {
         label: 'Show Node',
         caption: 'Show Node on canvas',
         callback: (event: MouseEvent) => {
-          event.preventDefault(); 
+          event.preventDefault();
           centerNodeInView(engine, nodeId);
+        }
       }
-    }
-    ]
-  });
+    ];
+  }
+
+  Notification.error(message, options);
 }
 
 export function centerNodeInView(engine: DiagramEngine, nodeId: string) {
   const model = engine.getModel();
   const node  = model.getNode(nodeId);
   if (!node) return;
-  
+
   const { x, y } = node.getPosition();
   const { width = 150, height = 100 } = (node as any).getSize?.() ?? {};
 
