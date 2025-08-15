@@ -60,15 +60,12 @@ export  class CustomPortModel extends DefaultPortModel  {
         this.extras=event.data.extras;
     }
 
+    // Port → NodeModel → NodeLayerModel → DiagramModel
     private getDiagramModel(): DiagramModel | undefined {
-        let currentParent: any = this.getNode?.();
-        while (currentParent && typeof currentParent.getParent === 'function') {
-            currentParent = currentParent.getParent();
-            if (currentParent && typeof currentParent.getNodes === 'function' && typeof currentParent.getLinks === 'function') {
-            return currentParent as DiagramModel;
-            }
-        }
-        return undefined;
+        let parent: any = this.getNode?.()?.getParent?.();
+        parent = parent?.getParent?.();
+        if (parent instanceof DiagramModel) return parent;
+        return;
     }
 
     get modelId(): string | undefined {
