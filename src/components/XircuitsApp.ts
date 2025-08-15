@@ -28,11 +28,11 @@ export class XircuitsApplication {
 
                 // Default Factories
                 this.diagramEngine.getLayerFactories().registerFactory(new NodeLayerFactory());
-	              this.diagramEngine.getLayerFactories().registerFactory(new LinkLayerFactory());
-	              this.diagramEngine.getLayerFactories().registerFactory(new SelectionBoxLayerFactory());
-	              this.diagramEngine.getLabelFactories().registerFactory(new DefaultLabelFactory());
+                this.diagramEngine.getLayerFactories().registerFactory(new LinkLayerFactory());
+                this.diagramEngine.getLayerFactories().registerFactory(new SelectionBoxLayerFactory());
+                this.diagramEngine.getLabelFactories().registerFactory(new DefaultLabelFactory());
                 this.diagramEngine.getLinkFactories().registerFactory(new DefaultLinkFactory());
-	              this.diagramEngine.getPortFactories().registerFactory(new DefaultPortFactory());
+                this.diagramEngine.getPortFactories().registerFactory(new DefaultPortFactory());
 
                 // Custom Factories, Actions & State
                 this.diagramEngine.getNodeFactories().registerFactory(new CustomNodeFactory(app, shell));
