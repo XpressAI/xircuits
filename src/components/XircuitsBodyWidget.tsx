@@ -426,19 +426,24 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		zoomOut(xircuitsApp.getDiagramEngine());
 		}, [xircuitsApp]);
 	
-	const onChange = useCallback(
-		(): void => {
-			if (skipSerializationRef.current) {
-				return;
-			}
-			if (contextRef.current.isReady) {
-				let currentModel = xircuitsApp.getDiagramEngine().getModel().serialize();
-				contextRef.current.model.fromString(
-					JSON.stringify(currentModel, null, 4)
-				);
-				setSaved(false);
-			}
-		}, []);
+	const serializeModel = useCallback(() => {
+		if (contextRef.current.isReady) {
+			// console.log("Serializing model..."); 
+			let currentModel = xircuitsApp.getDiagramEngine().getModel().serialize();
+			contextRef.current.model.fromString(
+				JSON.stringify(currentModel, null, 4)
+			);
+			setSaved(false);
+		}
+	}, []);
+
+	const onChange = useCallback((): void => {
+		if (skipSerializationRef.current) {
+			return;
+		}
+		serializeModel();
+	}, [serializeModel]);
+
 
 	useEffect(() => {
 		const currentContext = contextRef.current;
@@ -1020,10 +1025,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			setTimeout(() => {
 				skipSerializationRef.current = false;
 			}, 100);
-			// as we skipped the serialization, we need to manually set the context to dirty 
-			if (contextRef.current.isReady) {
-				contextRef.current.model.dirty = true;
-			}
+			// Manually serialize it at the end. 
+			await serializeModel();
 			console.log("Reload all complete.");
 		}
 	};
