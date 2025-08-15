@@ -1014,13 +1014,17 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 
 			await triggerLoadingAnimation(reloadPromise, { loadingMessage: 'Reloading all nodes...' });
 			clearSearchFlags();
-			console.log("Reload all complete.");
 		} finally {
 			// Wait 100ms before clearing the flag.
 			// This gives the 10ms-delayed onChange calls time to fire and see the flag is true.
 			setTimeout(() => {
 				skipSerializationRef.current = false;
 			}, 100);
+			// as we skipped the serialization, we need to manually set the context to dirty 
+			if (contextRef.current.isReady) {
+				contextRef.current.model.dirty = true;
+			}
+			console.log("Reload all complete.");
 		}
 	};
 
