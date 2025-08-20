@@ -581,3 +581,60 @@ def update_literal_chat(page, messages):
 
     page.get_by_role("button", name="Submit").click()
     page.wait_for_timeout(500)
+
+STABLE_WINDOW_MS = 2000
+STABLE_SAMPLES = 4
+STABLE_EPSILON_MB = 5.0
+
+def get_js_heap_used(page) -> int:
+    """Return JSHeapUsedSize (bytes) via CDP."""
+    client = page.context.new_cdp_session(page)
+    client.send("Performance.enable")
+    metrics = client.send("Performance.getMetrics")["metrics"]
+    for m in metrics:
+        if m.get("name") == "JSHeapUsedSize":
+            return int(m.get("value") or 0)
+    return 0
+
+def get_dom_counters(page):
+    """Return {documents, nodes, jsEventListeners} via CDP."""
+    client = page.context.new_cdp_session(page)
+    try:
+        return client.send("Memory.getDOMCounters")
+    except Exception:
+        return None
+
+def collect_gc(page):
+    """Best-effort GC trigger (Chromium only)."""
+    client = page.context.new_cdp_session(page)
+    try:
+        client.send("HeapProfiler.enable")
+        client.send("HeapProfiler.collectGarbage")
+    except Exception:
+        pass
+
+def wait_for_heap_stable(page):
+    """Wait until JS heap is stable across consecutive samples."""
+    values = []
+    per_sample = max(250, STABLE_WINDOW_MS // STABLE_SAMPLES)
+    for _ in range(STABLE_SAMPLES):
+        values.append(get_js_heap_used(page))
+        page.wait_for_timeout(per_sample)
+    span_mb = (max(values) - min(values)) / (1024 * 1024)
+    return span_mb <= STABLE_EPSILON_MB
+
+def wait_reload_settled(page, timeout_ms=60000):
+    locator = page.get_by_text("Reloading all nodes...", exact=False)
+    try:
+        locator.wait_for(state="visible", timeout=10_000)
+    except Exception:
+        pass
+    try:
+        locator.wait_for(state="detached", timeout=timeout_ms)
+    except Exception:
+        pass
+    assert wait_for_heap_stable(page), "Heap not stable after overlay detached"
+
+def trigger_reload_and_wait(page):
+    page.locator('jp-button[title="Reload all nodes"] >>> button').click()
+    wait_reload_settled(page)
