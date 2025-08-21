@@ -64,7 +64,7 @@ export class XircuitsPanel extends ReactWidget {
     } else if (event.type === 'focusout') {
       const fe = event as FocusEvent;
       const next = (fe.relatedTarget as HTMLElement | null);
-      if (next && (next.closest('[role="toolbar"]') || next.closest('.xircuits-toolbar-btn')))
+      if (next && (next.closest('.xircuits-toolbar-btn')))
       return;
 
       const deactivate = x => x.setSelected(false);
