@@ -5,7 +5,8 @@ import shutil
 import json
 from pathlib import Path
 from ..utils.file_utils import is_valid_url, is_empty
-from ..utils.git_toml_manager import remove_git_directory, get_git_info, update_pyproject_toml, extract_repo_url_from_path
+from ..utils.git_toml_manager import remove_git_directory, get_git_info, update_pyproject_toml
+
 from ..handlers.request_submodule import request_remote_library
 from ..handlers.request_folder import clone_from_github_url
 
@@ -110,7 +111,9 @@ def install_library(library_name: str):
                 with open(config_path, "r") as config_file:
                     config = json.load(config_file)
                     for library in config.get("libraries", []):
-                        if library.get("library_id") == library_name:
+                        lib_id = library.get('library_id', '').lower()
+                        search_name = library_name.lower()
+                        if lib_id == search_name:
                             repo_url = library.get("repository")
                             break
         except Exception as e:
@@ -121,7 +124,13 @@ def install_library(library_name: str):
         
         # Update pyproject.toml if we have the necessary info
         if git_ref and repo_url:
-            update_pyproject_toml(library_name, component_library_path, repo_url, git_ref)
+            success = update_pyproject_toml(library_name, component_library_path, repo_url, git_ref, is_tag)
+            if success:
+                print("✅ Successfully updated pyproject.toml")
+            else:
+                print("❌ Failed to update pyproject.toml")
+        else:
+            print(f"⚠️  Skipping TOML update - missing git_ref: {git_ref}, repo_url: {repo_url}")
 
     # Get the requirements path from the configuration
     requirements_path = get_library_config(library_name, "requirements_path")
@@ -159,7 +168,9 @@ def fetch_library(library_name: str):
                     with open(config_path, "r") as config_file:
                         config = json.load(config_file)
                         for library in config.get("libraries", []):
-                            if library.get("library_id") == library_name:
+                            lib_id = library.get('library_id', '').lower()
+                            search_name = library_name.lower()
+                            if lib_id == search_name:
                                 repo_url = library.get("repository")
                                 break
             except Exception as e:
@@ -170,7 +181,7 @@ def fetch_library(library_name: str):
             
             # Update pyproject.toml if we have the necessary info
             if git_ref and repo_url:
-                update_pyproject_toml(library_name, component_library_path, repo_url, git_ref)
+                update_pyproject_toml(library_name, component_library_path, repo_url, git_ref, is_tag)
             
             print(f"{library_name} library fetched and stored in {component_library_path}.")
         else:
