@@ -61,27 +61,27 @@ export class XircuitsPanel extends ReactWidget {
       this.mousePosition = { x: event.clientX, y: event.clientY };
       
       this.node.focus();
-      this.node.addEventListener('blur', this, true);
-    } else if (event.type === 'blur') {
+    } else if (event.type === 'focusout') {
+      const fe = event as FocusEvent;
+      const next = (fe.relatedTarget as HTMLElement | null);
+      if (next && (next.closest('[role="toolbar"]') || next.closest('.xircuits-toolbar-btn')))
+      return;
+
       const deactivate = x => x.setSelected(false);
       const model = this.xircuitsApp.getDiagramEngine().getModel();
       model.getNodes().forEach(deactivate);
       model.getLinks().forEach(deactivate);
-    } else if (event.type === 'contextmenu') {
-      this.node.removeEventListener('blur', this, true);
-    }
+    } 
   }
 
   protected onAfterAttach(msg) {
     this.node.addEventListener('mouseup', this, true);
-    this.node.addEventListener('blur', this, true);
-    this.node.addEventListener('contextmenu', this, true);
+    this.node.addEventListener('focusout', this, true);
   }
 
   protected onBeforeDetach() {
     this.node.removeEventListener('mouseup', this, true);
-    this.node.removeEventListener('blur', this, true);
-    this.node.removeEventListener('contextmenu', this, true);
+    this.node.removeEventListener('focusout', this, true);
   }
 
   render(): any {
