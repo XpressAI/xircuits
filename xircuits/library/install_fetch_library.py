@@ -4,7 +4,8 @@ import os
 import shutil
 import json
 from pathlib import Path
-from ..utils import is_valid_url, is_empty
+from ..utils.file_utils import is_valid_url, is_empty
+from ..utils.git_toml_manager import remove_git_directory, get_git_info, update_pyproject_toml, extract_repo_url_from_path
 from ..handlers.request_submodule import request_remote_library
 from ..handlers.request_folder import clone_from_github_url
 
@@ -87,15 +88,43 @@ def install_library(library_name: str):
     print(f"Installing {library_name}...")
     component_library_path = get_component_library_path(library_name)
 
+    # Store git info before cloning/fetching
+    git_ref = None
+    repo_url = None
+    
     if not Path(component_library_path).is_dir() or is_empty(component_library_path):
         success, message = request_remote_library(component_library_path)
         if not success:
             print(message)
             return
+        
+        # Get git info immediately after cloning, before removing .git
+        git_ref, is_tag = get_git_info(component_library_path)
+        print(f"Detected {'tag' if is_tag else 'commit'}: {git_ref}")
+        
+        # Get repo URL from config
+        try:
+            # Get library config to extract repo URL
+            config_path = ".xircuits/component_library_config.json"
+            if os.path.exists(config_path):
+                with open(config_path, "r") as config_file:
+                    config = json.load(config_file)
+                    for library in config.get("libraries", []):
+                        if library.get("library_id") == library_name:
+                            repo_url = library.get("repository")
+                            break
+        except Exception as e:
+            print(f"⚠️  Warning: Could not extract repo URL: {e}")
+        
+        # Remove .git directory
+        remove_git_directory(component_library_path)
+        
+        # Update pyproject.toml if we have the necessary info
+        if git_ref and repo_url:
+            update_pyproject_toml(library_name, component_library_path, repo_url, git_ref)
 
     # Get the requirements path from the configuration
     requirements_path = get_library_config(library_name, "requirements_path")
-    # Convert to Path object and ensure it's absolute
     requirements_path = Path(requirements_path).resolve() if requirements_path else Path(component_library_path) / "requirements.txt"
 
     # Install requirements if the file exists
@@ -118,6 +147,31 @@ def fetch_library(library_name: str):
     if not Path(component_library_path).is_dir() or is_empty(component_library_path):
         success, message = request_remote_library(component_library_path)
         if success:
+            # Get git info before removing .git
+            git_ref, is_tag = get_git_info(component_library_path)
+            print(f"Detected {'tag' if is_tag else 'commit'}: {git_ref}")
+            
+            # Get repo URL from config
+            repo_url = None
+            try:
+                config_path = ".xircuits/component_library_config.json"
+                if os.path.exists(config_path):
+                    with open(config_path, "r") as config_file:
+                        config = json.load(config_file)
+                        for library in config.get("libraries", []):
+                            if library.get("library_id") == library_name:
+                                repo_url = library.get("repository")
+                                break
+            except Exception as e:
+                print(f"⚠️  Warning: Could not extract repo URL: {e}")
+            
+            # Remove .git directory
+            remove_git_directory(component_library_path)
+            
+            # Update pyproject.toml if we have the necessary info
+            if git_ref and repo_url:
+                update_pyproject_toml(library_name, component_library_path, repo_url, git_ref)
+            
             print(f"{library_name} library fetched and stored in {component_library_path}.")
         else:
             print(message)

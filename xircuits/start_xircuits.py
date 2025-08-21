@@ -7,7 +7,7 @@ import toml
 from pathlib import Path
 from importlib.metadata import metadata, PackageNotFoundError
 
-from .utils import is_empty, copy_from_installed_wheel
+from .utils.file_utils import is_empty, copy_from_installed_wheel
 from .library import list_component_library, install_library, fetch_library, save_component_library_config, uninstall_library
 from .compiler import compile, recursive_compile
 from xircuits.handlers.config import get_config
