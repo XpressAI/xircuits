@@ -1,5 +1,9 @@
 import { DiagramEngine } from '@projectstorm/react-diagrams';
 import { Notification } from '@jupyterlab/apputils';
+import { requestAPI } from '../server/handler';
+import { handleInstall } from '../context-menu/TrayContextMenu';
+import { commandIDs } from '../commands/CommandIDs';
+import { CustomNodeModel } from '../components/node/CustomNodeModel';
 
 export function showNodeCenteringNotification(
   message: string,
@@ -49,4 +53,92 @@ export function centerNodeInView(engine: DiagramEngine, nodeId: string) {
 
   model.setOffset(offsetX, offsetY);
   engine.repaintCanvas();
+}
+
+type LibraryInfo = { name: string | null; path?: string | null };
+
+const LIB_REGEX = /xai_components[\/\\]([^\/\\]+)/i;
+
+export function getLibraryFromPath(path?: string): string | null {
+  if (!path) return null;
+  const m = path.match(LIB_REGEX);
+  return m?.[1] ?? null;
+}
+
+export async function resolveComponentLibrary(node: CustomNodeModel): Promise<LibraryInfo> {
+  const extras: any = node?.getOptions?.().extras ?? {};
+  const path = extras?.path || null;
+
+  if (!path) {
+    return { name: null, path: null };
+  }
+
+  const libFromPath = getLibraryFromPath(path);
+  if (libFromPath) {
+    return { name: libFromPath, path };
+  }
+
+  return { name: null, path };
+}
+export async function showInstallForRemoteLibrary(args: {
+  app: any;                    
+  engine?: DiagramEngine;
+  nodeId: string;
+  libName?: string | null;
+  path?: string | null;
+  message: string;
+
+}): Promise<boolean> {
+  const { app, engine, nodeId, message } = args;
+
+  // Normalize to internal id: xai_<name>
+  let libId = String(args.libName ?? '').trim().toLowerCase();
+  if (!libId) return false;
+  if (!libId.startsWith('xai_')) libId = `xai_${libId}`;
+
+  // Display name: OPENAI / FLASK ...
+  const displayName = libId.replace(/^xai_/, '').toUpperCase();
+
+  // Query library catalog/config to check "remote" status
+  let config: any;
+  try {
+    config = await requestAPI<any>('library/get_config', { method: 'GET' });
+  } catch {
+    return false;
+  }
+
+  const libs = config?.config?.libraries ?? [];
+  const entry = libs.find((l: any) => (l?.name || '').toLowerCase() === libId);
+  if (!entry || String(entry.status).toLowerCase() !== 'remote') {
+    return false;
+  }
+
+  const actions: any[] = [
+    {
+      label: `Install ${displayName}`,
+      caption: `Install ${displayName} library`,
+      callback: async (event: MouseEvent) => {
+        event.preventDefault();
+        await handleInstall(
+          app,
+          displayName,
+          () => app.commands.execute(commandIDs.refreshComponentList)
+        );
+      }
+    }
+  ];
+
+  if (engine) {
+    actions.push({
+      label: 'Show Node',
+      caption: 'Center this node on canvas',
+      callback: (event: MouseEvent) => {
+        event.preventDefault();
+        centerNodeInView(engine, nodeId);
+      }
+    });
+  }
+
+  Notification.error(message, { autoClose: 3000, actions });
+  return true;
 }
