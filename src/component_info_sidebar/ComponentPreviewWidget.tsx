@@ -1,67 +1,17 @@
 import { ReactWidget, ToolbarButtonComponent } from '@jupyterlab/apputils';
 import { JupyterFrontEnd } from '@jupyterlab/application';
 import { LabIcon, caretLeftIcon, caretRightIcon } from '@jupyterlab/ui-components';
-import { DiagramEngine } from '@projectstorm/react-diagrams';
+import { DiagramEngine, NodeModel } from '@projectstorm/react-diagrams';
 import React from 'react';
-import styled from '@emotion/styled';
 import { marked } from 'marked';
 import { infoIcon, fitIcon, fileCodeIcon, workflowComponentIcon, xircuitsIcon } from '../ui-components/icons';
 import { centerNodeInView } from '../helpers/notificationEffects';
 import { togglePreviewWidget } from './previewHelper';
-import { NodeModel } from '@projectstorm/react-diagrams';
 import { getMainPath } from './nodeNavigation';
-
-const Container = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-  background: var(--jp-layout-color1);
-  color: var(--jp-ui-font-color0);
-  border-left: var(--jp-border-width) solid var(--jp-border-color1);
-
-  .content {
-    flex: 1 1 auto;
-    padding: 24px 26px;
-    overflow-y: auto;
-  }
-
-  h3 {
-    margin: 12px 0 8px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--jp-ui-font-color1);
-  }
-
-  .jp-SidePanel-header  {
-    font-size: 0.8rem;
-    font-weight: 700;
-    margin: 0;
-  }
-
-  .empty-state {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.45;
-    filter: grayscale(100%);
-    user-select: none;
-    pointer-events: none;
-    text-align: center;
-  }
-  .empty-state svg {
-    width: 120px;
-    height: 120px;
-  }
-  .empty-state p {
-    margin-top: 12px;
-    font-size: 0.8rem;
-    color: var(--jp-ui-font-color1);
-    opacity: 0.9;
-  }
-`;
+import { collectParamIO } from './portPreview';
+import { CollapsibleSection } from './CollapsibleSection';
+import { IONodeTree } from './IONodeTree';
+import type { IONode } from './portPreview';
 
 export interface IComponentInfo {
   name: string;
@@ -149,9 +99,9 @@ export class ComponentPreviewWidget extends ReactWidget {
 
     if (workflowPath) {
       this._app.commands.execute('Xircuit-editor:open-xircuits-workflow', {
-        nodePath: node.extras?.path,
-        nodeName: node.name,
-        nodeLineNo: node.extras?.lineNo
+          nodePath: node.extras?.path,
+          nodeName: node.name,
+          nodeLineNo: node.extras?.lineNo
       }).catch(err => console.error('Failed to open workflow:', err));
     } else {
       console.warn('Open‑workflow: no valid path found', {
@@ -199,79 +149,129 @@ export class ComponentPreviewWidget extends ReactWidget {
     centerNodeInView(this._model?.engine!, next.getID());
   };
 
-  render(): JSX.Element {
+  private renderDocstring(): JSX.Element | null {
+    if (
+      !this._model?.docstring?.trim() ||
+      ['Start', 'Finish'].includes(this._model.name) ||
+      this.isWorkflowNode()
+    ) {
+      return null;
+    }
+
     return (
-      <Container className="jp-SidePanel">
+      <CollapsibleSection label="DESCRIPTION">
+        <div 
+        dangerouslySetInnerHTML={{ __html: marked(this._model.docstring) }} 
+        />
+      </CollapsibleSection>
+    );
+  }
+
+  private renderInputs(tree: IONode[]): JSX.Element | null {
+    if (tree.length === 0) return null;
+    return (
+      <CollapsibleSection label={`INPUTS (${tree.length})`} compact>
+        <IONodeTree data={tree} />
+      </CollapsibleSection>
+    );
+  }
+
+  private renderOutputs(tree: IONode[]): JSX.Element | null {
+    if (tree.length === 0) return null;
+    return (
+      <CollapsibleSection label={`OUTPUTS (${tree.length})`} compact>
+        <IONodeTree data={tree} />
+      </CollapsibleSection>
+    );
+  }
+
+  render(): JSX.Element {
+    const { inputs: inputTree, outputs: outputTree } = this._model?.node
+      ? collectParamIO(this._model.node)
+      : { inputs: [], outputs: [] };
+
+    return (
+      <div className="component-preview-container jp-SidePanel">
         <div className="jp-SidePanel-header">
           <h2 className="jp-text-truncated">Component Preview</h2>
         </div>
 
-        <div
-          className="jp-Toolbar jp-SidePanel-toolbar"
-          aria-label="Component preview toolbar"
-          style={{ minHeight: 'var(--jp-private-toolbar-height)' }}
-        >
-          <ToolbarButtonComponent
-            icon={caretLeftIcon}
-            tooltip="Previous node"
-            enabled={!!this._model?.node}
-            onClick={() => this.navigate(-1)}
-          />
-          <ToolbarButtonComponent
-            icon={caretRightIcon}
-            tooltip="Next node"
-            enabled={!!this._model?.node}
-            onClick={() => this.navigate(1)}
-          />
-          <ToolbarButtonComponent
-            icon={fileCodeIcon as LabIcon}
-            tooltip="Open script"
-            enabled={!!this._model?.node}
-            onClick={this.handleOpenScript}
-          />
-          <ToolbarButtonComponent
-            icon={fitIcon as LabIcon}
-            tooltip="Center node"
-            enabled={!!this._model?.node && !!this._model?.engine}
-            onClick={this.handleCenterNode}
-          />
-          {this.isWorkflowNode() && (
-            <ToolbarButtonComponent
-              icon={workflowComponentIcon as LabIcon}
-              tooltip="Open workflow"
-              enabled
-              onClick={this.handleOpenWorkflow}
-            />
-          )}
+        {/* title row (Accordion style) */}
+        <div className="lm-AccordionPanel">
+          <h3 className="lm-AccordionPanel-title jp-AccordionPanel-title x-title-row">
+            <span className="lm-AccordionPanel-toggleIcon jp-icon3 x-title-icon" />
+            <span className="lm-AccordionPanel-titleLabel">
+              {(this._model?.node as any)?.getOptions?.()?.name ?? ''}
+            </span>
+            <span className="x-toolbar">
+              {this.isWorkflowNode() && (
+                <ToolbarButtonComponent
+                  icon={workflowComponentIcon as LabIcon}
+                  tooltip="Open workflow"
+                  enabled
+                  onClick={this.handleOpenWorkflow}
+                />
+              )}
+              <ToolbarButtonComponent
+                icon={caretLeftIcon}
+                tooltip="Previous node"
+                enabled={!!this._model?.node}
+                onClick={() => this.navigate(-1)}
+              />
+              <ToolbarButtonComponent
+                icon={caretRightIcon}
+                tooltip="Next node"
+                enabled={!!this._model?.node}
+                onClick={() => this.navigate(1)}
+              />
+              <ToolbarButtonComponent
+                icon={fileCodeIcon as LabIcon}
+                tooltip="Open script"
+                enabled={!!this._model?.node}
+                onClick={this.handleOpenScript}
+              />
+              <ToolbarButtonComponent
+                icon={fitIcon as LabIcon}
+                tooltip="Center node"
+                enabled={!!this._model?.node && !!this._model?.engine}
+                onClick={this.handleCenterNode}
+              />
+            </span>
+          </h3>
         </div>
 
         <div className="content">
           {this._model ? (
             <>
-              <h3>{this._model.name}</h3>
-
               {this._model.name === 'Start' && (
-                <p><em>This is the <strong>start</strong> of your workflow.</em></p>
+                <p className="x-inset">
+                  <em>This is the <strong>start</strong> of your workflow.</em>
+                </p>
               )}
 
               {this._model.name === 'Finish' && (
-                <p><em>This is the <strong>end</strong> of your workflow.</em></p>
+                <p className="x-inset">
+                  <em>This is the <strong>end</strong> of your workflow.</em>
+                </p>
               )}
 
               {this.isWorkflowNode() && (
-                <p>
+                <p className="x-inset">
                   <em>
-                    Sub‑workflow component – click <strong>Open workflow</strong> in the preview to inspect
+                    Sub-workflow component – click <strong>Open workflow</strong> in the preview to inspect
                     the inner graph.
                   </em>
                 </p>
               )}
 
-              {!['Start', 'Finish'].includes(this._model.name) && !this.isWorkflowNode() && (
-                <div
-                  dangerouslySetInnerHTML={{ __html: marked(this._model.docstring || '_No docstring provided._') }}
-                />
-              )}
+              {/* Docstring */}
+              {this.renderDocstring()}
+
+              {/* Inputs */}
+              {this.renderInputs(inputTree)}
+
+              {/* Outputs */}
+              {this.renderOutputs(outputTree)}
             </>
           ) : (
             <div className="empty-state">
@@ -280,7 +280,7 @@ export class ComponentPreviewWidget extends ReactWidget {
             </div>
           )}
         </div>
-      </Container>
+      </div>
     );
   }
 }
