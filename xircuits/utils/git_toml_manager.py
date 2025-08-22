@@ -3,7 +3,7 @@ import shutil
 from pathlib import Path
 import tomlkit
 from tomlkit import parse, dumps
-
+import sys
 
 def remove_git_directory(repo_path):
     """Remove the .git directory from a cloned repository."""
@@ -89,7 +89,10 @@ def update_pyproject_toml(library_name, member_path, repo_url, ref, is_tag):
     if "sources" not in doc["tool"]["uv"]:
         doc["tool"]["uv"]["sources"] = tomlkit.table()
     if "workspace" not in doc["tool"]["uv"]:
-        doc["tool"]["uv"]["workspace"] = tomlkit.table()
+        ws_tbl = tomlkit.table()
+        ws_members = tomlkit.array(); ws_members.multiline(True)
+        ws_tbl.add("members", ws_members)
+        doc["tool"]["uv"]["workspace"] = ws_tbl
     if "xircuits" not in doc["tool"]:
         doc["tool"]["xircuits"] = tomlkit.table()
     if "components" not in doc["tool"]["xircuits"]:
@@ -104,24 +107,20 @@ def update_pyproject_toml(library_name, member_path, repo_url, ref, is_tag):
     # Ensure [project].dependencies includes the plain dist_name (no direct URL).
     deps = doc["project"].get("dependencies")
     if deps is None:
-        deps = tomlkit.array()
-        deps.multiline(True)
+        deps = tomlkit.array(); deps.multiline(True)
         doc["project"]["dependencies"] = deps
-
-    # Add the plain name if it's not already present as a plain entry.
     existing_plain = {d.strip() for d in deps if isinstance(d, str)}
     if dist_name not in existing_plain:
         deps.append(dist_name)
         deps.multiline(True)
 
-    # Map the name to the local workspace
+    # Map the name to the local workspace in [tool.uv.sources]
     doc["tool"]["uv"]["sources"][dist_name] = {"workspace": True}
 
     # Ensure member_path is a workspace member
     members = doc["tool"]["uv"]["workspace"].get("members")
     if members is None:
-        members = tomlkit.array()
-        members.multiline(True)
+        members = tomlkit.array(); members.multiline(True)
         doc["tool"]["uv"]["workspace"]["members"] = members
     if member_path not in members:
         members.append(member_path)
@@ -135,6 +134,19 @@ def update_pyproject_toml(library_name, member_path, repo_url, ref, is_tag):
     entry.add("tag" if is_tag else "rev", ref)
     components[dist_name] = entry
 
+    # This whole section just to add a space after workspace. Curse you OCD. 
+    # Rebuild the [tool.uv] table so that 'workspace' is reinserted after a single nl()
+    uv = doc["tool"]["uv"]
+    ws_tbl = uv["workspace"]
+    new_uv = tomlkit.table()
+    for key, val in uv.items():
+        if key == "workspace":
+            continue
+        new_uv.add(key, val)
+    new_uv.add(tomlkit.nl())
+    new_uv.add("workspace", ws_tbl)
+    doc["tool"]["uv"] = new_uv
+
     try:
         pyproject_file.write_text(dumps(doc), encoding="utf-8")
         print(f"✅ Workspace config updated: {dist_name} ← {('tag ' if is_tag else 'rev ')}{ref}")
@@ -143,31 +155,34 @@ def update_pyproject_toml(library_name, member_path, repo_url, ref, is_tag):
         print(f"⚠️  Warning: Could not write pyproject.toml: {e}")
         return False
 
-
 def create_default_pyproject(pyproject_file):
-    """Create a minimal pyproject.toml file (workspace-ready, vendoring-friendly)."""
+    """Create a minimal pyproject.toml with a fixed project name and current Python."""
     default = tomlkit.document()
 
+    # [project]
     project = tomlkit.table()
-    project.add("name", "xircuits-workspace")
+    project.add("name", "xircuits-project-template")
     project.add("version", "0.1.0")
-    project.add("requires-python", ">=3.10")
+    project.add("requires-python", f">={sys.version_info.major}.{sys.version_info.minor}")
     deps = tomlkit.array(); deps.multiline(True)
     project.add("dependencies", deps)
     default.add("project", project)
 
     tool = tomlkit.table()
-
     uv = tomlkit.table()
     uv.add("sources", tomlkit.table())
+    uv.add(tomlkit.nl())
+
     ws = tomlkit.table()
     members = tomlkit.array(); members.multiline(True)
     ws.add("members", members)
     uv.add("workspace", ws)
+
     tool.add("uv", uv)
 
+    # [tool.xircuits]
     xircuits = tomlkit.table()
-    xircuits.add("components", tomlkit.table())  # <-- renamed from "vendored"
+    xircuits.add("components", tomlkit.table())
     tool.add("xircuits", xircuits)
 
     default.add("tool", tool)
