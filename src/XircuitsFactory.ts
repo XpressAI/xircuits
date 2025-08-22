@@ -110,11 +110,13 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.title.icon = xircuitsIcon;
 
     const CommandButton = (commandId: string, icon: LabIcon, tooltip: string) => new ToolbarButton({
-      icon, tooltip,
-      onClick: () => {
-        this.commands.execute(commandId)
-      }
-    })
+        icon,
+        tooltip,
+        className: 'xircuits-toolbar-btn',
+        onClick: () => {
+          this.commands.execute(commandId)
+        }
+      })
 
     let saveButton = CommandButton(commandIDs.saveXircuit, saveIcon, 'Save (Ctrl+S)');
     let undoButton = CommandButton(commandIDs.undo, undoIcon, 'Undo (Ctrl+Z)');
