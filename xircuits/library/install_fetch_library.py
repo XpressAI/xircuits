@@ -5,7 +5,7 @@ import shutil
 import json
 from pathlib import Path
 from ..utils.file_utils import is_valid_url, is_empty
-from ..utils.git_toml_manager import remove_git_directory, get_git_info, update_pyproject_toml
+from ..utils.git_toml_manager import remove_git_directory, get_git_info, update_pyproject_toml, remove_from_pyproject_toml
 
 from ..handlers.request_submodule import request_remote_library
 from ..handlers.request_folder import clone_from_github_url
@@ -210,6 +210,16 @@ def uninstall_library(library_name: str) -> None:
         print(f"Library '{short_name}' not found.")
         return
 
+    try:
+        updated = remove_from_pyproject_toml(lib_path.as_posix(), name_hint=short_name)
+        if updated:
+            print(f"✅ Updated pyproject.toml for '{short_name}'.")
+        else:
+            print(f"⚠️  No matching TOML entries found for '{short_name}'.")
+    except Exception as e:
+        print(f"⚠️  Warning: Failed to update pyproject.toml for '{short_name}': {e}")
+
+    # Remove files on disk
     try:
         shutil.rmtree(lib_path)
         print(f"Library '{short_name}' uninstalled.")

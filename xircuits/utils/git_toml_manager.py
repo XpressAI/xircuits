@@ -4,6 +4,7 @@ from pathlib import Path
 import tomlkit
 from tomlkit import parse, dumps
 import sys
+from typing import Optional
 
 def remove_git_directory(repo_path):
     """Remove the .git directory from a cloned repository."""
@@ -189,3 +190,143 @@ def create_default_pyproject(pyproject_file):
 
     pyproject_file.write_text(dumps(default), encoding="utf-8")
     print("✅ Created default pyproject.toml")
+
+
+def _norm_path(p: str) -> str:
+    return str(Path(p)).replace("\\", "/").rstrip("/")
+
+def remove_from_pyproject_toml(member_path: str, name_hint: Optional[str] = None) -> bool:
+    """
+    Remove a component from pyproject.toml using either its recorded member path
+    (e.g. 'xai_components/xai_utils') and/or a dist name hint (e.g. 'xai_utils').
+
+    This will:
+      - drop dist name from [project].dependencies
+      - remove dist from [tool.uv.sources]
+      - remove member_path from [tool.uv.workspace].members
+      - remove [tool.xircuits.components."<dist_name>"]
+
+    Returns True if any change was written.
+    """
+    pyproject_file = Path("pyproject.toml")
+    if not pyproject_file.exists():
+        print("⚠️  pyproject.toml not found; nothing to update.")
+        return False
+
+    try:
+        doc = parse(pyproject_file.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"⚠️  Warning: Could not parse pyproject.toml: {e}")
+        return False
+
+    changed = False
+    target_path = _norm_path(member_path)
+
+    tool = doc.get("tool", tomlkit.table())
+    uv = tool.get("uv", tomlkit.table())
+    sources = uv.get("sources", tomlkit.table())
+    workspace = uv.get("workspace", tomlkit.table())
+    members = workspace.get("members", tomlkit.array())
+    xircuits = tool.get("xircuits", tomlkit.table())
+    components = xircuits.get("components", tomlkit.table())
+
+    # Figure out the dist name to remove:
+    # Prefer matching components entry by path; fall back to name_hint.
+    dist_name = None
+    matched_key_by_path = None
+    for key, val in list(components.items()):
+        try:
+            recorded_path = _norm_path(val.get("path", ""))
+            if recorded_path == target_path or Path(recorded_path).name == Path(target_path).name:
+                matched_key_by_path = key
+                break
+        except Exception:
+            continue
+
+    if matched_key_by_path:
+        dist_name = matched_key_by_path
+    elif isinstance(name_hint, str) and name_hint in components:
+        dist_name = name_hint
+    else:
+        # As a last resort, use the hint even if it's not in components; this still allows
+        # cleaning project.dependencies and uv.sources if they exist.
+        dist_name = name_hint
+
+    # Remove member_path from workspace.members
+    if isinstance(members, tomlkit.items.Array):
+        new_members = tomlkit.array(); new_members.multiline(True)
+        for item in members:
+            keep = True
+            if isinstance(item, str):
+                ip = _norm_path(item)
+                if ip == target_path or Path(ip).name == Path(target_path).name:
+                    keep = False
+            if keep:
+                new_members.append(item)
+            else:
+                changed = True
+        workspace["members"] = new_members
+
+    # Remove dist from project.dependencies (if we know the name)
+    if dist_name and "project" in doc:
+        deps = doc["project"].get("dependencies")
+        if isinstance(deps, tomlkit.items.Array):
+            new_deps = tomlkit.array(); new_deps.multiline(True)
+            for d in deps:
+                if isinstance(d, str) and d.strip() == dist_name:
+                    changed = True
+                    continue
+                new_deps.append(d)
+            doc["project"]["dependencies"] = new_deps
+
+    # Remove dist from uv.sources
+    if dist_name and isinstance(sources, tomlkit.items.Table) and dist_name in sources:
+        try:
+            del sources[dist_name]
+            changed = True
+        except Exception:
+            pass
+
+    # Remove component metadata
+    if isinstance(components, tomlkit.items.Table):
+        removed_component = False
+        if dist_name and dist_name in components:
+            try:
+                del components[dist_name]
+                removed_component = True
+            except Exception:
+                pass
+        else:
+            # Match by path if key lookup failed
+            for key, val in list(components.items()):
+                try:
+                    if _norm_path(val.get("path", "")) == target_path:
+                        del components[key]
+                        removed_component = True
+                except Exception:
+                    continue
+        if removed_component:
+            changed = True
+
+    # Reapply the "workspace after a single newline" formatting tweak
+    if "tool" in doc and "uv" in doc["tool"] and "workspace" in doc["tool"]["uv"]:
+        uv_tbl = doc["tool"]["uv"]
+        ws_tbl = uv_tbl["workspace"]
+        new_uv = tomlkit.table()
+        for k, v in uv_tbl.items():
+            if k == "workspace":
+                continue
+            new_uv.add(k, v)
+        new_uv.add(tomlkit.nl())
+        new_uv.add("workspace", ws_tbl)
+        doc["tool"]["uv"] = new_uv
+
+    if not changed:
+        return False
+
+    try:
+        pyproject_file.write_text(dumps(doc), encoding="utf-8")
+        return True
+    except Exception as e:
+        print(f"⚠️  Warning: Could not write pyproject.toml: {e}")
+        return False
