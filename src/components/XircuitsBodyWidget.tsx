@@ -937,7 +937,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	
 			let result;
 	
-			if (runType == 'run') {
+			if (runType == 'run' || runType == 'run-dont-compile') {
 				result = await handleLocalRunDialog();
 				if (result.status === 'ok') {
 				code += "%run " + model_path + result.args;
