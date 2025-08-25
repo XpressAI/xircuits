@@ -4,6 +4,7 @@ from pathlib import Path
 import tomlkit
 from tomlkit import parse, dumps
 import sys
+import re
 from typing import Optional
 
 def remove_git_directory(repo_path):
@@ -44,7 +45,6 @@ def get_git_info(repo_path):
         except subprocess.CalledProcessError:
             return "latest", False
 
-
 def _read_member_dist_name(member_path, fallback_name=None):
     """
     Read [project].name from the member's pyproject.toml, falling back to given name.
@@ -60,6 +60,46 @@ def _read_member_dist_name(member_path, fallback_name=None):
         except Exception:
             pass
     return fallback_name
+
+_HEADER_RE = re.compile(r'^\s*\[(?:\[.*\]|[^\]]+)\]\s*$')  # [table] or [[array-of-tables]]
+
+def _is_header(line: str) -> bool:
+    return bool(_HEADER_RE.match(line))
+
+def _reformat_toml_text(text: str) -> str:
+    """
+    Normalize whitespace:
+      - ensure exactly ONE blank line after any table/array-of-table header
+      - collapse 3+ blank lines anywhere to exactly ONE blank line
+      - trim leading blanks; ensure exactly one trailing newline
+    """
+    # Normalize newlines and strip trailing spaces per line
+    text = text.replace('\r\n', '\n').replace('\r', '\n')
+    lines = [ln.rstrip() for ln in text.split('\n')]
+
+    out: list[str] = []
+    n = len(lines)
+    for i, ln in enumerate(lines):
+        out.append(ln)
+        if _is_header(ln):
+            # If next line exists and is NOT blank, insert a blank line
+            if i + 1 < n and lines[i + 1].strip() != '':
+                out.append('')
+
+    text = '\n'.join(out)
+
+    # Collapse runs of 3+ newlines to just 2 (i.e., exactly one blank line)
+    text = re.sub(r'\n{3,}', '\n\n', text)
+
+    # Remove leading blank lines; ensure single trailing newline
+    text = text.lstrip('\n').rstrip() + '\n'
+    return text
+
+def _write_toml_with_format(doc, path: Path) -> None:
+    """Dump with tomlkit, then normalize whitespace."""
+    raw = dumps(doc)
+    formatted = _reformat_toml_text(raw)
+    path.write_text(formatted, encoding='utf-8')
 
 
 def update_pyproject_toml(library_name, member_path, repo_url, ref, is_tag):
@@ -135,21 +175,8 @@ def update_pyproject_toml(library_name, member_path, repo_url, ref, is_tag):
     entry.add("tag" if is_tag else "rev", ref)
     components[dist_name] = entry
 
-    # This whole section just to add a space after workspace. Curse you OCD. 
-    # Rebuild the [tool.uv] table so that 'workspace' is reinserted after a single nl()
-    uv = doc["tool"]["uv"]
-    ws_tbl = uv["workspace"]
-    new_uv = tomlkit.table()
-    for key, val in uv.items():
-        if key == "workspace":
-            continue
-        new_uv.add(key, val)
-    new_uv.add(tomlkit.nl())
-    new_uv.add("workspace", ws_tbl)
-    doc["tool"]["uv"] = new_uv
-
     try:
-        pyproject_file.write_text(dumps(doc), encoding="utf-8")
+        _write_toml_with_format(doc, pyproject_file)
         print(f"✅ Workspace config updated: {dist_name} ← {('tag ' if is_tag else 'rev ')}{ref}")
         return True
     except Exception as e:
@@ -170,9 +197,9 @@ def create_default_pyproject(pyproject_file):
     default.add("project", project)
 
     tool = tomlkit.table()
+
     uv = tomlkit.table()
     uv.add("sources", tomlkit.table())
-    uv.add(tomlkit.nl())
 
     ws = tomlkit.table()
     members = tomlkit.array(); members.multiline(True)
@@ -188,9 +215,8 @@ def create_default_pyproject(pyproject_file):
 
     default.add("tool", tool)
 
-    pyproject_file.write_text(dumps(default), encoding="utf-8")
+    _write_toml_with_format(default, pyproject_file)
     print("✅ Created default pyproject.toml")
-
 
 def _norm_path(p: str) -> str:
     return str(Path(p)).replace("\\", "/").rstrip("/")
@@ -308,24 +334,11 @@ def remove_from_pyproject_toml(member_path: str, name_hint: Optional[str] = None
         if removed_component:
             changed = True
 
-    # Reapply the "workspace after a single newline" formatting tweak
-    if "tool" in doc and "uv" in doc["tool"] and "workspace" in doc["tool"]["uv"]:
-        uv_tbl = doc["tool"]["uv"]
-        ws_tbl = uv_tbl["workspace"]
-        new_uv = tomlkit.table()
-        for k, v in uv_tbl.items():
-            if k == "workspace":
-                continue
-            new_uv.add(k, v)
-        new_uv.add(tomlkit.nl())
-        new_uv.add("workspace", ws_tbl)
-        doc["tool"]["uv"] = new_uv
-
     if not changed:
         return False
 
     try:
-        pyproject_file.write_text(dumps(doc), encoding="utf-8")
+        _write_toml_with_format(doc, pyproject_file)
         return True
     except Exception as e:
         print(f"⚠️  Warning: Could not write pyproject.toml: {e}")
