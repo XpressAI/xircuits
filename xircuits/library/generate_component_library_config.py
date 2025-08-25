@@ -64,7 +64,8 @@ def extract_library_info(lib_path, base_path, status="remote"):
 def generate_component_library_config(base_path="xai_components"):
 
     manifest_path = posixpath.join(
-        os.getcwd(), ".remote_libs_manifest", 'index.json')
+        os.getcwd(), ".xircuits", "remote_libs_manifest", "index.json")
+
     libraries = {}
     library_id_map = {}  # Map library IDs to library info
     # Parse remotes first and set them as "remote"
@@ -74,7 +75,7 @@ def generate_component_library_config(base_path="xai_components"):
         for entry in index:
             # load each metadata file
             meta_path = posixpath.join(
-                os.getcwd(), ".remote_libs_manifest", entry['metadata'])
+                os.getcwd(), ".xircuits", "remote_lib_manifest", entry['metadata'])
             meta = json.load(open(meta_path, 'r', encoding='utf-8'))
             remote_path = posixpath.normpath(meta['path'])
             os.makedirs(remote_path, exist_ok=True)

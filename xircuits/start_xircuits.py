@@ -21,7 +21,7 @@ def init_xircuits():
     package_name = 'xircuits'
     copy_from_installed_wheel(package_name, resource='.xircuits', dest_path='.xircuits')
 
-    tmp_dir = Path(os.getcwd()) / ".remote_libs_manifest"
+    tmp_dir = Path(os.getcwd()) / ".xircuits" / "remote_lib_manifest"
     cfg = get_config()
     subprocess.run(["git", "clone",cfg['DEV']['MANIFEST'],str(tmp_dir)], check=True)
 
