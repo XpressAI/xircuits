@@ -3,6 +3,7 @@ import sys
 import json
 import subprocess
 from pathlib import Path
+from .index_config import get_component_library_config
 
 def get_installed_packages():
     """Return a set of installed packages."""
@@ -17,13 +18,7 @@ def check_requirements_installed(installed_packages, requirements):
     return len(missing_packages) == 0, missing_packages
 
 def list_component_library():
-    config_path = Path(".xircuits/component_library_config.json")
-    if not config_path.exists():
-        print("Component library config file not found.")
-        return
-
-    with open(config_path, 'r') as file:
-        config = json.load(file)
+    config = get_component_library_config()
     libraries = config.get("libraries", [])
 
     print("Checking installed packages... This might take a moment.")

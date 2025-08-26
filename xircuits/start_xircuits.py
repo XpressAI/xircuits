@@ -8,7 +8,9 @@ from pathlib import Path
 from importlib.metadata import metadata, PackageNotFoundError
 
 from .utils.file_utils import is_empty, copy_from_installed_wheel
-from .library import list_component_library, install_library, fetch_library, save_component_library_config, uninstall_library
+from .library import list_component_library, install_library, fetch_library, uninstall_library
+from .library.index_config import refresh_index
+
 from .compiler import compile, recursive_compile
 from xircuits.handlers.config import get_config
 
@@ -21,14 +23,15 @@ def init_xircuits():
     package_name = 'xircuits'
     copy_from_installed_wheel(package_name, resource='.xircuits', dest_path='.xircuits')
 
-    tmp_dir = Path(os.getcwd()) / ".xircuits" / "remote_lib_manifest"
-    cfg = get_config()
-    subprocess.run(["git", "clone",cfg['DEV']['MANIFEST'],str(tmp_dir)], check=True)
+    # Fetch component library index.json over HTTP
+    try:
+        refresh_index()
+    except Exception as e:
+        print(f"Warning: could not download index.json yet: {e}")
 
     component_library_path = Path(os.getcwd()) / "xai_components"
     if not component_library_path.exists():
         copy_from_installed_wheel('xai_components', '', 'xai_components')
-    save_component_library_config()
 
 
 def find_xircuits_working_dir():

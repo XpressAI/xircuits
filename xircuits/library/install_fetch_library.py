@@ -7,7 +7,7 @@ from pathlib import Path
 from ..utils.file_utils import is_valid_url, is_empty
 from ..utils.git_toml_manager import remove_git_directory, get_git_info, update_pyproject_toml, remove_from_pyproject_toml
 
-from ..handlers.request_submodule import request_remote_library
+from ..handlers.request_remote import request_remote_library
 from ..handlers.request_folder import clone_from_github_url
 
 CORE_LIBS = {"xai_events", "xai_template", "xai_controlflow", "xai_utils"}
@@ -22,7 +22,7 @@ def build_component_library_path(component_library_query: str) -> str:
     return component_library_query
 
 def get_library_config(library_name, config_key):
-    config_path = ".xircuits/component_library_config.json"
+    config_path = ".xircuits/remote_lib_manifest/index.json"
     if os.path.exists(config_path):
         with open(config_path, "r") as config_file:
             config = json.load(config_file)
@@ -114,7 +114,7 @@ def install_library(library_name: str):
                         lib_id = library.get('library_id', '').lower()
                         search_name = library_name.lower()
                         if lib_id == search_name:
-                            repo_url = library.get("repository")
+                            repo_url = library.get("repository") or library.get("url")
                             break
         except Exception as e:
             print(f"⚠️  Warning: Could not extract repo URL: {e}")
@@ -132,22 +132,30 @@ def install_library(library_name: str):
         else:
             print(f"⚠️  Skipping TOML update - missing git_ref: {git_ref}, repo_url: {repo_url}")
 
-    # Get the requirements path from the configuration
-    requirements_path = get_library_config(library_name, "requirements_path")
-    requirements_path = Path(requirements_path).resolve() if requirements_path else Path(component_library_path) / "requirements.txt"
+    # Install dependencies (prefer specs from index.json; fallback to requirements.txt)
+    req_specs = get_library_config(library_name, "requirements")
 
-    # Install requirements if the file exists
-    if requirements_path.exists():
+    if isinstance(req_specs, list) and any(isinstance(s, str) and s.strip() for s in req_specs):
         try:
-            print(f"Installing requirements for {library_name} from {requirements_path}...")
-            cmd = get_pip_command() + ["-r", str(requirements_path)]
+            print(f"Installing requirements for {library_name} from index.json specs...")
+            cmd = get_pip_command() + req_specs  # e.g. ["pip", "install", "numpy>=1.26", "pydantic==2.*"]
             subprocess.run(cmd, check=True)
             print(f"Library {library_name} ready to use.")
         except Exception as e:
             print(f"An error occurred while installing requirements for {library_name}: {e}")
     else:
-        print(f"No requirements.txt found for {library_name}. Skipping installation of dependencies.")
-        print(f"Library {library_name} ready to use.")
+        requirements_path = Path(component_library_path) / "requirements.txt"
+        if requirements_path.exists():
+            try:
+                print(f"Installing requirements for {library_name} from {requirements_path}...")
+                cmd = get_pip_command() + ["-r", str(requirements_path)]
+                subprocess.run(cmd, check=True)
+                print(f"Library {library_name} ready to use.")
+            except Exception as e:
+                print(f"An error occurred while installing requirements for {library_name}: {e}")
+        else:
+            print(f"No requirements specified for {library_name}. Skipping dependency installation.")
+            print(f"Library {library_name} ready to use.")
 
 def fetch_library(library_name: str):
     print(f"Fetching {library_name}...")

@@ -4,8 +4,8 @@ import json
 
 
 def get_remote_config(user_query):
-    
-    manifest_path = posixpath.join('.xircuits', "component_library_config.json")
+
+    manifest_path = posixpath.join('.xircuits', "remote_lib_manifest", "index.json")
     # load all entries
     with open(manifest_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
