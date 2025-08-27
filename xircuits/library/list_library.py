@@ -1,62 +1,121 @@
-import os
 import sys
-import json
 import subprocess
 from pathlib import Path
+from typing import Iterable, Set
+
 from .index_config import get_component_library_config
 
-def get_installed_packages():
-    """Return a set of installed packages."""
-    result = subprocess.check_output([sys.executable, "-m", "pip", "freeze"])
-    packages = {package.split('==')[0] for package in result.decode().splitlines()}
-    return packages
 
-def check_requirements_installed(installed_packages, requirements):
-    """Check if all required packages are installed."""
-    required_packages = {pkg.split("==")[0].strip() for pkg in requirements}
-    missing_packages = required_packages - installed_packages
-    return len(missing_packages) == 0, missing_packages
+def _library_id(library_entry: dict) -> str:
+    library_identifier = library_entry.get("library_id")
+    if isinstance(library_identifier, str) and library_identifier.strip():
+        return library_identifier.strip()
+    return "<unknown-id>"
+
+
+def _filesystem_path(library_entry: dict) -> Path | None:
+    # Primary field is "path" in index.json; accept "local_path" for legacy entries.
+    raw_path = library_entry.get("path") or library_entry.get("local_path")
+    if not raw_path:
+        return None
+    path_obj = Path(raw_path)
+    return path_obj if path_obj.is_absolute() else (Path.cwd() / path_obj)
+
+
+def _has_init_py(directory_path: Path | None) -> bool:
+    return bool(directory_path and (directory_path / "__init__.py").exists())
+
+
+def _installed_package_names_lower() -> Set[str]:
+    """
+    Return lowercased package names currently installed (ignores versions and sources).
+    """
+    output = subprocess.check_output([sys.executable, "-m", "pip", "freeze"])
+    names_lower: Set[str] = set()
+    for line in output.decode().splitlines():
+        text = line.strip()
+        if not text or text.startswith("#"):
+            continue
+        # handle 'pkg==x.y', 'pkg @ git+...', editable installs, etc.
+        head = text.split(" ", 1)[0]       # drop ' @ ...'
+        head = head.split("==", 1)[0]      # drop version pin
+        names_lower.add(head.lower())
+    return names_lower
+
+
+def _requirement_names_lower(requirement_specifications: Iterable[str]) -> Set[str]:
+    """
+    Extract lowercased requirement names from requirement spec strings.
+    This intentionally ignores extras, markers, and version operators.
+    """
+    names_lower: Set[str] = set()
+    for specification in requirement_specifications or []:
+        if not isinstance(specification, str):
+            continue
+        text = specification.strip()
+        if not text:
+            continue
+        # drop environment markers: 'pkg; python_version<"3.12"'
+        text = text.split(";", 1)[0]
+        # drop extras: 'pkg[extra]'
+        text = text.split("[", 1)[0]
+        # drop version operators
+        for operator in ("==", ">=", "<=", "~=", "!=", ">", "<", "==="):
+            if operator in text:
+                text = text.split(operator, 1)[0]
+                break
+        name = text.strip().lower()
+        if name:
+            names_lower.add(name)
+    return names_lower
+
 
 def list_component_library():
-    config = get_component_library_config()
-    libraries = config.get("libraries", [])
+    configuration = get_component_library_config()
+    library_entries = configuration.get("libraries", [])
 
     print("Checking installed packages... This might take a moment.")
-    installed_packages = get_installed_packages()
+    installed_packages_lower = _installed_package_names_lower()
 
-    fully_installed = []
-    incomplete_installation = []
+    installed_ids: list[str] = []
+    incomplete_ids: list[str] = []
+    remote_ids: list[str] = []
 
-    for lib in libraries:
-        lib_name = lib["name"]
-        status = lib["status"]
-        requirements = lib.get("requirements", [])
-        
-        if status != "remote":
-            is_fully_installed, missing_packages = check_requirements_installed(installed_packages, requirements)
-            if is_fully_installed:
-                fully_installed.append(lib_name)
-            else:
-                # Append a star to libraries with incomplete installations
-                incomplete_installation.append(f"{lib_name} [*]")
+    for library_entry in library_entries:
+        library_identifier = _library_id(library_entry)
+        local_path = _filesystem_path(library_entry)
+        local_exists = bool(local_path and local_path.exists() and local_path.is_dir())
 
-    total_installed = len(fully_installed) + len(incomplete_installation)
+        requirement_specifications = library_entry.get("requirements") or []
+        required_names_lower = _requirement_names_lower(requirement_specifications)
+        all_requirements_present = required_names_lower.issubset(installed_packages_lower)
+
+        has_init_file = _has_init_py(local_path)
+
+        if local_exists and not all_requirements_present:
+            # Per your instruction: "for incomplete, just check the packages"
+            incomplete_ids.append(library_identifier)
+        elif local_exists and all_requirements_present and has_init_file:
+            installed_ids.append(library_identifier)
+        else:
+            remote_ids.append(library_identifier)
+
+    total_installed = len(installed_ids) + len(incomplete_ids)
     print(f"\nInstalled component libraries({total_installed}):")
-    for lib in sorted(fully_installed):
-        print(f" - {lib}")
-    for lib in sorted(incomplete_installation):
-        print(f" - {lib}")
+    for library_identifier in sorted(installed_ids, key=str.lower):
+        print(f" - {library_identifier}")
+    for library_identifier in sorted(incomplete_ids, key=str.lower):
+        print(f" - {library_identifier} [*]")
 
-    if incomplete_installation:
-        print("\n[*] indicates an incomplete installation.")
+    if incomplete_ids:
+        print("\n[*] indicates an incomplete installation (missing Python dependencies).")
 
-    # Handle remote libraries separately
-    remote = [lib["name"] for lib in libraries if lib["status"] == "remote"]
-    if remote:
-        print(f"\nRemote component libraries({len(remote)}):")
-        for lib in sorted(remote):
-            print(f" - {lib}")
-        print("\nYou can install remote libraries using 'xircuits install <libName>'.\n\n")
+    if remote_ids:
+        print(f"\nRemote component libraries({len(remote_ids)}):")
+        for library_identifier in sorted(remote_ids, key=str.lower):
+            print(f" - {library_identifier}")
+        print("\nYou can install libraries using 'xircuits install <LIBRARY_ID>'.\n")
+
 
 if __name__ == "__main__":
     list_component_library()
