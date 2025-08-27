@@ -8,12 +8,11 @@ def get_remote_config(user_query):
     manifest_path = posixpath.join('.xircuits', "remote_lib_manifest", "index.json")
     # load all entries
     with open(manifest_path, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-        subs = data.get('libraries', [])
+        entries = json.load(f)
 
     matches = [
-        s for s in subs
-        if user_query in s.get('local_path', '') or user_query == s.get('library_id', '')
+        s for s in entries
+        if user_query in s.get('path', '') or user_query == s.get('library_id', '')
     ]
     if len(matches) == 0:
         raise ValueError(
@@ -23,8 +22,8 @@ def get_remote_config(user_query):
         raise ValueError(f"Multiple instances of '{user_query}' found.")
 
     entry = matches[0]
-    remote_path = entry["local_path"]
-    remote_url = entry["repository"]
+    remote_path = entry["path"]
+    remote_url = entry.get("repository") or entry.get("url")
 
     return remote_path, remote_url
 

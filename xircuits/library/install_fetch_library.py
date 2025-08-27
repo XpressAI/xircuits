@@ -22,19 +22,22 @@ def build_component_library_path(component_library_query: str) -> str:
     return component_library_query
 
 def get_library_config(library_name, config_key):
-    config_path = ".xircuits/remote_lib_manifest/index.json"
-    if os.path.exists(config_path):
-        with open(config_path, "r") as config_file:
-            config = json.load(config_file)
-            for library in config.get("libraries", []):
-                if library.get("library_id") == library_name:
-                    # Check for the existence of the key and that its value is not None
-                    if config_key in library and library[config_key] is not None:
-                        return library[config_key]
-                    else:
-                        return None  # Explicitly return None if the key is missing or its value is None
+    index_path = ".xircuits/remote_lib_manifest/index.json"
+    if not os.path.exists(index_path):
+        return None
 
-    return None  # Return None if the library isn't found or the file doesn't exist
+    with open(index_path, "r", encoding="utf-8") as config_file:
+        parsed = json.load(config_file)
+
+    libraries = parsed if isinstance(parsed, list) else parsed.get("libraries", [])
+    search_name = str(library_name or "").lower()
+
+    for library in libraries:
+        lib_id = str(library.get("library_id", "")).lower()
+        if lib_id == search_name:
+            value = library.get(config_key)
+            return value if value is not None else None
+    return None
 
 def build_library_file_path_from_config(library_name, config_key):
     file_path = get_library_config(library_name, config_key)

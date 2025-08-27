@@ -2,7 +2,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 from urllib.parse import urlparse, urlunparse
 from urllib.request import urlopen, Request
 
@@ -12,11 +12,9 @@ from xircuits.handlers.config import get_config
 MANIFEST_DIR = Path(".xircuits") / "remote_lib_manifest"
 INDEX_PATH = MANIFEST_DIR / "index.json"
 
+
 def _to_raw_url(url: str) -> str:
-    """
-    If the URL is a GitHub 'blob' page, convert it to a raw URL.
-    Otherwise, return it unchanged.
-    """
+    """Convert a GitHub 'blob' URL to a raw URL; otherwise return unchanged."""
     parsed = urlparse(url)
     if parsed.netloc.lower() == "github.com" and "/blob/" in parsed.path:
         raw_path = parsed.path.replace("/blob/", "/")
@@ -28,23 +26,30 @@ def _to_raw_url(url: str) -> str:
         return urlunparse(parsed)
     return url
 
-def _read_index() -> Dict[str, Any]:
+
+def _read_index_list() -> List[Dict[str, Any]]:
+    """Load index.json and require a top-level array of library entries."""
     if not INDEX_PATH.exists():
         raise FileNotFoundError(f"index.json not found at {INDEX_PATH}")
     with INDEX_PATH.open("r", encoding="utf-8") as fh:
-        index_data = json.load(fh)
-    libraries = index_data.get("libraries")
-    if not isinstance(index_data, dict) or not isinstance(libraries, list):
-        raise ValueError("index.json must contain an object with 'libraries': [...]")
-    return index_data
+        parsed = json.load(fh)
+    if not isinstance(parsed, list):
+        raise ValueError("index.json must be a top-level JSON array of library entries.")
+    # Optional shallow validation
+    for i, entry in enumerate(parsed):
+        if not isinstance(entry, dict):
+            raise ValueError(f"index.json entry at index {i} is not an object.")
+    return parsed
+
 
 def _has_init_py(dir_path: Path) -> bool:
     return (dir_path / "__init__.py").exists()
 
+
 def _compute_status(library_entry: Dict[str, Any]) -> str:
     """
     Local-only status:
-      - 'installed' if local_path exists, non-empty, and has __init__.py
+      - 'installed' if local_path/path exists, non-empty, and has __init__.py
       - otherwise 'remote'
     """
     library_local_path = library_entry.get("local_path") or library_entry.get("path")
@@ -67,13 +72,15 @@ def _compute_status(library_entry: Dict[str, Any]) -> str:
     return "remote"
 
 def get_component_library_config() -> Dict[str, Any]:
-    index_doc = _read_index()
-    resolved_libraries = []
-    for library_entry in index_doc["libraries"]:
+    libraries_array = _read_index_list()
+    resolved_libraries: List[Dict[str, Any]] = []
+    for library_entry in libraries_array:
         entry_with_status = dict(library_entry)
         entry_with_status["status"] = _compute_status(library_entry)
         resolved_libraries.append(entry_with_status)
+    # Keep the public shape stable for the frontend/handlers
     return {"libraries": resolved_libraries}
+
 
 def refresh_index() -> Dict[str, Any]:
     """
@@ -95,6 +102,7 @@ def refresh_index() -> Dict[str, Any]:
         )
 
     raw_url = _to_raw_url(source_url)
+    print(f"Fetching index.json from: {raw_url}")
 
     request = Request(raw_url, headers={"User-Agent": "xircuits-index-fetcher"})
     with urlopen(request) as response:
