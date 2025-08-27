@@ -12,54 +12,52 @@ from xircuits.handlers.config import get_config
 MANIFEST_DIR = Path(".xircuits") / "remote_lib_manifest"
 INDEX_PATH = MANIFEST_DIR / "index.json"
 
+try:
+    import tomllib
+except Exception:
+    tomllib = None
+
 
 def _to_raw_url(url: str) -> str:
-    """Convert a GitHub 'blob' URL to a raw URL; otherwise return unchanged."""
     parsed = urlparse(url)
     if parsed.netloc.lower() == "github.com" and "/blob/" in parsed.path:
         raw_path = parsed.path.replace("/blob/", "/")
-        parsed = parsed._replace(
-            netloc="raw.githubusercontent.com",
-            path=raw_path,
-            query="",
-        )
+        parsed = parsed._replace(netloc="raw.githubusercontent.com", path=raw_path, query="")
         return urlunparse(parsed)
     return url
 
 
 def _read_index_list() -> List[Dict[str, Any]]:
-    """Load index.json and require a top-level array of library entries."""
     if not INDEX_PATH.exists():
         raise FileNotFoundError(f"index.json not found at {INDEX_PATH}")
-    with INDEX_PATH.open("r", encoding="utf-8") as fh:
-        parsed = json.load(fh)
+    with INDEX_PATH.open("r", encoding="utf-8") as file_handle:
+        parsed = json.load(file_handle)
     if not isinstance(parsed, list):
+        # We keep it strict: index.json must be a top-level array.
         raise ValueError("index.json must be a top-level JSON array of library entries.")
-    # Optional shallow validation
-    for i, entry in enumerate(parsed):
+    for position, entry in enumerate(parsed):
         if not isinstance(entry, dict):
-            raise ValueError(f"index.json entry at index {i} is not an object.")
+            raise ValueError(f"index.json entry at index {position} is not an object.")
     return parsed
 
 
-def _has_init_py(dir_path: Path) -> bool:
-    return (dir_path / "__init__.py").exists()
+def _has_init_py(directory_path: Path) -> bool:
+    return (directory_path / "__init__.py").exists()
 
 
 def _compute_status(library_entry: Dict[str, Any]) -> str:
     """
     Local-only status:
-      - 'installed' if local_path/path exists, non-empty, and has __init__.py
+      - 'installed' if local path exists, non-empty, and has __init__.py
       - otherwise 'remote'
     """
-    library_local_path = library_entry.get("local_path") or library_entry.get("path")
-    if not library_local_path:
+    local_path_field = library_entry.get("local_path") or library_entry.get("path")
+    if not local_path_field:
         return "remote"
 
     absolute_local_path = (
-        Path(library_local_path)
-        if Path(library_local_path).is_absolute()
-        else Path.cwd() / library_local_path
+        Path(local_path_field) if Path(local_path_field).is_absolute()
+        else Path.cwd() / local_path_field
     )
 
     if (
@@ -71,14 +69,109 @@ def _compute_status(library_entry: Dict[str, Any]) -> str:
         return "installed"
     return "remote"
 
+
+def _library_id_from_dir_name(directory_name: str) -> str:
+    # xai_components/xai_<name>  ->  <NAME> (uppercased)
+    base = directory_name.replace("xai_", "").replace("xai-", "")
+    return base.upper()
+
+
+def _read_local_requirements_for_dir(library_dir: Path) -> List[str]:
+    """
+    Try to read project dependencies for a local library, preferring pyproject.toml
+    (if tomllib is available), falling back to requirements.txt. If neither exists,
+    return [].
+    """
+    pyproject_path = library_dir / "pyproject.toml"
+    if tomllib and pyproject_path.exists():
+        try:
+            with pyproject_path.open("rb") as file_handle:
+                data = tomllib.load(file_handle)
+            project_table = data.get("project", {}) if isinstance(data, dict) else {}
+            dependencies = project_table.get("dependencies", [])
+            if isinstance(dependencies, list):
+                return [str(item).strip() for item in dependencies if str(item).strip()]
+        except Exception:
+            pass  # Fall through to requirements.txt
+
+    requirements_path = library_dir / "requirements.txt"
+    if requirements_path.exists():
+        try:
+            lines = []
+            for line in requirements_path.read_text(encoding="utf-8").splitlines():
+                text = line.strip()
+                if text and not text.startswith("#"):
+                    lines.append(text)
+            return lines
+        except Exception:
+            return []
+
+    return []
+
+
+def _scan_local_xai_components(base_directory: Path = Path("xai_components")) -> Dict[str, Dict[str, Any]]:
+    """
+    Discover local libraries under xai_components/xai_* and return a dict keyed by library_id.
+    Each entry is a minimal manifest stub that we can merge with the remote index.
+    """
+    discovered: Dict[str, Dict[str, Any]] = {}
+    if not base_directory.exists() or not base_directory.is_dir():
+        return discovered
+
+    for lib_candidate in sorted(base_directory.iterdir()):
+        if not lib_candidate.is_dir():
+            continue
+        if not lib_candidate.name.startswith("xai_"):
+            continue
+
+        library_id = _library_id_from_dir_name(lib_candidate.name)
+        relative_path = Path("xai_components") / lib_candidate.name
+
+        requirements_list = _read_local_requirements_for_dir(lib_candidate)
+
+        discovered[library_id] = {
+            "library_id": library_id,
+            "name": lib_candidate.name,
+            "path": str(relative_path).replace("\\", "/"),
+            "requirements": requirements_list,
+        }
+
+    return discovered
+
+
 def get_component_library_config() -> Dict[str, Any]:
-    libraries_array = _read_index_list()
+    """
+    Single source for the frontend/handlers:
+      - Start from the remote index.json array (strict format).
+      - Merge in any local libraries found under xai_components/xai_* that are
+        missing from the index.
+      - Compute 'status' for every entry based on the filesystem.
+    """
+    index_entries = _read_index_list()
+
+    # Build a map by library_id from index.json
+    by_id: Dict[str, Dict[str, Any]] = {}
+    for entry in index_entries:
+        library_identifier = entry.get("library_id")
+        if not isinstance(library_identifier, str) or not library_identifier.strip():
+            # skip index entries without a valid ID
+            continue
+        key = library_identifier.strip().upper()
+        by_id[key] = dict(entry)  # shallow copy
+
+    # Discover local-only libraries and merge if missing from index
+    local_discovered = _scan_local_xai_components()
+    for library_identifier, local_entry in local_discovered.items():
+        if library_identifier not in by_id:
+            by_id[library_identifier] = local_entry
+
+    # Finalize array and compute status
     resolved_libraries: List[Dict[str, Any]] = []
-    for library_entry in libraries_array:
-        entry_with_status = dict(library_entry)
-        entry_with_status["status"] = _compute_status(library_entry)
+    for entry in by_id.values():
+        entry_with_status = dict(entry)
+        entry_with_status["status"] = _compute_status(entry_with_status)
         resolved_libraries.append(entry_with_status)
-    # Keep the public shape stable for the frontend/handlers
+
     return {"libraries": resolved_libraries}
 
 
@@ -94,8 +187,8 @@ def refresh_index() -> Dict[str, Any]:
 
     source_url = os.environ.get("XIRCUITS_INDEX_URL")
     if not source_url:
-        cfg = get_config()
-        source_url = cfg.get("DEV", "INDEX_URL", fallback=None)
+        config = get_config()
+        source_url = config.get("DEV", "INDEX_URL", fallback=None)
     if not source_url:
         raise RuntimeError(
             "No INDEX_URL configured. Set env XIRCUITS_INDEX_URL or [DEV].INDEX_URL in config.ini"
