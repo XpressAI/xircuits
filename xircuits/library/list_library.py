@@ -1,19 +1,18 @@
 import sys
 import subprocess
 from pathlib import Path
-from typing import Iterable, Set
 
 from .index_config import get_component_library_config
 
 
-def _library_id(library_entry: dict) -> str:
+def _library_id(library_entry):
     library_identifier = library_entry.get("library_id")
     if isinstance(library_identifier, str) and library_identifier.strip():
         return library_identifier.strip()
     return "<unknown-id>"
 
 
-def _filesystem_path(library_entry: dict) -> Path | None:
+def _filesystem_path(library_entry):
     # Primary field is "path" in index.json; accept "local_path" for legacy entries.
     raw_path = library_entry.get("path") or library_entry.get("local_path")
     if not raw_path:
@@ -22,16 +21,16 @@ def _filesystem_path(library_entry: dict) -> Path | None:
     return path_obj if path_obj.is_absolute() else (Path.cwd() / path_obj)
 
 
-def _has_init_py(directory_path: Path | None) -> bool:
+def _has_init_py(directory_path):
     return bool(directory_path and (directory_path / "__init__.py").exists())
 
 
-def _installed_package_names_lower() -> Set[str]:
+def _installed_package_names_lower():
     """
     Return lowercased package names currently installed (ignores versions and sources).
     """
     output = subprocess.check_output([sys.executable, "-m", "pip", "freeze"])
-    names_lower: Set[str] = set()
+    names_lower = set()
     for line in output.decode().splitlines():
         text = line.strip()
         if not text or text.startswith("#"):
@@ -43,12 +42,12 @@ def _installed_package_names_lower() -> Set[str]:
     return names_lower
 
 
-def _requirement_names_lower(requirement_specifications: Iterable[str]) -> Set[str]:
+def _requirement_names_lower(requirement_specifications):
     """
     Extract lowercased requirement names from requirement spec strings.
     This intentionally ignores extras, markers, and version operators.
     """
-    names_lower: Set[str] = set()
+    names_lower = set()
     for specification in requirement_specifications or []:
         if not isinstance(specification, str):
             continue
@@ -77,9 +76,9 @@ def list_component_library():
     print("Checking installed packages... This might take a moment.")
     installed_packages_lower = _installed_package_names_lower()
 
-    installed_ids: list[str] = []
-    incomplete_ids: list[str] = []
-    remote_ids: list[str] = []
+    installed_ids = []
+    incomplete_ids = []
+    remote_ids = []
 
     for library_entry in library_entries:
         library_identifier = _library_id(library_entry)
