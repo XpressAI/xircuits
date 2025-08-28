@@ -681,7 +681,7 @@ def get_official_theme_info(page):
     }
     """)
 
-def wait_official_theme_change(page, before: dict, expect_mode: str | None = None, timeout: int = 15000):
+def wait_official_theme_change(page, before: dict, expect_mode: Optional[str] = None, timeout: int = 15000):
     """
     Wait for an official theme change on <body>.
 
