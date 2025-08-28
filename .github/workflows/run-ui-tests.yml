@@ -86,7 +86,7 @@ jobs:
         nohup jupyter lab --ServerApp.token='' --ServerApp.password='' --LabApp.default_url='/lab?reset' > jupyter.log 2>&1 &
         sleep 10
         cd ui-tests/tests
-
+        
         echo "===== 🚀 Starting test_toggle_light_dark.py ====="
         xvfb-run -a python3 test_clipboard_copy_paste.py
         echo "===== ✅ Finished test_toggle_light_dark.py ====="
@@ -94,6 +94,10 @@ jobs:
         echo "===== 🚀 Starting test_clipboard_single_print.py ====="
         xvfb-run -a python3 test_toggle_light_dark.py
         echo "===== ✅ Finished test_clipboard_single_print.py ====="
+        
+        echo "===== 🚀 Starting reload_performance_test.py ====="
+        xvfb-run -a python3 reload_performance_test.py
+        echo "===== ✅ Finished reload_performance_test.py ====="
 
         echo "===== 🚀 Starting zoom-buttons-test.py ====="
         xvfb-run -a python3 zoom-buttons-test.py
@@ -130,7 +134,7 @@ jobs:
         echo "===== 🚀 Starting editing-literal-nodes-test.py ====="
         xvfb-run -a python3 editing-literal-nodes-test.py
         echo "===== ✅ Finished editing-literal-nodes-test.py ====="
-
+     
     - uses: actions/upload-artifact@v4
       if: failure()
       with:
