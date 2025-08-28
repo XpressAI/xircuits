@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from ..utils.file_utils import is_valid_url, is_empty
 from ..utils.git_toml_manager import remove_git_directory, get_git_info, update_pyproject_toml, remove_from_pyproject_toml
+from ..utils.venv_ops import install_specs, install_requirements_file
 
 from ..handlers.request_remote import request_remote_library
 from ..handlers.request_folder import clone_from_github_url
@@ -51,41 +52,14 @@ def build_library_file_path_from_config(library_name, config_key):
     full_path = Path(base_path, file_path)
     return full_path.as_posix()
 
-def get_component_library_path(library_name: str) -> str:
+def get_component_library_path(library_name):
     if is_valid_url(library_name):
         return clone_from_github_url(library_name)
     else:
         return build_component_library_path(library_name)
 
-def is_uv_venv() -> bool:
-    """Return True if we're in a uv-managed venv (pyvenv.cfg contains 'uv =')."""
-    venv = os.environ.get("VIRTUAL_ENV")
-    if not venv:
-        return False
-    cfg = Path(venv) / "pyvenv.cfg"
-    if not cfg.exists():
-        return False
-    for line in cfg.read_text().splitlines():
-        if line.strip().startswith("uv ="):
-            return True
-    return False
 
-def get_pip_command() -> list[str]:
-    """
-    Return the command prefix to run 'pip install' in the current environment.
-    Prefers 'uv pip' if in a uv-managed venv and 'uv' is on PATH.
-    Otherwise falls back to 'python -m pip'.
-    """
-    # if uv-managed venv, use uv pip
-    if is_uv_venv():
-        uv_cmd = shutil.which("uv")
-        if uv_cmd:
-            return [uv_cmd, "pip", "install"]
-    # otherwise, use the interpreter's pip
-    return [sys.executable, "-m", "pip", "install"]
-
-def install_library(library_name: str):
-
+def install_library(library_name):
     if not os.environ.get("VIRTUAL_ENV"):
         print("Warning: no virtual environment detected; installing globally.")
 
@@ -95,39 +69,40 @@ def install_library(library_name: str):
     # Store git info before cloning/fetching
     git_ref = None
     repo_url = None
-    
+
     if not Path(component_library_path).is_dir() or is_empty(component_library_path):
         success, message = request_remote_library(component_library_path)
         if not success:
             print(message)
             return
-        
+
         # Get git info immediately after cloning, before removing .git
         git_ref, is_tag = get_git_info(component_library_path)
         print(f"Detected {'tag' if is_tag else 'commit'}: {git_ref}")
-        
+
         # Get repo URL from config
         try:
-            # Get library config to extract repo URL
             config_path = ".xircuits/component_library_config.json"
             if os.path.exists(config_path):
                 with open(config_path, "r") as config_file:
                     config = json.load(config_file)
                     for library in config.get("libraries", []):
-                        lib_id = library.get('library_id', '').lower()
+                        lib_id = library.get("library_id", "").lower()
                         search_name = library_name.lower()
                         if lib_id == search_name:
                             repo_url = library.get("repository") or library.get("url")
                             break
         except Exception as e:
             print(f"⚠️  Warning: Could not extract repo URL: {e}")
-        
+
         # Remove .git directory
         remove_git_directory(component_library_path)
-        
+
         # Update pyproject.toml if we have the necessary info
         if git_ref and repo_url:
-            success = update_pyproject_toml(library_name, component_library_path, repo_url, git_ref, is_tag)
+            success = update_pyproject_toml(
+                library_name, component_library_path, repo_url, git_ref, is_tag
+            )
             if success:
                 print("✅ Successfully updated pyproject.toml")
             else:
@@ -141,8 +116,8 @@ def install_library(library_name: str):
     if isinstance(req_specs, list) and any(isinstance(s, str) and s.strip() for s in req_specs):
         try:
             print(f"Installing requirements for {library_name} from index.json specs...")
-            cmd = get_pip_command() + req_specs  # e.g. ["pip", "install", "numpy>=1.26", "pydantic==2.*"]
-            subprocess.run(cmd, check=True)
+            # e.g. ["numpy>=1.26", "pydantic==2.*"]
+            install_specs(req_specs)
             print(f"Library {library_name} ready to use.")
         except Exception as e:
             print(f"An error occurred while installing requirements for {library_name}: {e}")
@@ -151,8 +126,7 @@ def install_library(library_name: str):
         if requirements_path.exists():
             try:
                 print(f"Installing requirements for {library_name} from {requirements_path}...")
-                cmd = get_pip_command() + ["-r", str(requirements_path)]
-                subprocess.run(cmd, check=True)
+                install_requirements_file(str(requirements_path))
                 print(f"Library {library_name} ready to use.")
             except Exception as e:
                 print(f"An error occurred while installing requirements for {library_name}: {e}")
@@ -170,7 +144,7 @@ def fetch_library(library_name: str):
             # Get git info before removing .git
             git_ref, is_tag = get_git_info(component_library_path)
             print(f"Detected {'tag' if is_tag else 'commit'}: {git_ref}")
-            
+
             # Get repo URL from config
             repo_url = None
             try:
@@ -179,28 +153,28 @@ def fetch_library(library_name: str):
                     with open(config_path, "r") as config_file:
                         config = json.load(config_file)
                         for library in config.get("libraries", []):
-                            lib_id = library.get('library_id', '').lower()
+                            lib_id = library.get("library_id", "").lower()
                             search_name = library_name.lower()
                             if lib_id == search_name:
                                 repo_url = library.get("repository")
                                 break
             except Exception as e:
                 print(f"⚠️  Warning: Could not extract repo URL: {e}")
-            
+
             # Remove .git directory
             remove_git_directory(component_library_path)
-            
+
             # Update pyproject.toml if we have the necessary info
             if git_ref and repo_url:
                 update_pyproject_toml(library_name, component_library_path, repo_url, git_ref, is_tag)
-            
+
             print(f"{library_name} library fetched and stored in {component_library_path}.")
         else:
             print(message)
     else:
         print(f"{library_name} library already exists in {component_library_path}.")
 
-def uninstall_library(library_name: str) -> None:
+def uninstall_library(library_name):
     """
     Remove the component-library directory unless it's a core library.
     """

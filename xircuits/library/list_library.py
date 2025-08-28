@@ -3,7 +3,7 @@ import subprocess
 from pathlib import Path
 
 from .index_config import get_component_library_config
-
+from ..utils.venv_ops import list_installed_package_names_lower
 
 def _library_id(library_entry):
     library_identifier = library_entry.get("library_id")
@@ -24,6 +24,8 @@ def _filesystem_path(library_entry):
 def _has_init_py(directory_path):
     return bool(directory_path and (directory_path / "__init__.py").exists())
 
+def _installed_package_names_lower():
+    return list_installed_package_names_lower()
 
 def _installed_package_names_lower():
     """
