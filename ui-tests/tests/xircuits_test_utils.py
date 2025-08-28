@@ -1,4 +1,5 @@
 from playwright.sync_api import Page
+from typing import Optional
 
 def fill_literal_string_input_and_submit(page: Page, text: str = "Hello Test!"):
     print(f"Filling Literal String input with: {text}")
