@@ -5,7 +5,8 @@ import tornado
 import posixpath
 from http import HTTPStatus
 from jupyter_server.base.handlers import APIHandler
-from xircuits.library import install_library, uninstall_library, fetch_library, build_library_file_path_from_config, save_component_library_config, get_component_library_config, create_or_update_library
+from xircuits.library import install_library, uninstall_library, fetch_library, build_library_file_path_from_config, create_or_update_library
+from xircuits.library.index_config import refresh_index, get_component_library_config
 
 class InstallLibraryRouteHandler(APIHandler):
     @tornado.web.authenticated
@@ -147,8 +148,8 @@ class ReloadComponentLibraryConfigHandler(APIHandler):
     @tornado.web.authenticated
     def post(self):
         try:
-            save_component_library_config()
-            response = {"status": "OK", "message": "Library config updated."}
+            refresh_index()
+            response = {"status": "OK", "message": "Index refreshed."}
         except Exception as e:
             self.set_status(HTTPStatus.INTERNAL_SERVER_ERROR)
             response = {"error": f"Something went wrong: {str(e)}"}

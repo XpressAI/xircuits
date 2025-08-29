@@ -4,8 +4,12 @@ import os
 import shutil
 import json
 from pathlib import Path
-from ..utils import is_valid_url, is_empty
-from ..handlers.request_submodule import request_remote_library
+from ..utils.file_utils import is_valid_url, is_empty
+from ..utils.git_toml_manager import remove_git_directory, get_git_info, update_pyproject_toml, remove_from_pyproject_toml
+
+from ..utils.venv_ops import install_specs, install_requirements_file
+
+from ..handlers.request_remote import request_remote_library
 from ..handlers.request_folder import clone_from_github_url
 
 CORE_LIBS = {"xai_events", "xai_template", "xai_controlflow", "xai_utils"}
@@ -20,19 +24,22 @@ def build_component_library_path(component_library_query: str) -> str:
     return component_library_query
 
 def get_library_config(library_name, config_key):
-    config_path = ".xircuits/component_library_config.json"
-    if os.path.exists(config_path):
-        with open(config_path, "r") as config_file:
-            config = json.load(config_file)
-            for library in config.get("libraries", []):
-                if library.get("library_id") == library_name:
-                    # Check for the existence of the key and that its value is not None
-                    if config_key in library and library[config_key] is not None:
-                        return library[config_key]
-                    else:
-                        return None  # Explicitly return None if the key is missing or its value is None
+    index_path = ".xircuits/remote_lib_manifest/index.json"
+    if not os.path.exists(index_path):
+        return None
 
-    return None  # Return None if the library isn't found or the file doesn't exist
+    with open(index_path, "r", encoding="utf-8") as config_file:
+        parsed = json.load(config_file)
+
+    libraries = parsed if isinstance(parsed, list) else parsed.get("libraries", [])
+    search_name = str(library_name or "").lower()
+
+    for library in libraries:
+        lib_id = str(library.get("library_id", "")).lower()
+        if lib_id == search_name:
+            value = library.get(config_key)
+            return value if value is not None else None
+    return None
 
 def build_library_file_path_from_config(library_name, config_key):
     file_path = get_library_config(library_name, config_key)
@@ -46,46 +53,23 @@ def build_library_file_path_from_config(library_name, config_key):
     full_path = Path(base_path, file_path)
     return full_path.as_posix()
 
-def get_component_library_path(library_name: str) -> str:
+def get_component_library_path(library_name):
     if is_valid_url(library_name):
         return clone_from_github_url(library_name)
     else:
         return build_component_library_path(library_name)
 
-def is_uv_venv() -> bool:
-    """Return True if we're in a uv-managed venv (pyvenv.cfg contains 'uv =')."""
-    venv = os.environ.get("VIRTUAL_ENV")
-    if not venv:
-        return False
-    cfg = Path(venv) / "pyvenv.cfg"
-    if not cfg.exists():
-        return False
-    for line in cfg.read_text().splitlines():
-        if line.strip().startswith("uv ="):
-            return True
-    return False
 
-def get_pip_command() -> list[str]:
-    """
-    Return the command prefix to run 'pip install' in the current environment.
-    Prefers 'uv pip' if in a uv-managed venv and 'uv' is on PATH.
-    Otherwise falls back to 'python -m pip'.
-    """
-    # if uv-managed venv, use uv pip
-    if is_uv_venv():
-        uv_cmd = shutil.which("uv")
-        if uv_cmd:
-            return [uv_cmd, "pip", "install"]
-    # otherwise, use the interpreter's pip
-    return [sys.executable, "-m", "pip", "install"]
-
-def install_library(library_name: str):
-
+def install_library(library_name):
     if not os.environ.get("VIRTUAL_ENV"):
         print("Warning: no virtual environment detected; installing globally.")
 
     print(f"Installing {library_name}...")
     component_library_path = get_component_library_path(library_name)
+
+    # Store git info before cloning/fetching
+    git_ref = None
+    repo_url = None
 
     if not Path(component_library_path).is_dir() or is_empty(component_library_path):
         success, message = request_remote_library(component_library_path)
@@ -93,23 +77,55 @@ def install_library(library_name: str):
             print(message)
             return
 
-    # Get the requirements path from the configuration
-    requirements_path = get_library_config(library_name, "requirements_path")
-    # Convert to Path object and ensure it's absolute
-    requirements_path = Path(requirements_path).resolve() if requirements_path else Path(component_library_path) / "requirements.txt"
+        # Get git info immediately after cloning, before removing .git
+        git_ref, is_tag = get_git_info(component_library_path)
+        print(f"Detected {'tag' if is_tag else 'commit'}: {git_ref}")
 
-    # Install requirements if the file exists
-    if requirements_path.exists():
+        # Prefer repository/url from the current manifest; fall back to the original input URL
+        repo_url = (
+            get_library_config(library_name, "repository")
+            or get_library_config(library_name, "url")
+            or (library_name if is_valid_url(library_name) else None)
+        )
+
+        # Remove .git directory
+        remove_git_directory(component_library_path)
+
+        # Update pyproject.toml if we have the necessary info
+        if git_ref and repo_url:
+            success = update_pyproject_toml(
+                library_name, component_library_path, repo_url, git_ref, is_tag
+            )
+            if success:
+                print("✅ Successfully updated pyproject.toml")
+            else:
+                print("❌ Failed to update pyproject.toml")
+        else:
+            print(f"⚠️  Skipping TOML update - missing git_ref: {git_ref}, repo_url: {repo_url}")
+
+    # Install dependencies (prefer specs from index.json; fallback to requirements.txt)
+    req_specs = get_library_config(library_name, "requirements")
+
+    if isinstance(req_specs, list) and any(isinstance(s, str) and s.strip() for s in req_specs):
         try:
-            print(f"Installing requirements for {library_name} from {requirements_path}...")
-            cmd = get_pip_command() + ["-r", str(requirements_path)]
-            subprocess.run(cmd, check=True)
+            print(f"Installing requirements for {library_name} from index.json specs...")
+            # e.g. ["numpy>=1.26", "pydantic==2.*"]
+            install_specs(req_specs)
             print(f"Library {library_name} ready to use.")
         except Exception as e:
             print(f"An error occurred while installing requirements for {library_name}: {e}")
     else:
-        print(f"No requirements.txt found for {library_name}. Skipping installation of dependencies.")
-        print(f"Library {library_name} ready to use.")
+        requirements_path = Path(component_library_path) / "requirements.txt"
+        if requirements_path.exists():
+            try:
+                print(f"Installing requirements for {library_name} from {requirements_path}...")
+                install_requirements_file(str(requirements_path))
+                print(f"Library {library_name} ready to use.")
+            except Exception as e:
+                print(f"An error occurred while installing requirements for {library_name}: {e}")
+        else:
+            print(f"No requirements specified for {library_name}. Skipping dependency installation.")
+            print(f"Library {library_name} ready to use.")
 
 def fetch_library(library_name: str):
     print(f"Fetching {library_name}...")
@@ -118,13 +134,31 @@ def fetch_library(library_name: str):
     if not Path(component_library_path).is_dir() or is_empty(component_library_path):
         success, message = request_remote_library(component_library_path)
         if success:
+            # Get git info before removing .git
+            git_ref, is_tag = get_git_info(component_library_path)
+            print(f"Detected {'tag' if is_tag else 'commit'}: {git_ref}")
+
+            # Prefer repository/url from the current manifest; fall back to the original input URL
+            repo_url = (
+                get_library_config(library_name, "repository")
+                or get_library_config(library_name, "url")
+                or (library_name if is_valid_url(library_name) else None)
+            )
+
+            # Remove .git directory
+            remove_git_directory(component_library_path)
+
+            # Update pyproject.toml if we have the necessary info
+            if git_ref and repo_url:
+                update_pyproject_toml(library_name, component_library_path, repo_url, git_ref, is_tag)
+
             print(f"{library_name} library fetched and stored in {component_library_path}.")
         else:
             print(message)
     else:
         print(f"{library_name} library already exists in {component_library_path}.")
 
-def uninstall_library(library_name: str) -> None:
+def uninstall_library(library_name):
     """
     Remove the component-library directory unless it's a core library.
     """
@@ -145,6 +179,16 @@ def uninstall_library(library_name: str) -> None:
         print(f"Library '{short_name}' not found.")
         return
 
+    try:
+        updated = remove_from_pyproject_toml(lib_path.as_posix(), name_hint=short_name)
+        if updated:
+            print(f"✅ Updated pyproject.toml for '{short_name}'.")
+        else:
+            print(f"⚠️  No matching TOML entries found for '{short_name}'.")
+    except Exception as e:
+        print(f"⚠️  Warning: Failed to update pyproject.toml for '{short_name}': {e}")
+
+    # Remove files on disk
     try:
         shutil.rmtree(lib_path)
         print(f"Library '{short_name}' uninstalled.")
