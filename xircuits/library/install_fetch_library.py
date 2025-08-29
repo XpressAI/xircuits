@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from ..utils.file_utils import is_valid_url, is_empty
 from ..utils.git_toml_manager import remove_git_directory, get_git_info, update_pyproject_toml, remove_from_pyproject_toml
+
 from ..utils.venv_ops import install_specs, install_requirements_file
 
 from ..handlers.request_remote import request_remote_library
@@ -80,20 +81,12 @@ def install_library(library_name):
         git_ref, is_tag = get_git_info(component_library_path)
         print(f"Detected {'tag' if is_tag else 'commit'}: {git_ref}")
 
-        # Get repo URL from config
-        try:
-            config_path = ".xircuits/component_library_config.json"
-            if os.path.exists(config_path):
-                with open(config_path, "r") as config_file:
-                    config = json.load(config_file)
-                    for library in config.get("libraries", []):
-                        lib_id = library.get("library_id", "").lower()
-                        search_name = library_name.lower()
-                        if lib_id == search_name:
-                            repo_url = library.get("repository") or library.get("url")
-                            break
-        except Exception as e:
-            print(f"⚠️  Warning: Could not extract repo URL: {e}")
+        # Prefer repository/url from the current manifest; fall back to the original input URL
+        repo_url = (
+            get_library_config(library_name, "repository")
+            or get_library_config(library_name, "url")
+            or (library_name if is_valid_url(library_name) else None)
+        )
 
         # Remove .git directory
         remove_git_directory(component_library_path)
@@ -145,21 +138,12 @@ def fetch_library(library_name: str):
             git_ref, is_tag = get_git_info(component_library_path)
             print(f"Detected {'tag' if is_tag else 'commit'}: {git_ref}")
 
-            # Get repo URL from config
-            repo_url = None
-            try:
-                config_path = ".xircuits/component_library_config.json"
-                if os.path.exists(config_path):
-                    with open(config_path, "r") as config_file:
-                        config = json.load(config_file)
-                        for library in config.get("libraries", []):
-                            lib_id = library.get("library_id", "").lower()
-                            search_name = library_name.lower()
-                            if lib_id == search_name:
-                                repo_url = library.get("repository")
-                                break
-            except Exception as e:
-                print(f"⚠️  Warning: Could not extract repo URL: {e}")
+            # Prefer repository/url from the current manifest; fall back to the original input URL
+            repo_url = (
+                get_library_config(library_name, "repository")
+                or get_library_config(library_name, "url")
+                or (library_name if is_valid_url(library_name) else None)
+            )
 
             # Remove .git directory
             remove_git_directory(component_library_path)
