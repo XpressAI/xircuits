@@ -1,4 +1,5 @@
 from playwright.sync_api import Page
+from typing import Optional
 
 def fill_literal_string_input_and_submit(page: Page, text: str = "Hello Test!"):
     print(f"Filling Literal String input with: {text}")
@@ -638,3 +639,73 @@ def wait_reload_settled(page, timeout_ms=60000):
 def trigger_reload_and_wait(page):
     page.locator('jp-button[title="Reload all nodes"] >>> button').click()
     wait_reload_settled(page)
+
+def click_toolbar_button(page, title: str, timeout: int = 10000) -> None:
+    host = page.locator(f'jp-button[title="{title}"]')
+    host.wait_for(state="attached", timeout=timeout)
+    host.locator('button[part="control"]').click()
+
+def wait_for_count(page, selector: str, expected: int, timeout: int = 12000) -> None:
+    """
+    Waits until the number of elements matching 'selector' equals 'expected'.
+    """
+    page.wait_for_function(
+        "({s, n}) => document.querySelectorAll(s).length === n",
+        arg={"s": selector, "n": expected},
+        timeout=timeout,
+    )
+
+def click_node_center(page, selector: str, ensure_canvas_focus: bool = True) -> None:
+    if ensure_canvas_focus:
+        page.click(".xircuits-canvas")
+    loc = page.locator(selector).first
+    loc.wait_for(state="visible", timeout=10000)
+    box = loc.bounding_box()
+    assert box is not None, "Could not read bounding box for the target node."
+    cx = box["x"] + box["width"] / 2
+    cy = box["y"] + box["height"] / 2
+    page.mouse.click(cx, cy)
+
+def get_official_theme_info(page):
+    """
+    Read ThemeManager's official attributes from <body>:
+      - data-jp-theme-name
+      - data-jp-theme-light ("true" | "false")
+    """
+    return page.evaluate("""
+    () => {
+      const body = document.body;
+      return {
+        themeName:  body.getAttribute('data-jp-theme-name'),
+        themeLight: body.getAttribute('data-jp-theme-light')
+      };
+    }
+    """)
+
+def wait_official_theme_change(page, before: dict, expect_mode: Optional[str] = None, timeout: int = 15000):
+    """
+    Wait for an official theme change on <body>.
+
+    """
+    exp_flag = None
+    if expect_mode == "light":
+        exp_flag = "true"
+    elif expect_mode == "dark":
+        exp_flag = "false"
+
+    page.wait_for_function(
+        """
+        (args) => {
+          const name  = document.body.getAttribute('data-jp-theme-name');
+          const light = document.body.getAttribute('data-jp-theme-light'); // "true"|"false"|null
+
+          if (args.expFlag !== null) {
+            return light !== null && light === args.expFlag;
+          }
+
+          return name !== args.before.themeName || light !== args.before.themeLight;
+        }
+        """,
+        arg={"before": before, "expFlag": exp_flag},
+        timeout=timeout
+    )
