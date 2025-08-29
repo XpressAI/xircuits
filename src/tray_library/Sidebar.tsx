@@ -349,7 +349,7 @@ export default function Sidebar(props: SidebarProps) {
                               <a onClick={handleSearchOnClick} className="search-input__button"><i
                                 className="fa fa-search "></i></a>
                               <input type="text" name="" placeholder="SEARCH"
-                                     className="search-input__text-input" style={{ width: "75%" }}
+                                     className="search-input__text-input" style={{ width: "75%", color: "var(--jp-ui-font-color1)"}}
                                      onChange={handleOnChange} />
                           </div>
                           <a onClick={showMenu} className="button" title="More actions...">
