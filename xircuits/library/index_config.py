@@ -1,4 +1,3 @@
-from __future__ import annotations
 import json
 import os
 from pathlib import Path
@@ -8,13 +7,12 @@ from urllib.request import urlopen, Request
 
 from xircuits.utils.file_utils import is_empty
 from xircuits.handlers.config import get_config
-from xircuits.utils.requirements_utils import normalize_requirements_list, parse_requirements_txt
 
 MANIFEST_DIR = Path(".xircuits") / "remote_lib_manifest"
 INDEX_PATH = MANIFEST_DIR / "index.json"
 
 try:
-    import tomllib
+    import tomllib  # Python 3.11+
 except Exception:
     tomllib = None
 
@@ -30,14 +28,14 @@ def _to_raw_url(url: str) -> str:
 
 def _read_index_list() -> List[Dict[str, Any]]:
     if not INDEX_PATH.exists():
-        raise FileNotFoundError(f"index.json not found at {INDEX_PATH}")
-    with INDEX_PATH.open("r", encoding="utf-8") as file_handle:
-        parsed = json.load(file_handle)
+        raise FileNotFoundError("index.json not found at %s" % INDEX_PATH)
+    with INDEX_PATH.open("r", encoding="utf-8") as fh:
+        parsed = json.load(fh)
     if not isinstance(parsed, list):
         raise ValueError("index.json must be a top-level JSON array of library entries.")
-    for position, entry in enumerate(parsed):
+    for i, entry in enumerate(parsed):
         if not isinstance(entry, dict):
-            raise ValueError(f"index.json entry at index {position} is not an object.")
+            raise ValueError("index.json entry at index %d is not an object." % i)
     return parsed
 
 
@@ -71,15 +69,16 @@ def _compute_status(library_entry: Dict[str, Any]) -> str:
 
 
 def _library_id_from_dir_name(directory_name: str) -> str:
-    # xai_components/xai_<name>  ->  <NAME> (uppercased)
+    # xai_components/xai_<name> -> <NAME> (uppercased)
     base = directory_name.replace("xai_", "").replace("xai-", "")
     return base.upper()
 
 
 def _read_local_requirements_for_dir(library_dir: Path) -> List[str]:
     """
-    Prefer pyproject.toml [project.dependencies], else requirements.txt.
-    Always return normalized canonical list[str].
+    Try to read project dependencies for a local library, preferring pyproject.toml
+    (if tomllib is available), falling back to requirements.txt. If neither exists,
+    return [].
     """
     pyproject_path = library_dir / "pyproject.toml"
     if tomllib and pyproject_path.exists():
@@ -89,15 +88,30 @@ def _read_local_requirements_for_dir(library_dir: Path) -> List[str]:
             project_table = data.get("project", {}) if isinstance(data, dict) else {}
             dependencies = project_table.get("dependencies", [])
             if isinstance(dependencies, list):
-                return normalize_requirements_list(dependencies)
+                return [str(item).strip() for item in dependencies if str(item).strip()]
         except Exception:
-            pass
+            pass  # Fall through to requirements.txt
 
-    reqs = parse_requirements_txt(library_dir / "requirements.txt")
-    return reqs
+    requirements_path = library_dir / "requirements.txt"
+    if requirements_path.exists():
+        try:
+            lines = []
+            for line in requirements_path.read_text(encoding="utf-8").splitlines():
+                text = line.strip()
+                if text and not text.startswith("#"):
+                    lines.append(text)
+            return lines
+        except Exception:
+            return []
+
+    return []
 
 
 def _scan_local_xai_components(base_directory: Path = Path("xai_components")) -> Dict[str, Dict[str, Any]]:
+    """
+    Discover local libraries under xai_components/xai_* and return a dict keyed by library_id.
+    Each entry is a minimal manifest stub that we can merge with the remote index.
+    """
     discovered: Dict[str, Dict[str, Any]] = {}
     if not base_directory.exists() or not base_directory.is_dir():
         return discovered
@@ -127,8 +141,7 @@ def get_component_library_config() -> Dict[str, Any]:
     """
     Single source for the frontend/handlers:
       - Start from the remote index.json array (strict format).
-      - Merge in any local libraries found under xai_components/xai_* that are
-        missing from the index.
+      - Merge in any local libraries found under xai_components/xai_* that are missing from the index.
       - Compute 'status' for every entry based on the filesystem.
     """
     index_entries = _read_index_list()
@@ -138,14 +151,9 @@ def get_component_library_config() -> Dict[str, Any]:
     for entry in index_entries:
         library_identifier = entry.get("library_id")
         if not isinstance(library_identifier, str) or not library_identifier.strip():
-            # skip index entries without a valid ID
             continue
         key = library_identifier.strip().upper()
-        # also normalize any 'requirements' array coming from remote
-        copy = dict(entry)
-        if isinstance(copy.get("requirements"), list):
-            copy["requirements"] = normalize_requirements_list(copy["requirements"])
-        by_id[key] = copy
+        by_id[key] = dict(entry)  # shallow copy
 
     # Discover local-only libraries and merge if missing from index
     local_discovered = _scan_local_xai_components()
@@ -183,7 +191,7 @@ def refresh_index() -> Dict[str, Any]:
         )
 
     raw_url = _to_raw_url(source_url)
-    print(f"Fetching index.json from: {raw_url}")
+    print("Fetching index.json from: %s" % raw_url)
 
     request = Request(raw_url, headers={"User-Agent": "xircuits-index-fetcher"})
     with urlopen(request) as response:

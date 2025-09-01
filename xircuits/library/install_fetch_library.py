@@ -1,221 +1,135 @@
-import subprocess
-import sys
 import os
 import shutil
-import json
 from pathlib import Path
+from typing import Optional
 
 from ..utils.file_utils import is_valid_url, is_empty
-from ..utils.requirements_utils import normalize_requirements_list, parse_requirements_txt
+from ..utils.requirements_utils import read_requirements_for_library
 from ..utils.git_toml_manager import (
-    remove_git_directory,
-    get_git_info,
-    update_pyproject_toml,
-    remove_from_pyproject_toml,
     set_library_extra,
     rebuild_meta_extra,
-    remove_library_extra,
+    record_component_metadata,
+    remove_component_metadata,
+    remove_git_directory,
 )
-
-from ..utils.venv_ops import install_specs, install_requirements_file
 from ..handlers.request_remote import request_remote_library
 from ..handlers.request_folder import clone_from_github_url
 
+
 CORE_LIBS = {"xai_events", "xai_template", "xai_controlflow", "xai_utils"}
 
-def build_component_library_path(component_library_query: str) -> str:
-    if "xai" not in component_library_query:
-        component_library_query = "xai_" + component_library_query
-    if "xai_components" not in component_library_query:
-        component_library_query = "xai_components/" + component_library_query
-    return component_library_query
 
-def get_library_config(library_name, config_key):
-    index_path = ".xircuits/remote_lib_manifest/index.json"
-    if not os.path.exists(index_path):
-        return None
+def _as_components_path(query: str) -> str:
+    """
+    Normalize any user query to 'xai_components/xai_<name>' directory string.
+    """
+    q = (query or "").strip().lower().replace("-", "_")
+    if not q.startswith("xai_"):
+        q = "xai_" + q
+    return "xai_components/" + q
 
-    with open(index_path, "r", encoding="utf-8") as config_file:
-        parsed = json.load(config_file)
 
-    libraries = parsed if isinstance(parsed, list) else parsed.get("libraries", [])
-    search_name = str(library_name or "").lower()
-
-    for library in libraries:
-        lib_id = str(library.get("library_id", "")).lower()
-        if lib_id == search_name:
-            value = library.get(config_key)
-            return value if value is not None else None
-    return None
-
-def build_library_file_path_from_config(library_name, config_key):
-    file_path = get_library_config(library_name, config_key)
-    if file_path is None:
-        return None
-
-    base_path = get_library_config(library_name, "local_path")
-    if base_path is None:
-        return None
-    
-    full_path = Path(base_path, file_path)
-    return full_path.as_posix()
-
-def get_component_library_path(library_name):
+def get_component_library_path(library_name: str) -> str:
+    """
+    If a URL is provided, clone to xai_components/xai_<name>.
+    Otherwise normalize a library key like 'sklearn' -> 'xai_components/xai_sklearn'.
+    """
     if is_valid_url(library_name):
         return clone_from_github_url(library_name)
-    else:
-        return build_component_library_path(library_name)
+    return _as_components_path(library_name)
 
-def _collect_requirements(library_name: str, component_library_path: str) -> list[str]:
+
+def _extra_name_for_path(components_path: str) -> str:
     """
-    Prefer requirements from index.json entry (normalized); else fallback to requirements.txt.
-    Always returns canonical list[str].
+    For 'xai_components/xai_sklearn' -> 'xai-sklearn'
     """
-    from_index = get_library_config(library_name, "requirements")
-    reqs = []
-    if isinstance(from_index, list):
-        reqs = normalize_requirements_list(from_index)
-    if not reqs:
-        reqs = parse_requirements_txt(Path(component_library_path) / "requirements.txt")
-    return reqs
+    tail = Path(components_path).name  # xai_sklearn
+    return "xai-" + tail.replace("xai_", "").replace("_", "-")
 
-def install_library(library_name):
-    if not os.environ.get("VIRTUAL_ENV"):
-        print("Warning: no virtual environment detected; installing globally.")
 
-    print(f"Installing {library_name}...")
-    component_library_path = get_component_library_path(library_name)
+def fetch_library(library_name: str) -> str:
+    """
+    FETCH-ONLY:
+      - ensure the library files exist under xai_components/xai_<name>
+      - clone from remote manifest if directory is missing or empty
+      - strip embedded .git folder (vendored)
+      - DO NOT touch pyproject.toml
+      - return a status message
+    """
+    comp_path = get_component_library_path(library_name)
 
-    # Store git info before cloning/fetching
-    git_ref = None
-    repo_url = None
-
-    if not Path(component_library_path).is_dir() or is_empty(component_library_path):
-        success, message = request_remote_library(component_library_path)
+    # If directory is missing or empty, clone using remote manifest
+    if not Path(comp_path).is_dir() or is_empty(comp_path):
+        success, message = request_remote_library(comp_path)
         if not success:
-            print(message)
-            return
-
-        # Get git info immediately after cloning, before removing .git
-        git_ref, is_tag = get_git_info(component_library_path)
-        print(f"Detected {'tag' if is_tag else 'commit'}: {git_ref}")
-
-        # Prefer repository/url from the current manifest; fall back to the original input URL
-        repo_url = (
-            get_library_config(library_name, "repository")
-            or get_library_config(library_name, "url")
-            or (library_name if is_valid_url(library_name) else None)
-        )
-
-        # Remove .git directory
-        remove_git_directory(component_library_path)
-
-        # Update pyproject.toml if we have the necessary info
-        if git_ref and repo_url:
-            success = update_pyproject_toml(
-                library_name, component_library_path, repo_url, git_ref, is_tag
-            )
-            if success:
-                print("✅ Successfully updated pyproject.toml")
-            else:
-                print("❌ Failed to update pyproject.toml")
-        else:
-            print(f"⚠️  Skipping TOML update - missing git_ref: {git_ref}, repo_url: {repo_url}")
-
-    # Canonical requirements (index first, then requirements.txt)
-    req_specs = _collect_requirements(library_name, component_library_path)
-
-    # Install dependencies
-    if req_specs:
-        try:
-            print(f"Installing requirements for {library_name} ...")
-            install_specs(req_specs)
-            print(f"Library {library_name} ready to use.")
-        except Exception as e:
-            print(f"An error occurred while installing requirements for {library_name}: {e}")
+            return f"Failed to fetch '{library_name}': {message}"
+        remove_git_directory(comp_path)
+        return f"Fetched '{library_name}' into {comp_path}."
     else:
-        # No requirements; nothing to install
-        print(f"No requirements specified for {library_name}. Skipping dependency installation.")
-        print(f"Library {library_name} ready to use.")
+        return f"'{library_name}' already present at {comp_path}."
 
-    # Maintain per-library extra and meta extra
-    try:
-        set_library_extra(library_name, req_specs)
-        rebuild_meta_extra("xai-components")
-    except Exception as e:
-        print(f"⚠️  Warning: could not update extras for {library_name}: {e}")
 
-def fetch_library(library_name: str):
-    print(f"Fetching {library_name}...")
-    component_library_path = get_component_library_path(library_name)
-
-    if not Path(component_library_path).is_dir() or is_empty(component_library_path):
-        success, message = request_remote_library(component_library_path)
-        if success:
-            # Get git info before removing .git
-            git_ref, is_tag = get_git_info(component_library_path)
-            print(f"Detected {'tag' if is_tag else 'commit'}: {git_ref}")
-
-            # Prefer repository/url from the current manifest; fall back to the original input URL
-            repo_url = (
-                get_library_config(library_name, "repository")
-                or get_library_config(library_name, "url")
-                or (library_name if is_valid_url(library_name) else None)
-            )
-
-            # Remove .git directory
-            remove_git_directory(component_library_path)
-
-            # Update pyproject.toml if we have the necessary info
-            if git_ref and repo_url:
-                update_pyproject_toml(library_name, component_library_path, repo_url, git_ref, is_tag)
-
-            print(f"{library_name} library fetched and stored in {component_library_path}.")
-        else:
-            print(message)
-    else:
-        print(f"{library_name} library already exists in {component_library_path}.")
-
-def uninstall_library(library_name):
+def install_library(library_name: str) -> str:
     """
-    Remove the component-library directory unless it's a core library.
-    Also drop its extra and rebuild metadata extra.
-    """
-    raw = library_name.strip().lower()
+    INSTALL (fetch + pyproject writes, no environment install):
+      - fetch/clone if needed (same as fetch_library)
+      - read the vendored library dependencies
+      - write/replace per-library extra [project.optional-dependencies].xai-<lib>
+      - rebuild meta extra [project.optional-dependencies].xai-components
+      - record [tool.xircuits.components.xai-<lib>] with path (no source/rev tracked here)
+      - return a status message
 
-    if "xai" not in raw:
+    Users then install packages with:  uv sync --extra xai-components
+    """
+    # Ensure files exist (fetch-only behavior)
+    fetch_msg = fetch_library(library_name)
+
+    comp_path = get_component_library_path(library_name)
+    reqs = read_requirements_for_library(Path(comp_path))
+
+    extra_name = _extra_name_for_path(comp_path)
+    set_library_extra(extra_name, reqs)
+    rebuild_meta_extra("xai-components")
+
+    # Minimal metadata entry (no tag/rev tracking in this simplified flow)
+    record_component_metadata(extra_name, comp_path, repo_url=None, ref=None, is_tag=False)
+
+    return (
+        f"{fetch_msg} "
+        f"Updated pyproject: extra '{extra_name}' ({len(reqs)} deps) and rebuilt 'xai-components'."
+    )
+
+
+def uninstall_library(library_name: str) -> str:
+    """
+    Remove the vendored directory, remove its extra and metadata, and rebuild the meta extra.
+    """
+    raw = (library_name or "").strip().lower()
+    if not raw.startswith("xai_"):
         raw = "xai_" + raw
+    short = raw.split("/")[-1]
 
-    short_name = raw.split("/")[-1]
+    if short in CORE_LIBS:
+        raise RuntimeError(f"'{short}' is a core library and cannot be uninstalled.")
 
-    if short_name in CORE_LIBS:
-        raise RuntimeError(f"'{short_name}' is a core library and cannot be uninstalled.")
-
-    lib_path = Path(build_component_library_path(short_name))
-
+    lib_path = Path(_as_components_path(short))
     if not lib_path.exists():
-        print(f"Library '{short_name}' not found.")
-        return
+        return f"Library '{short}' not found."
 
-    try:
-        updated = remove_from_pyproject_toml(lib_path.as_posix(), name_hint=short_name)
-        if updated:
-            print(f"✅ Updated pyproject.toml for '{short_name}'.")
-        else:
-            print(f"⚠️  No matching TOML entries found for '{short_name}'.")
-    except Exception as e:
-        print(f"⚠️  Warning: Failed to update pyproject.toml for '{short_name}': {e}")
-
-    # Remove per-library extra and rebuild metadata
-    try:
-        remove_library_extra(short_name)
-        rebuild_meta_extra("xai-components")
-    except Exception as e:
-        print(f"⚠️  Warning: Failed to update extras for '{short_name}': {e}")
-
-    # Remove files on disk
+    # Remove files
     try:
         shutil.rmtree(lib_path)
-        print(f"Library '{short_name}' uninstalled.")
+        removed_dir_msg = f"✓ Removed directory {lib_path}."
     except Exception as e:
-        print(f"Failed to uninstall '{short_name}': {e}")
+        removed_dir_msg = f"Failed to remove '{short}': {e}"
+
+    # Remove metadata + extra, then rebuild meta extra
+    try:
+        remove_component_metadata(str(lib_path))
+        set_library_extra(_extra_name_for_path(str(lib_path)), [])  # clear the per-library extra
+        rebuild_meta_extra("xai-components")
+        toml_msg = "✓ Updated pyproject.toml."
+    except Exception as e:
+        toml_msg = f"Warning updating pyproject.toml for '{short}': {e}"
+
+    return f"{removed_dir_msg} {toml_msg}"

@@ -1,4 +1,3 @@
-from __future__ import annotations
 import re
 from pathlib import Path
 from typing import Iterable, List
@@ -50,3 +49,10 @@ def parse_requirements_txt(path: Path) -> List[str]:
         return []
     lines = path.read_text(encoding="utf-8").splitlines()
     return normalize_requirements_list(lines)
+
+def read_requirements_for_library(library_dir: Path) -> List[str]:
+    """
+    Single canonical source for vendored library dependencies:
+    requirements.txt in the library directory.
+    """
+    return parse_requirements_txt(library_dir / "requirements.txt")
