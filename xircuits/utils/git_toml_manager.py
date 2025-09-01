@@ -18,11 +18,11 @@ def _reformat_toml_text(text: str) -> str:
     out = []
     n = len(lines)
     for i, ln in enumerate(lines):
+        # Add blank line before headers (except the first one) to separate sections
+        if _is_header(ln) and i > 0 and out and out[-1].strip():
+            out.append("")
         out.append(ln)
-        if _is_header(ln):
-            # exactly one blank line after every header
-            if i + 1 < n and lines[i + 1].strip() != "":
-                out.append("")
+        # Remove the logic that was adding blank lines after headers
 
     text = "\n".join(out)
 
