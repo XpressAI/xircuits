@@ -193,6 +193,7 @@ def create_default_pyproject(pyproject_file):
     project.add("version", "0.1.0")
     project.add("requires-python", f">={sys.version_info.major}.{sys.version_info.minor}")
     deps = tomlkit.array(); deps.multiline(True)
+    deps.append("xircuits")
     project.add("dependencies", deps)
     default.add("project", project)
 
