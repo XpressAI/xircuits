@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Iterable, Optional
 import shutil
+import subprocess
 import tomlkit
 from tomlkit import parse, dumps
 
@@ -22,7 +23,6 @@ def _reformat_toml_text(text: str) -> str:
         if _is_header(ln) and i > 0 and out and out[-1].strip():
             out.append("")
         out.append(ln)
-        # Remove the logic that was adding blank lines after headers
 
     text = "\n".join(out)
 
@@ -39,6 +39,30 @@ def _write_toml_with_format(doc, path: Path) -> None:
     formatted = _reformat_toml_text(raw)
     path.write_text(formatted, encoding="utf-8")
 
+def _run_uv_lock() -> bool:
+    """
+    Run 'uv lock' to update the lock file after pyproject.toml changes.
+    Returns True if successful, False if uv is not available or fails.
+    """
+    if not shutil.which("uv"):
+        print("Warning: 'uv' not found in PATH. Lock file not updated.")
+        return False
+    
+    try:
+        result = subprocess.run(
+            ["uv", "lock"], 
+            check=True, 
+            capture_output=True, 
+            text=True
+        )
+        print("✓ Updated uv.lock")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"Warning: 'uv lock' failed: {e.stderr}")
+        return False
+    except Exception as e:
+        print(f"Warning: Could not run 'uv lock': {e}")
+        return False
 
 # ---------- Minimal project bootstrap ----------
 
@@ -130,6 +154,7 @@ def set_library_extra(extra_name: str, requirements: Iterable[str]) -> None:
     extras_tbl[key] = arr
 
     _write_toml_with_format(doc, path)
+    _run_uv_lock()
 
 def remove_library_extra(extra_name: str) -> None:
     doc, path = _load_or_init_pyproject()
@@ -138,6 +163,7 @@ def remove_library_extra(extra_name: str) -> None:
     if key in extras_tbl:
         del extras_tbl[key]
         _write_toml_with_format(doc, path)
+        _run_uv_lock()
 
 def rebuild_meta_extra(meta_name: str = "xai-components") -> None:
     """
@@ -164,6 +190,7 @@ def rebuild_meta_extra(meta_name: str = "xai-components") -> None:
     extras_tbl[meta_key] = arr
 
     _write_toml_with_format(doc, path)
+    _run_uv_lock()
 
 def record_component_metadata(library_name: str,
                               member_path: str,
@@ -227,3 +254,10 @@ def remove_git_directory(repo_path: str) -> bool:
     except Exception as e:
         print(f"Warning: could not remove .git from {repo_path}: {e}")
         return False
+
+def regenerate_lock_file() -> bool:
+    """
+    Manually regenerate the uv.lock file from current pyproject.toml.
+    Useful for maintenance or after manual pyproject.toml edits.
+    """
+    return _run_uv_lock()
