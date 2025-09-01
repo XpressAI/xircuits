@@ -4,11 +4,20 @@ import os
 import shutil
 import json
 from pathlib import Path
+
 from ..utils.file_utils import is_valid_url, is_empty
-from ..utils.git_toml_manager import remove_git_directory, get_git_info, update_pyproject_toml, remove_from_pyproject_toml
+from ..utils.requirements_utils import normalize_requirements_list, parse_requirements_txt
+from ..utils.git_toml_manager import (
+    remove_git_directory,
+    get_git_info,
+    update_pyproject_toml,
+    remove_from_pyproject_toml,
+    set_library_extra,
+    rebuild_meta_extra,
+    remove_library_extra,
+)
 
 from ..utils.venv_ops import install_specs, install_requirements_file
-
 from ..handlers.request_remote import request_remote_library
 from ..handlers.request_folder import clone_from_github_url
 
@@ -17,10 +26,8 @@ CORE_LIBS = {"xai_events", "xai_template", "xai_controlflow", "xai_utils"}
 def build_component_library_path(component_library_query: str) -> str:
     if "xai" not in component_library_query:
         component_library_query = "xai_" + component_library_query
-
     if "xai_components" not in component_library_query:
         component_library_query = "xai_components/" + component_library_query
-
     return component_library_query
 
 def get_library_config(library_name, config_key):
@@ -59,6 +66,18 @@ def get_component_library_path(library_name):
     else:
         return build_component_library_path(library_name)
 
+def _collect_requirements(library_name: str, component_library_path: str) -> list[str]:
+    """
+    Prefer requirements from index.json entry (normalized); else fallback to requirements.txt.
+    Always returns canonical list[str].
+    """
+    from_index = get_library_config(library_name, "requirements")
+    reqs = []
+    if isinstance(from_index, list):
+        reqs = normalize_requirements_list(from_index)
+    if not reqs:
+        reqs = parse_requirements_txt(Path(component_library_path) / "requirements.txt")
+    return reqs
 
 def install_library(library_name):
     if not os.environ.get("VIRTUAL_ENV"):
@@ -103,29 +122,28 @@ def install_library(library_name):
         else:
             print(f"⚠️  Skipping TOML update - missing git_ref: {git_ref}, repo_url: {repo_url}")
 
-    # Install dependencies (prefer specs from index.json; fallback to requirements.txt)
-    req_specs = get_library_config(library_name, "requirements")
+    # Canonical requirements (index first, then requirements.txt)
+    req_specs = _collect_requirements(library_name, component_library_path)
 
-    if isinstance(req_specs, list) and any(isinstance(s, str) and s.strip() for s in req_specs):
+    # Install dependencies
+    if req_specs:
         try:
-            print(f"Installing requirements for {library_name} from index.json specs...")
-            # e.g. ["numpy>=1.26", "pydantic==2.*"]
+            print(f"Installing requirements for {library_name} ...")
             install_specs(req_specs)
             print(f"Library {library_name} ready to use.")
         except Exception as e:
             print(f"An error occurred while installing requirements for {library_name}: {e}")
     else:
-        requirements_path = Path(component_library_path) / "requirements.txt"
-        if requirements_path.exists():
-            try:
-                print(f"Installing requirements for {library_name} from {requirements_path}...")
-                install_requirements_file(str(requirements_path))
-                print(f"Library {library_name} ready to use.")
-            except Exception as e:
-                print(f"An error occurred while installing requirements for {library_name}: {e}")
-        else:
-            print(f"No requirements specified for {library_name}. Skipping dependency installation.")
-            print(f"Library {library_name} ready to use.")
+        # No requirements; nothing to install
+        print(f"No requirements specified for {library_name}. Skipping dependency installation.")
+        print(f"Library {library_name} ready to use.")
+
+    # Maintain per-library extra and meta extra
+    try:
+        set_library_extra(library_name, req_specs)
+        rebuild_meta_extra("xai-components")
+    except Exception as e:
+        print(f"⚠️  Warning: could not update extras for {library_name}: {e}")
 
 def fetch_library(library_name: str):
     print(f"Fetching {library_name}...")
@@ -161,8 +179,8 @@ def fetch_library(library_name: str):
 def uninstall_library(library_name):
     """
     Remove the component-library directory unless it's a core library.
+    Also drop its extra and rebuild metadata extra.
     """
-
     raw = library_name.strip().lower()
 
     if "xai" not in raw:
@@ -187,6 +205,13 @@ def uninstall_library(library_name):
             print(f"⚠️  No matching TOML entries found for '{short_name}'.")
     except Exception as e:
         print(f"⚠️  Warning: Failed to update pyproject.toml for '{short_name}': {e}")
+
+    # Remove per-library extra and rebuild metadata
+    try:
+        remove_library_extra(short_name)
+        rebuild_meta_extra("xai-components")
+    except Exception as e:
+        print(f"⚠️  Warning: Failed to update extras for '{short_name}': {e}")
 
     # Remove files on disk
     try:

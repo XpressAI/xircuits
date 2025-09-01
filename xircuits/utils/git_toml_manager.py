@@ -5,7 +5,9 @@ import tomlkit
 from tomlkit import parse, dumps
 import sys
 import re
-from typing import Optional
+from typing import Optional, Iterable
+
+from .requirements_utils import normalize_requirements_list
 
 def remove_git_directory(repo_path):
     """Remove the .git directory from a cloned repository."""
@@ -61,7 +63,7 @@ def _read_member_dist_name(member_path, fallback_name=None):
             pass
     return fallback_name
 
-_HEADER_RE = re.compile(r'^\s*\[(?:\[.*\]|[^\]]+)\]\s*$')  # [table] or [[array-of-tables]]
+_HEADER_RE = re.compile(r'^\s*\[(?:\[.*\]|[^\]]+)\]\s*$')
 
 def _is_header(line: str) -> bool:
     return bool(_HEADER_RE.match(line))
@@ -100,6 +102,101 @@ def _write_toml_with_format(doc, path: Path) -> None:
     raw = dumps(doc)
     formatted = _reformat_toml_text(raw)
     path.write_text(formatted, encoding='utf-8')
+
+def _ensure_project_tables(doc):
+    if "project" not in doc:
+        doc["project"] = tomlkit.table()
+    proj = doc["project"]
+    if "dependencies" not in proj:
+        arr = tomlkit.array(); arr.multiline(True)
+        proj["dependencies"] = arr
+    if "optional-dependencies" not in proj:
+        proj["optional-dependencies"] = tomlkit.table()
+    return proj
+
+def _extras_table(doc):
+    proj = _ensure_project_tables(doc)
+    return proj["optional-dependencies"]
+
+def _extra_key_for_library(library_name: str) -> str:
+    """
+    Normalize to 'xai-<name>' (hyphens), accepting inputs like:
+      'xai_tensorflow', 'xai-tensorflow', 'tensorflow',
+      'xai_components/xai_tensorflow', etc.
+    """
+    raw = (library_name or "").strip().lower().replace("\\", "/")
+    seg = raw.split("/")[-1]
+    if seg.startswith("xai_"):
+        seg = seg[4:]
+    elif seg.startswith("xai-"):
+        seg = seg[4:]
+    seg = seg.replace("_", "-")
+    return f"xai-{seg}" if seg else "xai-unknown"
+
+def _set_extra(doc, key: str, specs: Iterable[str]) -> None:
+    arr = tomlkit.array()
+    for s in normalize_requirements_list(list(specs or [])):
+        arr.append(s)
+    arr.multiline(True)
+    _extras_table(doc)[key] = arr
+
+def set_library_extra(library_name: str, requirement_specs: Iterable[str]) -> bool:
+    """
+    Set/overwrite the per-library extra (e.g., 'xai-tensorflow') with normalized specs.
+    Returns True if pyproject.toml was written.
+    """
+    path = Path("pyproject.toml")
+    if not path.exists():
+        create_default_pyproject(path)
+    doc = parse(path.read_text(encoding="utf-8"))
+
+    key = _extra_key_for_library(library_name)
+    _set_extra(doc, key, requirement_specs)
+
+    _write_toml_with_format(doc, path)
+    print(f"✅ Updated extra [{key}]")
+    return True
+
+def remove_library_extra(library_name: str) -> bool:
+    """
+    Remove the per-library extra (e.g., 'xai-sklearn').
+    """
+    path = Path("pyproject.toml")
+    if not path.exists():
+        return False
+    doc = parse(path.read_text(encoding="utf-8"))
+
+    key = _extra_key_for_library(library_name)
+    extras = _extras_table(doc)
+    if key in extras:
+        del extras[key]
+        _write_toml_with_format(doc, path)
+        print(f"✅ Removed extra [{key}]")
+        return True
+    return False
+
+def rebuild_meta_extra(meta_key: str = "xai-components") -> bool:
+    """
+    Set meta extra to the union of all 'xai-*' extras (excluding meta itself).
+    """
+    path = Path("pyproject.toml")
+    if not path.exists():
+        create_default_pyproject(path)
+    doc = parse(path.read_text(encoding="utf-8"))
+
+    extras = _extras_table(doc)
+    union: list[str] = []
+    for key, arr in list(extras.items()):
+        if key == meta_key:
+            continue
+        if not isinstance(arr, tomlkit.items.Array):
+            continue
+        union.extend([str(x) for x in arr if isinstance(x, str)])
+
+    _set_extra(doc, meta_key, union)
+    _write_toml_with_format(doc, path)
+    print(f"✅ Rebuilt meta extra [{meta_key}]")
+    return True
 
 
 def update_pyproject_toml(library_name, member_path, repo_url, ref, is_tag):
@@ -183,8 +280,10 @@ def update_pyproject_toml(library_name, member_path, repo_url, ref, is_tag):
         print(f"⚠️  Warning: Could not write pyproject.toml: {e}")
         return False
 
-def create_default_pyproject(pyproject_file):
-    """Create a minimal pyproject.toml with a fixed project name and current Python."""
+def create_default_pyproject(pyproject_file: Path):
+    """
+    Minimal baseline with empty base deps and empty meta extra 'xai-components'.
+    """
     default = tomlkit.document()
 
     # [project]
@@ -195,6 +294,13 @@ def create_default_pyproject(pyproject_file):
     deps = tomlkit.array(); deps.multiline(True)
     deps.append("xircuits")
     project.add("dependencies", deps)
+
+    # [project.optional-dependencies]
+    opt = tomlkit.table()
+    # meta extra present from the start (empty union)
+    opt.add("xai-components", tomlkit.array().multiline(True))
+    project.add("optional-dependencies", opt)
+
     default.add("project", project)
 
     tool = tomlkit.table()
@@ -203,13 +309,10 @@ def create_default_pyproject(pyproject_file):
     uv.add("sources", tomlkit.table())
 
     ws = tomlkit.table()
-    members = tomlkit.array(); members.multiline(True)
-    ws.add("members", members)
+    ws.add("members", tomlkit.array().multiline(True))
     uv.add("workspace", ws)
-
     tool.add("uv", uv)
 
-    # [tool.xircuits]
     xircuits = tomlkit.table()
     xircuits.add("components", tomlkit.table())
     tool.add("xircuits", xircuits)

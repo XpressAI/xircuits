@@ -8,6 +8,7 @@ from urllib.request import urlopen, Request
 
 from xircuits.utils.file_utils import is_empty
 from xircuits.handlers.config import get_config
+from xircuits.utils.requirements_utils import normalize_requirements_list, parse_requirements_txt
 
 MANIFEST_DIR = Path(".xircuits") / "remote_lib_manifest"
 INDEX_PATH = MANIFEST_DIR / "index.json"
@@ -33,7 +34,6 @@ def _read_index_list() -> List[Dict[str, Any]]:
     with INDEX_PATH.open("r", encoding="utf-8") as file_handle:
         parsed = json.load(file_handle)
     if not isinstance(parsed, list):
-        # We keep it strict: index.json must be a top-level array.
         raise ValueError("index.json must be a top-level JSON array of library entries.")
     for position, entry in enumerate(parsed):
         if not isinstance(entry, dict):
@@ -78,42 +78,26 @@ def _library_id_from_dir_name(directory_name: str) -> str:
 
 def _read_local_requirements_for_dir(library_dir: Path) -> List[str]:
     """
-    Try to read project dependencies for a local library, preferring pyproject.toml
-    (if tomllib is available), falling back to requirements.txt. If neither exists,
-    return [].
+    Prefer pyproject.toml [project.dependencies], else requirements.txt.
+    Always return normalized canonical list[str].
     """
     pyproject_path = library_dir / "pyproject.toml"
     if tomllib and pyproject_path.exists():
         try:
-            with pyproject_path.open("rb") as file_handle:
-                data = tomllib.load(file_handle)
+            with pyproject_path.open("rb") as fh:
+                data = tomllib.load(fh)
             project_table = data.get("project", {}) if isinstance(data, dict) else {}
             dependencies = project_table.get("dependencies", [])
             if isinstance(dependencies, list):
-                return [str(item).strip() for item in dependencies if str(item).strip()]
+                return normalize_requirements_list(dependencies)
         except Exception:
-            pass  # Fall through to requirements.txt
+            pass
 
-    requirements_path = library_dir / "requirements.txt"
-    if requirements_path.exists():
-        try:
-            lines = []
-            for line in requirements_path.read_text(encoding="utf-8").splitlines():
-                text = line.strip()
-                if text and not text.startswith("#"):
-                    lines.append(text)
-            return lines
-        except Exception:
-            return []
-
-    return []
+    reqs = parse_requirements_txt(library_dir / "requirements.txt")
+    return reqs
 
 
 def _scan_local_xai_components(base_directory: Path = Path("xai_components")) -> Dict[str, Dict[str, Any]]:
-    """
-    Discover local libraries under xai_components/xai_* and return a dict keyed by library_id.
-    Each entry is a minimal manifest stub that we can merge with the remote index.
-    """
     discovered: Dict[str, Dict[str, Any]] = {}
     if not base_directory.exists() or not base_directory.is_dir():
         return discovered
@@ -157,7 +141,11 @@ def get_component_library_config() -> Dict[str, Any]:
             # skip index entries without a valid ID
             continue
         key = library_identifier.strip().upper()
-        by_id[key] = dict(entry)  # shallow copy
+        # also normalize any 'requirements' array coming from remote
+        copy = dict(entry)
+        if isinstance(copy.get("requirements"), list):
+            copy["requirements"] = normalize_requirements_list(copy["requirements"])
+        by_id[key] = copy
 
     # Discover local-only libraries and merge if missing from index
     local_discovered = _scan_local_xai_components()
