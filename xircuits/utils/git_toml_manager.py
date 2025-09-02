@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Tuple
 import shutil
 import subprocess
 import tomlkit
@@ -254,6 +254,34 @@ def remove_git_directory(repo_path: str) -> bool:
     except Exception as e:
         print(f"Warning: could not remove .git from {repo_path}: {e}")
         return False
+
+
+def get_git_metadata(repo_path: str) -> Tuple[Optional[str], Optional[str], bool]:
+    """
+    Return (repo_url, ref, is_tag).
+
+    - repo_url: `git remote get-url origin`
+    - ref: exact tag if HEAD matches a tag; otherwise commit SHA
+    - is_tag: True if ref is a tag, False if commit SHA
+
+    If .git is absent or any command fails, returns (None, None, False).
+    """
+    try:
+        def run(*args: str) -> str:
+            return subprocess.check_output(["git", "-C", repo_path, *args], text=True).strip()
+
+        repo_url = run("remote", "get-url", "origin")
+        # Prefer a stable tag if HEAD is exactly at a tag
+        try:
+            tag = run("describe", "--tags", "--exact-match")
+            return repo_url, tag, True
+        except subprocess.CalledProcessError:
+            pass
+        commit = run("rev-parse", "HEAD")
+        return repo_url, commit, False
+    except Exception:
+        return None, None, False
+
 
 def regenerate_lock_file() -> bool:
     """

@@ -10,6 +10,7 @@ from ..utils.git_toml_manager import (
     rebuild_meta_extra,
     record_component_metadata,
     remove_component_metadata,
+    get_git_metadata,
     remove_git_directory,
 )
 from ..handlers.request_remote import request_remote_library
@@ -53,7 +54,7 @@ def fetch_library(library_name: str) -> str:
       - ensure the library files exist under xai_components/xai_<name>
       - clone from remote manifest if directory is missing or empty
       - strip embedded .git folder (vendored)
-      - DO NOT touch pyproject.toml
+      - DOES NOT touch project's pyproject.toml
       - return a status message
     """
     print(f"Fetching {library_name}...")
@@ -63,7 +64,10 @@ def fetch_library(library_name: str) -> str:
     if not Path(comp_path).is_dir() or is_empty(comp_path):
         success, message = request_remote_library(comp_path)
         if not success:
-            return "Component library remote not found."
+            msg = "Component library remote not found."
+            print(msg)
+            return msg
+
         remove_git_directory(comp_path)
         return f"{library_name} library fetched and stored in {comp_path}."
     else:
@@ -77,7 +81,7 @@ def install_library(library_name: str) -> str:
       - read the vendored library dependencies
       - write/replace per-library extra [project.optional-dependencies].xai-<lib>
       - rebuild meta extra [project.optional-dependencies].xai-components
-      - record [tool.xircuits.components.xai-<lib>] with path (no source/rev tracked here)
+      - record [tool.xircuits.components.xai-<lib>] with path + source + tag/rev
       - return a status message
 
     Users then install packages with:  uv sync --extra xai-components
@@ -85,20 +89,36 @@ def install_library(library_name: str) -> str:
     print(f"Installing {library_name}...")
     comp_path = get_component_library_path(library_name)
 
+    # Track whether we just cloned (vendoring flow) to know when to strip .git
+    did_clone = False
+
     # If directory is missing or empty, clone using remote manifest
     if not Path(comp_path).is_dir() or is_empty(comp_path):
         success, message = request_remote_library(comp_path)
         if not success:
             return "Component library remote not found."
-        remove_git_directory(comp_path)
+        did_clone = True
+
+    # Try to collect repo metadata
+    repo_url, ref, is_tag = get_git_metadata(comp_path)
 
     reqs = read_requirements_for_library(Path(comp_path))
     extra_name = _extra_name_for_path(comp_path)
     set_library_extra(extra_name, reqs)
     rebuild_meta_extra("xai-components")
 
-    # Minimal metadata entry (no tag/rev tracking in this simplified flow)
-    record_component_metadata(extra_name, comp_path, repo_url=None, ref=None, is_tag=False)
+    # Record metadata (source + exact tag or commit)
+    record_component_metadata(
+        extra_name,
+        comp_path,
+        repo_url=repo_url,
+        ref=ref,
+        is_tag=is_tag,
+    )
+
+    # For vendored installs from manifest, strip .git after we captured metadata
+    if did_clone:
+        remove_git_directory(comp_path)
 
     print(f"Library {library_name} ready to use.")
     return f"Library {library_name} installation completed."
