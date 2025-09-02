@@ -1,11 +1,13 @@
 from pathlib import Path
 from typing import Iterable, Optional, Tuple
+import os
 import shutil
 import subprocess
 import tomlkit
 from tomlkit import parse, dumps
 
 from .requirements_utils import normalize_requirements_list
+from .venv_ops import is_uv_venv
 
 def _is_header(line: str) -> bool:
     line = line.strip()
@@ -41,19 +43,35 @@ def _write_toml_with_format(doc, path: Path) -> None:
 
 def _run_uv_lock() -> bool:
     """
-    Run 'uv lock' to update the lock file after pyproject.toml changes.
-    Returns True if successful, False if uv is not available or fails.
+    Update uv.lock only when:
+      - 'uv' is available, AND
+      - we're in a uv virtualenv, OR env XIRCUITS_USE_UV is set, OR uv.lock already exists.
+
+    Returns True if a lock was updated, False otherwise.
     """
     if not shutil.which("uv"):
-        print("Warning: 'uv' not found in PATH. Lock file not updated.")
+        print("Info: 'uv' not found; skipping lock.")
         return False
-    
+
+    try:
+        should_lock = (
+            is_uv_venv()
+            or os.environ.get("XIRCUITS_USE_UV")
+            or Path("uv.lock").exists()
+        )
+    except Exception:
+        should_lock = False
+
+    if not should_lock:
+        print("Info: Not a uv-managed environment; skipping 'uv lock'.")
+        return False
+
     try:
         result = subprocess.run(
-            ["uv", "lock"], 
-            check=True, 
-            capture_output=True, 
-            text=True
+            ["uv", "lock"],
+            check=True,
+            capture_output=True,
+            text=True,
         )
         print("✓ Updated uv.lock")
         return True
@@ -141,7 +159,6 @@ def _lib_key_for_components(name: str) -> str:
 def set_library_extra(extra_name: str, requirements: Iterable[str]) -> None:
     """
     Write/replace a per-library extra under [project.optional-dependencies].
-    Does not mutate base dependencies or any uv sections.
     """
     reqs = normalize_requirements_list(list(requirements or []))
     doc, path = _load_or_init_pyproject()
@@ -154,16 +171,17 @@ def set_library_extra(extra_name: str, requirements: Iterable[str]) -> None:
     extras_tbl[key] = arr
 
     _write_toml_with_format(doc, path)
-    _run_uv_lock()
 
 def remove_library_extra(extra_name: str) -> None:
+    """
+    Remove a per-library extra under [project.optional-dependencies].
+    """
     doc, path = _load_or_init_pyproject()
     extras_tbl = doc["project"]["optional-dependencies"]
     key = _canon_extra_name(extra_name)
     if key in extras_tbl:
         del extras_tbl[key]
         _write_toml_with_format(doc, path)
-        _run_uv_lock()
 
 def rebuild_meta_extra(meta_name: str = "xai-components") -> None:
     """
@@ -190,7 +208,6 @@ def rebuild_meta_extra(meta_name: str = "xai-components") -> None:
     extras_tbl[meta_key] = arr
 
     _write_toml_with_format(doc, path)
-    _run_uv_lock()
 
 def record_component_metadata(library_name: str,
                               member_path: str,
@@ -285,7 +302,7 @@ def get_git_metadata(repo_path: str) -> Tuple[Optional[str], Optional[str], bool
 
 def regenerate_lock_file() -> bool:
     """
-    Manually regenerate the uv.lock file from current pyproject.toml.
+    Manually regenerate the uv.lock file from current pyproject.toml, gated by _run_uv_lock().
     Useful for maintenance or after manual pyproject.toml edits.
     """
     return _run_uv_lock()

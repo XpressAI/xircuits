@@ -12,7 +12,10 @@ from ..utils.git_toml_manager import (
     remove_component_metadata,
     get_git_metadata,
     remove_git_directory,
+    regenerate_lock_file
 )
+from ..utils.venv_ops import install_specs
+
 from ..handlers.request_remote import request_remote_library
 from ..handlers.request_folder import clone_from_github_url
 
@@ -126,6 +129,21 @@ def install_library(library_name: str) -> str:
     if did_clone:
         remove_git_directory(comp_path)
 
+    # Install the Python dependencies
+    try:
+        if reqs:
+            print(f"Installing Python dependencies for {library_name}...")
+            # chooses 'uv pip install' inside a uv venv, otherwise 'pip install'
+            install_specs(reqs)
+            print(f"✓ Dependencies for {library_name} installed.")
+        else:
+            print(f"No requirements.txt entries for {library_name}; nothing to install.")
+    except Exception as e:
+        # Do not fail the whole flow—metadata and extras are already written.
+        print(f"Warning: installing dependencies for {library_name} failed:{e}".rstrip())
+
+    regenerate_lock_file()
+
     print(f"Library {library_name} ready to use.")
     return f"Library {library_name} installation completed."
 
@@ -159,6 +177,8 @@ def uninstall_library(library_name: str) -> str:
         remove_component_metadata(str(lib_path))
         set_library_extra(_extra_name_for_path(str(lib_path)), [])  # clear the per-library extra
         rebuild_meta_extra("xai-components")
+        regenerate_lock_file()
+
     except Exception as e:
         print(f"Warning updating pyproject.toml for '{short}': {e}")
 
