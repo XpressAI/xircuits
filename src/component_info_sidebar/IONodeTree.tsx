@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { TreeView, TreeItem } from '@jupyter/react-components';
 import { getTreeItemElement } from '@jupyterlab/ui-components';
+import type { ISignal } from '@lumino/signaling';
 import type { IONode } from './portPreview';
 
 function useHostWidth() {
@@ -34,9 +35,7 @@ function wrapByWidth(
   const result: string[] = [];
   const lines = text.split(/\r?\n/);
 
-  for (let k = 0; k < lines.length; k++) {
-    const line = lines[k];
-
+  for (const line of lines) {
     if (line === '') {
       // Preserve empty lines
       result.push('');
@@ -57,7 +56,6 @@ function wrapByWidth(
         cur = tok.replace(/^\s+/, '');
       }
     }
-
     if (cur) {
       result.push(cur);
     }
@@ -71,12 +69,15 @@ function wrapByWidth(
   return result;
 }
 
-const Item: React.FC<{
+type ItemProps = {
   n: IONode;
   d?: number;
   hostWidth: number;
   measure: (s: string) => number;
-}> = ({ n, d = 0, hostWidth, measure }) => {
+  collapseToggled?: ISignal<unknown, boolean>;
+};
+
+const Item: React.FC<ItemProps> = ({ n, d = 0, hostWidth, measure, collapseToggled }) => {
   const [open, setOpen] = useState(true);
   const styles = getComputedStyle(document.documentElement);
   const INDENT = parseInt(styles.getPropertyValue('--io-indent')) || 16;
@@ -89,24 +90,30 @@ const Item: React.FC<{
     if (e.currentTarget === it) setOpen(o => !o);
   };
 
+  useEffect(() => {
+    if (!collapseToggled) return;
+    const cb = (_: unknown, expandAll: boolean) => setOpen(expandAll);
+    collapseToggled.connect(cb);
+    return () => {collapseToggled.disconnect(cb);}
+  }, [collapseToggled]);
+
   const valueLines = n.valueBlock
     ? wrapByWidth(n.valueBlock, avail, measure)
     : null;
 
   return (
-    <TreeItem
-      className={`jp-TreeItem${d ? ' nested' : ''}`}
-      expanded={open}
-      onClick={onToggle}
-    >
-    {n.label && (
-      <span
-        className={`jp-TreeItem-label${n.valueBlock ? ' io-label-ellipsis' : ''}`}
-        title={n.label}
-      >
-        {n.label}
-      </span>
-)}
+    <TreeItem className={`jp-TreeItem${d ? ' nested' : ''}`} expanded={open} onClick={onToggle}>
+      {n.label && (
+        <span
+          className={`jp-TreeItem-label io-label-ellipsis`}
+          title={n.label}
+        >
+          {n.label}
+        </span>
+      )}
+      { (n as any).dtype && (
+        <span className="jp-RunningSessions-itemDetail">{String((n as any).dtype)}</span>
+      )}
 
       {valueLines &&
         valueLines.map((seg, i) => (
@@ -122,13 +129,17 @@ const Item: React.FC<{
           d={d + 1}
           hostWidth={hostWidth}
           measure={measure}
+          collapseToggled={collapseToggled}
         />
       ))}
     </TreeItem>
   );
 };
 
-export const IONodeTree: React.FC<{ data: IONode[] }> = ({ data }) => {
+export const IONodeTree: React.FC<{
+  data: IONode[];
+  collapseToggled?: ISignal<unknown, boolean>;
+}> = ({ data, collapseToggled }) => {
   const { ref, width } = useHostWidth();
   const measure = useMeasureFont();
 
@@ -136,7 +147,13 @@ export const IONodeTree: React.FC<{ data: IONode[] }> = ({ data }) => {
     <div ref={ref}>
       <TreeView className="jp-TreeView">
         {data.map((n, i) => (
-          <Item key={i} n={n} hostWidth={width} measure={measure} />
+          <Item
+            key={i}
+            n={n}
+            hostWidth={width}
+            measure={measure}
+            collapseToggled={collapseToggled}
+          />
         ))}
       </TreeView>
     </div>

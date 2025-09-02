@@ -1,41 +1,84 @@
-/* IO tree spacing vars */
-:root {
-  --io-indent: 16px;
-  --io-pad-left: 32px;
-  --io-pad-right: 24px;
+#xircuits-doc-preview .jp-SidePanel-header {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
-.component-preview-container {
-  height: 100%;
+#xircuits-doc-preview .component-preview-header-title,
+#xircuits-doc-preview .component-preview-header-topbar {
+  padding-left: 5px;
+  padding-right: 5px;
+  box-sizing: border-box;
+}
+
+.component-preview-topbar {
   display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--jp-layout-color1);
-  color: var(--jp-ui-font-color0);
+  align-items: center;
+  gap: var(--jp-toolbar-micro-spacing);
+  width: 100%;
+  min-height: var(--jp-private-toolbar-height);
+  background: transparent;
+  padding: 0;              /* <-- كان 0 12px؛ ألغيناه */
+  box-sizing: border-box;
 }
 
-/* scrollable content area */
-.component-preview-container .content {
+.component-preview-title {
   flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 0;
+  min-width: 0;
 }
-
-.component-preview-container .jp-AccordionPanel-content:not(.jp-mod-compact) {
-  /* default padding for DESCRIPTION */
-  padding: 12px 18px;
-}
-
-/* wrap long labels (multi-line) */
-.component-preview-container .jp-TreeItem-label {
-  white-space: pre-wrap;
-  word-break: break-word;
-  overflow-wrap: anywhere;
+.component-preview-title-text {
   display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.component-preview-topbar-widget {
+  display: flex;
+  align-items: center;
+  gap: var(--jp-toolbar-micro-spacing);
+  min-height: var(--jp-private-toolbar-height);
 }
 
-.component-preview-container .empty-state {
+#xircuits-doc-preview .jp-SidePanel-header .jp-Toolbar {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-top: 1px solid var(--jp-border-color2);
+  border-bottom: 0;
+  padding-top: 2px; /* اختياري */
+}
+
+#xircuits-doc-preview .component-preview-header {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+#xircuits-doc-preview .component-preview-header-title,
+#xircuits-doc-preview .component-preview-header-topbar {
+  flex: 1 0 100%;
+  min-width: 0;
+}
+
+#xircuits-doc-preview .component-preview-toolbar-hidden {
+  display: none !important;
+}
+
+.component-preview-scroll {
+  overflow: auto;
+  min-height: 0;
+}
+
+#xircuits-doc-preview .jp-AccordionPanel-content {
+  padding: 8px;
+}
+
+.overview-title {
+  margin: 8px 0;
+  font-weight: 600;
+}
+.overview-docstring {
+  line-height: 1.5;
+}
+
+.empty-state {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -47,82 +90,10 @@
   pointer-events: none;
   text-align: center;
 }
-
-.component-preview-container .empty-state svg {
-  width: 120px;
-  height: 120px;
-}
-
-.component-preview-container .empty-state p {
+.empty-state svg { width: 120px; height: 120px; }
+.empty-state p {
   margin-top: 12px;
   font-size: 0.8rem;
   color: var(--jp-ui-font-color1);
   opacity: 0.9;
-}
-
-/* CollapsibleSection tweaks */
-.component-preview-container .cs-titleLabel {
-  margin-left: 4px;
-}
-
-/* ensure clipping inside JL tree */
-.component-preview-container .jp-TreeItem,
-.component-preview-container .jp-TreeItem .jp-TreeItem-content {
-  min-width: 0;
-}
-
-/* single-line label with ellipsis */
-.component-preview-container .io-label-ellipsis {
-  display: block;
-  white-space: nowrap !important;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* literal head row (clip first line + static dots) */
-.component-preview-container .io-head {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-}
-
-.component-preview-container .jp-SidePanel-header,
-.component-preview-container .jp-SidePanel-header h2 {
-  font-size: 0.85rem;
-  font-weight: 700;
-  line-height: 1;
-  margin: 0;
-  text-transform: none;
-}
-
-.component-preview-container .io-head .io-ellipsis {
-  flex: 1 1 auto;
-  min-width: 0;
-  white-space: nowrap !important;
-  overflow: hidden;
-  text-overflow: clip !important; /* avoid double ellipsis */
-}
-
-/* title row */
-.component-preview-container .x-title-row {
-  display: flex;
-  align-items: center;
-  margin: 0;
-}
-
-/* tiny arrow icon */
-.component-preview-container .x-title-icon {
-  width: 12px;
-}
-
-/* toolbar at title right */
-.component-preview-container .x-toolbar {
-  margin-left: auto;
-  display: flex;
-  gap: 4px;
-}
-
-/* help text indent (Start/Finish/Workflow note) */
-.component-preview-container .x-inset {
-  margin-left: 40px;
 }
