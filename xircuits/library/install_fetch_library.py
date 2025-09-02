@@ -64,14 +64,18 @@ def fetch_library(library_name: str) -> str:
     if not Path(comp_path).is_dir() or is_empty(comp_path):
         success, message = request_remote_library(comp_path)
         if not success:
-            msg = "Component library remote not found."
+            msg = "component library remote not found"
             print(msg)
             return msg
 
         remove_git_directory(comp_path)
-        return f"{library_name} library fetched and stored in {comp_path}."
+        msg = f"{library_name} library fetched and stored in {comp_path}."
+        print(msg)
+        return msg
     else:
-        return f"{library_name} library already exists in {comp_path}."
+        msg = f"{library_name} library already exists in {comp_path}."
+        print(msg)
+        return msg
 
 
 def install_library(library_name: str) -> str:
@@ -96,7 +100,9 @@ def install_library(library_name: str) -> str:
     if not Path(comp_path).is_dir() or is_empty(comp_path):
         success, message = request_remote_library(comp_path)
         if not success:
-            return "Component library remote not found."
+            msg = "component library remote not found"
+            print(msg)
+            return msg
         did_clone = True
 
     # Try to collect repo metadata
