@@ -3,6 +3,7 @@ from typing import Iterable, Optional, Tuple
 import os
 import shutil
 import subprocess
+from importlib.metadata import version as pkg_version, PackageNotFoundError
 import tomlkit
 from tomlkit import parse, dumps
 
@@ -82,6 +83,26 @@ def _run_uv_lock() -> bool:
         print(f"Warning: Could not run 'uv lock': {e}")
         return False
 
+
+# ---------- Xircuits version helpers ----------
+
+def _detect_xircuits_version() -> Optional[str]:
+    """Prefer package metadata; fallback to local _version if needed."""
+    try:
+        return pkg_version("xircuits")
+    except PackageNotFoundError:
+        pass
+    try:
+        from xircuits._version import __version__ as v  # local fallback
+        return v
+    except Exception:
+        return None
+
+def _xircuits_spec_exact() -> str:
+    """Return 'xircuits==X.Y.Z' if detectable, else 'xircuits'."""
+    v = _detect_xircuits_version()
+    return f"xircuits=={v}" if v else "xircuits"
+
 # ---------- Minimal project bootstrap ----------
 
 def create_default_pyproject(pyproject_file: Path) -> None:
@@ -90,7 +111,8 @@ def create_default_pyproject(pyproject_file: Path) -> None:
       [project]
       name/version/requires-python
       dependencies = []
-      [project.optional-dependencies] (empty)
+      [project.optional-dependencies]
+      xai-components = ["xircuits==<version>"]
       [tool.xircuits.components] (empty)
     """
     doc = tomlkit.document()
@@ -99,11 +121,17 @@ def create_default_pyproject(pyproject_file: Path) -> None:
     project.add("name", "xircuits-project-template")
     project.add("version", "0.1.0")
     project.add("requires-python", ">=3.10")
-    deps = tomlkit.array(); deps.multiline(True)
+    deps = tomlkit.array()
+    deps.multiline(True)
     project.add("dependencies", deps)
     doc.add("project", project)
 
+    # optional-dependencies with xai-components seeded with xircuits
     opt = tomlkit.table()
+    meta_arr = tomlkit.array()
+    meta_arr.multiline(True)
+    meta_arr.append(_xircuits_spec_exact())
+    opt["xai-components"] = meta_arr
     doc["project"]["optional-dependencies"] = opt
 
     tool = tomlkit.table()
@@ -135,6 +163,18 @@ def _load_or_init_pyproject():
     if "components" not in doc["tool"]["xircuits"]:
         doc["tool"]["xircuits"]["components"] = tomlkit.table()
 
+    # Ensure xai-components exists and includes xircuits even on a blank project
+    extras_tbl = doc["project"]["optional-dependencies"]
+    meta_arr = extras_tbl.get("xai-components")
+    if meta_arr is None:
+        meta_arr = tomlkit.array()
+        meta_arr.multiline(True)
+        extras_tbl["xai-components"] = meta_arr
+    # Guarantee a single xircuits entry present
+    if not any(str(e).strip().lower().startswith("xircuits") for e in list(meta_arr)):
+        meta_arr.append(_xircuits_spec_exact())
+        _write_toml_with_format(doc, path)
+
     return doc, path
 
 def _canon_extra_name(name: str) -> str:
@@ -165,7 +205,8 @@ def set_library_extra(extra_name: str, requirements: Iterable[str]) -> None:
 
     extras_tbl = doc["project"]["optional-dependencies"]
     key = _canon_extra_name(extra_name)
-    arr = tomlkit.array(); arr.multiline(True)
+    arr = tomlkit.array()
+    arr.multiline(True)
     for r in reqs:
         arr.append(r)
     extras_tbl[key] = arr
@@ -185,7 +226,8 @@ def remove_library_extra(extra_name: str) -> None:
 
 def rebuild_meta_extra(meta_name: str = "xai-components") -> None:
     """
-    Rebuild the meta extra as the union of all 'xai-*' extras except itself.
+    Rebuild the meta extra as the union of all 'xai-*' extras except itself,
+    and ensure it includes 'xircuits==<version>'.
     """
     doc, path = _load_or_init_pyproject()
     extras_tbl = doc["project"]["optional-dependencies"]
@@ -201,19 +243,25 @@ def rebuild_meta_extra(meta_name: str = "xai-components") -> None:
         if isinstance(vals, list):
             union.extend(str(v) for v in vals)
 
+    # Add/ensure xircuits spec
+    union.append(_xircuits_spec_exact())
+
     union = normalize_requirements_list(union)
-    arr = tomlkit.array(); arr.multiline(True)
+    arr = tomlkit.array()
+    arr.multiline(True)
     for r in union:
         arr.append(r)
     extras_tbl[meta_key] = arr
 
     _write_toml_with_format(doc, path)
 
-def record_component_metadata(library_name: str,
-                              member_path: str,
-                              repo_url: Optional[str],
-                              ref: Optional[str],
-                              is_tag: bool) -> None:
+def record_component_metadata(
+    library_name: str,
+    member_path: str,
+    repo_url: Optional[str],
+    ref: Optional[str],
+    is_tag: bool,
+) -> None:
     """
     Write [tool.xircuits.components.<xai-*>] table with:
       source = <repo_url> (optional)

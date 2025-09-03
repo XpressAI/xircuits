@@ -8,6 +8,7 @@ from ..utils.requirements_utils import read_requirements_for_library
 from ..utils.git_toml_manager import (
     set_library_extra,
     rebuild_meta_extra,
+    remove_library_extra,
     record_component_metadata,
     remove_component_metadata,
     get_git_metadata,
@@ -175,7 +176,9 @@ def uninstall_library(library_name: str) -> str:
     # Remove metadata + extra, then rebuild meta extra
     try:
         remove_component_metadata(str(lib_path))
-        set_library_extra(_extra_name_for_path(str(lib_path)), [])  # clear the per-library extra
+        extra_name = _extra_name_for_path(str(lib_path))
+        remove_library_extra(extra_name)
+
         rebuild_meta_extra("xai-components")
         regenerate_lock_file()
 
