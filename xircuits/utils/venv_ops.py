@@ -4,6 +4,7 @@ import sys
 import subprocess
 from pathlib import Path
 from importlib import metadata
+import tomlkit
 
 def is_uv_venv():
     venv = os.environ.get("VIRTUAL_ENV")
@@ -24,31 +25,24 @@ def has_pip_module():
     except Exception:
         return False
 
+def _has_uv() -> bool:
+    return shutil.which("uv") is not None
+
 def get_installer_cmd():
-    # Prefer 'uv pip' in uv venvs if 'uv' is on PATH
-    if is_uv_venv():
-        uv_cmd = shutil.which("uv")
-        if uv_cmd:
-            return [uv_cmd, "pip", "install"]
+    """
+      - If in a uv venv and uv is on PATH -> use 'uv pip install'
+      - Else -> use 'python -m pip install'
+    """
+    if is_uv_venv() and _has_uv():
+        return ["uv", "pip", "install"]
+    # Assume pip is available; if not, this will raise at runtime
+    return [sys.executable, "-m", "pip", "install"]
 
-    # Fallback: python -m pip (only if pip is importable)
-    if has_pip_module():
-        return [sys.executable, "-m", "pip", "install"]
-
-    # Last resort: try to bootstrap pip, then use it
-    try:
-        subprocess.run([sys.executable, "-m", "ensurepip", "--upgrade"], check=True)
-        return [sys.executable, "-m", "pip", "install"]
-    except Exception:
-        raise RuntimeError(
-            "No installer found. In a uv environment, ensure 'uv' is on PATH. "
-            "Otherwise install pip (or run 'python -m ensurepip')."
-        )
 
 def install_specs(requirement_specs):
     if not requirement_specs:
         return
-    cmd = get_installer_cmd() + requirement_specs
+    cmd = get_installer_cmd() + list(requirement_specs)
     subprocess.run(cmd, check=True)
 
 def install_requirements_file(req_file):
@@ -65,3 +59,46 @@ def list_installed_package_names_lower():
         except Exception:
             continue
     return names
+
+def _read_xai_components_specs(pyproject_path: str = "pyproject.toml") -> list[str]:
+    """
+    Read project.optional-dependencies['xai-components'] from pyproject.toml.
+    Returns a flat list of requirement strings (possibly including direct URLs).
+    """
+    path = Path(pyproject_path)
+    if not path.exists():
+        return []
+    doc = tomlkit.parse(path.read_text(encoding="utf-8"))
+    try:
+        extras_tbl = doc["project"]["optional-dependencies"]
+        specs = extras_tbl.get("xai-components")
+        if specs is None:
+            return []
+        # tomlkit arrays are iterable; normalize to trimmed strings
+        return [str(item).strip() for item in list(specs) if str(item).strip()]
+    except Exception:
+        return []
+
+def sync_xai_components(pyproject_path: str = "pyproject.toml") -> None:
+    """
+    Wrapper for syncing dependencies for all Xircuits components:
+      - Prefer 'uv sync --extra xai-components' if uv is available.
+      - Otherwise, parse pyproject.toml and 'pip install' each spec listed
+        under [project.optional-dependencies].xai-components.
+    """
+    if _has_uv():
+        print("xircuits sync: using uv -> `uv sync --extra xai-components`")
+        subprocess.run(["uv", "sync", "--extra", "xai-components"], check=True)
+        return
+
+    print("xircuits sync: uv not found; falling back to pip and pyproject.toml parsing.")
+    specs = _read_xai_components_specs(pyproject_path)
+    if not specs:
+        print("xircuits sync: no [project.optional-dependencies].xai-components found. Nothing to install.")
+        return
+
+    print("xircuits sync: installing the following specs via pip:")
+    for s in specs:
+        print(f"  - {s}")
+    subprocess.run([sys.executable, "-m", "pip", "install", *specs], check=True)
+    print("xircuits sync: done.")
