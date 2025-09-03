@@ -3,7 +3,9 @@ from typing import Iterable, Optional, Tuple
 import os
 import shutil
 import subprocess
-from importlib.metadata import version as pkg_version, PackageNotFoundError
+from importlib.metadata import version as pkg_version, PackageNotFoundError, distribution
+import json
+
 import tomlkit
 from tomlkit import parse, dumps
 
@@ -98,8 +100,31 @@ def _detect_xircuits_version() -> Optional[str]:
     except Exception:
         return None
 
-def _xircuits_spec_exact() -> str:
-    """Return 'xircuits==X.Y.Z' if detectable, else 'xircuits'."""
+def _local_wheel_url_for_xircuits() -> Optional[str]:
+    """
+    Return file:// URL to the local wheel IF Xircuits was installed from a local wheel,
+    else None. Uses PEP 610 'direct_url.json' via importlib.metadata.
+    """
+    try:
+        direct_url_text = distribution("xircuits").read_text("direct_url.json")
+        if not direct_url_text:
+            return None
+        direct_url_data = json.loads(direct_url_text)
+        source_url = direct_url_data.get("url")
+        if source_url and source_url.startswith("file:") and source_url.lower().endswith(".whl"):
+            return source_url
+        return None
+    except Exception:
+        return None
+
+def _xircuits_spec_for_meta() -> str:
+    """
+    If local wheel is detected -> 'xircuits @ file:///.../xircuits-X.Y.Z.whl'
+    else -> 'xircuits==X.Y.Z' (or 'xircuits' if version unknown)
+    """
+    url = _local_wheel_url_for_xircuits()
+    if url:
+        return f"xircuits @ {url}"
     v = _detect_xircuits_version()
     return f"xircuits=={v}" if v else "xircuits"
 
@@ -112,7 +137,7 @@ def create_default_pyproject(pyproject_file: Path) -> None:
       name/version/requires-python
       dependencies = []
       [project.optional-dependencies]
-      xai-components = ["xircuits==<version>"]
+      xai-components = ["<xircuits spec>"]
       [tool.xircuits.components] (empty)
     """
     doc = tomlkit.document()
@@ -130,7 +155,7 @@ def create_default_pyproject(pyproject_file: Path) -> None:
     opt = tomlkit.table()
     meta_arr = tomlkit.array()
     meta_arr.multiline(True)
-    meta_arr.append(_xircuits_spec_exact())
+    meta_arr.append(_xircuits_spec_for_meta())
     opt["xai-components"] = meta_arr
     doc["project"]["optional-dependencies"] = opt
 
@@ -170,9 +195,10 @@ def _load_or_init_pyproject():
         meta_arr = tomlkit.array()
         meta_arr.multiline(True)
         extras_tbl["xai-components"] = meta_arr
-    # Guarantee a single xircuits entry present
-    if not any(str(e).strip().lower().startswith("xircuits") for e in list(meta_arr)):
-        meta_arr.append(_xircuits_spec_exact())
+    # Guarantee a single xircuits entry present (URL if local wheel, else exact pin)
+    has_xircuits = any(str(e).strip().lower().startswith("xircuits") for e in list(meta_arr))
+    if not has_xircuits:
+        meta_arr.append(_xircuits_spec_for_meta())
         _write_toml_with_format(doc, path)
 
     return doc, path
@@ -227,7 +253,7 @@ def remove_library_extra(extra_name: str) -> None:
 def rebuild_meta_extra(meta_name: str = "xai-components") -> None:
     """
     Rebuild the meta extra as the union of all 'xai-*' extras except itself,
-    and ensure it includes 'xircuits==<version>'.
+    and ensure it includes the Xircuits spec (local wheel URL if detected; else exact pin).
     """
     doc, path = _load_or_init_pyproject()
     extras_tbl = doc["project"]["optional-dependencies"]
@@ -243,8 +269,8 @@ def rebuild_meta_extra(meta_name: str = "xai-components") -> None:
         if isinstance(vals, list):
             union.extend(str(v) for v in vals)
 
-    # Add/ensure xircuits spec
-    union.append(_xircuits_spec_exact())
+    # Add/ensure xircuits spec (URL if local wheel; otherwise exact pin)
+    union.append(_xircuits_spec_for_meta())
 
     union = normalize_requirements_list(union)
     arr = tomlkit.array()
