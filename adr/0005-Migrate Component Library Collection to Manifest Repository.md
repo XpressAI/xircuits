@@ -1,4 +1,4 @@
-# Migrate Component Libraries to Manifest-Based Repository Management
+# Migrate Component Library Collection to Manifest Repository
 
 ## Status
 Accepted
