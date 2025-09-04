@@ -82,14 +82,15 @@ def _read_xai_components_specs(pyproject_path: str = "pyproject.toml") -> list[s
 def sync_xai_components(pyproject_path: str = "pyproject.toml") -> None:
     """
     Wrapper for syncing dependencies for all Xircuits components:
-      - Prefer 'uv sync --extra xai-components' if uv is available.
+      - Prefer 'uv sync --active --extra xai-components' if uv is available
+        (installs into the currently active virtual environment).
       - Otherwise, parse pyproject.toml and 'pip install' each spec listed
         under [project.optional-dependencies].xai-components.
     """
     use_uv = (_has_uv() and is_uv_venv()) or bool(os.environ.get("XIRCUITS_USE_UV"))
     if use_uv:
-        print("xircuits sync: using uv -> `uv sync --extra xai-components`")
-        subprocess.run(["uv", "sync", "--extra", "xai-components"], check=True)
+        print("xircuits sync: using uv -> `uv sync --active --extra xai-components`")
+        subprocess.run(["uv", "sync", "--active", "--extra", "xai-components"], check=True)
         return
 
     print("xircuits sync: uv not found; falling back to pip and pyproject.toml parsing.")
