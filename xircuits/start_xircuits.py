@@ -1,14 +1,13 @@
 import argparse
 import json
 import os
-import subprocess
-import shutil
-import toml
 from pathlib import Path
-from importlib.metadata import metadata, PackageNotFoundError
 
-from .utils import is_empty, copy_from_installed_wheel
-from .library import list_component_library, install_library, fetch_library, save_component_library_config, uninstall_library
+from .utils.file_utils import is_empty, copy_from_installed_wheel
+from .utils.venv_ops import sync_xai_components
+from .library import list_component_library, install_library, fetch_library, uninstall_library
+from .library.index_config import refresh_index
+
 from .compiler import compile, recursive_compile
 from xircuits.handlers.config import get_config
 
@@ -21,14 +20,15 @@ def init_xircuits():
     package_name = 'xircuits'
     copy_from_installed_wheel(package_name, resource='.xircuits', dest_path='.xircuits')
 
-    tmp_dir = Path(os.getcwd()) / ".remote_libs_manifest"
-    cfg = get_config()
-    subprocess.run(["git", "clone",cfg['DEV']['MANIFEST'],str(tmp_dir)], check=True)
+    # Fetch component library index.json over HTTP
+    try:
+        refresh_index()
+    except Exception as e:
+        print(f"Warning: could not download index.json yet: {e}")
 
     component_library_path = Path(os.getcwd()) / "xai_components"
     if not component_library_path.exists():
         copy_from_installed_wheel('xai_components', '', 'xai_components')
-    save_component_library_config()
 
 
 def find_xircuits_working_dir():
@@ -153,6 +153,9 @@ def cmd_compile(args, extra_args=[]):
 def cmd_list_libraries(args, extra_args=[]):
     list_component_library()
 
+def cmd_sync(args, extra_args=[]):
+    sync_xai_components()
+
 
 def cmd_run(args, extra_args=[]):
     original_cwd = args.original_cwd
@@ -251,6 +254,13 @@ def main():
     list_parser = subparsers.add_parser(
         'list', help='List available component libraries for Xircuits.')
     list_parser.set_defaults(func=cmd_list_libraries)
+
+    # 'sync' command.
+    sync_parser = subparsers.add_parser(
+        'sync',
+        help='Install dependencies for all Xircuits component libraries (meta extra: xai-components).'
+    )
+    sync_parser.set_defaults(func=cmd_sync)
 
     # 'run' command.
     run_parser = subparsers.add_parser(

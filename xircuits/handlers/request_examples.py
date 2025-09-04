@@ -5,7 +5,7 @@ import tornado
 from http import HTTPStatus
 from pathlib import Path
 from jupyter_server.base.handlers import APIHandler
-from xircuits.utils import is_empty, copy_from_installed_wheel
+from xircuits.utils.file_utils import is_empty, copy_from_installed_wheel
 from xircuits.start_xircuits import find_xircuits_working_dir, init_xircuits
 
 class FetchExamplesRouteHandler(APIHandler):
