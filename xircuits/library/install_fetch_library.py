@@ -1,7 +1,5 @@
-import os
 import shutil
 from pathlib import Path
-from typing import Optional
 
 from ..utils.file_utils import is_valid_url, is_empty
 from ..utils.requirements_utils import read_requirements_for_library
@@ -29,10 +27,13 @@ def _as_components_path(query: str) -> str:
     Normalize any user query to 'xai_components/xai_<name>' directory string.
     """
     q = (query or "").strip().lower().replace("-", "_")
+    # If the user already passed a normalized path, keep it
+    if q.startswith("xai_components/xai_"):
+        return q
     if not q.startswith("xai_"):
         q = "xai_" + q
-    return "xai_components/" + q
-
+    result = "xai_components/" + q
+    return result
 
 def get_component_library_path(library_name: str) -> str:
     """
@@ -40,9 +41,10 @@ def get_component_library_path(library_name: str) -> str:
     Otherwise normalize a library key like 'sklearn' -> 'xai_components/xai_sklearn'.
     """
     if is_valid_url(library_name):
-        return clone_from_github_url(library_name)
-    return _as_components_path(library_name)
-
+        path = clone_from_github_url(library_name)
+        return path
+    path = _as_components_path(library_name)
+    return path
 
 def _extra_name_for_path(components_path: str) -> str:
     """
