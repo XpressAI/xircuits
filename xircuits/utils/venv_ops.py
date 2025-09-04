@@ -86,7 +86,8 @@ def sync_xai_components(pyproject_path: str = "pyproject.toml") -> None:
       - Otherwise, parse pyproject.toml and 'pip install' each spec listed
         under [project.optional-dependencies].xai-components.
     """
-    if _has_uv():
+    use_uv = (_has_uv() and is_uv_venv()) or bool(os.environ.get("XIRCUITS_USE_UV"))
+    if use_uv:
         print("xircuits sync: using uv -> `uv sync --extra xai-components`")
         subprocess.run(["uv", "sync", "--extra", "xai-components"], check=True)
         return
