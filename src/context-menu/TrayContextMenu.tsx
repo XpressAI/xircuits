@@ -12,13 +12,18 @@ import { normalizeLibraryName } from '../tray_library/ComponentLibraryConfig';
 export async function handleInstall(
     app,
     libraryName: string,
-    refreshTrigger: () => void
+    refreshTrigger: () => void,
+    opts?: { silent?: boolean }
+
 ): Promise<boolean> {
+    const { silent = false } = opts ?? {};
     const originalName = libraryName;
     const normalizedLibName = normalizeLibraryName(originalName);
 
-    const proceed = confirm(`Do you want to proceed with installing "${originalName}" library?`);
-    if (!proceed) return false;
+    if (!silent) {
+        const proceed = confirm(`Do you want to proceed with installing "${originalName}" library?`);
+        if (!proceed) return false;
+    }
 
     const installPromise = requestAPI<any>('library/install', {
         method: 'POST',
