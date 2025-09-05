@@ -1,12 +1,13 @@
-import { JupyterFrontEnd, ILabShell } from '@jupyterlab/application';
 import { ComponentPreviewWidget, IComponentInfo } from './ComponentPreviewWidget';
 import { IXircuitsDocTracker } from '../index';
-
+import type { ILayoutRestorer, JupyterFrontEnd, ILabShell } from '@jupyterlab/application';
+import type { IWidgetTracker } from '@jupyterlab/apputils';
+import type { DocumentWidget } from '@jupyterlab/docregistry';
 const PREVIEW_ID = 'xircuits-doc-preview';
 
 export function togglePreviewWidget(
   app: JupyterFrontEnd,
-  model: IComponentInfo,
+  model: IComponentInfo,         
   neverCollapse = false
 ): void {
   const shell = app.shell as ILabShell;
@@ -46,6 +47,12 @@ export function togglePreviewWidget(
 
   shell.expandRight();
   shell.activateById(widget.id);
+
+  requestAnimationFrame(() => {
+    try {
+      widget?.update();
+    } catch {}
+  });
 }
 
 export function registerPreviewResetOnCanvasChange(
@@ -78,4 +85,29 @@ function resetPreview(shell: ILabShell): void {
   if (widget) {
     widget.setModel(null);
   }
+}
+
+export function installComponentPreview(
+  app: JupyterFrontEnd,
+  restorer: ILayoutRestorer,
+  tracker: IWidgetTracker<DocumentWidget>,
+  opts?: { rank?: number; collapseOnStart?: boolean }
+): ComponentPreviewWidget {
+  const shell = app.shell as ILabShell;
+
+  let widget = Array.from(shell.widgets('right'))
+    .find(w => w.id === PREVIEW_ID) as ComponentPreviewWidget | undefined;
+
+  if (!widget) {
+    widget = new ComponentPreviewWidget(app, null);
+    shell.add(widget, 'right', { rank: opts?.rank ?? 0 });
+    restorer.add(widget, widget.id);
+  }
+
+  if (opts?.collapseOnStart !== false) {
+    (shell as any).collapseRight?.();
+  }
+
+  registerPreviewResetOnCanvasChange(app, tracker as any);
+  return widget;
 }
