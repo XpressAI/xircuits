@@ -1,6 +1,6 @@
 {
   "name": "xircuits",
-  "version": "1.19.2",
+  "version": "1.20.0-alpha.0",
   "description": "A JupyterLab extension for rendering and editing xircuit files.",
   "keywords": [
     "jupyter",
