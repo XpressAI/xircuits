@@ -90,7 +90,7 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigg
             try {
                 const libraryConfig = await fetchLibraryConfig(libraryName);
                 setValidOptions({
-                    showInFileBrowser: !!libraryConfig.local_path,
+                    showInFileBrowser: !!libraryConfig.path,
                     showReadme: await buildLocalFilePath(libraryName, 'readme') !== null,
                     showExample: await buildLocalFilePath(libraryName, 'default_example_path') !== null,
                     showPageInNewTab: !!libraryConfig.repository
@@ -123,8 +123,8 @@ const TrayContextMenu = ({ app, x, y, visible, libraryName, status, refreshTrigg
         try {
             const libraryConfig = await fetchLibraryConfig(libraryName);
     
-            if (libraryConfig && libraryConfig.local_path) {
-                await app.commands.execute('filebrowser:go-to-path', { path: libraryConfig.local_path });
+            if (libraryConfig && libraryConfig.path) {
+                await app.commands.execute('filebrowser:go-to-path', { path: libraryConfig.path });
             }
         } catch (error) {
             alert(`Failed to Show in File Browser: ${error}`);
