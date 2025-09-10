@@ -3,8 +3,8 @@ import json
 import os
 from pathlib import Path
 
-from .utils.file_utils import is_empty, copy_from_installed_wheel
-from .utils.venv_ops import sync_xai_components
+from xircuits.utils.file_utils import is_empty, copy_from_installed_wheel
+from xircuits.utils.venv_ops import sync_xai_components
 from .library import list_component_library, install_library, fetch_library, uninstall_library
 from .library.index_config import refresh_index
 
