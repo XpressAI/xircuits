@@ -7,7 +7,7 @@ from jupyter_server.base.handlers import APIHandler
 
 from xircuits.library import install_library, uninstall_library, fetch_library, create_or_update_library
 from xircuits.library.index_config import refresh_index, get_component_library_config
-from xircuits.utils.pathing import resolve_library_dir
+from xircuits.utils.pathing import get_library_relpath, resolve_library_dir
 
 class InstallLibraryRouteHandler(APIHandler):
     @tornado.web.authenticated
@@ -92,7 +92,7 @@ class GetLibraryDirectoryRouteHandler(APIHandler):
             self.finish(json.dumps({"error": "Library name is required"}))
             return
 
-        directory_path = posixpath.join("xai_components", f"xai_{library_name.lower()}")
+        directory_path = get_library_relpath(library_name)
         self.finish(json.dumps({"status": "OK", "path": directory_path}))
 
 class GetLibraryReadmeRouteHandler(APIHandler):

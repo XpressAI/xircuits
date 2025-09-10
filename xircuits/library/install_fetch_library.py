@@ -14,7 +14,7 @@ from xircuits.utils.git_toml_manager import (
     regenerate_lock_file
 )
 from xircuits.utils.venv_ops import install_specs
-from xircuits.utils.pathing import get_library_relpath
+from xircuits.utils.pathing import get_library_relpath, resolve_library_dir
 
 from ..handlers.request_remote import request_remote_library
 from ..handlers.request_folder import clone_from_github_url
@@ -152,7 +152,7 @@ def uninstall_library(library_name: str) -> str:
     if short in CORE_LIBS:
         raise RuntimeError(f"'{short}' is a core library and cannot be uninstalled.")
 
-    lib_path = Path(get_library_relpath(short))
+    lib_path = resolve_library_dir(short)
     if not lib_path.exists():
         print("Library not found.")
         return f"Library '{short}' not found."

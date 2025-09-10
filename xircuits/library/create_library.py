@@ -1,7 +1,8 @@
 from pathlib import Path
+from xircuits.utils.pathing import resolve_library_dir
 
 def create_or_update_library(library_name: str, filename: str, content: str):
-    library_path = Path(f"xai_components/xai_{library_name}")
+    library_path = resolve_library_dir(library_name)
     if library_path.exists():
         return save_component_to_library(content, library_path, filename)
     else:
