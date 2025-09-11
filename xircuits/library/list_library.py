@@ -3,7 +3,7 @@ import subprocess
 from pathlib import Path
 
 from .index_config import get_component_library_config
-from ..utils.venv_ops import list_installed_package_names_lower
+from xircuits.utils.venv_ops import list_installed_package_names_lower
 
 def _library_id(library_entry):
     library_identifier = library_entry.get("library_id")

@@ -3,8 +3,10 @@ import json
 import os
 from pathlib import Path
 
-from .utils.file_utils import is_empty, copy_from_installed_wheel
-from .utils.venv_ops import sync_xai_components
+from xircuits.utils.file_utils import is_empty, copy_from_installed_wheel
+from xircuits.utils.venv_ops import sync_xai_components
+from xircuits.utils.pathing import resolve_working_dir
+
 from .library import list_component_library, install_library, fetch_library, uninstall_library
 from .library.index_config import refresh_index
 
@@ -31,20 +33,6 @@ def init_xircuits():
         copy_from_installed_wheel('xai_components', '', 'xai_components')
 
 
-def find_xircuits_working_dir():
-    """
-    Traverse upward from the current directory to find the first directory
-    that contains 'xai_components'. That directory is considered the Xircuits working directory.
-    """
-    current_dir = Path(os.getcwd())
-    while True:
-        if (current_dir / "xai_components").exists():
-            return current_dir
-        if current_dir == current_dir.parent:  # Reached filesystem root.
-            return None
-        current_dir = current_dir.parent
-
-
 def ensure_xircuits_initialized():
     """
     Define the working directory by the presence of xai_components.
@@ -53,7 +41,7 @@ def ensure_xircuits_initialized():
       - Auto-initialize if XIRCUITS_INIT is set.
       - Otherwise, prompt the user to initialize in the current directory.
     """
-    working_dir = find_xircuits_working_dir()
+    working_dir = resolve_working_dir()
     if working_dir is not None:
         # Found xai_components. Now check for .xircuits.
         if not (working_dir / ".xircuits").exists():

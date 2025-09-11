@@ -1,9 +1,9 @@
 import shutil
 from pathlib import Path
 
-from ..utils.file_utils import is_valid_url, is_empty
-from ..utils.requirements_utils import read_requirements_for_library
-from ..utils.git_toml_manager import (
+from xircuits.utils.file_utils import is_valid_url, is_empty
+from xircuits.utils.requirements_utils import read_requirements_for_library
+from xircuits.utils.git_toml_manager import (
     set_library_extra,
     rebuild_meta_extra,
     remove_library_extra,
@@ -13,7 +13,8 @@ from ..utils.git_toml_manager import (
     remove_git_directory,
     regenerate_lock_file
 )
-from ..utils.venv_ops import install_specs
+from xircuits.utils.venv_ops import install_specs
+from xircuits.utils.pathing import get_library_relpath, resolve_library_dir
 
 from ..handlers.request_remote import request_remote_library
 from ..handlers.request_folder import clone_from_github_url
@@ -21,19 +22,6 @@ from ..handlers.request_folder import clone_from_github_url
 
 CORE_LIBS = {"xai_events", "xai_template", "xai_controlflow", "xai_utils"}
 
-
-def _as_components_path(query: str) -> str:
-    """
-    Normalize any user query to 'xai_components/xai_<name>' directory string.
-    """
-    q = (query or "").strip().lower().replace("-", "_")
-    # If the user already passed a normalized path, keep it
-    if q.startswith("xai_components/xai_"):
-        return q
-    if not q.startswith("xai_"):
-        q = "xai_" + q
-    result = "xai_components/" + q
-    return result
 
 def get_component_library_path(library_name: str) -> str:
     """
@@ -43,8 +31,9 @@ def get_component_library_path(library_name: str) -> str:
     if is_valid_url(library_name):
         path = clone_from_github_url(library_name)
         return path
-    path = _as_components_path(library_name)
+    path = get_library_relpath(library_name)
     return path
+
 
 def _extra_name_for_path(components_path: str) -> str:
     """
@@ -163,7 +152,7 @@ def uninstall_library(library_name: str) -> str:
     if short in CORE_LIBS:
         raise RuntimeError(f"'{short}' is a core library and cannot be uninstalled.")
 
-    lib_path = Path(_as_components_path(short))
+    lib_path = resolve_library_dir(short)
     if not lib_path.exists():
         print("Library not found.")
         return f"Library '{short}' not found."

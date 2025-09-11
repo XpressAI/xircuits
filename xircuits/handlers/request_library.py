@@ -1,13 +1,13 @@
-import os
 import json
 import traceback
 import tornado
 import posixpath
-from pathlib import Path
 from http import HTTPStatus
 from jupyter_server.base.handlers import APIHandler
+
 from xircuits.library import install_library, uninstall_library, fetch_library, create_or_update_library
 from xircuits.library.index_config import refresh_index, get_component_library_config
+from xircuits.utils.pathing import get_library_relpath, resolve_library_dir
 
 class InstallLibraryRouteHandler(APIHandler):
     @tornado.web.authenticated
@@ -92,7 +92,7 @@ class GetLibraryDirectoryRouteHandler(APIHandler):
             self.finish(json.dumps({"error": "Library name is required"}))
             return
 
-        directory_path = posixpath.join("xai_components", f"xai_{library_name.lower()}")
+        directory_path = get_library_relpath(library_name)
         self.finish(json.dumps({"status": "OK", "path": directory_path}))
 
 class GetLibraryReadmeRouteHandler(APIHandler):
@@ -106,7 +106,7 @@ class GetLibraryReadmeRouteHandler(APIHandler):
             self.finish(json.dumps({"error": "Library name is required"}))
             return
 
-        base = _library_dir_from_name(library_name)
+        base = resolve_library_dir(library_name)
         candidates = [base / "README.md", base / "README.rst", base / "Readme.md", base / "readme.md"]
         for p in candidates:
             if p.exists():
@@ -127,7 +127,7 @@ class GetLibraryExampleRouteHandler(APIHandler):
             self.finish(json.dumps({"error": "Library name is required"}))
             return
 
-        base = _library_dir_from_name(library_name)
+        base = resolve_library_dir(library_name)
         preferred = base / "examples" / "default.xircuits"
         if preferred.exists():
             self.finish(json.dumps({"status": "OK", "path": preferred.as_posix()}))
@@ -195,10 +195,3 @@ class CreateNewLibraryHandler(APIHandler):
             message = f"An unexpected error occurred: {traceback.format_exc()}"
             print(message)
             self.finish(json.dumps({"error": message}))
-
-
-def _library_dir_from_name(library_name: str) -> Path:
-    raw = (library_name or "").strip().lower().replace("-", "_")
-    if not raw.startswith("xai_"):
-        raw = "xai_" + raw
-    return Path("xai_components") / raw

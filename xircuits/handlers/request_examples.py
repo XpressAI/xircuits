@@ -6,7 +6,7 @@ from http import HTTPStatus
 from pathlib import Path
 from jupyter_server.base.handlers import APIHandler
 from xircuits.utils.file_utils import is_empty, copy_from_installed_wheel
-from xircuits.start_xircuits import find_xircuits_working_dir, init_xircuits
+from xircuits.utils.pathing import resolve_working_dir
 
 class FetchExamplesRouteHandler(APIHandler):
     """
@@ -16,7 +16,7 @@ class FetchExamplesRouteHandler(APIHandler):
     def post(self):
         try:
             # Determine the Xircuits working directory (where xai_components exists)
-            working_dir = find_xircuits_working_dir()
+            working_dir = resolve_working_dir()
             if working_dir is None:
                 self.set_status(HTTPStatus.BAD_REQUEST)
                 return self.finish(json.dumps({
