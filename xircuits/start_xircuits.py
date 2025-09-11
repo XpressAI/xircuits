@@ -9,6 +9,7 @@ from xircuits.utils.pathing import resolve_working_dir
 
 from .library import list_component_library, install_library, fetch_library, uninstall_library
 from .library.index_config import refresh_index
+from .library.update_library import update_library
 
 from .compiler import compile, recursive_compile
 from xircuits.handlers.config import get_config
@@ -144,6 +145,16 @@ def cmd_list_libraries(args, extra_args=[]):
 def cmd_sync(args, extra_args=[]):
     sync_xai_components()
 
+def cmd_update_library(args, extra_args=[]):
+    from .library import update_library
+    message = update_library(
+        library_name=args.library_name,
+        ref=args.ref,
+        dry_run=args.dry_run,
+        no_delete=args.no_delete,
+        verbose=args.verbose,
+    )
+    print(message)
 
 def cmd_run(args, extra_args=[]):
     original_cwd = args.original_cwd
@@ -249,6 +260,17 @@ def main():
         help='Install dependencies for all Xircuits component libraries (meta extra: xai-components).'
     )
     sync_parser.set_defaults(func=cmd_sync)
+
+    # 'update' command.
+    update_parser = subparsers.add_parser(
+        'update', help='Update a component library with in-place .bak backups.'
+    )
+    update_parser.add_argument('library_name', type=str, help='Library to update (e.g., gradio)')
+    update_parser.add_argument('--ref', type=str, default=None, help='Tag/branch/commit to update to')
+    update_parser.add_argument('--dry-run', action='store_true', help='Preview changes without modifying files')
+    update_parser.add_argument('--no-delete', action='store_true', help='Keep local-only files (do not treat as deletions)')
+    update_parser.add_argument('--verbose', action='store_true', help='Print per-file actions')
+    update_parser.set_defaults(func=cmd_update_library)
 
     # 'run' command.
     run_parser = subparsers.add_parser(
