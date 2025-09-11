@@ -149,10 +149,11 @@ def cmd_update_library(args, extra_args=[]):
     from .library import update_library
     message = update_library(
         library_name=args.library_name,
+        repo=args.repo,
         ref=args.ref,
         dry_run=args.dry_run,
         no_delete=args.no_delete,
-        verbose=args.verbose,
+        verbose=args.verbose
     )
     print(message)
 
@@ -265,7 +266,8 @@ def main():
     update_parser = subparsers.add_parser(
         'update', help='Update a component library with in-place .bak backups.'
     )
-    update_parser.add_argument('library_name', type=str, help='Library to update (e.g., gradio)')
+    update_parser.add_argument('library_name', type=str, help='Library to update (e.g., flask)')
+    update_parser.add_argument('--repo', type=str, default=None, help='Override source repository URL')
     update_parser.add_argument('--ref', type=str, default=None, help='Tag/branch/commit to update to')
     update_parser.add_argument('--dry-run', action='store_true', help='Preview changes without modifying files')
     update_parser.add_argument('--no-delete', action='store_true', help='Keep local-only files (do not treat as deletions)')

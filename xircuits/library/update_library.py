@@ -39,6 +39,7 @@ class SyncReport:
 
 def update_library(
     library_name: str,
+    repo: Optional[str] = None,
     ref: Optional[str] = None,
     dry_run: bool = False,
     no_delete: bool = False,
@@ -49,6 +50,7 @@ def update_library(
 
     Args:
         library_name: "gradio", "xai_gradio", etc. (normalized internally)
+        repo:         Optional repository URL override (persists into pyproject if not dry-run).
         ref:          Optional tag/branch/commit to update to.
         dry_run:      If True, compute and print actions without modifying files.
         no_delete:    If True, do not treat dest-only files as deletions.
@@ -67,15 +69,17 @@ def update_library(
 
     timestamp = time.strftime("%Y%m%d-%H%M%S")
 
-    source_spec = _resolve_source_spec(lib_name, ref)
+    source_spec = _resolve_source_spec(lib_name, repo, ref)
     if not source_spec or not source_spec.repo_url:
         raise RuntimeError(
             f"Could not resolve a repository URL for '{library_name}'. "
             "Ensure it was installed (so metadata exists) or present in your index.json."
         )
 
-    print(f"Updating {lib_name} from {source_spec.repo_url} "
-          f"{'(ref='+source_spec.desired_ref+')' if source_spec.desired_ref else '(default branch)'}")
+    print(
+        f"Updating {lib_name} from {source_spec.repo_url} "
+        f"{'(ref='+source_spec.desired_ref+')' if source_spec.desired_ref else '(default branch)'}"
+    )
 
     temp_repo_dir = Path(tempfile.mkdtemp(prefix=f"update_{lib_name}_"))
     try:
@@ -104,17 +108,18 @@ def update_library(
             report=report,
         )
 
-        # Update pyproject metadata with the new ref (no lock/deps here)
-        try:
-            record_component_metadata(
-                library_name=lib_name,            # record_component_metadata normalizes to xai-*
-                member_path=str(dest_dir),
-                repo_url=repo_url_final or source_spec.repo_url,
-                ref=resolved_ref or source_spec.desired_ref or "latest",
-                is_tag=is_tag,
-            )
-        except Exception as e:
-            print(f"Warning: could not update pyproject metadata: {e}")
+        # Update pyproject metadata with the new source/ref (skipped on dry-run)
+        if not dry_run:
+            try:
+                record_component_metadata(
+                    library_name=lib_name,            # normalizes to xai-*
+                    member_path=str(dest_dir),
+                    repo_url=repo_url_final or source_spec.repo_url,
+                    ref=resolved_ref or source_spec.desired_ref or "latest",
+                    is_tag=is_tag,
+                )
+            except Exception as e:
+                print(f"Warning: could not update pyproject metadata: {e}")
 
         summary = (
             f"{lib_name} update "
@@ -128,19 +133,29 @@ def update_library(
         shutil.rmtree(temp_repo_dir, ignore_errors=True)
 
 
-def _resolve_source_spec(lib_name: str, user_ref: Optional[str]) -> Optional[SourceSpec]:
+def _resolve_source_spec(
+    lib_name: str,
+    repo_override: Optional[str],
+    user_ref: Optional[str]
+) -> Optional[SourceSpec]:
     """
     Priority:
+      0) explicit repo override (CLI/API 'repo=')
       1) pyproject.toml [tool.xircuits.components] entry (source + tag/rev)
       2) manifest index via get_remote_config()
     """
+    # 0) explicit override wins (persisted by record_component_metadata later if not dry-run)
+    if repo_override:
+        return SourceSpec(repo_url=repo_override, desired_ref=user_ref)
+
+    # 1) pyproject metadata
     source_url, meta_ref = read_component_metadata_entry(lib_name)
     desired_ref = user_ref or meta_ref
     if source_url:
         return SourceSpec(repo_url=source_url, desired_ref=desired_ref)
 
+    # 2) manifest (accept 'gradio' by stripping 'xai_')
     try:
-        # Accept 'gradio' (strip 'xai_') for manifest lookup
         _, manifest_url = get_remote_config(lib_name.replace("xai_", ""))
         return SourceSpec(repo_url=manifest_url, desired_ref=user_ref)
     except Exception:
@@ -167,7 +182,7 @@ def _select_library_source_dir(repo_root: Path, lib_name: str) -> Path:
 
 def _walk_files(root: Path) -> Set[Path]:
     """
-    Discover files under root, skipping obvious noise. No external excludes.
+    Discover files under root, skipping obvious noise.
     """
     INTERNAL_SKIP = {".git", "__pycache__"}
     out: Set[Path] = set()
