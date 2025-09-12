@@ -1,4 +1,3 @@
-import json
 import os
 import shutil
 import tempfile
@@ -6,7 +5,7 @@ import time
 import filecmp
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Set, Tuple
+from typing import List, Optional, Set
 
 from xircuits.utils.pathing import (
     resolve_working_dir,
@@ -32,8 +31,8 @@ class SourceSpec:
 @dataclass
 class SyncReport:
     added: List[str]
-    updated: List[Tuple[str, str]]   # (path, backup_name)
-    deleted: List[Tuple[str, str]]   # (path, backup_name)
+    updated: List[str]
+    deleted: List[str]
     unchanged: List[str]
 
 
@@ -42,19 +41,23 @@ def update_library(
     repo: Optional[str] = None,
     ref: Optional[str] = None,
     dry_run: bool = False,
-    no_delete: bool = False,
+    prune: bool = False,
     verbose: bool = False,
 ) -> str:
     """
     Safely update an installed component library (e.g., "gradio").
+
+    Defaults:
+      - Keeps any local-only files/dirs as-is (no deletions).
+      - Overwrites changed files, backing up the previous version in-place as *.YYYYmmdd-HHMMSS.bak.
 
     Args:
         library_name: "gradio", "xai_gradio", etc. (normalized internally)
         repo:         Optional repository URL override (persists into pyproject if not dry-run).
         ref:          Optional tag/branch/commit to update to.
         dry_run:      If True, compute and print actions without modifying files.
-        no_delete:    If True, do not treat dest-only files as deletions.
-        verbose:      If True, prints per-file actions; otherwise summarize.
+        prune:        If True, also archive local-only files/dirs (rename to *.TIMESTAMP.bak).
+        verbose:      If True, prints per-file actions; otherwise summary only.
     """
     working_dir = resolve_working_dir()
     if working_dir is None:
@@ -94,18 +97,9 @@ def update_library(
             source_root=src_dir,
             destination_root=dest_dir,
             dry_run=dry_run,
-            no_delete=no_delete,
+            prune=prune,
             timestamp=timestamp,
             verbose=verbose,
-        )
-
-        manifest_path = _write_update_manifest(
-            working_dir=working_dir,
-            lib_name=lib_name,
-            timestamp=timestamp,
-            repo_url=repo_url_final or source_spec.repo_url,
-            ref=resolved_ref or source_spec.desired_ref or "latest",
-            report=report,
         )
 
         # Update pyproject metadata with the new source/ref (skipped on dry-run)
@@ -124,8 +118,7 @@ def update_library(
         summary = (
             f"{lib_name} update "
             f"(added: {len(report.added)}, updated: {len(report.updated)}, "
-            f"deleted: {len(report.deleted)}, unchanged: {len(report.unchanged)}). "
-            f"Manifest: {manifest_path}"
+            f"deleted: {len(report.deleted)}, unchanged: {len(report.unchanged)})"
         )
         print(summary)
         return summary
@@ -136,7 +129,7 @@ def update_library(
 def _resolve_source_spec(
     lib_name: str,
     repo_override: Optional[str],
-    user_ref: Optional[str]
+    user_ref: Optional[str],
 ) -> Optional[SourceSpec]:
     """
     Priority:
@@ -144,17 +137,16 @@ def _resolve_source_spec(
       1) pyproject.toml [tool.xircuits.components] entry (source + tag/rev)
       2) manifest index via get_remote_config()
     """
-    # 0) explicit override wins (persisted by record_component_metadata later if not dry-run)
+    # use repo url if specified
     if repo_override:
         return SourceSpec(repo_url=repo_override, desired_ref=user_ref)
 
-    # 1) pyproject metadata
+    # pyproject metadata
     source_url, meta_ref = read_component_metadata_entry(lib_name)
     desired_ref = user_ref or meta_ref
     if source_url:
         return SourceSpec(repo_url=source_url, desired_ref=desired_ref)
 
-    # 2) manifest (accept 'gradio' by stripping 'xai_')
     try:
         _, manifest_url = get_remote_config(lib_name.replace("xai_", ""))
         return SourceSpec(repo_url=manifest_url, desired_ref=user_ref)
@@ -245,13 +237,13 @@ def _sync_with_backups(
     source_root: Path,
     destination_root: Path,
     dry_run: bool,
-    no_delete: bool,
+    prune: bool,
     timestamp: str,
     verbose: bool,
 ) -> SyncReport:
     added: List[str] = []
-    updated: List[Tuple[str, str]] = []
-    deleted: List[Tuple[str, str]] = []
+    updated: List[str] = []
+    deleted: List[str] = []
     unchanged: List[str] = []
 
     source_files = _walk_files(source_root)
@@ -261,78 +253,49 @@ def _sync_with_backups(
     for rel in sorted(source_files, key=str):
         src = source_root / rel
         dst = destination_root / rel
+        path_str = rel.as_posix()
 
         if not dst.exists():
             if verbose:
-                print(f"ADD     {rel.as_posix()}")
+                print(f"+++ {path_str}")
             _copy_file(src, dst, dry_run)
-            added.append(rel.as_posix())
+            added.append(path_str)
             continue
 
         if _files_equal(src, dst):
-            if verbose:
-                print(f"OK      {rel.as_posix()}")
-            unchanged.append(rel.as_posix())
+            # uncomment to log:
+            # if verbose: print(f"    {path_str}")
+            unchanged.append(path_str)
             continue
 
         backup_name = _backup_in_place(dst, timestamp, dry_run)
         if verbose:
-            print(f"UPDATE  {rel.as_posix()}  (backup: {backup_name})")
+            print(f"--- {path_str} (backup: {backup_name})")
+            print(f"+++ {path_str}")
         _copy_file(src, dst, dry_run)
-        updated.append((rel.as_posix(), backup_name))
+        updated.append(path_str)
 
-    # Deletions (dest-only)
-    if not no_delete:
+    # Deletions (dest-only) — only when prune=True
+    if prune:
         source_dirs = _walk_dirs(source_root)
         destination_dirs = _walk_dirs(destination_root)
 
         for rel in sorted(destination_files - source_files, key=str):
             dst = destination_root / rel
+            path_str = rel.as_posix()
             backup_name = _backup_in_place(dst, timestamp, dry_run)
             if verbose:
-                print(f"DELETE  {rel.as_posix()}  (backup: {backup_name})")
-            deleted.append((rel.as_posix(), backup_name))
+                print(f"--- {path_str} (backup: {backup_name})")
+            deleted.append(path_str)
 
         # Directories only in destination — deepest first
         for rel in sorted(destination_dirs - source_dirs, key=lambda p: len(p.as_posix()), reverse=True):
             dst_dir = destination_root / rel
             if dst_dir.exists():
+                path_str = rel.as_posix() + "/"
                 backup_name = _backup_in_place(dst_dir, timestamp, dry_run)
                 if verbose:
-                    print(f"DELETE  {rel.as_posix()}/  (backup: {backup_name})")
-                deleted.append((rel.as_posix() + "/", backup_name))
+                    print(f"--- {path_str} (backup: {backup_name})")
+                deleted.append(path_str)
 
     return SyncReport(added=added, updated=updated, deleted=deleted, unchanged=unchanged)
-
-
-def _write_update_manifest(
-    working_dir: Path,
-    lib_name: str,
-    timestamp: str,
-    repo_url: str,
-    ref: str,
-    report: SyncReport,
-) -> Path:
-    updates_dir = working_dir / ".xircuits" / "updates"
-    updates_dir.mkdir(parents=True, exist_ok=True)
-    manifest_path = updates_dir / f"{lib_name}-{timestamp}.json"
-
-    payload = {
-        "library": lib_name,
-        "timestamp": timestamp,
-        "source": {"repo_url": repo_url, "ref": ref},
-        "summary": {
-            "added": len(report.added),
-            "updated": len(report.updated),
-            "deleted": len(report.deleted),
-            "unchanged": len(report.unchanged),
-        },
-        "details": {
-            "added": report.added,
-            "updated": [{"path": p, "backup": b} for (p, b) in report.updated],
-            "deleted": [{"path": p, "backup": b} for (p, b) in report.deleted],
-            "unchanged": report.unchanged,
-        },
-    }
-    manifest_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    return manifest_path

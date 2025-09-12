@@ -146,14 +146,14 @@ def cmd_sync(args, extra_args=[]):
     sync_xai_components()
 
 def cmd_update_library(args, extra_args=[]):
-    from .library import update_library
+
     message = update_library(
         library_name=args.library_name,
         repo=args.repo,
         ref=args.ref,
         dry_run=args.dry_run,
-        no_delete=args.no_delete,
-        verbose=args.verbose
+        prune=args.prune,
+        verbose=args.verbose,
     )
     print(message)
 
@@ -269,8 +269,9 @@ def main():
     update_parser.add_argument('library_name', type=str, help='Library to update (e.g., flask)')
     update_parser.add_argument('--repo', type=str, default=None, help='Override source repository URL')
     update_parser.add_argument('--ref', type=str, default=None, help='Tag/branch/commit to update to')
-    update_parser.add_argument('--dry-run', action='store_true', help='Preview changes without modifying files')
-    update_parser.add_argument('--no-delete', action='store_true', help='Keep local-only files (do not treat as deletions)')
+    update_parser.add_argument('--dry-run', action='store_true', help='Preview only; no changes')
+    update_parser.add_argument('--prune', action='store_true',
+                            help='Prune local-only files/dirs (rename to .bak)')
     update_parser.add_argument('--verbose', action='store_true', help='Print per-file actions')
     update_parser.set_defaults(func=cmd_update_library)
 
