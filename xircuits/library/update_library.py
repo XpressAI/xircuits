@@ -388,15 +388,24 @@ def _read_text(path: Optional[Path]) -> List[str]:
         except Exception:
             return []
 
-
 def _unified_diff_for_pair(src: Optional[Path], dst: Optional[Path], rel: Path) -> str:
     """
-    Build a unified diff between dst (current destination) and src (incoming source),
-    using conventional 'a/' (old) -> 'b/' (new) headers.
-
-    When one side doesn't exist (adds/deletes), we represent the missing side as
-    an empty sequence of lines—no special files are read or written.
+    Build a unified diff between dst (current destination, old) and src (incoming source, new).
     """
+    def _normalize_for_diff(lines: List[str], keep_max_blank_run: int = 1) -> List[str]:
+        # Collapse runs of blank lines to at most `keep_max_blank_run`.
+        out: List[str] = []
+        blanks = 0
+        for ln in lines:
+            if ln.strip() == "":
+                blanks += 1
+                if blanks <= keep_max_blank_run:
+                    out.append(ln)  # keep original terminator
+            else:
+                blanks = 0
+                out.append(ln)
+        return out
+
     label_old = f"a/{rel.as_posix()}"
     label_new = f"b/{rel.as_posix()}"
 
@@ -411,13 +420,17 @@ def _unified_diff_for_pair(src: Optional[Path], dst: Optional[Path], rel: Path) 
         # Updated
         return f"Binary file updated: {rel.as_posix()}\n"
 
-    old_lines = _read_text(dst)
-    new_lines = _read_text(src)
-    diff_lines = difflib.unified_diff(
-        old_lines, new_lines, fromfile=label_old, tofile=label_new, lineterm=""
-    )
-    return "\n".join(diff_lines) + ("\n" if diff_lines else "")
+    # Read and normalize lines (with terminators preserved)
+    old_lines = _normalize_for_diff(_read_text(dst))
+    new_lines = _normalize_for_diff(_read_text(src))
 
+    # Use lineterm="\n" so each diff line includes its newline -> headers won't glue
+    diff_lines = list(difflib.unified_diff(
+        old_lines, new_lines,
+        fromfile=label_old, tofile=label_new,
+        lineterm="\n"
+    ))
+    return "".join(diff_lines)
 
 def _build_combined_diff(
     source_root: Path,
