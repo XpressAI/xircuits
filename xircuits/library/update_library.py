@@ -157,7 +157,6 @@ def update_library(
             f"(added: {len(report.added)}, updated: {len(report.updated)}, "
             f"deleted: {len(report.deleted)}, unchanged: {len(report.unchanged)})"
         )
-        print(summary)
         return summary
     finally:
         shutil.rmtree(temp_repo_dir, ignore_errors=True)
