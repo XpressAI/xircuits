@@ -2,6 +2,7 @@ import shutil
 import tempfile
 import time
 import filecmp
+import difflib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Set
@@ -46,14 +47,13 @@ def update_library(
     ref: Optional[str] = None,
     dry_run: bool = False,
     prune: bool = False,
-    verbose: bool = False,
     install_deps: bool = True,
 ) -> str:
     """
     Safely update an installed component library (e.g., "gradio").
 
     Defaults:
-      - Keeps any local-only files/dirs as-is (no deletions).
+      - Keeps any local-only files/dirs as-is (no deletions) unless prune=True.
       - Overwrites changed files, backing up the previous version in-place as *.YYYYmmdd-HHMMSS.bak.
       - Updates per-library extra and installs requirements (unless disabled).
 
@@ -61,10 +61,17 @@ def update_library(
         library_name: "gradio", "xai_gradio", etc. (normalized internally)
         repo:         Optional repository URL override (persists into pyproject if not dry-run).
         ref:          Optional tag/branch/commit to update to.
-        dry_run:      If True, compute and print actions without modifying files.
-        prune:        If True, also archive local-only files/dirs (rename to *.TIMESTAMP.bak).
-        verbose:      If True, prints per-file actions; otherwise summary only.
+        dry_run:      If True, compute actions and print a unified diff (no files changed).
+                      Also writes a combined diff file alongside the library directory.
+        prune:        If True, also archive local-only files/dirs (rename to *.bak).
         install_deps: If True (default), update per-library extra and install its requirements.
+
+    Output policy:
+      - Print action markers:
+          +++ path         (added or written)
+          --- path (...)   (backed up / deleted)
+      - Unchanged files are not printed.
+      - On dry-run, a unified diff of changes is printed and saved to disk.
     """
     working_dir = resolve_working_dir()
     if working_dir is None:
@@ -106,10 +113,26 @@ def update_library(
             dry_run=dry_run,
             prune=prune,
             timestamp=timestamp,
-            verbose=verbose,
         )
 
-        # Update pyproject metadata with the new source/ref (skipped on dry-run)
+        # On DRY-RUN: show and save a unified diff of planned changes.
+        # This is an *in-memory* comparison; no filesystem writes occur, and we don't
+        # ever touch '/dev/null'. For adds/deletes we diff against an empty side.
+        if dry_run:
+            diff_text = _build_combined_diff(
+                src_dir, dest_dir,
+                added=report.added,
+                updated=report.updated,
+                deleted=report.deleted
+            )
+            if diff_text.strip():
+                diff_path = dest_dir / f"{lib_name}.update.{timestamp}.dry-run.diff.txt"
+                diff_path.write_text(diff_text, encoding="utf-8")
+                print("\n--- DRY-RUN DIFF ---")
+                print(diff_text.rstrip())
+                print(f"\n(Wrote diff file to: {diff_path})")
+
+        # Update pyproject metadata / deps (skipped during dry-run)
         if not dry_run:
             try:
                 record_component_metadata(
@@ -275,8 +298,18 @@ def _sync_with_backups(
     dry_run: bool,
     prune: bool,
     timestamp: str,
-    verbose: bool,
 ) -> SyncReport:
+    """
+    Perform the filesystem sync (or simulate it on dry_run).
+
+    Prints concise markers by default:
+      +++ path
+      --- path (backup: <name>)    for updated/deleted
+
+    Notes:
+      - All backups and writes occur inside the destination library folder.
+      - On dry_run, no files are modified; we only print what would happen.
+    """
     added: List[str] = []
     updated: List[str] = []
     deleted: List[str] = []
@@ -292,22 +325,18 @@ def _sync_with_backups(
         path_str = rel.as_posix()
 
         if not dst.exists():
-            if verbose:
-                print(f"+++ {path_str}")
+            print(f"+++ {path_str}")
             _copy_file(src, dst, dry_run)
             added.append(path_str)
             continue
 
         if _files_equal(src, dst):
-            # uncomment to log:
-            # if verbose: print(f"    {path_str}")
             unchanged.append(path_str)
             continue
 
         backup_name = _backup_in_place(dst, timestamp, dry_run)
-        if verbose:
-            print(f"--- {path_str} (backup: {backup_name})")
-            print(f"+++ {path_str}")
+        print(f"--- {path_str} (backup: {backup_name})")
+        print(f"+++ {path_str}")
         _copy_file(src, dst, dry_run)
         updated.append(path_str)
 
@@ -320,8 +349,7 @@ def _sync_with_backups(
             dst = destination_root / rel
             path_str = rel.as_posix()
             backup_name = _backup_in_place(dst, timestamp, dry_run)
-            if verbose:
-                print(f"--- {path_str} (backup: {backup_name})")
+            print(f"--- {path_str} (backup: {backup_name})")
             deleted.append(path_str)
 
         # Directories only in destination — deepest first
@@ -330,8 +358,104 @@ def _sync_with_backups(
             if dst_dir.exists():
                 path_str = rel.as_posix() + "/"
                 backup_name = _backup_in_place(dst_dir, timestamp, dry_run)
-                if verbose:
-                    print(f"--- {path_str} (backup: {backup_name})")
+                print(f"--- {path_str} (backup: {backup_name})")
                 deleted.append(path_str)
 
     return SyncReport(added=added, updated=updated, deleted=deleted, unchanged=unchanged)
+
+
+# ---------- Diff helpers (for dry-run) ----------
+
+def _is_binary_file(path: Optional[Path]) -> bool:
+    if not path or not path.exists() or not path.is_file():
+        return False
+    try:
+        chunk = path.read_bytes()[:2048]
+        return b"\x00" in chunk
+    except Exception:
+        return False
+
+
+def _read_text(path: Optional[Path]) -> List[str]:
+    if not path or not path.exists() or not path.is_file():
+        return []
+    try:
+        return path.read_text(encoding="utf-8", errors="replace").splitlines(True)
+    except Exception:
+        # Fallback: best-effort decode
+        try:
+            return path.read_bytes().decode("utf-8", errors="replace").splitlines(True)
+        except Exception:
+            return []
+
+
+def _unified_diff_for_pair(src: Optional[Path], dst: Optional[Path], rel: Path) -> str:
+    """
+    Build a unified diff between dst (current destination) and src (incoming source),
+    using conventional 'a/' (old) -> 'b/' (new) headers.
+
+    When one side doesn't exist (adds/deletes), we represent the missing side as
+    an empty sequence of lines—no special files are read or written.
+    """
+    label_old = f"a/{rel.as_posix()}"
+    label_new = f"b/{rel.as_posix()}"
+
+    # Binary file summary
+    if _is_binary_file(dst) or _is_binary_file(src):
+        # Added
+        if dst is None or (dst and not dst.exists()):
+            return f"Binary file added: {rel.as_posix()}\n"
+        # Deleted
+        if src is None or (src and not src.exists()):
+            return f"Binary file deleted: {rel.as_posix()}\n"
+        # Updated
+        return f"Binary file updated: {rel.as_posix()}\n"
+
+    old_lines = _read_text(dst)
+    new_lines = _read_text(src)
+    diff_lines = difflib.unified_diff(
+        old_lines, new_lines, fromfile=label_old, tofile=label_new, lineterm=""
+    )
+    return "\n".join(diff_lines) + ("\n" if diff_lines else "")
+
+
+def _build_combined_diff(
+    source_root: Path,
+    destination_root: Path,
+    added: List[str],
+    updated: List[str],
+    deleted: List[str],
+) -> str:
+    """
+    Combine all per-file diffs in a single text blob, in stable sorted order.
+    """
+    out: List[str] = []
+
+    # Added
+    for p in sorted(added):
+        rel = Path(p)
+        src = source_root / rel
+        dst = None  # represent "no previous file" by empty content
+        diff = _unified_diff_for_pair(src, dst, rel)
+        if diff.strip():
+            out.append(diff)
+
+    # Updated
+    for p in sorted(updated):
+        rel = Path(p)
+        src = source_root / rel
+        dst = destination_root / rel
+        diff = _unified_diff_for_pair(src, dst, rel)
+        if diff.strip():
+            out.append(diff)
+
+    # Deleted
+    for p in sorted(deleted):
+        rel = Path(p)
+        src = None  # represent "no new file" by empty content
+        dst = destination_root / rel
+        diff = _unified_diff_for_pair(src, dst, rel)
+        if diff.strip():
+            out.append(diff)
+
+    return "\n".join(out)
