@@ -153,6 +153,7 @@ def cmd_update_library(args, extra_args=[]):
         ref=args.ref,
         dry_run=args.dry_run,
         prune=args.prune,
+        install_deps=args.install_deps,
         verbose=args.verbose,
     )
     print(message)
@@ -272,6 +273,9 @@ def main():
     update_parser.add_argument('--dry-run', action='store_true', help='Preview only; no changes')
     update_parser.add_argument('--prune', action='store_true',
                             help='Prune local-only files/dirs (rename to .bak)')
+    update_parser.add_argument('--install-deps', nargs='?', const=True, default=True, 
+                               type=lambda s: str(s).lower() not in ('0','false','no','off'), 
+                               help='Install/update Python deps (default true). Pass false to disable.')
     update_parser.add_argument('--verbose', action='store_true', help='Print per-file actions')
     update_parser.set_defaults(func=cmd_update_library)
 

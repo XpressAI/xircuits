@@ -1,4 +1,3 @@
-import os
 import shutil
 import tempfile
 import time
@@ -18,7 +17,12 @@ from xircuits.utils.git_toml_manager import (
     git_checkout_ref,
     get_git_metadata,
     record_component_metadata,
+    set_library_extra,
+    rebuild_meta_extra,
+    regenerate_lock_file,
 )
+from xircuits.utils.requirements_utils import read_requirements_for_library
+from xircuits.utils.venv_ops import install_specs
 from xircuits.handlers.request_remote import get_remote_config
 
 
@@ -43,6 +47,7 @@ def update_library(
     dry_run: bool = False,
     prune: bool = False,
     verbose: bool = False,
+    install_deps: bool = True,
 ) -> str:
     """
     Safely update an installed component library (e.g., "gradio").
@@ -50,6 +55,7 @@ def update_library(
     Defaults:
       - Keeps any local-only files/dirs as-is (no deletions).
       - Overwrites changed files, backing up the previous version in-place as *.YYYYmmdd-HHMMSS.bak.
+      - Updates per-library extra and installs requirements (unless disabled).
 
     Args:
         library_name: "gradio", "xai_gradio", etc. (normalized internally)
@@ -58,6 +64,7 @@ def update_library(
         dry_run:      If True, compute and print actions without modifying files.
         prune:        If True, also archive local-only files/dirs (rename to *.TIMESTAMP.bak).
         verbose:      If True, prints per-file actions; otherwise summary only.
+        install_deps: If True (default), update per-library extra and install its requirements.
     """
     working_dir = resolve_working_dir()
     if working_dir is None:
@@ -114,6 +121,36 @@ def update_library(
                 )
             except Exception as e:
                 print(f"Warning: could not update pyproject metadata: {e}")
+
+            # Requirements / extras install
+            try:
+                reqs = read_requirements_for_library(dest_dir)
+            except Exception as e:
+                reqs = []
+                print(f"Warning: could not read requirements for {lib_name}: {e}")
+
+            # Always refresh the per-library extra + meta extra on update (safe even if no install)
+            try:
+                set_library_extra(lib_name, reqs)
+                rebuild_meta_extra("xai-components")
+            except Exception as e:
+                print(f"Warning: could not update optional-dependencies for {lib_name}: {e}")
+
+            if install_deps:
+                try:
+                    if reqs:
+                        print(f"Installing Python dependencies for {lib_name}...")
+                        install_specs(reqs)
+                        print(f"✓ Dependencies for {lib_name} installed.")
+                    else:
+                        print(f"No requirements.txt entries for {lib_name}; nothing to install.")
+                except Exception as e:
+                    print(f"Warning: installing dependencies for {lib_name} failed:{e}".rstrip())
+
+            try:
+                regenerate_lock_file()
+            except Exception as e:
+                print(f"Warning: could not regenerate lock file: {e}")
 
         summary = (
             f"{lib_name} update "
