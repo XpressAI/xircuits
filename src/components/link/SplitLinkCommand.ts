@@ -58,12 +58,17 @@ export class SplitLinkCommand {
         let provider: CustomPortModel;
         let consumer: CustomPortModel;
         if (!a.getOptions().in && b.getOptions().in) {
-          provider = a; consumer = b;
+          provider = a;
+          consumer = b;
         } else if (!b.getOptions().in && a.getOptions().in) {
-          provider = b; consumer = a;
+          provider = b;
+          consumer = a;
+        } else if (p === a) {
+          provider = b;
+          consumer = a;
         } else {
-          provider = (p === a) ? b : a;
-          consumer = p;
+          provider = a;
+          consumer = b;
         }
 
         if (!provider.checkExecutionLoop(provider, consumer)) {
