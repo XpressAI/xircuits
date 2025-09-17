@@ -38,54 +38,27 @@ export class SplitLinkCommand {
   private clonePoint(orig: PointModel, link: DefaultLinkModel): PointModel {
       return link.generatePoint(orig.getX(), orig.getY());
   }
-  // Clean up unsafe parameter links (loops/back-edges) after insertion
-  private sanitizeParamLinksAfterInsertion() {
-    const paramPorts = Object.values(this.draggedNode.getPorts())
-      .filter(p => {
-        const name = (p as CustomPortModel).getName?.();
-        return name !== 'in-0' && name !== 'out-0';
-      }) as CustomPortModel[];
 
-    let removed = 0;
+  /** Remove all links on *any* port of the dragged node, except those connected to Literal nodes */
+  private clearAllNodeLinks() {
+      const isLiteralNode = (node: CustomNodeModel) => {
+          const opts = node?.getOptions?.() ?? {};
+          const n = (opts as any).name ?? '';
+          return /literal/i.test(n);
+      };
 
-    for (const p of paramPorts) {
-      const links = [...Object.values(p.getLinks())];
+    Object.values(this.draggedNode.getPorts()).forEach(port => {
+        Object.values((port as CustomPortModel).getLinks()).forEach(l => {
+            const srcNode = (l.getSourcePort() as CustomPortModel)?.getParent() as CustomNodeModel;
+            const dstNode = (l.getTargetPort() as CustomPortModel)?.getParent() as CustomNodeModel;
 
-      for (const l of links) {
-        const a = l.getSourcePort() as CustomPortModel;
-        const b = l.getTargetPort() as CustomPortModel;
-
-        let provider: CustomPortModel;
-        let consumer: CustomPortModel;
-        if (!a.getOptions().in && b.getOptions().in) {
-          provider = a;
-          consumer = b;
-        } else if (!b.getOptions().in && a.getOptions().in) {
-          provider = b;
-          consumer = a;
-        } else if (p === a) {
-          provider = b;
-          consumer = a;
-        } else {
-          provider = a;
-          consumer = b;
-        }
-
-        if (!provider.checkExecutionLoop(provider, consumer)) {
-          this.diagramModel.removeLink(l);
-          removed++;
-        }
-      }
-    }
-
-    if (removed) {
-      Notification.info(
-        `Removed ${removed} unsafe parameter link(s) that would create an execution loop.`,
-        { autoClose: 4000 }
-      );
-    }
+            if (isLiteralNode(srcNode) || isLiteralNode(dstNode)) {
+                return;
+            }
+            this.diagramModel.removeLink(l);
+        });
+    });
   }
-
   execute(): void {
       const inPort = this.draggedNode.getPort('in-0') as CustomPortModel;
       const outPort = this.draggedNode.getPort('out-0') as CustomPortModel;
@@ -95,14 +68,8 @@ export class SplitLinkCommand {
         return;
     }
     
-
-    const existingInLinks = Object.values(inPort.getLinks());
-    const existingOutLinks = Object.values(outPort.getLinks());
-    if (existingInLinks.length > 0 || existingOutLinks.length > 0) {
-        Notification.info("Flow ports are already connected. Existing flow connections will be removed.", { autoClose: 3000 });
-        existingInLinks.forEach(l => this.diagramModel.removeLink(l));
-        existingOutLinks.forEach(l => this.diagramModel.removeLink(l));
-    }
+    this.clearAllNodeLinks();
+    Notification.info("Flow ports are already connected. Existing flow connections will be removed.", { autoClose: 3000 });
 
     const oldLink = this.diagramModel.getLink(this.linkId) as DefaultLinkModel;
     if (!oldLink) return;
@@ -122,7 +89,7 @@ export class SplitLinkCommand {
 
     const points = [...oldLink.getPoints()];
     this.diagramModel.removeLink(oldLink);
-    
+
     // Straight link (no bends)
     if (points.length <= 2) {
         const leftLink = new DefaultLinkModel();
@@ -133,7 +100,6 @@ export class SplitLinkCommand {
         rightLink.setTargetPort(dstPort);
         this.diagramModel.addLink(leftLink);
         this.diagramModel.addLink(rightLink);
-        this.sanitizeParamLinksAfterInsertion();
         return;
     }
 
@@ -179,8 +145,6 @@ export class SplitLinkCommand {
     // Highlight new links
     leftLink.setSelected(true);
     rightLink.setSelected(true);
-    this.sanitizeParamLinksAfterInsertion();
-
     leftBends.forEach(pt => pt.setSelected(true));
     rightBends.forEach(pt => pt.setSelected(true));
   }
