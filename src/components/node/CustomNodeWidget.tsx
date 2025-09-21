@@ -283,6 +283,11 @@ const StartFinishNode = ({ node, engine, handleDeletableNode, app }) => (
 
 const WorkflowNode = ({ node, engine, app, handleDeletableNode }) => {
     const handleDescription = () => {
+        const m = engine.getModel();
+        m.clearSelection?.();
+        node.setSelected?.(true); 
+        engine.repaintCanvas?.();
+
         togglePreviewWidget(app, {
         node,
         engine,
@@ -325,6 +330,11 @@ const WorkflowNode = ({ node, engine, app, handleDeletableNode }) => {
 
 const ComponentLibraryNode = ({ node, engine, shell, app, handleDeletableNode }) => {
     const handleDescription = () => {
+        const m = engine.getModel();
+        m.clearSelection?.();
+        node.setSelected?.(true);      
+        engine.repaintCanvas?.();
+
         togglePreviewWidget(app, {
             node,
             engine,
