@@ -17,7 +17,7 @@
   width: 100%;
   min-height: var(--jp-private-toolbar-height);
   background: transparent;
-  padding: 0;              /* <-- كان 0 12px؛ ألغيناه */
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -90,10 +90,10 @@
   pointer-events: none;
   text-align: center;
 }
-.empty-state svg { width: 120px; height: 120px; }
+.empty-state svg { width: 80px; height: 80px; }
 .empty-state p {
-  margin-top: 12px;
-  font-size: 0.8rem;
+  margin-top: 10px;
+  font-size: 0.7rem;
   color: var(--jp-ui-font-color1);
   opacity: 0.9;
 }

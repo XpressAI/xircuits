@@ -30,6 +30,7 @@ type ToolbarState = {
   canOpenScript: boolean;
   canCenter: boolean;
   canOpenWorkflow: boolean;
+  canCollapse: boolean;
 };
 
 class CollapseBus extends Signal<unknown, boolean> {}
@@ -108,7 +109,7 @@ function TopBarReact({
             : expandAllIcon
         }
         tooltip={expandAll ? 'Collapse All' : 'Expand All'}
-        enabled
+        enabled={s.canCollapse}
         onClick={handleToggle}
       />
     </div>
@@ -155,7 +156,7 @@ class OverviewSection extends ReactWidget {
   }
   setModel(m: IComponentInfo | null) {
     this._model = m;
-    this.update();
+    this.update();   
   }
   render(): JSX.Element {
     if (!this._model) {
@@ -244,7 +245,7 @@ export class ComponentPreviewWidget extends SidePanel {
         this._collapseBus.emit(expandAll)
     });
     (topbar as any).addClass?.('component-preview-header-topbar');
-    this._topbar = topbar;          // ← نخزن المرجع هنا
+    this._topbar = topbar;
     this.header.addWidget(topbar);
 
     this._accordion = this.content as AccordionPanel;
@@ -331,7 +332,8 @@ export class ComponentPreviewWidget extends SidePanel {
         canNext: false,
         canOpenScript: false,
         canCenter: false,
-        canOpenWorkflow: false
+        canOpenWorkflow: false,
+        canCollapse: false
       };
     }
     let canPrev = false,
@@ -342,15 +344,20 @@ export class ComponentPreviewWidget extends SidePanel {
         canPrev = nodes.length > 1 && idx > 0;
         canNext = nodes.length > 1 && idx >= 0 && idx < nodes.length - 1;
     }
-    const nodeType =
-      m.node?.extras?.type ?? m.node?.getOptions?.().extras?.type ?? '';
+    const nodeOpts = (m.node as any)?.getOptions?.() ?? {};
+    const nodeName: string = nodeOpts.name ?? (m.node as any)?.name ?? '';
+    const nodeType: string =
+      nodeOpts.extras?.type ?? (m.node as any)?.extras?.type ?? '';
+
+    const isStartFinish = nodeName === 'Start' || nodeName === 'Finish';
     return {
       title: m.name ?? '',
       canPrev,
       canNext,
-      canOpenScript: !!m.node,
+      canOpenScript: !!m.node && !isStartFinish,
       canCenter: !!(m.node && m.engine),
-      canOpenWorkflow: nodeType === 'xircuits_workflow'
+      canOpenWorkflow: nodeType === 'xircuits_workflow',
+      canCollapse: !isStartFinish  
     };
   }
 
@@ -387,10 +394,20 @@ export class ComponentPreviewWidget extends SidePanel {
       if (engine) centerNodeInView(engine, next.getID());
   }
 
+  private _selectModelNode() {
+    const node = this._model?.node as any;
+    const engine = this._model?.engine as any;
+    if (!node || !engine?.getModel) return;
+    const mdl = engine.getModel();
+    mdl.clearSelection?.();
+    node.setSelected?.(true);
+  }
+
   private _handleOpenScript() {
-  void this._app.commands.execute(commandIDs.openScript)
-    .catch(err => console.error('Failed to open node script:', err));
-}
+    this._selectModelNode();
+    void this._app.commands.execute(commandIDs.openScript)
+      .catch(err => console.error('Failed to open node script:', err));
+  }
 
   private _handleCenterNode() {
     const node = this._model?.node;
@@ -401,7 +418,8 @@ export class ComponentPreviewWidget extends SidePanel {
   }
 
   private _handleOpenWorkflow() {
-  void this._app.commands.execute(commandIDs.openXircuitsWorkflow)
-    .catch(err => console.error('Failed to open workflow:', err));
+    this._selectModelNode();
+    void this._app.commands.execute(commandIDs.openXircuitsWorkflow)
+      .catch(err => console.error('Failed to open workflow:', err));
   }
 }
