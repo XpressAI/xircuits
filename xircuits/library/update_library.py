@@ -302,13 +302,10 @@ def _sync_with_backups(
     """
     Perform the filesystem sync (or simulate it on dry_run).
 
-    Prints concise markers by default:
+    Prints concise markers:
       +++ path
       --- path (backup: <name>)    for updated/deleted
-
-    Notes:
-      - All backups and writes occur inside the destination library folder.
-      - On dry_run, no files are modified; we only print what would happen.
+      --- path (would backup)      for updated/deleted (dry-run mode)
     """
     added: List[str] = []
     updated: List[str] = []
@@ -334,9 +331,14 @@ def _sync_with_backups(
             unchanged.append(path_str)
             continue
 
-        backup_name = _backup_in_place(dst, timestamp, dry_run)
-        print(f"--- {path_str} (backup: {backup_name})")
-        print(f"+++ {path_str}")
+        if dry_run:
+            backup_name = _backup_in_place(dst, timestamp, dry_run)
+            print(f"--- {path_str} (would backup as: {backup_name})")
+            print(f"+++ {path_str}")
+        else:
+            backup_name = _backup_in_place(dst, timestamp, dry_run)
+            print(f"--- {path_str} (backup: {backup_name})")
+            print(f"+++ {path_str}")
         _copy_file(src, dst, dry_run)
         updated.append(path_str)
 
@@ -348,8 +350,12 @@ def _sync_with_backups(
         for rel in sorted(destination_files - source_files, key=str):
             dst = destination_root / rel
             path_str = rel.as_posix()
-            backup_name = _backup_in_place(dst, timestamp, dry_run)
-            print(f"--- {path_str} (backup: {backup_name})")
+            if dry_run:
+                backup_name = _backup_in_place(dst, timestamp, dry_run)
+                print(f"--- {path_str} (would backup as: {backup_name})")
+            else:
+                backup_name = _backup_in_place(dst, timestamp, dry_run)
+                print(f"--- {path_str} (backup: {backup_name})")
             deleted.append(path_str)
 
         # Directories only in destination — deepest first
@@ -357,12 +363,15 @@ def _sync_with_backups(
             dst_dir = destination_root / rel
             if dst_dir.exists():
                 path_str = rel.as_posix() + "/"
-                backup_name = _backup_in_place(dst_dir, timestamp, dry_run)
-                print(f"--- {path_str} (backup: {backup_name})")
+                if dry_run:
+                    backup_name = _backup_in_place(dst_dir, timestamp, dry_run)
+                    print(f"--- {path_str} (would backup as: {backup_name})")
+                else:
+                    backup_name = _backup_in_place(dst_dir, timestamp, dry_run)
+                    print(f"--- {path_str} (backup: {backup_name})")
                 deleted.append(path_str)
 
     return SyncReport(added=added, updated=updated, deleted=deleted, unchanged=unchanged)
-
 
 # ---------- Diff helpers (for dry-run) ----------
 
