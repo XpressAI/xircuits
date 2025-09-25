@@ -9,7 +9,7 @@ export interface LibraryConfig {
     name: string;
     library_id: string;
     repository: string;
-    local_path: string;
+    path: string;
     status: string;
     version?: string;
     description?: string;
@@ -101,7 +101,7 @@ export const buildLocalFilePath = async (libName, fileKey) => {
     const libraryConfig = await fetchLibraryConfig(libName);
 
     if (libraryConfig && libraryConfig[fileKey]) {
-        return `${libraryConfig.local_path}/${libraryConfig[fileKey]}`;
+        return `${libraryConfig.path}/${libraryConfig[fileKey]}`;
     } else if (libraryConfig) {
         // console.log(`File not found for: ${libName} (Key: ${fileKey})`);
     }
