@@ -583,6 +583,10 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       });
     }
 
+    function canon(name: string): string {
+      return name.toLowerCase().replace(/^xai[_-]?/, '');
+    }
+
     async function getInstalledLibraries(): Promise<Set<string>> {
       try {
         const result = await requestAPI<any>('library/get_config', {
@@ -592,7 +596,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         return new Set<string>(
           result.config.libraries
             .filter((lib: any) => lib.status === 'installed' && typeof lib.name === 'string')
-            .map((lib: any) => lib.name)
+            .map((lib: any) => canon(lib.name))
         );
       } catch (err) {
         console.error('Failed to load library config via API:', err);
@@ -622,23 +626,27 @@ const xircuits: JupyterFrontEndPlugin<void> = {
           const currentPath = browserFactory.tracker.currentWidget?.model.path ?? '';
           const installedLibs = await getInstalledLibraries();
 
-          for (const lib of libraries) {
-            if (installedLibs.has(lib)) {
-              console.log(`Library ${lib} already installed. Skipping.`);
-              continue;
+          const pairs = libraries.map(lib => ({ lib, want: canon(lib) }));
+          const missing = pairs.filter(p => !installedLibs.has(p.want));
+          if (missing.length) {
+            const list = missing.map(p => p.lib).join(', ');
+            const ok = window.confirm(`This template requires: ${list}. Install now?`);
+            if (!ok) {
+              console.warn('User cancelled installation.');
+              return;
             }
 
-            const ok = await handleInstall(app, lib, () =>
-              app.commands.execute(commandIDs.refreshComponentList)
-            );
-
+            for (const { lib, want } of missing) {
+              const ok = await handleInstall(app, lib, () =>{},
+                { silent: true }
+              );
               if (!ok) {
                 console.warn(`Aborted: ${lib} not installed.`);
                 return;
               }
-            installedLibs.add(lib);
+              installedLibs.add(want);
             }
-
+          }
           // Currently the templates are stored at the `examples` dir
           await app.commands.execute(commandIDs.fetchExamples);
 
