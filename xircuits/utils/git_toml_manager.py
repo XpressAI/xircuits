@@ -380,3 +380,43 @@ def regenerate_lock_file() -> bool:
     Useful for maintenance or after manual pyproject.toml edits.
     """
     return _run_uv_lock()
+
+def read_component_metadata_entry(library_name: str) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Read [tool.xircuits.components.<xai-*>] and return (source_url, ref).
+    'ref' prefers tag over rev when both exist.
+    Accepts inputs like 'gradio', 'xai_gradio', 'xai-gradio', or a path.
+    """
+    doc, _ = _load_or_init_pyproject()
+    comps = doc.get("tool", {}).get("xircuits", {}).get("components", {})
+    key = _lib_key_for_components(library_name)
+    entry = comps.get(key)
+    if not isinstance(entry, dict):
+        return None, None
+    source_url = entry.get("source")
+    ref = entry.get("tag") or entry.get("rev")
+    return source_url, ref
+
+
+def git_clone_shallow(repo_url: str, destination: Path) -> None:
+    """
+    Shallow clone repo_url into destination (depth=1).
+    """
+    subprocess.run(["git", "clone", "--depth=1", repo_url, str(destination)], check=True)
+
+
+def git_checkout_ref(repo_dir: Path, ref: str) -> None:
+    """
+    Best-effort shallow checkout of tag/branch/SHA into detached HEAD.
+    """
+    try:
+        subprocess.run(
+            ["git", "-C", str(repo_dir), "fetch", "--depth", "1", "origin", ref],
+            check=True,
+        )
+        subprocess.run(
+            ["git", "-C", str(repo_dir), "checkout", "--detach", "FETCH_HEAD"],
+            check=True,
+        )
+    except subprocess.CalledProcessError:
+        subprocess.run(["git", "-C", str(repo_dir), "checkout", ref], check=True)

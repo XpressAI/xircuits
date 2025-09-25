@@ -1,5 +1,3 @@
-import sys
-import subprocess
 from pathlib import Path
 
 from .index_config import get_component_library_config
@@ -24,24 +22,13 @@ def _filesystem_path(library_entry):
 def _has_init_py(directory_path):
     return bool(directory_path and (directory_path / "__init__.py").exists())
 
-def _installed_package_names_lower():
-    return list_installed_package_names_lower()
 
 def _installed_package_names_lower():
     """
     Return lowercased package names currently installed (ignores versions and sources).
+    Delegates to the canonical implementation in utils.venv_ops.
     """
-    output = subprocess.check_output([sys.executable, "-m", "pip", "freeze"])
-    names_lower = set()
-    for line in output.decode().splitlines():
-        text = line.strip()
-        if not text or text.startswith("#"):
-            continue
-        # handle 'pkg==x.y', 'pkg @ git+...', editable installs, etc.
-        head = text.split(" ", 1)[0]       # drop ' @ ...'
-        head = head.split("==", 1)[0]      # drop version pin
-        names_lower.add(head.lower())
-    return names_lower
+    return list_installed_package_names_lower()
 
 
 def _requirement_names_lower(requirement_specifications):

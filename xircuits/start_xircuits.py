@@ -9,6 +9,7 @@ from xircuits.utils.pathing import resolve_working_dir
 
 from .library import list_component_library, install_library, fetch_library, uninstall_library
 from .library.index_config import refresh_index
+from .library.update_library import update_library
 
 from .compiler import compile, recursive_compile
 from xircuits.handlers.config import get_config
@@ -144,6 +145,17 @@ def cmd_list_libraries(args, extra_args=[]):
 def cmd_sync(args, extra_args=[]):
     sync_xai_components()
 
+def cmd_update_library(args, extra_args=[]):
+
+    message = update_library(
+        library_name=args.library_name,
+        repo=args.repo,
+        ref=args.ref,
+        dry_run=args.dry_run,
+        prune=args.prune,
+        install_deps=args.install_deps,
+    )
+    print(message)
 
 def cmd_run(args, extra_args=[]):
     original_cwd = args.original_cwd
@@ -249,6 +261,21 @@ def main():
         help='Install dependencies for all Xircuits component libraries (meta extra: xai-components).'
     )
     sync_parser.set_defaults(func=cmd_sync)
+
+    # 'update' command.
+    update_parser = subparsers.add_parser(
+        'update', help='Update a component library with in-place .bak backups.'
+    )
+    update_parser.add_argument('library_name', type=str, help='Library to update (e.g., flask)')
+    update_parser.add_argument('--repo', type=str, default=None, help='Override source repository URL')
+    update_parser.add_argument('--ref', type=str, default=None, help='Tag/branch/commit to update to')
+    update_parser.add_argument('--dry-run', action='store_true', help='Preview only; no changes')
+    update_parser.add_argument('--prune', action='store_true',
+                            help='Prune local-only files/dirs (rename to .bak)')
+    update_parser.add_argument('--install-deps', nargs='?', const=True, default=True, 
+                               type=lambda s: str(s).lower() not in ('0','false','no','off'), 
+                               help='Install/update Python deps (default true). Pass false to disable.')
+    update_parser.set_defaults(func=cmd_update_library)
 
     # 'run' command.
     run_parser = subparsers.add_parser(
