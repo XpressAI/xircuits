@@ -65,12 +65,12 @@ export function addNodeActionCommands(
             if (args['nodePath'] === undefined && args['nodeName'] === undefined && args['nodeLineNo'] === undefined) {
                 node = getLastSelectedNode();
             }
-
+    
             // Assign values based on whether args were provided or derived from getLastSelectedNode()
             nodePath = args['nodePath'] ?? node?.extras.path;
             nodeName = args['nodeName'] ?? node?.name;
             nodeLineNo = args['nodeLineNo'] ?? node?.extras.lineNo;
-
+    
             if (nodeName.startsWith('Literal ') || nodeName.startsWith('Argument ')) {
                 showDialog({
                     title: `${node.name} don't have its own script`,
@@ -101,7 +101,7 @@ export function addNodeActionCommands(
             if (args['nodePath'] === undefined && args['nodeName'] === undefined && args['nodeLineNo'] === undefined) {
                 node = getLastSelectedNode();
             }
-
+    
             // Assign values based on whether args were provided or derived from getLastSelectedNode()
             nodePath = args['nodePath'] ?? node?.extras.path;
             let xircuitsPath = nodePath.replace(/\.py$/, '.xircuits');
@@ -231,7 +231,7 @@ export function addNodeActionCommands(
         execute: async () => {
 
             await fetchComponents();
-
+            
             const widget = tracker.currentWidget?.content as XircuitsPanel;
             const engine = widget.xircuitsApp.getDiagramEngine();
             const model = engine.getModel();
@@ -247,9 +247,9 @@ export function addNodeActionCommands(
                     console.info(selected_node.name + " cannot be reloaded.");
                     continue;
                 }
-
+            
                 let node;
-
+            
                 if (selected_node.name.startsWith("Literal ")) {
                     const nodeName = selected_node["name"];
                     const label = selected_node.getPorts()["out-0"].getOptions()["label"];
@@ -258,7 +258,7 @@ export function addNodeActionCommands(
                         type: selected_node["extras"]["type"],
                     };
                     const attached = selected_node["extras"]["attached"];
-
+    
                     node = createLiteralNode({
                         nodeName,
                         nodeData,
@@ -266,7 +266,7 @@ export function addNodeActionCommands(
                         type: nodeData.type,
                         attached
                     });
-
+    
                 } else if (selected_node.name.startsWith("Argument ")) {
                     const nodeName = selected_node["name"];
                     const nodeData = {
@@ -274,12 +274,12 @@ export function addNodeActionCommands(
                         type: selected_node["extras"]["type"],
                     };
                     const inputValue = nodeName.split(": ")[1];
-
+    
                     node = createArgumentNode({
                         nodeData,
                         inputValue
                     });
-
+    
                 } else if (selected_node.name == "Finish") {
                     node = BaseComponentLibrary('Finish');
                 } else {
@@ -324,10 +324,10 @@ export function addNodeActionCommands(
                         continue;
                     }
                 }
-
+            
                 let nodePositionX = selected_node.getX();
                 let nodePositionY = selected_node.getY();
-
+                
                 // Add node at given position
                 node.setPosition(nodePositionX, nodePositionY);
                 engine.getModel().addNode(node);
@@ -337,10 +337,10 @@ export function addNodeActionCommands(
                     let ports = selected_node.getPorts();
                     for (let portName in ports) {
                         let port = ports[portName];
-
+                
                         for (let linkID in port.links) {
                             let link = port.links[linkID];
-
+                
                             if (link.getSourcePort() === port) {
                                 let sourcePortName = link.getSourcePort().getName();
                                 let newSourcePort = node.getPorts()[sourcePortName];
@@ -351,9 +351,9 @@ export function addNodeActionCommands(
                                     linksToRemove.push(link);
                                     continue;
                                 }
-
+                
                             } else if (link.getTargetPort() === port) {
-
+                                
                                 let targetPort = link.getTargetPort();
                                 let targetPortName = targetPort.getName();
                                 let newTargetPort = node.getPorts()[targetPortName];
@@ -373,7 +373,7 @@ export function addNodeActionCommands(
                                 link.setTargetPort(newTargetPort);
 
                                 }
-
+                                
                             engine.getModel().addLink(link);
                         }
                     }
@@ -402,7 +402,7 @@ export function addNodeActionCommands(
             // Repaint canvas
             selected_nodes.forEach(node => node.setSelected(false));
             nodesToHighlight.forEach(node => node.setSelected(true));
-
+            
             pruneLooseLinks(model);
             engine.repaintCanvas();
 
@@ -411,7 +411,7 @@ export function addNodeActionCommands(
     });
 
     function pruneLooseLinks(model: SRD.DiagramModel): void {
-
+ 
         const links = model.getLinks()
 
         // Iterate over all links and prune those that do not have either a source or a target port
@@ -507,7 +507,7 @@ export function addNodeActionCommands(
                 // When node got no outputPort, just return
                 return;
             }
-
+    
             // Helper function to parse Union types
             const parseUnionType = (type: string): string[] => {
                 const unionMatch = type.match(/^Union\[(.*)\]$/);
@@ -516,7 +516,7 @@ export function addNodeActionCommands(
                 }
                 return [type];
             };
-
+    
             for (let outPortIndex in outPorts) {
                 const outPort = outPorts[outPortIndex];
                 const outPortName = outPort.getOptions()['name'];
@@ -524,17 +524,17 @@ export function addNodeActionCommands(
                 const outPortType = outPort.getOptions()['dataType'];
                 const outPortLabelArr: string[] = outPortLabel.split('_');
                 const outPortTypes = parseUnionType(outPortType);
-
+    
                 if (outPort.getOptions()['label'] == '▶') {
                     // Skip ▶ outPort
                     continue;
                 }
-
+    
                 // Check if there are existing links from the target port
                 if (Object.keys(outPort.getLinks()).length > 0) {
                     continue;
                 }
-
+    
                 for (let inPortIndex in inPorts) {
                     const inPort = inPorts[inPortIndex];
                     const inPortName = inPort.getOptions()['name'];
@@ -545,20 +545,20 @@ export function addNodeActionCommands(
                     const inPortTypes = parseUnionType(inPortType);
                     // Compare if there is similarity for each word
                     const intersection = outPortLabelArr.filter(element => inPortLabelArr.includes(element));
-
+    
                     // Check if there are existing links from the source port
                     if (Object.keys(inPort.getLinks()).length > 0) {
                         continue;
                     }
-
+    
                     // Check datatype compatibility
-                    const typesCompatible = outPortTypes.some(outType =>
+                    const typesCompatible = outPortTypes.some(outType => 
                         inPortTypes.includes(outType) || inPortTypes.includes('any')
                     );
                     if (!typesCompatible) {
                         continue;
                     }
-
+    
                     // Check label compatibility or intersection
                     if ((outPortLabel === inPortLabel && typesCompatible) || intersection.length >= 1) {
                         const newLink = new DefaultLinkModel();
@@ -580,7 +580,7 @@ export function addNodeActionCommands(
     commands.addCommand(commandIDs.addCommentNode, {
         execute: async (args) => {
             const widget = tracker.currentWidget?.content as XircuitsPanel;
-
+            
             const dialogOptions: Partial<Dialog.IOptions<any>> = {
                 body: formDialogWidget(
                         <CommentDialog commentInput={""}/>
@@ -640,7 +640,7 @@ export function addNodeActionCommands(
 
         localStorage.setItem('clipboard', JSON.stringify(copies));
 
-
+    
     }
 
     function copyNode(): void {
@@ -656,22 +656,22 @@ export function addNodeActionCommands(
     function pasteNode(): void {
         const widget = tracker.currentWidget?.content as XircuitsPanel;
         if (!widget) return;
-
+    
         const engine = widget.xircuitsApp.getDiagramEngine();
         const model = engine.getModel();
         const clipboard = JSON.parse(localStorage.getItem('clipboard'));
-
+    
         if (!clipboard) return;
         model.clearSelection();
-
+    
         const newNodeModels = [];
         let idMap = {};
-
+    
         const clipboardNodes = clipboard.filter(serialized => serialized.type.includes('node'));
         const clipboardLinks = clipboard.filter(serialized => serialized.type.includes('link'));
-
+    
         let totalX = 0, totalY = 0, nodesCount = clipboardNodes.length;
-
+    
         clipboardNodes.forEach(serializedNode => {
 
             if (serializedNode.name === 'Start' || serializedNode.name === 'Finish') {
@@ -681,36 +681,36 @@ export function addNodeActionCommands(
 
             let originalNodeInstance = model.getNodes().find(node => node.getID() === serializedNode.id);
             let clonedNodeModelInstance;
-
+    
             if (originalNodeInstance) {
                 clonedNodeModelInstance = originalNodeInstance.clone();
             } else {
                 clonedNodeModelInstance = createNewNodeInstance(model, engine, serializedNode);
             }
-
+    
             newNodeModels.push(clonedNodeModelInstance);
             idMap = mapNodeAndPortIds(serializedNode, clonedNodeModelInstance, idMap);
-
+    
             totalX += clonedNodeModelInstance.getX();
             totalY += clonedNodeModelInstance.getY();
         });
-
+    
         // Calculate the center of the group of nodes.
         const centerX = totalX / nodesCount;
         const centerY = totalY / nodesCount;
-
+    
         placeNodes(engine, model, newNodeModels, widget.mousePosition, centerX, centerY);
         recreateLinks(engine, model, clipboardLinks, idMap, widget.mousePosition, centerX, centerY);
         app.commands.execute(commandIDs.reloadNode);
         engine.repaintCanvas();
     }
-
+    
     function createNewNodeInstance(model: SRD.DiagramModel, engine: SRD.DiagramEngine, serializedNode): NodeModel {
         const clonedNodeModelInstance = model.getActiveNodeLayer()
                                         .getChildModelFactoryBank(engine)
                                         .getFactory(serializedNode.type)
                                         .generateModel({ initialConfig: serializedNode });
-
+    
         clonedNodeModelInstance.deserialize({
             engine: engine,
             data: serializedNode,
@@ -719,47 +719,47 @@ export function addNodeActionCommands(
                 throw new Error('Function not implemented.');
             }
         });
-
+    
         return clonedNodeModelInstance;
     }
-
+    
     function mapNodeAndPortIds(serializedNode, clonedNodeModelInstance: CustomNodeModel, idMap) {
         // Map the ID of the serialized node to the ID of the cloned node instance.
         idMap[serializedNode.id] = clonedNodeModelInstance.getID();
-
+    
         // For each serialized port in the serialized node...
         serializedNode.ports.forEach(serializedPort => {
             // ...find the corresponding port in the cloned node instance by comparing names.
             const correspondingNewPort: any = Object.values(clonedNodeModelInstance.getPorts()).find((newPort: CustomPortModel) => newPort.getName() === serializedPort.name);
-
+    
             // If the corresponding port exists, map the ID of the serialized port to the ID of the cloned port.
             if(correspondingNewPort) idMap[serializedPort.id] = correspondingNewPort.getID();
         });
-
+    
         // Return the updated ID map.
         return idMap;
     }
-
+    
     function placeNodes(engine: SRD.DiagramEngine, model: SRD.DiagramModel, newNodeModels: CustomNodeModel[], mousePosition: { x: number; y: number }, centerX: number, centerY: number): void {
         let clientMouseEvent = { clientX: mousePosition.x, clientY: mousePosition.y };
         let relativeMousePosition = engine.getRelativeMousePoint(clientMouseEvent);
-
+    
         newNodeModels.forEach((modelInstance) => {
             // Get the offset position of the node relative to the group's center
             let nodeOffsetX = modelInstance.getX() - centerX;
             let nodeOffsetY = modelInstance.getY() - centerY;
-
+    
             modelInstance.setPosition(
                 relativeMousePosition.x + nodeOffsetX,
                 relativeMousePosition.y + nodeOffsetY
             );
-
+    
             model.addNode(modelInstance);
-
+    
             if (modelInstance.getOptions()['type'] === 'default') {
                 model.removeNode(modelInstance);
             }
-
+    
             modelInstance.setSelected(true);
         });
     }
@@ -774,63 +774,63 @@ export function addNodeActionCommands(
                 if(sourcePort && targetPort) recreateLink(engine, model, serializedLink, sourcePort, targetPort, mousePosition, centerX, centerY);
             }
         });
-    }
-
+    }    
+    
     function getSourceAndTargetPorts(model: SRD.DiagramModel, newSourceID: string, newTargetID: string): { sourcePort, targetPort } {
         let sourcePort, targetPort;
-
+    
         model.getSelectedEntities().forEach((entity) => {
             if (entity instanceof NodeModel) {
                 if(entity.getPortFromID(newSourceID)) sourcePort = entity.getPortFromID(newSourceID);
                 if(entity.getPortFromID(newTargetID)) targetPort = entity.getPortFromID(newTargetID);
             }
         });
-
+    
         return { sourcePort, targetPort };
     }
-
+    
     function recreateLink(engine: SRD.DiagramEngine, model: SRD.DiagramModel, serializedLink, sourcePort, targetPort, mousePosition: { x: number; y: number }, centerX: number, centerY: number): void {
         let originalLink = model.getLinks().find(link => link.getID() === serializedLink.id);
         let clonedLink;
         let points = [];
-
+    
         let clientMouseEvent = { clientX: mousePosition.x, clientY: mousePosition.y };
         let relativeMousePosition = engine.getRelativeMousePoint(clientMouseEvent);
-
+    
         if (originalLink) {
             clonedLink = originalLink.clone();
         } else {
             clonedLink = createNewLink(serializedLink);
             points = serializedLink.points.map(point => new PointModel({ id: point.id, link: clonedLink, position: new Point(point.x, point.y) }));
         }
-
+    
         clonedLink.setSourcePort(sourcePort);
         clonedLink.setTargetPort(targetPort);
         clonedLink.setSelected(true);
-
+    
         if (points.length > 0) clonedLink.setPoints(points);
-
+    
         clonedLink.getPoints().forEach((point) => {
             // Adjust each point's position relative to the group's center
             let pointOffsetX = point.getX() - centerX;
             let pointOffsetY = point.getY() - centerY;
-
+    
             point.setPosition(
                 relativeMousePosition.x + pointOffsetX,
                 relativeMousePosition.y + pointOffsetY
             );
-
+    
             point.setSelected(true);
         });
-
+    
         model.addLink(clonedLink);
     }
-
+    
     function createNewLink(serializedLink): CustomLinkModel {
         if(serializedLink.type === 'parameter-link') return new ParameterLinkModel(serializedLink);
         else if(serializedLink.type === 'triangle-link') return new TriangleLinkModel(serializedLink);
     }
-
+    
 
     async function editParameter(): Promise<void> {
         const widget = tracker.currentWidget?.content as XircuitsPanel;
@@ -839,7 +839,7 @@ export function addNodeActionCommands(
             const selected_node = getLastSelectedNode();
             const nodeName = selected_node.getOptions()["name"];
             let updatedNode = null;
-
+    
             if (nodeName.startsWith("Literal ")) {
                 updatedNode = await editLiteral(widget, selected_node);
             } else if (nodeName.startsWith("Argument ")) {
@@ -851,31 +851,31 @@ export function addNodeActionCommands(
                 });
                 return;
             }
-
+            
             if (updatedNode) {
                 // Set new node to old node position
                 let position = selected_node.getPosition();
                 updatedNode.setPosition(position);
                 widget.xircuitsApp.getDiagramEngine().getModel().addNode(updatedNode);
-
+    
                 // Update the links
                 const links = widget.xircuitsApp.getDiagramEngine().getModel()["layers"][0]["models"];
                 for (let linkID in links) {
                     let link = links[linkID];
                     if (link["sourcePort"] && link["targetPort"]) {
                         let newLink = new DefaultLinkModel();
-
+                        
                         // a parameter node will have only 1 outPort
                         let sourcePort = Object.values(updatedNode.getPorts())[0] as CustomPortModel;
                         newLink.setSourcePort(sourcePort);
-
+    
                         // This to make sure the new link came from the same literal node as previous link
                         let sourceLinkNodeId = link["sourcePort"].getParent().getID();
                         let sourceNodeId = selected_node.getOptions()["id"];
                         if (sourceLinkNodeId == sourceNodeId) {
                             newLink.setTargetPort(link["targetPort"]);
                         }
-
+    
                         widget.xircuitsApp.getDiagramEngine().getModel().addLink(newLink);
                     }
                 }
@@ -886,7 +886,7 @@ export function addNodeActionCommands(
             }
         }
     }
-
+    
     async function editLiteral(widget: XircuitsPanel, selected_node: any): Promise<any> {
         if (!selected_node.getOptions()["name"].startsWith("Literal ")) {
             showDialog({
@@ -902,23 +902,23 @@ export function addNodeActionCommands(
 
         const literalType = selected_node["extras"]["type"];
         let oldValue = selected_node.getPorts()["out-0"].getOptions()["label"];
-
+        
         if (literalType == "chat") {
             oldValue = JSON.parse(oldValue);
         }
-
+        
         const updateTitle = `Update ${literalType}`;
         let nodeData: CustomNodeModelOptions = {color: selected_node["color"], type: selected_node["extras"]["type"], extras: {attached: selected_node["extras"]["attached"]}}
         let updatedContent = await handleLiteralInput(selected_node["name"], nodeData, oldValue, literalType, updateTitle, connections);
-
+        
         if (!updatedContent) {
             // handle case where Cancel was clicked or an error occurred
             return null;
         }
-
+        
         return updatedContent;
     }
-
+    
     async function editArgument(widget: XircuitsPanel, selected_node: any): Promise<any> {
         if (!selected_node.getOptions()["name"].startsWith("Argument ")) {
             showDialog({
@@ -933,12 +933,12 @@ export function addNodeActionCommands(
         const updateTitle = `Update Argument`;
         let nodeData: CustomNodeModelOptions = {color: selected_node["color"], type: selected_node["extras"]["type"]}
         let updatedContent = await handleArgumentInput(nodeData, updateTitle, oldValue);
-
+        
         if (!updatedContent) {
             // handle case where Cancel was clicked or an error occurred
             return null;
         }
-
+        
         return updatedContent;
     }
 
@@ -980,7 +980,7 @@ export function addNodeActionCommands(
                                 const hasOtherConnections = sourceNode.getOutPorts().some(outPort => {
                                     return Object.values(outPort.getLinks()).some(link => {
                                         const targetNode = link.getTargetPort()?.getParent();
-                                        return targetNode && targetNode !== entity &&
+                                        return targetNode && targetNode !== entity && 
                                                 !selectedEntities.includes(targetNode);
                                     });
                                 });
@@ -1000,7 +1000,7 @@ export function addNodeActionCommands(
         });
 
         selectedEntities = widget.xircuitsApp.getDiagramEngine().getModel().getSelectedEntities();
-
+        
         // Separate collections for nodes and links
         let nodes = [];
         let links = [];
@@ -1167,5 +1167,5 @@ export function addNodeActionCommands(
         },
         label: trans.__('detach all nodes')
     });
-
+    
 }
