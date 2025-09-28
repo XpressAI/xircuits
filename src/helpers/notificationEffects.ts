@@ -3,6 +3,7 @@ import { Notification } from '@jupyterlab/apputils';
 import { requestAPI } from '../server/handler';
 import { handleInstall } from '../context-menu/TrayContextMenu';
 import { commandIDs } from '../commands/CommandIDs';
+import { normalizeLibraryName } from '../tray_library/ComponentLibraryConfig';
 
 export function showNodeCenteringNotification(
   message: string,
@@ -55,22 +56,33 @@ export function centerNodeInView(engine: DiagramEngine, nodeId: string) {
 }
 
 type LibraryStatus = 'installed' | 'incomplete' | 'remote' | 'unknown';
+type LibraryEntry = { library_id: string; status: string; [k: string]: any };
 
 function pathToLibraryId(rawPath?: string | null): string | null {
   if (!rawPath || typeof rawPath !== 'string') return null;
   const m = rawPath.match(/xai_components[\/\\]([a-z0-9_-]+)[\/\\]/i);
   if (!m) return null;
-  return m[1].replace(/^xai[-_]/i, '').toUpperCase();
+  return normalizeLibraryName(m[1]);
 }
 
-function computeStatusFromEntry(entry: any | undefined): { libId: string | null; status: LibraryStatus } {
+async function loadLibraryIndex(): Promise<Map<string, LibraryEntry>> {
+  const res: any = await requestAPI('library/get_config', { method: 'GET' });
+  const libs = res?.config?.libraries;
+  if (!Array.isArray(libs)) throw new Error('Invalid library response');
+
+  const index = new Map<string, LibraryEntry>();
+  for (const lib of libs as LibraryEntry[]) {
+    if (!lib?.library_id) continue;
+    const id = normalizeLibraryName(String(lib.library_id));
+    index.set(id, lib);
+  }
+  return index;
+}
+
+function computeStatusFromEntry(entry?: LibraryEntry, normalizedId?: string): { libId: string | null; status: LibraryStatus } {
   if (!entry) return { libId: null, status: 'unknown' };
-
-  const libId = entry?.library_id ? String(entry.library_id).toUpperCase() : null;
-  const status = String(entry?.status ?? '').toLowerCase();
-  const isRemote = status === 'remote';
-
-  return { libId, status: isRemote ? 'remote' : 'installed' };
+  const s = String(entry.status).toLowerCase();
+  return { libId: normalizedId, status: s === 'remote' ? 'remote' : 'installed' };
 }
 
 export async function resolveLibraryForNode(
@@ -80,36 +92,31 @@ export async function resolveLibraryForNode(
   const candidateId = pathToLibraryId(extras.path);
   if (!candidateId) return { libId: null, status: 'unknown' };
 
-  const res: any = await requestAPI('library/get_config', { method: 'GET' });
-  const libraries: any[] = Array.isArray(res?.config?.libraries) ? res.config.libraries : [];
-
-  const entry = libraries.find(e => String(e?.library_id ?? '').toUpperCase() === candidateId);
-  return computeStatusFromEntry(entry);
+  const idx = await loadLibraryIndex();
+  const entry = idx.get(candidateId);
+  return computeStatusFromEntry(entry, candidateId);
 }
 
 export async function showInstallForRemoteLibrary(args: {
   app: any;
   engine?: DiagramEngine;
   nodeId: string;
-  libName?: string | null;  
+  libName?: string | null;
   path?: string | null;
   message: string;
 }): Promise<boolean> {
   const { app, engine, nodeId, message } = args;
 
-  const candidateId = String(args.libName ?? '').trim().toUpperCase();
-  if (!candidateId) return false;
-
-  const res: any = await requestAPI('library/get_config', { method: 'GET' });
-  const libraries: any[] = Array.isArray(res?.config?.libraries) ? res.config.libraries : [];
-
-  const entry = libraries.find(e => String(e?.library_id ?? '').toUpperCase() === candidateId);
-  const { libId, status } = computeStatusFromEntry(entry);
+  const rawName = (args.libName ?? '').trim();
+  if (!rawName) return false;
+  const candidateId = normalizeLibraryName(rawName);
+  const idx = await loadLibraryIndex();
+  const entry = idx.get(candidateId);
+  const { libId, status } = computeStatusFromEntry(entry, candidateId);
 
   if (status !== 'remote' || !libId) return false;
 
-  const displayName = libId; 
-
+  const displayName = entry.library_id;
   const actions: any[] = [
     {
       label: `Install ${displayName}`,
