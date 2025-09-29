@@ -77,9 +77,9 @@ export class SplitLinkCommand {
     const srcPort = oldLink.getSourcePort() as CustomPortModel;
     const dstPort = oldLink.getTargetPort() as CustomPortModel;
     if (!srcPort || !dstPort) return;
-    if (srcPort.getName() !== 'out-0' || dstPort.getName() !== 'in-0') {
+    if (oldLink.getOptions().type !== 'triangle-link') {
         return;
-        }
+    }
 
     if (!this.diagramModel.getNode(this.draggedNode.getID())) {
         this.diagramModel.addNode(this.draggedNode);
