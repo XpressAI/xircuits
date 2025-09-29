@@ -162,8 +162,8 @@ class OverviewSection extends ReactWidget {
     if (!this._model) {
       return (
         <div className="empty-state">
-          <xircuitsIcon.react />
-          <p>Select a component's `i` icon to show its detail here.</p>
+            <xircuitsIcon.react className="empty-logo" />
+            <p className="empty-text">Select a component's `i` icon to show its detail here.</p>
         </div>
       );
     }
