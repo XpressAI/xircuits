@@ -178,6 +178,16 @@ def cmd_run(args, extra_args=[]):
         output_filename = args.out_file if args.out_file else args.source_file.replace(
             '.xircuits', '.py')
 
+    # Get the working directory (project root) for PYTHONPATH
+    working_dir = resolve_working_dir() or Path.cwd()
+    
+    # Set PYTHONPATH to include working directory for proper imports
+    current_pythonpath = os.environ.get('PYTHONPATH', '')
+    if current_pythonpath:
+        os.environ['PYTHONPATH'] = f"{working_dir}{os.pathsep}{current_pythonpath}"
+    else:
+        os.environ['PYTHONPATH'] = str(working_dir)
+
     run_command = f"python {output_filename} {' '.join(extra_args)}"
     os.system(run_command)
 
