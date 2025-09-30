@@ -8,7 +8,30 @@ export interface SearchResult {
 }
 
 /**
- * Search all nodes’ `options.name` (case-insensitive).
+ * Collect searchable texts only from ports (for literals).
+ */
+function collectLiteralValues(node: NodeModel): string[] {
+    const texts: string[] = [];
+    const opts = node.getOptions() as any;
+
+    const nodeName = (opts.name || "").toLowerCase();
+    const isLiteral = nodeName.startsWith("literal");
+
+    if (isLiteral) {
+        Object.values(node.getPorts()).forEach((p: any) => {
+            const pOpt = p.getOptions?.() ?? {};
+            if (pOpt.label) {
+                texts.push(pOpt.label);
+            }
+        });
+    }
+
+    return texts.filter(Boolean).map((s) => String(s).toLowerCase());
+}
+
+/**
+ * Search all nodes’ `options.name` (case-insensitive),
+ * and also inside literal values from ports.
  */
 export function searchModel(model: DiagramModel, text: string): SearchResult {
     const nodes = model.getNodes();
@@ -18,14 +41,13 @@ export function searchModel(model: DiagramModel, text: string): SearchResult {
     }
 
     const indices: number[] = [];
-    const matches: string[] = [];
 
     nodes.forEach((node: NodeModel, idx: number) => {
         const opts = node.getOptions() as any;
-        const name: string = (opts.name || '').toString();
-        if (name.toLowerCase().includes(query)) {
-        indices.push(idx);
-        matches.push(name);
+        const name: string = (opts.name || '').toString().toLowerCase();
+        const texts = [name, ...collectLiteralValues(node)];
+        if (texts.some((t) => t.includes(query))) {
+            indices.push(idx);
         }
     });
 
