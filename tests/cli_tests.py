@@ -697,3 +697,34 @@ def test_32_uninstall_core_library():
 
     core_dir = Path("xai_components") / core_lib
     assert core_dir.exists(), f"{core_dir} should still exist after failed uninstall"
+
+def test_33_terminal_run_import_check():
+    """
+    Ensure `xircuits run` works correctly from inside a remote library's examples directory
+    (e.g., xai_sqlite) and does not raise ModuleNotFoundError.
+    """
+    # 1) Initialize a new project
+    stdout, stderr, rc = run_command("xircuits init", timeout=30)
+
+    # 2) Install the remote sqlite library
+    stdout, stderr, rc = run_command("xircuits install sqlite", timeout=90)
+    assert rc == 0, "Failed to install sqlite library."
+
+    # 3) Go inside the examples directory of the sqlite library
+    examples_dir = Path("xai_components/xai_sqlite/examples")
+    os.chdir(examples_dir)
+
+    # 4) Ensure the example exists
+    example_file = Path("sqlite_sample.xircuits")
+    assert example_file.exists(), f"Example file not found: {example_file}"
+
+    # 5) Run xircuits from inside examples directory
+    stdout, stderr, rc = run_command(f"xircuits run {example_file}", timeout=60)
+    output = (stdout or "") + (stderr or "")
+
+    # 6) Assertions to verify fix
+    assert rc == 0, f"Run failed inside examples directory.\nOutput:\n{output}"
+    assert "ModuleNotFoundError" not in output, f"Unexpected import error:\n{output}"
+    assert "Compiled" in output, "Expected 'Compiled' not found in output."
+    assert "Finished Executing" in output, "Expected 'Finished Executing' not found in output."
+    assert Path("sqlite_sample.py").exists(), "Expected compiled .py file not found."
