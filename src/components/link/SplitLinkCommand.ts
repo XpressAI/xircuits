@@ -39,11 +39,25 @@ export class SplitLinkCommand {
       return link.generatePoint(orig.getX(), orig.getY());
   }
 
-   /** Remove all links on *any* port of the dragged node */
+  /** Remove all links on *any* port of the dragged node, except those connected to Literal nodes */
   private clearAllNodeLinks() {
-    Object.values(this.draggedNode.getPorts()).forEach(port =>
-      Object.values((port as CustomPortModel).getLinks()).forEach(l => this.diagramModel.removeLink(l))
-    );
+      const isLiteralNode = (node: CustomNodeModel) => {
+          const options = node?.getOptions?.() ?? {};
+          const nodeName = (options as any).name ?? '';
+          return nodeName.toLowerCase().includes("literal");
+      };
+
+    Object.values(this.draggedNode.getPorts()).forEach(port => {
+        Object.values((port as CustomPortModel).getLinks()).forEach(l => {
+            const srcNode = (l.getSourcePort() as CustomPortModel)?.getParent() as CustomNodeModel;
+            const dstNode = (l.getTargetPort() as CustomPortModel)?.getParent() as CustomNodeModel;
+
+            if (isLiteralNode(srcNode) || isLiteralNode(dstNode)) {
+                return;
+            }
+            this.diagramModel.removeLink(l);
+        });
+    });
   }
   execute(): void {
       const inPort = this.draggedNode.getPort('in-0') as CustomPortModel;
@@ -55,14 +69,7 @@ export class SplitLinkCommand {
     }
     
     this.clearAllNodeLinks();
-
-    const existingInLinks = Object.values(inPort.getLinks());
-    const existingOutLinks = Object.values(outPort.getLinks());
-    if (existingInLinks.length > 0 || existingOutLinks.length > 0) {
-        Notification.info("One or more ports are already connected. Existing connections will be removed.", { autoClose: 3000 });
-        existingInLinks.forEach(l => this.diagramModel.removeLink(l));
-        existingOutLinks.forEach(l => this.diagramModel.removeLink(l));
-    }
+    Notification.info("Flow ports are already connected. Existing flow connections will be removed.", { autoClose: 3000 });
 
     const oldLink = this.diagramModel.getLink(this.linkId) as DefaultLinkModel;
     if (!oldLink) return;
@@ -70,9 +77,9 @@ export class SplitLinkCommand {
     const srcPort = oldLink.getSourcePort() as CustomPortModel;
     const dstPort = oldLink.getTargetPort() as CustomPortModel;
     if (!srcPort || !dstPort) return;
-    if (srcPort.getName() !== 'out-0' || dstPort.getName() !== 'in-0') {
+    if (oldLink.getOptions().type !== 'triangle-link') {
         return;
-        }
+    }
 
     if (!this.diagramModel.getNode(this.draggedNode.getID())) {
         this.diagramModel.addNode(this.draggedNode);

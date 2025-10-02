@@ -22,9 +22,10 @@ export class LinkSplitManager {
 
     
     static canSplit(link: DefaultLinkModel): boolean {
-        const src = link.getSourcePort() as CustomPortModel;
-        const dst = link.getTargetPort() as CustomPortModel;
-        return src.getName() === 'out-0' && dst.getName() === 'in-0';
+        if (link.getOptions().type === 'triangle-link') {
+            return true;
+        }
+        return false;
     }
 
     /**
