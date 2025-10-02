@@ -25,7 +25,7 @@ import { CustomDynaPortModel } from '../components/port/CustomDynaPortModel';
 import { fetchComponents } from '../tray_library/Component';
 import { BaseComponentLibrary } from '../tray_library/BaseComponentLib';
 import { commandIDs } from "./CommandIDs";
-import { showNodeCenteringNotification } from '../helpers/notificationEffects';
+import { showNodeCenteringNotification, resolveLibraryForNode, showInstallForRemoteLibrary } from '../helpers/notificationEffects';
 
 /**
  * Add the commands for node actions.
@@ -284,7 +284,7 @@ export function addNodeActionCommands(
                     node = BaseComponentLibrary('Finish');
                 } else {
                     const extras = selected_node.getOptions().extras ?? {};
-                    const path = extras.path || '' .trim();
+                    const path = (extras.path ?? '').trim();
                     const isComment = extras.type === 'comment';
 
                     if (!path || isComment) {
@@ -298,9 +298,28 @@ export function addNodeActionCommands(
                     } catch (error) {
                         console.log(`Error reloading component from path: ${path}. Error: ${error.message}`);
                         selected_node.getOptions().extras["borderColor"] = "red";
-                        const message =
-                            `Component could not be loaded from path: \`${path}\`.\nPlease ensure that the component exists!`;
-                        showNodeCenteringNotification(message, selected_node.getID(), engine);
+
+                        const { libId, status } = await resolveLibraryForNode(selected_node);
+                        const componentName = selected_node.getOptions().name;
+
+                        if (status === 'remote' && libId) {
+                            const message = `You need to install the "${libId}" library to use "${componentName}" component.`;
+
+                            // Show "Install" only for remote libraries; otherwise use legacy message.
+                            await showInstallForRemoteLibrary({
+                            app,
+                            engine,
+                            nodeId: selected_node.getID(),
+                            libName: libId,
+                            path,
+                            message
+                            });
+
+                        } else {
+                            const message =
+                            `Component "${componentName}" could not be loaded from path: \`${path}\`.\nPlease ensure that the component exists!`;
+                            showNodeCenteringNotification(message, selected_node.getID(), engine);
+                        }
                         nodesToHighlight.push(selected_node);
                         continue;
                     }
