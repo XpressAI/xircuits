@@ -42,9 +42,9 @@ export class SplitLinkCommand {
   /** Remove all links on *any* port of the dragged node, except those connected to Literal nodes */
   private clearAllNodeLinks() {
       const isLiteralNode = (node: CustomNodeModel) => {
-          const opts = node?.getOptions?.() ?? {};
-          const n = (opts as any).name ?? '';
-          return /literal/i.test(n);
+          const options = node?.getOptions?.() ?? {};
+          const nodeName = (options as any).name ?? '';
+          return nodeName.toLowerCase().includes("literal");
       };
 
     Object.values(this.draggedNode.getPorts()).forEach(port => {
