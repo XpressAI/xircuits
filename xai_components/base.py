@@ -72,6 +72,43 @@ class InArg(Generic[T]):
             memo[id_self] = _copy
         return _copy
 
+    class _DynaIndex:
+        def __init__(self, parent, idx):
+            self._p = parent
+            self._i = idx
+
+        def _assign(self, obj):
+            v = self._p._value
+            # Start from empty container if needed
+            if v is None:
+                v = []
+            # Internally first use list for convenience
+            is_tuple = isinstance(v, tuple)
+            if is_tuple:
+                v = list(v)
+
+            while len(v) <= self._i:
+                v.append(None)
+            v[self._i] = obj
+
+            # Convert back to tuple if the port uses dynatuple semantics
+            try_is_dynatuple = (self._p._getter is dynatuple.getter)
+            self._p._value = tuple(v) if try_is_dynatuple else v
+
+        def connect(self, ref):
+            # Accept InArg/OutArg or literal-like objects
+            self._assign(ref)
+
+        def set(self, value):
+            self._assign(value)
+
+    def __getitem__(self, idx):
+        # Allow indexing when the port holds a list/tuple (dynaports)
+        return InArg._DynaIndex(self, idx)
+
+    def __setitem__(self, idx, value):
+        # Support literal assignment: port[i] = 'a'
+        self[idx].set(value)
 
 class InCompArg(Generic[T]):
     def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
@@ -265,6 +302,10 @@ class dynalist(list):
             return []
         return [item.value if isinstance(item, (InArg, OutArg)) else item for item in x]
 
+    @staticmethod
+    def initial_value():
+        return []
+
 
 class dynatuple(tuple):
     def __init__(self, *args):
@@ -281,6 +322,11 @@ class dynatuple(tuple):
             else:
                 return item
         return tuple(resolve(item) for item in x)
+
+    @staticmethod
+    def initial_value():
+        return tuple()
+
 
 def parse_bool(value):
     if value is None:

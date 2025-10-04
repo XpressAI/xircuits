@@ -199,42 +199,54 @@ class %s(Component):
 
             # Handle dynamic connections
             dynaports = [p for p in node.ports if
-                         p.direction == 'in' and p.type != 'triangle-link' and p.dataType in DYNAMIC_PORTS]
+                        p.direction == 'in' and p.type != 'triangle-link' and p.dataType in DYNAMIC_PORTS]
+
+            # Capture index N from port names like 'parameter-dynalist-dlist-2'
+            _name_idx_re = re.compile(r'-(\d+)\s*$')
+
+            # Map: varName -> {index: port}
             ports_by_varName = {}
 
-            RefOrValue = namedtuple('RefOrValue', ['value', 'is_ref'])  # Renamed to RefOrValue
-
-            # Group ports by varName
             for port in dynaports:
-                if port.varName not in ports_by_varName:
-                    ports_by_varName[port.varName] = []
-                ports_by_varName[port.varName].append(port)
+                var_name = port.varName
+                name = port.name
+                # Extract index from name; default to 0 if no '-N' suffix
+                m = _name_idx_re.search(name)
+                idx = int(m.group(1)) if m else 0
 
-            for varName, ports in ports_by_varName.items():
-                dynaport_values = []
+                ports_by_varName.setdefault(var_name, {})
+                ports_by_varName[var_name].setdefault(idx, port)
 
-                for port in ports:
-                    if port.source.id not in named_nodes:
-                        value = _get_value_from_literal_port(port)
-                        dynaport_values.append(RefOrValue(value, False))
+            # Emit code per element in numeric order
+            for var_name, mapping in ports_by_varName.items():
+                for i in sorted(mapping.keys()):
+                    port = mapping[i]
+                    target_indexed = f"{named_nodes[port.target.id]}.{var_name}[{i}]"
+
+                    if port.source.id in named_nodes:
+                        # Component reference -> connect
+                        source_ref = f"{named_nodes[port.source.id]}.{port.sourceLabel}"
+                        init_code.append(ast.parse(f"{target_indexed}.connect({source_ref})"))
                     else:
-                        # Handle named node references
-                        value = "%s.%s" % (named_nodes[port.source.id], port.sourceLabel)  # Variable reference
-                        dynaport_values.append(RefOrValue(value, True))
+                        # Regex: matches e.g. 'Argument (string): argsName'
+                        pattern = re.compile(r'^Argument \((.+?)\): (.+)$')
+                        if port.source.file is None and port.source.name.startswith("Argument "):
+                            match = pattern.match(port.source.name)
+                            arg_type = type_mapping.get(match.group(1), 'any')
+                            arg_name = match.group(2)
 
-                if ports[0].dataType == 'dynatuple':
-                    tuple_elements = [item.value if item.is_ref else repr(item.value) for item in dynaport_values]
-                    if len(tuple_elements) == 1:
-                        assignment_value = '(' + tuple_elements[0] + ',)'
-                    else:
-                        assignment_value = '(' + ', '.join(tuple_elements) + ')'
-                else:
-                    list_elements = [item.value if item.is_ref else repr(item.value) for item in dynaport_values]
-                    assignment_value = '[' + ', '.join(list_elements) + ']'
+                            if arg_name not in existing_args:
+                                args_code.append(ast.parse(f"{arg_name}: InArg[{arg_type}]").body[0])
+                                existing_args.add(arg_name)
 
-                assignment_target = "%s.%s" % (named_nodes[ports[0].target.id], ports[0].varName)
-                tpl = set_value(assignment_target, assignment_value)
-                init_code.append(tpl)
+                            init_code.append(ast.parse(f"{target_indexed}.connect(self.{arg_name})"))
+                        else:
+                            # Literal -> `[i] = <python literal>`
+                            lit_value = _get_value_from_literal_port(port)
+                            assign = ast.parse(f"{target_indexed} = 0")
+                            assign.body[0].value = ast.parse(repr(lit_value)).body[0].value
+                            init_code.append(assign)
+
 
         # Handle output connections
         for i, port in enumerate(p for p in finish_node.ports if p.dataType == 'dynalist'):
