@@ -206,6 +206,10 @@ const ZoomControls = styled.div<{visible: boolean}>`
 	}
 `;
 
+export type CanvasUpdatedPayload = { reason: 'content'; };
+
+export const canvasUpdatedSignal = new Signal<Window, CanvasUpdatedPayload>(window);
+
 export const BodyWidget: FC<BodyWidgetProps> = ({
 	context,
 	xircuitsApp,
@@ -471,6 +475,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					return () => clearTimeout(timeout);
 				},
 				linksUpdated: (event) => {
+					canvasUpdatedSignal.emit({ reason: 'content' });
 					const timeout = setTimeout(() => {
 					event.link.registerListener({
 						sourcePortChanged: () => {
@@ -494,6 +499,8 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				xircuitsApp.getDiagramEngine().setModel(deserializedModel);
 				clearSearchFlags();
 				
+				canvasUpdatedSignal.emit({ reason: 'content' });
+
 				// On the first load, clear undo history and register global engine listeners
 				if (initialRender.current) {
 					currentContext.model.sharedModel.clearUndoHistory();
