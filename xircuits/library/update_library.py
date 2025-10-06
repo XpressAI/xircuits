@@ -6,6 +6,9 @@ import difflib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Set
+from importlib_resources import files, as_file
+
+from .core_libs import is_core_library
 
 from xircuits.utils.pathing import (
     resolve_working_dir,
@@ -50,38 +53,162 @@ def update_library(
     install_deps: bool = True,
 ) -> str:
     """
-    Safely update an installed component library (e.g., "gradio").
+    Update an installed component library (core or regular).
 
-    Defaults:
-      - Keeps any local-only files/dirs as-is (no deletions) unless prune=True.
-      - Overwrites changed files, backing up the previous version in-place as *.YYYYmmdd-HHMMSS.bak.
-      - Updates per-library extra and installs requirements (unless disabled).
+    Core libraries (xai_events, xai_template, xai_controlflow, xai_utils, base.py)
+    are updated from the installed xircuits wheel.
+    
+    Regular libraries are updated from their git repository.
 
     Args:
-        library_name: "gradio", "xai_gradio", etc. (normalized internally)
-        repo:         Optional repository URL override (persists into pyproject if not dry-run).
-        ref:          Optional tag/branch/commit to update to.
+        library_name: "gradio", "xai_events", "base.py", etc. (normalized internally)
+        repo:         Optional repository URL override (ignored for core libs)
+        ref:          Optional tag/branch/commit to update to (ignored for core libs)
         dry_run:      If True, compute actions and print a unified diff (no files changed).
-                      Also writes a combined diff file alongside the library directory.
         prune:        If True, also archive local-only files/dirs (rename to *.bak).
         install_deps: If True (default), update per-library extra and install its requirements.
 
-    Output policy:
-      - Print action markers:
-          +++ path         (added or written)
-          --- path (...)   (backed up / deleted)
-      - Unchanged files are not printed.
-      - On dry-run, a unified diff of changes is printed and saved to disk.
+    Returns:
+        Summary message of update results.
     """
     working_dir = resolve_working_dir()
     if working_dir is None:
         raise RuntimeError("Xircuits working directory not found. Run 'xircuits init' first.")
 
-    lib_name = normalize_library_slug(library_name)      # e.g., 'xai_gradio'
-    dest_dir = resolve_library_dir(lib_name)             # absolute path
+    # Check if updating base.py
+    normalized = library_name.strip().lower()
+    if normalized in ("base", "base.py"):
+        return _update_from_wheel(
+            component_name="base.py",
+            working_dir=working_dir,
+            dry_run=dry_run,
+            prune=prune,
+        )
+    
+    # Normalize library name and check if it's a core library
+    lib_name = normalize_library_slug(library_name)
+    if is_core_library(lib_name):
+        return _update_from_wheel(
+            component_name=lib_name,
+            working_dir=working_dir,
+            dry_run=dry_run,
+            prune=prune,
+        )
+    
+    # Regular (non-core) library update from git
+    return _update_from_git(
+        lib_name=lib_name,
+        working_dir=working_dir,
+        repo=repo,
+        ref=ref,
+        dry_run=dry_run,
+        prune=prune,
+        install_deps=install_deps,
+    )
+
+def _update_from_wheel(
+    component_name: str,
+    working_dir: Path,
+    dry_run: bool,
+    prune: bool,
+) -> str:
+    """
+    Update a core component from the installed xircuits wheel.
+    """
+    dest_base = working_dir / "xai_components"
+    if not dest_base.exists():
+        raise RuntimeError(f"xai_components directory not found at {working_dir}")
+    
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    is_base_file = component_name == "base.py"
+    display_name = component_name
+    
+    print(f"Updating core component: {display_name} (from installed wheel)")
+    
+    temp_dir = Path(tempfile.mkdtemp(prefix=f"update_core_{component_name.replace('.', '_')}_"))
+    
+    try:
+        # Extract from wheel to temp directory
+        if is_base_file:
+            _extract_base_py_from_wheel(temp_dir)
+            src_path = temp_dir / "base.py"
+            dst_path = dest_base / "base.py"
+        else:
+            _extract_core_lib_from_wheel(component_name, temp_dir)
+            src_path = temp_dir / component_name
+            dst_path = dest_base / component_name
+        
+        if not src_path.exists():
+            raise FileNotFoundError(f"{display_name} not found in installed wheel")
+        
+        # Ensure destination exists
+        if not dst_path.exists():
+            if is_base_file:
+                raise FileNotFoundError(f"{display_name} does not exist locally. Run 'xircuits init' first.")
+            else:
+                raise FileNotFoundError(f"{display_name} does not exist locally. This is unexpected for a core library.")
+        
+        # Sync files
+        if is_base_file:
+            report = _sync_single_file(src_path, dst_path, dry_run, timestamp)
+        else:
+            report = _sync_with_backups(
+                source_root=src_path,
+                destination_root=dst_path,
+                dry_run=dry_run,
+                prune=prune,
+                timestamp=timestamp,
+            )
+        
+        # Generate diff for dry-run
+        if dry_run:
+            if is_base_file and report.updated:
+                diff_text = _unified_diff_for_pair(src_path, dst_path, Path("base.py"))
+                if diff_text.strip():
+                    print("\n--- DRY-RUN DIFF ---")
+                    print(diff_text.rstrip())
+            elif not is_base_file:
+                diff_text = _build_combined_diff(
+                    src_path, dst_path,
+                    added=report.added,
+                    updated=report.updated,
+                    deleted=report.deleted
+                )
+                if diff_text.strip():
+                    diff_path = dst_path / f"{component_name}.update.{timestamp}.dry-run.diff.txt"
+                    diff_path.write_text(diff_text, encoding="utf-8")
+                    print("\n--- DRY-RUN DIFF ---")
+                    print(diff_text.rstrip())
+                    print(f"\n(Wrote diff file to: {diff_path})")
+        
+        summary = (
+            f"{display_name} update "
+            f"(added: {len(report.added)}, updated: {len(report.updated)}, "
+            f"deleted: {len(report.deleted)}, unchanged: {len(report.unchanged)})"
+        )
+        return summary
+        
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def _update_from_git(
+    lib_name: str,
+    working_dir: Path,
+    repo: Optional[str],
+    ref: Optional[str],
+    dry_run: bool,
+    prune: bool,
+    install_deps: bool,
+) -> str:
+    """
+    Update a regular component library from its git repository.
+    (Original update_library logic)
+    """
+    dest_dir = resolve_library_dir(lib_name)
     if not dest_dir.exists() or not dest_dir.is_dir():
         raise FileNotFoundError(
-            f"Library '{lib_name}' not found at {dest_dir}. Try 'xircuits install {library_name}'."
+            f"Library '{lib_name}' not found at {dest_dir}. Try 'xircuits install {lib_name}'."
         )
 
     timestamp = time.strftime("%Y%m%d-%H%M%S")
@@ -89,7 +216,7 @@ def update_library(
     source_spec = _resolve_source_spec(lib_name, repo, ref)
     if not source_spec or not source_spec.repo_url:
         raise RuntimeError(
-            f"Could not resolve a repository URL for '{library_name}'. "
+            f"Could not resolve a repository URL for '{lib_name}'. "
             "Ensure it was installed (so metadata exists) or present in your index.json."
         )
 
@@ -184,6 +311,72 @@ def update_library(
     finally:
         shutil.rmtree(temp_repo_dir, ignore_errors=True)
 
+
+# ========== Wheel Extraction Helpers ==========
+
+def _extract_core_lib_from_wheel(lib_name: str, dest_dir: Path) -> None:
+    """
+    Extract a core component library directory from the installed wheel.
+    """
+    try:
+        lib_ref = files('xai_components') / lib_name
+        with as_file(lib_ref) as source_path:
+            if not source_path.exists():
+                raise FileNotFoundError(f"{lib_name} not found in wheel")
+            shutil.copytree(source_path, dest_dir / lib_name, dirs_exist_ok=True)
+    except Exception as e:
+        raise RuntimeError(f"Failed to extract {lib_name} from wheel: {e}")
+
+
+def _extract_base_py_from_wheel(dest_dir: Path) -> None:
+    """
+    Extract base.py from the installed wheel.
+    """
+    try:
+        base_ref = files('xai_components') / 'base.py'
+        with as_file(base_ref) as source_path:
+            if not source_path.exists():
+                raise FileNotFoundError("base.py not found in wheel")
+            shutil.copy2(source_path, dest_dir / 'base.py')
+    except Exception as e:
+        raise RuntimeError(f"Failed to extract base.py from wheel: {e}")
+
+
+def _sync_single_file(src_file: Path, dst_file: Path, dry_run: bool, timestamp: str) -> SyncReport:
+    """
+    Sync a single file with backup support.
+    """
+    added: List[str] = []
+    updated: List[str] = []
+    deleted: List[str] = []
+    unchanged: List[str] = []
+    
+    rel_path = dst_file.name
+    
+    if not dst_file.exists():
+        print(f"+++ {rel_path}")
+        if not dry_run:
+            dst_file.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src_file, dst_file)
+        added.append(rel_path)
+    elif _files_equal(src_file, dst_file):
+        unchanged.append(rel_path)
+    else:
+        if dry_run:
+            backup_name = _backup_in_place(dst_file, timestamp, dry_run)
+            print(f"--- {rel_path} (would backup as: {backup_name})")
+            print(f"+++ {rel_path}")
+        else:
+            backup_name = _backup_in_place(dst_file, timestamp, dry_run)
+            print(f"--- {rel_path} (backup: {backup_name})")
+            print(f"+++ {rel_path}")
+            shutil.copy2(src_file, dst_file)
+        updated.append(rel_path)
+    
+    return SyncReport(added=added, updated=updated, deleted=deleted, unchanged=unchanged)
+
+
+# ========== Git Update Helpers ==========
 
 def _resolve_source_spec(
     lib_name: str,

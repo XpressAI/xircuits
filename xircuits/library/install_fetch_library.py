@@ -1,6 +1,8 @@
 import shutil
 from pathlib import Path
 
+from .core_libs import is_core_library
+
 from xircuits.utils.file_utils import is_valid_url, is_empty
 from xircuits.utils.requirements_utils import read_requirements_for_library
 from xircuits.utils.git_toml_manager import (
@@ -18,10 +20,6 @@ from xircuits.utils.pathing import get_library_relpath, resolve_library_dir
 
 from ..handlers.request_remote import request_remote_library
 from ..handlers.request_folder import clone_from_github_url
-
-
-CORE_LIBS = {"xai_events", "xai_template", "xai_controlflow", "xai_utils"}
-
 
 def get_component_library_path(library_name: str) -> str:
     """
@@ -149,7 +147,7 @@ def uninstall_library(library_name: str) -> str:
         raw = "xai_" + raw
     short = raw.split("/")[-1]
 
-    if short in CORE_LIBS:
+    if is_core_library(short):
         raise RuntimeError(f"'{short}' is a core library and cannot be uninstalled.")
 
     lib_path = resolve_library_dir(short)
