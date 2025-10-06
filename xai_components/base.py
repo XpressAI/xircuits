@@ -72,43 +72,31 @@ class InArg(Generic[T]):
             memo[id_self] = _copy
         return _copy
 
-    class _DynaIndex:
+    def _put_at_index(self, idx: int, obj):
+        v = self._value
+        if v is None:
+            v = []
+        if isinstance(v, tuple):
+            v = list(v)
+        if idx >= len(v):
+            v.extend([None] * (idx + 1 - len(v)))
+        v[idx] = obj
+        self._value = v
+
+    class _IndexProxy:
         def __init__(self, parent, idx):
             self._p = parent
             self._i = idx
-
-        def _assign(self, obj):
-            v = self._p._value
-            # Start from empty container if needed
-            if v is None:
-                v = []
-            # Internally first use list for convenience
-            is_tuple = isinstance(v, tuple)
-            if is_tuple:
-                v = list(v)
-
-            while len(v) <= self._i:
-                v.append(None)
-            v[self._i] = obj
-
-            # Convert back to tuple if the port uses dynatuple semantics
-            try_is_dynatuple = (self._p._getter is dynatuple.getter)
-            self._p._value = tuple(v) if try_is_dynatuple else v
-
         def connect(self, ref):
-            # Accept InArg/OutArg or literal-like objects
-            self._assign(ref)
-
-        def set(self, value):
-            self._assign(value)
+            self._p._put_at_index(self._i, ref)
 
     def __getitem__(self, idx):
-        # Allow indexing when the port holds a list/tuple (dynaports)
-        return InArg._DynaIndex(self, idx)
+        # Enables: port[i].connect(other_port)
+        return InArg._IndexProxy(self, idx)
 
     def __setitem__(self, idx, value):
-        # Support literal assignment: port[i] = 'a'
-        self[idx].set(value)
+        # Enables: port[i] = <literal or port>
+        self._put_at_index(idx, value)
 
 class InCompArg(Generic[T]):
     def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
