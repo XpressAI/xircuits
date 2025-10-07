@@ -85,7 +85,7 @@ Didn't find what you're looking for? Creating Xircuits components is very easy! 
 And many more.
 
 # Installation
-You will need python 3.8+ to install Xircuits. We recommend installing in a virtual environment.
+You will need python 3.9+ to install Xircuits. We recommend installing in a virtual environment.
 
   ```
   $ pip install xircuits

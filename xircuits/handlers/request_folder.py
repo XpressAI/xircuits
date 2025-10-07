@@ -1,5 +1,6 @@
 import re
 import subprocess
+from xircuits.utils.pathing import normalize_library_slug, get_library_relpath
 
 def extract_library_details_from_url(github_url):
     """Extract organization and repository name from a GitHub URL."""
@@ -27,6 +28,6 @@ def clone_from_github_url(github_url: str) -> str:
     Clone the repository from the GitHub URL.
     """
     org_name, repo_name = extract_library_details_from_url(github_url)
-    local_lib_path = repo_name.replace('-', '_')
-    target_path = f"xai_components/xai_{local_lib_path}"
+    slug = normalize_library_slug(repo_name)          # 'sklearn' → 'xai_sklearn'
+    target_path = get_library_relpath(slug)
     return clone_repo(github_url, target_path)

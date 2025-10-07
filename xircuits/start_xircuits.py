@@ -1,14 +1,16 @@
 import argparse
 import json
 import os
-import subprocess
-import shutil
-import toml
 from pathlib import Path
-from importlib.metadata import metadata, PackageNotFoundError
 
-from .utils import is_empty, copy_from_installed_wheel
-from .library import list_component_library, install_library, fetch_library, save_component_library_config, uninstall_library
+from xircuits.utils.file_utils import is_empty, copy_from_installed_wheel
+from xircuits.utils.venv_ops import sync_xai_components
+from xircuits.utils.pathing import resolve_working_dir
+
+from .library import list_component_library, install_library, fetch_library, uninstall_library
+from .library.index_config import refresh_index
+from .library.update_library import update_library
+
 from .compiler import compile, recursive_compile
 from xircuits.handlers.config import get_config
 
@@ -21,28 +23,15 @@ def init_xircuits():
     package_name = 'xircuits'
     copy_from_installed_wheel(package_name, resource='.xircuits', dest_path='.xircuits')
 
-    tmp_dir = Path(os.getcwd()) / ".remote_libs_manifest"
-    cfg = get_config()
-    subprocess.run(["git", "clone",cfg['DEV']['MANIFEST'],str(tmp_dir)], check=True)
+    # Fetch component library index.json over HTTP
+    try:
+        refresh_index()
+    except Exception as e:
+        print(f"Warning: could not download index.json yet: {e}")
 
     component_library_path = Path(os.getcwd()) / "xai_components"
     if not component_library_path.exists():
         copy_from_installed_wheel('xai_components', '', 'xai_components')
-    save_component_library_config()
-
-
-def find_xircuits_working_dir():
-    """
-    Traverse upward from the current directory to find the first directory
-    that contains 'xai_components'. That directory is considered the Xircuits working directory.
-    """
-    current_dir = Path(os.getcwd())
-    while True:
-        if (current_dir / "xai_components").exists():
-            return current_dir
-        if current_dir == current_dir.parent:  # Reached filesystem root.
-            return None
-        current_dir = current_dir.parent
 
 
 def ensure_xircuits_initialized():
@@ -53,7 +42,7 @@ def ensure_xircuits_initialized():
       - Auto-initialize if XIRCUITS_INIT is set.
       - Otherwise, prompt the user to initialize in the current directory.
     """
-    working_dir = find_xircuits_working_dir()
+    working_dir = resolve_working_dir()
     if working_dir is not None:
         # Found xai_components. Now check for .xircuits.
         if not (working_dir / ".xircuits").exists():
@@ -153,6 +142,20 @@ def cmd_compile(args, extra_args=[]):
 def cmd_list_libraries(args, extra_args=[]):
     list_component_library()
 
+def cmd_sync(args, extra_args=[]):
+    sync_xai_components()
+
+def cmd_update_library(args, extra_args=[]):
+
+    message = update_library(
+        library_name=args.library_name,
+        repo=args.repo,
+        ref=args.ref,
+        dry_run=args.dry_run,
+        prune=args.prune,
+        install_deps=args.install_deps,
+    )
+    print(message)
 
 def cmd_run(args, extra_args=[]):
     original_cwd = args.original_cwd
@@ -174,6 +177,16 @@ def cmd_run(args, extra_args=[]):
         cmd_compile(args, extra_args)
         output_filename = args.out_file if args.out_file else args.source_file.replace(
             '.xircuits', '.py')
+
+    # Get the working directory (project root) for PYTHONPATH
+    working_dir = resolve_working_dir() or Path.cwd()
+    
+    # Set PYTHONPATH to include working directory for proper imports
+    current_pythonpath = os.environ.get('PYTHONPATH', '')
+    if current_pythonpath:
+        os.environ['PYTHONPATH'] = f"{working_dir}{os.pathsep}{current_pythonpath}"
+    else:
+        os.environ['PYTHONPATH'] = str(working_dir)
 
     run_command = f"python {output_filename} {' '.join(extra_args)}"
     os.system(run_command)
@@ -251,6 +264,28 @@ def main():
     list_parser = subparsers.add_parser(
         'list', help='List available component libraries for Xircuits.')
     list_parser.set_defaults(func=cmd_list_libraries)
+
+    # 'sync' command.
+    sync_parser = subparsers.add_parser(
+        'sync',
+        help='Install dependencies for all Xircuits component libraries (meta extra: xai-components).'
+    )
+    sync_parser.set_defaults(func=cmd_sync)
+
+    # 'update' command.
+    update_parser = subparsers.add_parser(
+        'update', help='Update a component library with in-place .bak backups.'
+    )
+    update_parser.add_argument('library_name', type=str, help='Library to update (e.g., flask)')
+    update_parser.add_argument('--repo', type=str, default=None, help='Override source repository URL')
+    update_parser.add_argument('--ref', type=str, default=None, help='Tag/branch/commit to update to')
+    update_parser.add_argument('--dry-run', action='store_true', help='Preview only; no changes')
+    update_parser.add_argument('--prune', action='store_true',
+                            help='Prune local-only files/dirs (rename to .bak)')
+    update_parser.add_argument('--install-deps', nargs='?', const=True, default=True, 
+                               type=lambda s: str(s).lower() not in ('0','false','no','off'), 
+                               help='Install/update Python deps (default true). Pass false to disable.')
+    update_parser.set_defaults(func=cmd_update_library)
 
     # 'run' command.
     run_parser = subparsers.add_parser(

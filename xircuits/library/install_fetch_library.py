@@ -1,152 +1,179 @@
-import subprocess
-import sys
-import os
 import shutil
-import json
 from pathlib import Path
-from ..utils import is_valid_url, is_empty
-from ..handlers.request_submodule import request_remote_library
+
+from xircuits.utils.file_utils import is_valid_url, is_empty
+from xircuits.utils.requirements_utils import read_requirements_for_library
+from xircuits.utils.git_toml_manager import (
+    set_library_extra,
+    rebuild_meta_extra,
+    remove_library_extra,
+    record_component_metadata,
+    remove_component_metadata,
+    get_git_metadata,
+    remove_git_directory,
+    regenerate_lock_file
+)
+from xircuits.utils.venv_ops import install_specs
+from xircuits.utils.pathing import get_library_relpath, resolve_library_dir
+
+from ..handlers.request_remote import request_remote_library
 from ..handlers.request_folder import clone_from_github_url
+
 
 CORE_LIBS = {"xai_events", "xai_template", "xai_controlflow", "xai_utils"}
 
-def build_component_library_path(component_library_query: str) -> str:
-    if "xai" not in component_library_query:
-        component_library_query = "xai_" + component_library_query
-
-    if "xai_components" not in component_library_query:
-        component_library_query = "xai_components/" + component_library_query
-
-    return component_library_query
-
-def get_library_config(library_name, config_key):
-    config_path = ".xircuits/component_library_config.json"
-    if os.path.exists(config_path):
-        with open(config_path, "r") as config_file:
-            config = json.load(config_file)
-            for library in config.get("libraries", []):
-                if library.get("library_id") == library_name:
-                    # Check for the existence of the key and that its value is not None
-                    if config_key in library and library[config_key] is not None:
-                        return library[config_key]
-                    else:
-                        return None  # Explicitly return None if the key is missing or its value is None
-
-    return None  # Return None if the library isn't found or the file doesn't exist
-
-def build_library_file_path_from_config(library_name, config_key):
-    file_path = get_library_config(library_name, config_key)
-    if file_path is None:
-        return None
-
-    base_path = get_library_config(library_name, "local_path")
-    if base_path is None:
-        return None
-    
-    full_path = Path(base_path, file_path)
-    return full_path.as_posix()
 
 def get_component_library_path(library_name: str) -> str:
+    """
+    If a URL is provided, clone to xai_components/xai_<name>.
+    Otherwise normalize a library key like 'sklearn' -> 'xai_components/xai_sklearn'.
+    """
     if is_valid_url(library_name):
-        return clone_from_github_url(library_name)
-    else:
-        return build_component_library_path(library_name)
+        path = clone_from_github_url(library_name)
+        return path
+    path = get_library_relpath(library_name)
+    return path
 
-def is_uv_venv() -> bool:
-    """Return True if we're in a uv-managed venv (pyvenv.cfg contains 'uv =')."""
-    venv = os.environ.get("VIRTUAL_ENV")
-    if not venv:
-        return False
-    cfg = Path(venv) / "pyvenv.cfg"
-    if not cfg.exists():
-        return False
-    for line in cfg.read_text().splitlines():
-        if line.strip().startswith("uv ="):
-            return True
-    return False
 
-def get_pip_command() -> list[str]:
+def _extra_name_for_path(components_path: str) -> str:
     """
-    Return the command prefix to run 'pip install' in the current environment.
-    Prefers 'uv pip' if in a uv-managed venv and 'uv' is on PATH.
-    Otherwise falls back to 'python -m pip'.
+    For 'xai_components/xai_sklearn' -> 'xai-sklearn'
     """
-    # if uv-managed venv, use uv pip
-    if is_uv_venv():
-        uv_cmd = shutil.which("uv")
-        if uv_cmd:
-            return [uv_cmd, "pip", "install"]
-    # otherwise, use the interpreter's pip
-    return [sys.executable, "-m", "pip", "install"]
+    tail = Path(components_path).name  # xai_sklearn
+    return "xai-" + tail.replace("xai_", "").replace("_", "-")
 
-def install_library(library_name: str):
 
-    if not os.environ.get("VIRTUAL_ENV"):
-        print("Warning: no virtual environment detected; installing globally.")
-
-    print(f"Installing {library_name}...")
-    component_library_path = get_component_library_path(library_name)
-
-    if not Path(component_library_path).is_dir() or is_empty(component_library_path):
-        success, message = request_remote_library(component_library_path)
-        if not success:
-            print(message)
-            return
-
-    # Get the requirements path from the configuration
-    requirements_path = get_library_config(library_name, "requirements_path")
-    # Convert to Path object and ensure it's absolute
-    requirements_path = Path(requirements_path).resolve() if requirements_path else Path(component_library_path) / "requirements.txt"
-
-    # Install requirements if the file exists
-    if requirements_path.exists():
-        try:
-            print(f"Installing requirements for {library_name} from {requirements_path}...")
-            cmd = get_pip_command() + ["-r", str(requirements_path)]
-            subprocess.run(cmd, check=True)
-            print(f"Library {library_name} ready to use.")
-        except Exception as e:
-            print(f"An error occurred while installing requirements for {library_name}: {e}")
-    else:
-        print(f"No requirements.txt found for {library_name}. Skipping installation of dependencies.")
-        print(f"Library {library_name} ready to use.")
-
-def fetch_library(library_name: str):
+def fetch_library(library_name: str) -> str:
+    """
+    FETCH-ONLY:
+      - ensure the library files exist under xai_components/xai_<name>
+      - clone from remote manifest if directory is missing or empty
+      - strip embedded .git folder (vendored)
+      - DOES NOT touch project's pyproject.toml
+      - return a status message
+    """
     print(f"Fetching {library_name}...")
-    component_library_path = get_component_library_path(library_name)
+    comp_path = get_component_library_path(library_name)
 
-    if not Path(component_library_path).is_dir() or is_empty(component_library_path):
-        success, message = request_remote_library(component_library_path)
-        if success:
-            print(f"{library_name} library fetched and stored in {component_library_path}.")
-        else:
-            print(message)
+    # If directory is missing or empty, clone using remote manifest
+    if not Path(comp_path).is_dir() or is_empty(comp_path):
+        success, message = request_remote_library(comp_path)
+        if not success:
+            msg = "component library remote not found"
+            print(msg)
+            return msg
+
+        remove_git_directory(comp_path)
+        msg = f"{library_name} library fetched and stored in {comp_path}."
+        print(msg)
+        return msg
     else:
-        print(f"{library_name} library already exists in {component_library_path}.")
+        msg = f"{library_name} library already exists in {comp_path}."
+        print(msg)
+        return msg
 
-def uninstall_library(library_name: str) -> None:
+
+def install_library(library_name: str) -> str:
     """
-    Remove the component-library directory unless it's a core library.
+    INSTALL (fetch + pyproject writes, no environment install):
+      - fetch/clone if needed (same as fetch_library)
+      - read the vendored library dependencies
+      - write/replace per-library extra [project.optional-dependencies].xai-<lib>
+      - rebuild meta extra [project.optional-dependencies].xai-components
+      - record [tool.xircuits.components.xai-<lib>] with path + source + tag/rev
+      - return a status message
+
+    Users then install packages with:  uv sync --extra xai-components
     """
+    print(f"Installing {library_name}...")
+    comp_path = get_component_library_path(library_name)
 
-    raw = library_name.strip().lower()
+    # Track whether we just cloned (vendoring flow) to know when to strip .git
+    did_clone = False
 
-    if "xai" not in raw:
+    # If directory is missing or empty, clone using remote manifest
+    if not Path(comp_path).is_dir() or is_empty(comp_path):
+        success, message = request_remote_library(comp_path)
+        if not success:
+            msg = "component library remote not found"
+            print(msg)
+            return msg
+        did_clone = True
+
+    # Try to collect repo metadata
+    repo_url, ref, is_tag = get_git_metadata(comp_path)
+
+    reqs = read_requirements_for_library(Path(comp_path))
+    extra_name = _extra_name_for_path(comp_path)
+    set_library_extra(extra_name, reqs)
+    rebuild_meta_extra("xai-components")
+
+    # Record metadata (source + exact tag or commit)
+    record_component_metadata(
+        extra_name,
+        comp_path,
+        repo_url=repo_url,
+        ref=ref,
+        is_tag=is_tag,
+    )
+
+    # For vendored installs from manifest, strip .git after we captured metadata
+    if did_clone:
+        remove_git_directory(comp_path)
+
+    # Install the Python dependencies
+    try:
+        if reqs:
+            print(f"Installing Python dependencies for {library_name}...")
+            # chooses 'uv pip install' inside a uv venv, otherwise 'pip install'
+            install_specs(reqs)
+            print(f"✓ Dependencies for {library_name} installed.")
+        else:
+            print(f"No requirements.txt entries for {library_name}; nothing to install.")
+    except Exception as e:
+        # Do not fail the whole flow—metadata and extras are already written.
+        print(f"Warning: installing dependencies for {library_name} failed:{e}".rstrip())
+
+    regenerate_lock_file()
+
+    print(f"Library {library_name} ready to use.")
+    return f"Library {library_name} installation completed."
+
+
+def uninstall_library(library_name: str) -> str:
+    """
+    Remove the vendored directory, remove its extra and metadata, and rebuild the meta extra.
+    """
+    raw = (library_name or "").strip().lower()
+    if not raw.startswith("xai_"):
         raw = "xai_" + raw
+    short = raw.split("/")[-1]
 
-    short_name = raw.split("/")[-1]
+    if short in CORE_LIBS:
+        raise RuntimeError(f"'{short}' is a core library and cannot be uninstalled.")
 
-    if short_name in CORE_LIBS:
-        raise RuntimeError(f"'{short_name}' is a core library and cannot be uninstalled.")
-
-    lib_path = Path(build_component_library_path(short_name))
-
+    lib_path = resolve_library_dir(short)
     if not lib_path.exists():
-        print(f"Library '{short_name}' not found.")
-        return
+        print("Library not found.")
+        return f"Library '{short}' not found."
 
+    # Remove files
     try:
         shutil.rmtree(lib_path)
-        print(f"Library '{short_name}' uninstalled.")
+        print(f"Library '{short}' uninstalled.")
     except Exception as e:
-        print(f"Failed to uninstall '{short_name}': {e}")
+        return f"Failed to remove '{short}': {e}"
+
+    # Remove metadata + extra, then rebuild meta extra
+    try:
+        remove_component_metadata(str(lib_path))
+        extra_name = _extra_name_for_path(str(lib_path))
+        remove_library_extra(extra_name)
+
+        rebuild_meta_extra("xai-components")
+        regenerate_lock_file()
+
+    except Exception as e:
+        print(f"Warning updating pyproject.toml for '{short}': {e}")
+
+    return f"Library '{short}' uninstalled."

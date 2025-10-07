@@ -1,11 +1,13 @@
-import os
 import json
 import traceback
 import tornado
 import posixpath
 from http import HTTPStatus
 from jupyter_server.base.handlers import APIHandler
-from xircuits.library import install_library, uninstall_library, fetch_library, build_library_file_path_from_config, save_component_library_config, get_component_library_config, create_or_update_library
+
+from xircuits.library import install_library, uninstall_library, fetch_library, create_or_update_library
+from xircuits.library.index_config import refresh_index, get_component_library_config
+from xircuits.utils.pathing import get_library_relpath, resolve_library_dir
 
 class InstallLibraryRouteHandler(APIHandler):
     @tornado.web.authenticated
@@ -90,7 +92,7 @@ class GetLibraryDirectoryRouteHandler(APIHandler):
             self.finish(json.dumps({"error": "Library name is required"}))
             return
 
-        directory_path = posixpath.join("xai_components", f"xai_{library_name.lower()}")
+        directory_path = get_library_relpath(library_name)
         self.finish(json.dumps({"status": "OK", "path": directory_path}))
 
 class GetLibraryReadmeRouteHandler(APIHandler):
@@ -104,51 +106,53 @@ class GetLibraryReadmeRouteHandler(APIHandler):
             self.finish(json.dumps({"error": "Library name is required"}))
             return
 
-        file_path = build_library_file_path_from_config(library_name, "readme")
+        base = resolve_library_dir(library_name)
+        candidates = [base / "README.md", base / "README.rst", base / "Readme.md", base / "readme.md"]
+        for p in candidates:
+            if p.exists():
+                self.finish(json.dumps({"status": "OK", "path": p.as_posix()}))
+                return
 
-        if file_path:
-            if os.path.exists(file_path):
-                response = {"status": "OK", "path": file_path}
-            else:
-                self.set_status(HTTPStatus.NOT_FOUND)
-                response = {"error": "Readme file not found."}
-        else:
-            self.set_status(HTTPStatus.NOT_FOUND)
-            response = {"error": "Readme configuration not found."}
+        self.set_status(HTTPStatus.NOT_FOUND)
+        self.finish(json.dumps({"error": "Readme file not found."}))
 
-        self.finish(json.dumps(response))
 
 class GetLibraryExampleRouteHandler(APIHandler):
     @tornado.web.authenticated
     def post(self):
         input_data = self.get_json_body()
         library_name = input_data.get("libraryName")
-
         if not library_name:
             self.set_status(HTTPStatus.BAD_REQUEST)
             self.finish(json.dumps({"error": "Library name is required"}))
             return
 
-        example_path = build_library_file_path_from_config(library_name, "default_example_path")
+        base = resolve_library_dir(library_name)
+        preferred = base / "examples" / "default.xircuits"
+        if preferred.exists():
+            self.finish(json.dumps({"status": "OK", "path": preferred.as_posix()}))
+            return
 
-        if example_path:
-            if os.path.exists(example_path):
-                response = {"status": "OK", "path": example_path}
-            else:
-                self.set_status(HTTPStatus.NOT_FOUND)
-                response = {"error": "Example file not found."}
+        # Fallback: first .xircuits anywhere under the library dir (recursive)
+        found = None
+        if base.exists():
+            for p in base.rglob("*.xircuits"):
+                found = p
+                break
+
+        if found:
+            self.finish(json.dumps({"status": "OK", "path": found.as_posix()}))
         else:
             self.set_status(HTTPStatus.NOT_FOUND)
-            response = {"error": "Example configuration not found."}
+            self.finish(json.dumps({"error": "Example file not found."}))
 
-        self.finish(json.dumps(response))
 
 class ReloadComponentLibraryConfigHandler(APIHandler):
     @tornado.web.authenticated
     def post(self):
         try:
-            save_component_library_config()
-            response = {"status": "OK", "message": "Library config updated."}
+            refresh_index()
+            response = {"status": "OK", "message": "Index refreshed."}
         except Exception as e:
             self.set_status(HTTPStatus.INTERNAL_SERVER_ERROR)
             response = {"error": f"Something went wrong: {str(e)}"}
