@@ -12,18 +12,13 @@ import { normalizeLibraryName } from '../tray_library/ComponentLibraryConfig';
 export async function handleInstall(
     app,
     libraryName: string,
-    refreshTrigger: () => void,
-    opts?: { silent?: boolean }
-
+    refreshTrigger: () => void
 ): Promise<boolean> {
-    const { silent = false } = opts ?? {};
     const originalName = libraryName;
     const normalizedLibName = normalizeLibraryName(originalName);
 
-    if (!silent) {
-        const proceed = confirm(`Do you want to proceed with installing "${originalName}" library?`);
-        if (!proceed) return false;
-    }
+    const proceed = confirm(`Do you want to proceed with installing "${originalName}" library?`);
+    if (!proceed) return false;
 
     const installPromise = requestAPI<any>('library/install', {
         method: 'POST',
@@ -58,6 +53,34 @@ export async function handleInstall(
         console.error(`Installation error: ${err}`);
         return false;
     }
+}
+
+export async function installLibrarySilently(app: any, libraryName: string): Promise<boolean> {
+  const normalized = normalizeLibraryName(libraryName);
+
+  const installPromise = requestAPI<any>('library/install', {
+    method: 'POST',
+    body: JSON.stringify({ libraryName: normalized })
+  });
+
+  Notification.promise(installPromise, {
+    pending: { message: `Installing ${libraryName} library...`, options: { autoClose: 3000 } },
+    success: { message: () => `Library ${libraryName} installed successfully.`, options: { autoClose: 3000 } },
+    error: { message: (err) => `Failed to install ${libraryName}: ${err}`, options: { autoClose: false } }
+  });
+
+  try {
+    const res = await installPromise;
+    if (res.status === 'OK') {
+      await app.commands.execute(commandIDs.refreshComponentList);
+      return true;
+    }
+    console.error(`Installation failed: ${res.error || 'Unknown error'}`);
+    return false;
+  } catch (e) {
+    console.error('Installation error:', e);
+    return false;
+  }
 }
 
 export interface TrayContextMenuProps {

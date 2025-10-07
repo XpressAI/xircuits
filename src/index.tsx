@@ -33,10 +33,10 @@ import type { Signal } from "@lumino/signaling";
 import { commandIDs } from "./commands/CommandIDs";
 import { IEditorTracker } from '@jupyterlab/fileeditor';
 import { IMainMenu } from '@jupyterlab/mainmenu';
-import { handleInstall } from './context-menu/TrayContextMenu';
-import { ComponentPreviewWidget } from './component_info_sidebar/ComponentPreviewWidget';
-import {registerPreviewResetOnCanvasChange } from './component_info_sidebar/previewHelper';
-
+import { installLibrarySilently } from './context-menu/TrayContextMenu';
+import { normalizeLibraryName } from './tray_library/ComponentLibraryConfig';
+import { loadLibraryIndex } from './helpers/notificationEffects';
+import { installComponentPreview } from './component_info_sidebar/previewHelper';
 const FACTORY = 'Xircuits editor';
 
 // Export a token so other extensions can require it
@@ -160,15 +160,11 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
     restorer.add(sidebarWidget, sidebarWidget.id);
     app.shell.add(sidebarWidget, "left");
-
-    const previewWidget = new ComponentPreviewWidget(null);   
-    previewWidget.id = 'xircuits-doc-preview';               
-    app.shell.add(previewWidget, 'right', { rank: 1 });
-    restorer.add(previewWidget, previewWidget.id);
+    // === Right Sidebar 
+    installComponentPreview(app, restorer, tracker, { rank: 0, collapseOnStart: true });
 
     // Additional commands for node action
     addNodeActionCommands(app, tracker, translator);
-    registerPreviewResetOnCanvasChange(app, tracker);
 
     // Additional commands for chat actions
     addLibraryActionCommands(app, tracker, translator, widgetFactory);
@@ -583,26 +579,17 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       });
     }
 
-    function canon(name: string): string {
-      return name.toLowerCase().replace(/^xai[_-]?/, '');
-    }
-
-    async function getInstalledLibraries(): Promise<Set<string>> {
-      try {
-        const result = await requestAPI<any>('library/get_config', {
-          method: 'GET'
-        });
-
-        return new Set<string>(
-          result.config.libraries
-            .filter((lib: any) => lib.status === 'installed' && typeof lib.name === 'string')
-            .map((lib: any) => canon(lib.name))
-        );
-      } catch (err) {
-        console.error('Failed to load library config via API:', err);
-        return new Set();
+    async function getInstalledIds(): Promise<Set<string>> {
+      const idx = await loadLibraryIndex();
+      const set = new Set<string>();
+      for (const [id, entry] of idx) {
+        if (String(entry.status).toLowerCase() === 'installed') {
+          set.add(id);
+        }
       }
+      return set;
     }
+
     app.commands.addCommand(commandIDs.fetchExamples, {
       label: 'Fetch Example Workflows',
       caption: 'Fetch example workflows into the examples directory',
@@ -624,29 +611,33 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         icon: xircuitsIcon,
         execute: async () => {
           const currentPath = browserFactory.tracker.currentWidget?.model.path ?? '';
-          const installedLibs = await getInstalledLibraries();
+          const installedIds = await getInstalledIds();
 
-          const pairs = libraries.map(lib => ({ lib, want: canon(lib) }));
-          const missing = pairs.filter(p => !installedLibs.has(p.want));
+          const pairs = libraries.map(lib => ({
+            raw: lib,
+            id: normalizeLibraryName(lib)
+          }));
+
+          const missing = pairs.filter(p => !installedIds.has(p.id));
+
           if (missing.length) {
-            const list = missing.map(p => p.lib).join(', ');
+            const list = missing.map(p => p.raw).join(', ');
             const ok = window.confirm(`This template requires: ${list}. Install now?`);
             if (!ok) {
               console.warn('User cancelled installation.');
               return;
             }
 
-            for (const { lib, want } of missing) {
-              const ok = await handleInstall(app, lib, () =>{},
-                { silent: true }
-              );
+            for (const { raw, id } of missing) {
+              const ok = await installLibrarySilently(app, raw);
               if (!ok) {
-                console.warn(`Aborted: ${lib} not installed.`);
+                console.warn(`Aborted: ${raw} not installed.`);
                 return;
               }
-              installedLibs.add(want);
+              installedIds.add(id);
             }
           }
+
           // Currently the templates are stored at the `examples` dir
           await app.commands.execute(commandIDs.fetchExamples);
 
