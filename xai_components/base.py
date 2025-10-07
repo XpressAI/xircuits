@@ -72,6 +72,31 @@ class InArg(Generic[T]):
             memo[id_self] = _copy
         return _copy
 
+    def _put_at_index(self, idx: int, obj):
+        v = self._value
+        if v is None:
+            v = []
+        if isinstance(v, tuple):
+            v = list(v)
+        if idx >= len(v):
+            v.extend([None] * (idx + 1 - len(v)))
+        v[idx] = obj
+        self._value = v
+
+    class _IndexProxy:
+        def __init__(self, parent, idx):
+            self._p = parent
+            self._i = idx
+        def connect(self, ref):
+            self._p._put_at_index(self._i, ref)
+
+    def __getitem__(self, idx):
+        # Enables: port[i].connect(other_port)
+        return InArg._IndexProxy(self, idx)
+
+    def __setitem__(self, idx, value):
+        # Enables: port[i] = <literal or port>
+        self._put_at_index(idx, value)
 
 class InCompArg(Generic[T]):
     def __init__(self, value: T = None, getter: Callable[[T], any] = lambda x: x) -> None:
@@ -265,6 +290,10 @@ class dynalist(list):
             return []
         return [item.value if isinstance(item, (InArg, OutArg)) else item for item in x]
 
+    @staticmethod
+    def initial_value():
+        return []
+
 
 class dynatuple(tuple):
     def __init__(self, *args):
@@ -281,6 +310,11 @@ class dynatuple(tuple):
             else:
                 return item
         return tuple(resolve(item) for item in x)
+
+    @staticmethod
+    def initial_value():
+        return tuple()
+
 
 def parse_bool(value):
     if value is None:
