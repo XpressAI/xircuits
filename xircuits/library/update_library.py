@@ -349,7 +349,7 @@ def _sync_single_file(src_file: Path, dst_file: Path, dry_run: bool, timestamp: 
         unchanged.append(rel_path)
     else:
         # File has local modifications
-        if no_overwrite: BLOCK
+        if no_overwrite:
             print(f"⊙ {rel_path} (local changes preserved)")
             unchanged.append(rel_path)
         elif dry_run:
@@ -538,7 +538,7 @@ def _sync_with_backups(
                 report.unchanged.append(str(rel))
             else:
                 # File differs - local modification detected
-                if no_overwrite: BLOCK
+                if no_overwrite:
                     print(f"⊙ {rel} (local changes preserved)")
                     report.unchanged.append(str(rel))
                 elif dry_run:
