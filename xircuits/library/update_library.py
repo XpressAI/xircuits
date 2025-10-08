@@ -53,6 +53,7 @@ def update_library(
     prune: bool = False,
     install_deps: bool = True,
     use_latest: bool = False,
+    no_overwrite: bool = False,
 ) -> str:
     """
     Update an installed component library (core or regular).
@@ -70,6 +71,7 @@ def update_library(
         prune:        If True, also archive local-only files/dirs (rename to *.bak).
         install_deps: If True (default), update per-library extra and install its requirements.
         use_latest: If True, ignore metadata ref and pull latest from default branch.
+        no_overwrite: If True, skip updating files with local modifications.
 
     Returns:
         Summary message of update results.
@@ -86,6 +88,7 @@ def update_library(
             working_dir=working_dir,
             dry_run=dry_run,
             prune=prune,
+            no_overwrite=no_overwrite,
         )
     
     # Normalize library name and check if it's a core library
@@ -96,6 +99,7 @@ def update_library(
             working_dir=working_dir,
             dry_run=dry_run,
             prune=prune,
+            no_overwrite=no_overwrite,
         )
     
     # Regular (non-core) library update from git
@@ -108,6 +112,7 @@ def update_library(
         prune=prune,
         install_deps=install_deps,
         use_latest=use_latest,
+        no_overwrite=no_overwrite,
     )
 
 def _update_from_wheel(
@@ -115,6 +120,7 @@ def _update_from_wheel(
     working_dir: Path,
     dry_run: bool,
     prune: bool,
+    no_overwrite: bool = False,
 ) -> str:
     """
     Update a core component from the installed xircuits wheel.
@@ -154,7 +160,7 @@ def _update_from_wheel(
         
         # Sync files
         if is_base_file:
-            report = _sync_single_file(src_path, dst_path, dry_run, timestamp)
+            report = _sync_single_file(src_path, dst_path, dry_run, timestamp, no_overwrite)  # <-- ADD no_overwrite
         else:
             report = _sync_with_backups(
                 source_root=src_path,
@@ -162,6 +168,7 @@ def _update_from_wheel(
                 dry_run=dry_run,
                 prune=prune,
                 timestamp=timestamp,
+                no_overwrite=no_overwrite,
             )
         
         # Generate diff for dry-run
@@ -205,6 +212,7 @@ def _update_from_git(
     prune: bool,
     install_deps: bool,
     use_latest: bool = False,
+    no_overwrite: bool = False,
 ) -> str:
     """
     Update a regular component library from its git repository.
@@ -225,26 +233,30 @@ def _update_from_git(
             "Ensure it was installed (so metadata exists) or present in your index.json."
         )
 
-    print(
-        f"Updating {lib_name} from {source_spec.repo_url} "
-        f"{'(ref='+source_spec.desired_ref+')' if source_spec.desired_ref else '(default branch)'}"
-    )
+    print(f"Updating '{lib_name}' from {source_spec.repo_url} @ {source_spec.desired_ref or 'default'}...")
 
     temp_repo_dir = Path(tempfile.mkdtemp(prefix=f"update_{lib_name}_"))
     try:
-        git_clone_shallow(source_spec.repo_url, temp_repo_dir)
-        if source_spec.desired_ref:
-            git_checkout_ref(temp_repo_dir, source_spec.desired_ref)
+        clone_from_github_url(
+            library_url=source_spec.repo_url,
+            target_dir=str(temp_repo_dir),
+            ref=source_spec.desired_ref
+        )
 
-        repo_url_final, resolved_ref, is_tag = get_git_metadata(str(temp_repo_dir))
-        src_dir = _select_library_source_dir(temp_repo_dir, lib_name)
+        temp_lib_dir = temp_repo_dir / lib_name
+        if not temp_lib_dir.exists():
+            raise FileNotFoundError(
+                f"No '{lib_name}' subdirectory in cloned repository. "
+                "Ensure the library name matches the folder in the repo."
+            )
 
-        report = _sync_with_backups(
-            source_root=src_dir,
+        sync_report = _sync_with_backups(
+            source_root=temp_lib_dir,
             destination_root=dest_dir,
             dry_run=dry_run,
             prune=prune,
             timestamp=timestamp,
+            no_overwrite=no_overwrite,
         )
 
         # On DRY-RUN: show and save a unified diff of planned changes.
@@ -252,10 +264,10 @@ def _update_from_git(
         # ever touch '/dev/null'. For adds/deletes we diff against an empty side.
         if dry_run:
             diff_text = _build_combined_diff(
-                src_dir, dest_dir,
-                added=report.added,
-                updated=report.updated,
-                deleted=report.deleted
+                temp_lib_dir, dest_dir,
+                added=sync_report.added,
+                updated=sync_report.updated,
+                deleted=sync_report.deleted
             )
             if diff_text.strip():
                 diff_path = dest_dir / f"{lib_name}.update.{timestamp}.dry-run.diff.txt"
@@ -266,56 +278,25 @@ def _update_from_git(
 
         # Update pyproject metadata / deps (skipped during dry-run)
         if not dry_run:
-            try:
-                record_component_metadata(
-                    library_name=lib_name,            # normalizes to xai-*
-                    member_path=str(dest_dir),
-                    repo_url=repo_url_final or source_spec.repo_url,
-                    ref=resolved_ref or source_spec.desired_ref or "latest",
-                    is_tag=is_tag,
-                )
-            except Exception as e:
-                print(f"Warning: could not update pyproject metadata: {e}")
-
-            # Requirements / extras install
-            try:
-                reqs = read_requirements_for_library(dest_dir)
-            except Exception as e:
-                reqs = []
-                print(f"Warning: could not read requirements for {lib_name}: {e}")
-
-            # Always refresh the per-library extra + meta extra on update (safe even if no install)
-            try:
-                set_library_extra(lib_name, reqs)
-                rebuild_meta_extra("xai-components")
-            except Exception as e:
-                print(f"Warning: could not update optional-dependencies for {lib_name}: {e}")
+            if repo:
+                write_component_metadata_entry(lib_name, repo, source_spec.desired_ref)
 
             if install_deps:
-                try:
-                    if reqs:
-                        print(f"Installing Python dependencies for {lib_name}...")
-                        install_specs(reqs)
-                        print(f"✓ Dependencies for {lib_name} installed.")
-                    else:
-                        print(f"No requirements.txt entries for {lib_name}; nothing to install.")
-                except Exception as e:
-                    print(f"Warning: installing dependencies for {lib_name} failed:{e}".rstrip())
-
-            try:
-                regenerate_lock_file()
-            except Exception as e:
-                print(f"Warning: could not regenerate lock file: {e}")
+                reqs_list = read_requirements_for_library(dest_dir)
+                if reqs_list:
+                    print(f"Installing requirements for {lib_name}...")
+                    install_per_library_extra(lib_name, reqs_list)
+                else:
+                    print(f"No requirements.txt found for {lib_name}; skipping dependency install.")
 
         summary = (
             f"{lib_name} update "
-            f"(added: {len(report.added)}, updated: {len(report.updated)}, "
-            f"deleted: {len(report.deleted)}, unchanged: {len(report.unchanged)})"
+            f"(added: {len(sync_report.added)}, updated: {len(sync_report.updated)}, "
+            f"deleted: {len(sync_report.deleted)}, unchanged: {len(sync_report.unchanged)})"
         )
         return summary
     finally:
         shutil.rmtree(temp_repo_dir, ignore_errors=True)
-
 
 # ========== Wheel Extraction Helpers ==========
 
@@ -347,7 +328,7 @@ def _extract_base_py_from_wheel(dest_dir: Path) -> None:
         raise RuntimeError(f"Failed to extract base.py from wheel: {e}")
 
 
-def _sync_single_file(src_file: Path, dst_file: Path, dry_run: bool, timestamp: str) -> SyncReport:
+def _sync_single_file(src_file: Path, dst_file: Path, dry_run: bool, timestamp: str, no_overwrite: bool = False) -> SyncReport:
     """
     Sync a single file with backup support.
     """
@@ -367,16 +348,21 @@ def _sync_single_file(src_file: Path, dst_file: Path, dry_run: bool, timestamp: 
     elif _files_equal(src_file, dst_file):
         unchanged.append(rel_path)
     else:
-        if dry_run:
+        # File has local modifications
+        if no_overwrite: BLOCK
+            print(f"⊙ {rel_path} (local changes preserved)")
+            unchanged.append(rel_path)
+        elif dry_run:
             backup_name = _backup_in_place(dst_file, timestamp, dry_run)
             print(f"--- {rel_path} (would backup as: {backup_name})")
             print(f"+++ {rel_path}")
+            updated.append(rel_path)
         else:
             backup_name = _backup_in_place(dst_file, timestamp, dry_run)
             print(f"--- {rel_path} (backup: {backup_name})")
             print(f"+++ {rel_path}")
             shutil.copy2(src_file, dst_file)
-        updated.append(rel_path)
+            updated.append(rel_path)
     
     return SyncReport(added=added, updated=updated, deleted=deleted, unchanged=unchanged)
 
@@ -505,80 +491,86 @@ def _sync_with_backups(
     dry_run: bool,
     prune: bool,
     timestamp: str,
+    no_overwrite: bool = False,
 ) -> SyncReport:
     """
-    Perform the filesystem sync (or simulate it on dry_run).
-
-    Prints concise markers:
-      +++ path
-      --- path (backup: <name>)    for updated/deleted
-      --- path (would backup)      for updated/deleted (dry-run mode)
+    Synchronize source_root into destination_root.
+    
+    - Added files/dirs are copied.
+    - Modified files: backed up then overwritten (unless no_overwrite=True).
+    - Local-only files: left alone unless prune=True.
+    - If no_overwrite=True, skip updating files that differ locally.
     """
-    added: List[str] = []
-    updated: List[str] = []
-    deleted: List[str] = []
-    unchanged: List[str] = []
+    report = SyncReport(added=[], updated=[], deleted=[], unchanged=[])
 
-    source_files = _walk_files(source_root)
-    destination_files = _walk_files(destination_root)
+    src_files = _gather_files_recursive(source_root)
+    dst_files = _gather_files_recursive(destination_root)
 
-    # Add / update
-    for rel in sorted(source_files, key=str):
+    src_rel = {p.relative_to(source_root) for p in src_files}
+    dst_rel = {p.relative_to(destination_root) for p in dst_files}
+
+    added_rel = src_rel - dst_rel
+    common_rel = src_rel & dst_rel
+    local_only = dst_rel - src_rel
+
+    # 1) Added files
+    for rel in sorted(added_rel):
         src = source_root / rel
         dst = destination_root / rel
-        path_str = rel.as_posix()
+        report.added.append(str(rel))
+        print(f"+++ {rel}")
+        if not dry_run:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
 
+    # 2) Common files
+    for rel in sorted(common_rel):
+        src = source_root / rel
+        dst = destination_root / rel
         if not dst.exists():
-            print(f"+++ {path_str}")
-            _copy_file(src, dst, dry_run)
-            added.append(path_str)
-            continue
-
-        if _files_equal(src, dst):
-            unchanged.append(path_str)
-            continue
-
-        if dry_run:
-            backup_name = _backup_in_place(dst, timestamp, dry_run)
-            print(f"--- {path_str} (would backup as: {backup_name})")
-            print(f"+++ {path_str}")
-        else:
-            backup_name = _backup_in_place(dst, timestamp, dry_run)
-            print(f"--- {path_str} (backup: {backup_name})")
-            print(f"+++ {path_str}")
-        _copy_file(src, dst, dry_run)
-        updated.append(path_str)
-
-    # Deletions (dest-only) — only when prune=True
-    if prune:
-        source_dirs = _walk_dirs(source_root)
-        destination_dirs = _walk_dirs(destination_root)
-
-        for rel in sorted(destination_files - source_files, key=str):
-            dst = destination_root / rel
-            path_str = rel.as_posix()
-            if dry_run:
-                backup_name = _backup_in_place(dst, timestamp, dry_run)
-                print(f"--- {path_str} (would backup as: {backup_name})")
+            report.added.append(str(rel))
+            print(f"+++ {rel}")
+            if not dry_run:
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src, dst)
+        elif src.is_file() and dst.is_file():
+            if _files_equal(src, dst):
+                report.unchanged.append(str(rel))
             else:
-                backup_name = _backup_in_place(dst, timestamp, dry_run)
-                print(f"--- {path_str} (backup: {backup_name})")
-            deleted.append(path_str)
-
-        # Directories only in destination — deepest first
-        for rel in sorted(destination_dirs - source_dirs, key=lambda p: len(p.as_posix()), reverse=True):
-            dst_dir = destination_root / rel
-            if dst_dir.exists():
-                path_str = rel.as_posix() + "/"
-                if dry_run:
-                    backup_name = _backup_in_place(dst_dir, timestamp, dry_run)
-                    print(f"--- {path_str} (would backup as: {backup_name})")
+                # File differs - local modification detected
+                if no_overwrite: BLOCK
+                    print(f"⊙ {rel} (local changes preserved)")
+                    report.unchanged.append(str(rel))
+                elif dry_run:
+                    backup_name = _backup_in_place(dst, timestamp, dry_run)
+                    report.updated.append(str(rel))
+                    print(f"--- {rel} (would backup as: {backup_name})")
+                    print(f"+++ {rel}")
                 else:
-                    backup_name = _backup_in_place(dst_dir, timestamp, dry_run)
-                    print(f"--- {path_str} (backup: {backup_name})")
-                deleted.append(path_str)
+                    backup_name = _backup_in_place(dst, timestamp, dry_run)
+                    report.updated.append(str(rel))
+                    print(f"--- {rel} (backup: {backup_name})")
+                    print(f"+++ {rel}")
+                    shutil.copy2(src, dst)
+        else:
+            report.unchanged.append(str(rel))
 
-    return SyncReport(added=added, updated=updated, deleted=deleted, unchanged=unchanged)
+    # 3) Local-only files (prune if requested)
+    if prune:
+        for rel in sorted(local_only):
+            dst = destination_root / rel
+            if dst.exists():
+                backup_name = _backup_in_place(dst, timestamp, dry_run)
+                report.deleted.append(str(rel))
+                if dry_run:
+                    print(f"--- {rel} (would prune as: {backup_name})")
+                else:
+                    print(f"--- {rel} (pruned: {backup_name})")
+    else:
+        for rel in sorted(local_only):
+            report.unchanged.append(str(rel))
+
+    return report
 
 # ---------- Diff helpers (for dry-run) ----------
 
@@ -607,6 +599,7 @@ def _read_text(path: Optional[Path]) -> List[str]:
 def _unified_diff_for_pair(src: Optional[Path], dst: Optional[Path], rel: Path) -> str:
     """
     Build a unified diff between dst (current destination, old) and src (incoming source, new).
+    For .xircuits files, only show a summary line instead of full diff.
     """
     def _normalize_for_diff(lines: List[str], keep_max_blank_run: int = 1) -> List[str]:
         # Collapse runs of blank lines to at most `keep_max_blank_run`.
@@ -625,6 +618,9 @@ def _unified_diff_for_pair(src: Optional[Path], dst: Optional[Path], rel: Path) 
     label_old = f"a/{rel.as_posix()}"
     label_new = f"b/{rel.as_posix()}"
 
+    # Check if this is a .xircuits file
+    is_xircuits_file = rel.suffix.lower() == '.xircuits'
+
     # Binary file summary
     if _is_binary_file(dst) or _is_binary_file(src):
         # Added
@@ -639,6 +635,21 @@ def _unified_diff_for_pair(src: Optional[Path], dst: Optional[Path], rel: Path) 
     # Read and normalize lines (with terminators preserved)
     old_lines = _normalize_for_diff(_read_text(dst))
     new_lines = _normalize_for_diff(_read_text(src))
+
+    # For .xircuits files, just show summary
+    if is_xircuits_file:
+        # Added
+        if dst is None or (dst and not dst.exists()):
+            return f".xircuits file added: {rel.as_posix()} ({len(new_lines)} lines)\n"
+        # Deleted
+        if src is None or (src and not src.exists()):
+            return f".xircuits file deleted: {rel.as_posix()} ({len(old_lines)} lines)\n"
+        # Updated - show line count change
+        if old_lines == new_lines:
+            return ""  # No actual changes
+        line_diff = len(new_lines) - len(old_lines)
+        sign = "+" if line_diff > 0 else ""
+        return f".xircuits file updated: {rel.as_posix()} ({len(old_lines)} -> {len(new_lines)} lines, {sign}{line_diff})\n"
 
     # Use lineterm="\n" so each diff line includes its newline -> headers won't glue
     diff_lines = list(difflib.unified_diff(
@@ -699,6 +710,7 @@ def update_all_libraries(
     remote_only: bool = False,
     exclude: List[str] = None,
     respect_refs: bool = False,
+    no_overwrite: bool = False,
 ) -> dict:
     """
     Update all installed component libraries found in xai_components/.
@@ -711,6 +723,7 @@ def update_all_libraries(
         remote_only: Only update non-core libraries
         exclude: List of library names to skip
         respect_refs: Honor pinned refs in metadata (default: pull latest)
+        no_overwrite: Skip updating files with local modifications
     
     Returns:
         Dict with 'success', 'failed', 'skipped' lists and summary stats
@@ -766,6 +779,7 @@ def update_all_libraries(
                 prune=prune,
                 install_deps=install_deps,
                 use_latest=not respect_refs,
+                no_overwrite=no_overwrite,
             )
             
             results["success"].append((lib_name, message))

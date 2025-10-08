@@ -167,6 +167,7 @@ def cmd_update_library(args, extra_args=[]):
                 remote_only=args.remote_only,
                 exclude=exclude_list,
                 respect_refs=args.respect_refs,
+                no_overwrite=args.no_overwrite,
             )
             
         except Exception as e:
@@ -185,7 +186,7 @@ def cmd_update_library(args, extra_args=[]):
             dry_run=args.dry_run,
             prune=args.prune,
             install_deps=args.install_deps,
-            # use_latest defaults to False for single library updates
+            no_overwrite=args.no_overwrite,  # <-- ADD THIS
         )
         print(message)
 
@@ -329,6 +330,8 @@ def main():
                             help='Comma-separated list of libraries to exclude (e.g., gradio,opencv)')
     update_parser.add_argument('--respect-refs', action='store_true',
                             help='Honor pinned refs in metadata (default: pull latest for --all)')
+    update_parser.add_argument('--no-overwrite', action='store_true',
+                            help='Skip updating files with local modifications (preserve local changes)')
 
     update_parser.set_defaults(func=cmd_update_library)
 
