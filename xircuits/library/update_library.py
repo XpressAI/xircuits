@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import List, Optional, Set
 from importlib_resources import files, as_file
 
+from xircuits.utils.pathing import resolve_working_dir, components_base_dir
 from .core_libs import is_core_library
 
 from xircuits.utils.pathing import (
@@ -51,6 +52,7 @@ def update_library(
     dry_run: bool = False,
     prune: bool = False,
     install_deps: bool = True,
+    use_latest: bool = False,
 ) -> str:
     """
     Update an installed component library (core or regular).
@@ -67,6 +69,7 @@ def update_library(
         dry_run:      If True, compute actions and print a unified diff (no files changed).
         prune:        If True, also archive local-only files/dirs (rename to *.bak).
         install_deps: If True (default), update per-library extra and install its requirements.
+        use_latest: If True, ignore metadata ref and pull latest from default branch.
 
     Returns:
         Summary message of update results.
@@ -104,6 +107,7 @@ def update_library(
         dry_run=dry_run,
         prune=prune,
         install_deps=install_deps,
+        use_latest=use_latest,
     )
 
 def _update_from_wheel(
@@ -200,6 +204,7 @@ def _update_from_git(
     dry_run: bool,
     prune: bool,
     install_deps: bool,
+    use_latest: bool = False,
 ) -> str:
     """
     Update a regular component library from its git repository.
@@ -213,7 +218,7 @@ def _update_from_git(
 
     timestamp = time.strftime("%Y%m%d-%H%M%S")
 
-    source_spec = _resolve_source_spec(lib_name, repo, ref)
+    source_spec = _resolve_source_spec(lib_name, repo, ref, use_latest)
     if not source_spec or not source_spec.repo_url:
         raise RuntimeError(
             f"Could not resolve a repository URL for '{lib_name}'. "
@@ -382,12 +387,15 @@ def _resolve_source_spec(
     lib_name: str,
     repo_override: Optional[str],
     user_ref: Optional[str],
+    use_latest: bool = False,
 ) -> Optional[SourceSpec]:
     """
     Priority:
       0) explicit repo override (CLI/API 'repo=')
       1) pyproject.toml [tool.xircuits.components] entry (source + tag/rev)
       2) manifest index via get_remote_config()
+      
+    If use_latest=True, ignore metadata ref and use user_ref (or None for default branch).
     """
     # use repo url if specified
     if repo_override:
@@ -395,7 +403,13 @@ def _resolve_source_spec(
 
     # pyproject metadata
     source_url, meta_ref = read_component_metadata_entry(lib_name)
-    desired_ref = user_ref or meta_ref
+    
+    # Determine ref: use_latest bypasses metadata ref
+    if use_latest:
+        desired_ref = user_ref  # None means default branch
+    else:
+        desired_ref = user_ref or meta_ref
+
     if source_url:
         return SourceSpec(repo_url=source_url, desired_ref=desired_ref)
 
@@ -674,3 +688,190 @@ def _build_combined_diff(
             out.append(diff)
 
     return "\n".join(out)
+
+# ---------- Update All functionality ----------
+
+def update_all_libraries(
+    dry_run: bool = False,
+    prune: bool = False,
+    install_deps: bool = True,
+    core_only: bool = False,
+    remote_only: bool = False,
+    exclude: List[str] = None,
+    respect_refs: bool = False,
+) -> dict:
+    """
+    Update all installed component libraries found in xai_components/.
+    
+    Args:
+        dry_run: Preview changes without modifying files
+        prune: Remove local-only files during update
+        install_deps: Install/update Python dependencies
+        core_only: Only update core libraries
+        remote_only: Only update non-core libraries
+        exclude: List of library names to skip
+        respect_refs: Honor pinned refs in metadata (default: pull latest)
+    
+    Returns:
+        Dict with 'success', 'failed', 'skipped' lists and summary stats
+    """
+
+    # Validate conflicting flags
+    if core_only and remote_only:
+        raise ValueError("Cannot specify both --core-only and --remote-only")
+    
+    working_dir = resolve_working_dir()
+    if working_dir is None:
+        raise RuntimeError("Xircuits working directory not found. Run 'xircuits init' first.")
+    
+    exclude_set = set((exclude or []))
+    exclude_set = {normalize_library_slug(x) for x in exclude_set}
+    
+    results = {
+        "success": [],
+        "failed": [],
+        "skipped": []
+    }
+    
+    # Discover libraries to update
+    libraries_to_update = _discover_updateable_libraries(
+        working_dir=working_dir,
+        core_only=core_only,
+        remote_only=remote_only,
+        exclude=exclude_set
+    )
+    
+    if not libraries_to_update:
+        print("No libraries found to update.")
+        return results
+    
+    print(f"Found {len(libraries_to_update)} {'library' if len(libraries_to_update) == 1 else 'libraries'} to update")
+    if dry_run:
+        print("DRY-RUN MODE: No files will be modified\n")
+    print()
+    
+    # Update each library
+    for lib_name in sorted(libraries_to_update):
+        try:
+            print(f"{'='*60}")
+            print(f"Updating: {lib_name}")
+            print(f"{'='*60}")
+            
+            # For --all without --respect-refs, pull latest by setting use_latest=True
+            message = update_library(
+                library_name=lib_name,
+                repo=None,
+                ref=None,
+                dry_run=dry_run,
+                prune=prune,
+                install_deps=install_deps,
+                use_latest=not respect_refs,
+            )
+            
+            results["success"].append((lib_name, message))
+            print(f"✓ {lib_name}: {message}\n")
+            
+        except Exception as e:
+            error_msg = str(e)
+            results["failed"].append((lib_name, error_msg))
+            print(f"✗ {lib_name}: Failed - {error_msg}\n")
+            # Continue to next library
+    
+    # Print summary
+    _print_update_all_summary(results, dry_run)
+    
+    return results
+
+def _discover_updateable_libraries(
+    working_dir: Path,
+    core_only: bool,
+    remote_only: bool,
+    exclude: set
+) -> List[str]:
+    """
+    Scan xai_components directory and return list of updateable library names.
+    """
+
+    base_dir = components_base_dir(working_dir)
+    if not base_dir.exists():
+        return []
+    
+    libraries = []
+    
+    # Check base.py
+    base_py = base_dir / "base.py"
+    if base_py.exists() and base_py.is_file():
+        if not remote_only and "base.py" not in exclude:
+            if core_only or not remote_only:
+                libraries.append("base.py")
+    
+    # Scan xai_* directories
+    for item in base_dir.glob("xai_*"):
+        if not item.is_dir():
+            continue
+        
+        # Must have __init__.py to be valid
+        if not (item / "__init__.py").exists():
+            continue
+        
+        lib_name = item.name
+        
+        # Check exclusions
+        if lib_name in exclude:
+            continue
+        
+        # Check core/remote filters
+        is_core = is_core_library(lib_name)
+        if core_only and not is_core:
+            continue
+        if remote_only and is_core:
+            continue
+        
+        libraries.append(lib_name)
+    
+    return libraries
+
+
+def _print_update_all_summary(results: dict, dry_run: bool):
+    """
+    Print a formatted summary of update results.
+    """
+    print()
+    print("="*60)
+    print("Update All Summary")
+    print("="*60)
+    print()
+    
+    if results["success"]:
+        print("✓ SUCCEEDED:")
+        for lib_name, message in results["success"]:
+            print(f"  {lib_name:20} {message}")
+        print()
+    
+    if results["failed"]:
+        print("✗ FAILED:")
+        for lib_name, error in results["failed"]:
+            # Truncate long errors
+            error_display = error if len(error) <= 60 else error[:57] + "..."
+            print(f"  {lib_name:20} {error_display}")
+        print()
+    
+    if results["skipped"]:
+        print("⊘ SKIPPED:")
+        for lib_name, reason in results["skipped"]:
+            print(f"  {lib_name:20} {reason}")
+        print()
+    
+    # Summary counts
+    total = len(results["success"]) + len(results["failed"]) + len(results["skipped"])
+    summary_parts = []
+    if results["success"]:
+        summary_parts.append(f"{len(results['success'])} succeeded")
+    if results["failed"]:
+        summary_parts.append(f"{len(results['failed'])} failed")
+    if results["skipped"]:
+        summary_parts.append(f"{len(results['skipped'])} skipped")
+    
+    mode_suffix = " (dry-run)" if dry_run else ""
+    print(f"{', '.join(summary_parts)}{mode_suffix}")
+    print("="*60)
