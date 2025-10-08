@@ -174,6 +174,10 @@ def cmd_update_library(args, extra_args=[]):
             return
     else:
         # single-library update
+        if not args.library_name:
+            print("Error: library_name is required when not using --all")
+            return
+            
         message = update_library(
             library_name=args.library_name,
             repo=args.repo,
