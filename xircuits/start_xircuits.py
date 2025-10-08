@@ -186,7 +186,7 @@ def cmd_update_library(args, extra_args=[]):
             dry_run=args.dry_run,
             prune=args.prune,
             install_deps=args.install_deps,
-            no_overwrite=args.no_overwrite,  # <-- ADD THIS
+            no_overwrite=args.no_overwrite,
         )
         print(message)
 
