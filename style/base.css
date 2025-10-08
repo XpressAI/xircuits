@@ -158,6 +158,18 @@ body.light-mode jp-button[title="Toggle Light/Dark Mode"]  .moon  { visibility: 
 
 body.light-mode jp-button[title="Toggle Light/Dark Mode"]  .sun  { visibility: visible; }
 
+.xircuits-notification-details {
+  max-height: 60vh;
+  overflow: auto;
+  padding: 0.25rem;
+}
 
+.xircuits-notification-details pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+  font-family: var(--jp-code-font-family);
+  font-size: var(--jp-code-font-size);
+}
 
 
