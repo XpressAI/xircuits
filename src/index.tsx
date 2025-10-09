@@ -622,7 +622,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
 
           if (missing.length) {
             const list = missing.map(p => p.raw).join(', ');
-            const ok = window.confirm(`This template requires: ${list}. Install now?`);
+            const ok = window.confirm(`This workflow template requires the following component libraries: ${list}. Would you like to install them now?`);
             if (!ok) {
               console.warn('User cancelled installation.');
               return;
