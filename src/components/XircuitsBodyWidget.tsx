@@ -289,39 +289,52 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	// Execute search command
 	const searchInputRef = useRef<HTMLInputElement>(null);
 
+	const clearPortHover = () => {
+		document.querySelectorAll('div.port .hover, g.hover')
+			.forEach(el => el.classList.remove('hover'));
+	};
+
+	const addPortHover = (nodeId: string, portName: string) => {
+		const selector = `div.port[data-nodeid="${nodeId}"][data-name='${portName}']>div>div`;
+		document.querySelector(selector)?.classList.add('hover');
+	};
+
 	const executeSearch = useCallback((text: string) => {
 		const engine = xircuitsApp.getDiagramEngine();
 		const model = engine.getModel();
 		const nodes = model.getNodes();
-	
+
 		// Deselect all
 		nodes.forEach(node => {
 			node.setSelected(false);
 			node.getOptions().extras.isMatch = false;
 			node.getOptions().extras.isSelectedMatch = false;
 		});
-	
+		clearPortHover();
+
 		const query = text.trim();
 		if (!query) {
-		setMatchCount(0);
-		setCurrentMatch(0);
-		setMatchedIndices([]);
-		setCurrentMatchIndex(-1);
-		engine.repaintCanvas();
-		return;
+			setMatchCount(0);
+			setCurrentMatch(0);
+			setMatchedIndices([]);
+			setCurrentMatchIndex(-1);
+			engine.repaintCanvas();
+			return;
 		}
-	
+
 		const result: SearchResult = searchModel(model, query);
+		result.portHits?.forEach(({ nodeId, portName }) => addPortHover(nodeId, portName));
+
 		setMatchCount(result.count);
 		setMatchedIndices(result.indices);
-	
+
 		if (result.indices.length > 0) {
 			result.indices.forEach((index, i) => {
 			const matchNode = nodes[index];
 			matchNode.getOptions().extras.isMatch = true;
 			matchNode.getOptions().extras.isSelectedMatch = i === 0;
 			});
-		
+
 			const first = nodes[result.indices[0]];
 			first.setSelected(true);
 			centerNodeInView(engine, first);
@@ -329,12 +342,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			setCurrentMatch(1);
 			setCurrentMatchIndex(0);
 		} else {
-		setCurrentMatch(0);
-		setCurrentMatchIndex(-1);
+			setCurrentMatch(0);
+			setCurrentMatchIndex(-1);
 		}
-	
+
 		searchInputRef.current?.focus();
-	}, [xircuitsApp]);
+		}, [xircuitsApp]);
 	
 	const navigateMatch = (direction: 'next' | 'prev') => {
 		const engine = xircuitsApp.getDiagramEngine();
@@ -389,18 +402,19 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		useEffect(() => {
 		isHoveringControlsRef.current = isHoveringControls;
 		}, [isHoveringControls]);
-	
+
 	useEffect(() => {
-	if (!showSearch) {
-    const engine = xircuitsApp.getDiagramEngine();
-    const nodes = engine.getModel().getNodes();
-    nodes.forEach(node => {
-	node.getOptions().extras.isMatch = false;
-	node.getOptions().extras.isSelectedMatch = false;
-    });
-    engine.repaintCanvas();
-}
-}, [showSearch]);
+		if (!showSearch) {
+			clearPortHover();
+			const engine = xircuitsApp.getDiagramEngine();
+			const nodes = engine.getModel().getNodes();
+			nodes.forEach(node => {
+			node.getOptions().extras.isMatch = false;
+			node.getOptions().extras.isSelectedMatch = false;
+			});
+			engine.repaintCanvas();
+		}
+	}, [showSearch]);
 
 	const handleMouseMoveCanvas = useCallback(() => {
 	setShowZoom(true);
