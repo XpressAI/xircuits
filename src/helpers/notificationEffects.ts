@@ -65,7 +65,7 @@ function pathToLibraryId(rawPath?: string | null): string | null {
   return normalizeLibraryName(m[1]);
 }
 
-async function loadLibraryIndex(): Promise<Map<string, LibraryEntry>> {
+export async function loadLibraryIndex(): Promise<Map<string, LibraryEntry>> {
   const res: any = await requestAPI('library/get_config', { method: 'GET' });
   const libs = res?.config?.libraries;
   if (!Array.isArray(libs)) throw new Error('Invalid library response');
