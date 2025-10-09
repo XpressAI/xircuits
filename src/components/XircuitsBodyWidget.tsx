@@ -957,9 +957,12 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			}
 			
 			else if (runType === 'terminal-run') {
-				commands.execute(commandIDs.executeToTerminal, {
-					command: `xircuits run ${workflow_path}`
-				});
+				const result = await handleLocalRunDialog();
+				if (result.status === 'ok') {
+					commands.execute(commandIDs.executeToTerminal, {
+					command: `xircuits run ${workflow_path} ${result.args}`
+					});
+				}
 			}
 			
 			else {
