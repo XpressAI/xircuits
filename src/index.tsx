@@ -33,9 +33,10 @@ import type { Signal } from "@lumino/signaling";
 import { commandIDs } from "./commands/CommandIDs";
 import { IEditorTracker } from '@jupyterlab/fileeditor';
 import { IMainMenu } from '@jupyterlab/mainmenu';
-import { installLibrarySilently } from './context-menu/TrayContextMenu';
-import { normalizeLibraryName } from './tray_library/ComponentLibraryConfig';
+import { handleInstall, installLibrarySilently } from './context-menu/TrayContextMenu';
+import { augmentNotifications } from './helpers/notificationAugmentor';
 import { loadLibraryIndex } from './helpers/notificationEffects';
+import { normalizeLibraryName } from './tray_library/ComponentLibraryConfig';
 import { installComponentPreview } from './component_info_sidebar/previewHelper';
 const FACTORY = 'Xircuits editor';
 
@@ -80,6 +81,9 @@ const xircuits: JupyterFrontEndPlugin<void> = {
   ) => {
 
     console.log('Xircuits is activated!');
+
+    // Add "View details" to long notifications
+    augmentNotifications();
 
     // Creating the widget factory to register it so the document manager knows about
     // our new DocumentWidget
