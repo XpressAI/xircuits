@@ -33,8 +33,10 @@ import type { Signal } from "@lumino/signaling";
 import { commandIDs } from "./commands/CommandIDs";
 import { IEditorTracker } from '@jupyterlab/fileeditor';
 import { IMainMenu } from '@jupyterlab/mainmenu';
-import { handleInstall } from './context-menu/TrayContextMenu';
+import { handleInstall, installLibrarySilently } from './context-menu/TrayContextMenu';
 import { augmentNotifications } from './helpers/notificationAugmentor';
+import { loadLibraryIndex } from './helpers/notificationEffects';
+import { normalizeLibraryName } from './tray_library/ComponentLibraryConfig';
 import { installComponentPreview } from './component_info_sidebar/previewHelper';
 const FACTORY = 'Xircuits editor';
 
@@ -581,22 +583,17 @@ const xircuits: JupyterFrontEndPlugin<void> = {
       });
     }
 
-    async function getInstalledLibraries(): Promise<Set<string>> {
-      try {
-        const result = await requestAPI<any>('library/get_config', {
-          method: 'GET'
-        });
-
-        return new Set<string>(
-          result.config.libraries
-            .filter((lib: any) => lib.status === 'installed' && typeof lib.name === 'string')
-            .map((lib: any) => lib.name)
-        );
-      } catch (err) {
-        console.error('Failed to load library config via API:', err);
-        return new Set();
+    async function getInstalledIds(): Promise<Set<string>> {
+      const idx = await loadLibraryIndex();
+      const set = new Set<string>();
+      for (const [id, entry] of idx) {
+        if (String(entry.status).toLowerCase() === 'installed') {
+          set.add(id);
+        }
       }
+      return set;
     }
+
     app.commands.addCommand(commandIDs.fetchExamples, {
       label: 'Fetch Example Workflows',
       caption: 'Fetch example workflows into the examples directory',
@@ -618,24 +615,32 @@ const xircuits: JupyterFrontEndPlugin<void> = {
         icon: xircuitsIcon,
         execute: async () => {
           const currentPath = browserFactory.tracker.currentWidget?.model.path ?? '';
-          const installedLibs = await getInstalledLibraries();
+          const installedIds = await getInstalledIds();
 
-          for (const lib of libraries) {
-            if (installedLibs.has(lib)) {
-              console.log(`Library ${lib} already installed. Skipping.`);
-              continue;
+          const pairs = libraries.map(lib => ({
+            raw: lib,
+            id: normalizeLibraryName(lib)
+          }));
+
+          const missing = pairs.filter(p => !installedIds.has(p.id));
+
+          if (missing.length) {
+            const list = missing.map(p => p.raw).join(', ');
+            const ok = window.confirm(`This workflow template requires the following component libraries: ${list}. Would you like to install them now?`);
+            if (!ok) {
+              console.warn('User cancelled installation.');
+              return;
             }
 
-            const ok = await handleInstall(app, lib, () =>
-              app.commands.execute(commandIDs.refreshComponentList)
-            );
-
+            for (const { raw, id } of missing) {
+              const ok = await installLibrarySilently(app, raw);
               if (!ok) {
-                console.warn(`Aborted: ${lib} not installed.`);
+                console.warn(`Aborted: ${raw} not installed.`);
                 return;
               }
-            installedLibs.add(lib);
+              installedIds.add(id);
             }
+          }
 
           // Currently the templates are stored at the `examples` dir
           await app.commands.execute(commandIDs.fetchExamples);
