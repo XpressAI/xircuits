@@ -14,6 +14,7 @@ import { collectParamIO } from './portPreview';
 import { IONodeTree } from './IONodeTree';
 import type { IONode } from './portPreview';
 import { commandIDs } from "../commands/CommandIDs";
+import { canvasUpdatedSignal } from '../components/XircuitsBodyWidget';
 
 export interface IComponentInfo {
   name: string;
@@ -156,7 +157,7 @@ class OverviewSection extends ReactWidget {
   }
   setModel(m: IComponentInfo | null) {
     this._model = m;
-    this.update();   
+    this.update();
   }
   render(): JSX.Element {
     if (!this._model) {
@@ -321,6 +322,7 @@ export class ComponentPreviewWidget extends SidePanel {
     const shell = this._app.shell as ILabShell;
     shell.expandRight();
     shell.activateById(this.id);
+    this._bindCanvasListener();
   }
 
   private _computeToolbarState(): ToolbarState {
@@ -357,8 +359,52 @@ export class ComponentPreviewWidget extends SidePanel {
       canOpenScript: !!m.node && !isStartFinish,
       canCenter: !!(m.node && m.engine),
       canOpenWorkflow: nodeType === 'xircuits_workflow',
-      canCollapse: !isStartFinish  
+      canCollapse: !isStartFinish
     };
+  }
+  
+  private _isListening = false;
+
+  private _bindCanvasListener(): void {
+    if (this._isListening || this.isDisposed) return;
+
+    const onCanvasUpdate = () => {
+      const engine = this._model?.engine;
+      const currentNode = this._model?.node;
+      if (!engine || !currentNode) return;
+
+      // Skip updating sidebar if a link is still being dragged (incomplete connection)
+      const hasUnfinishedLink = Object.values(engine.getModel()?.getLinks?.() ?? {}).some(
+        (link: any) => !link.getTargetPort?.()
+      );
+      if (hasUnfinishedLink) return;
+
+      // Refresh node reference in case the model recreated it after a change
+      const id = currentNode.getID?.();
+      const latestNode = engine.getModel?.().getNodes?.().find(n => n.getID?.() === id);
+      if (latestNode && latestNode !== currentNode) {
+        this._model!.node = latestNode;
+      }
+
+      try {
+        const { inputs = [], outputs = [] } = collectParamIO(this._model!.node as any);
+        this._inputs.setData(inputs);
+        this._outputs.setData(outputs);
+      } catch (err) {
+        console.warn('[Sidebar] Failed to collect I/O, keeping previous state:', err);
+      }
+
+
+      this._topbar?.update();
+    };
+
+    canvasUpdatedSignal.connect(onCanvasUpdate, this);
+    this._isListening = true;
+
+    this.disposed.connect(() => {
+      canvasUpdatedSignal.disconnect(onCanvasUpdate, this);
+      this._isListening = false;
+    });
   }
 
   private _navigate(step: -1 | 1) {
