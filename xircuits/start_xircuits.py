@@ -9,7 +9,7 @@ from xircuits.utils.pathing import resolve_working_dir
 
 from .library import list_component_library, install_library, fetch_library, uninstall_library
 from .library.index_config import refresh_index
-from .library.update_library import update_library
+from .library.update_library import update_library, update_all_libraries
 
 from .compiler import compile, recursive_compile
 from xircuits.handlers.config import get_config
@@ -146,16 +146,49 @@ def cmd_sync(args, extra_args=[]):
     sync_xai_components()
 
 def cmd_update_library(args, extra_args=[]):
-
-    message = update_library(
-        library_name=args.library_name,
-        repo=args.repo,
-        ref=args.ref,
-        dry_run=args.dry_run,
-        prune=args.prune,
-        install_deps=args.install_deps,
-    )
-    print(message)
+    if args.all:
+        
+        # Parse exclude list
+        exclude_list = []
+        if args.exclude:
+            exclude_list = [x.strip() for x in args.exclude.split(',') if x.strip()]
+        
+        # Validate conflicting flags
+        if args.core_only and args.remote_only:
+            print("Error: Cannot specify both --core-only and --remote-only")
+            return
+        
+        try:
+            results = update_all_libraries(
+                dry_run=args.dry_run,
+                prune=args.prune,
+                install_deps=args.install_deps,
+                core_only=args.core_only,
+                remote_only=args.remote_only,
+                exclude=exclude_list,
+                respect_refs=args.respect_refs,
+                no_overwrite=args.no_overwrite,
+            )
+            
+        except Exception as e:
+            print(f"Error: {e}")
+            return
+    else:
+        # single-library update
+        if not args.library_name:
+            print("Error: library_name is required when not using --all")
+            return
+            
+        message = update_library(
+            library_name=args.library_name,
+            repo=args.repo,
+            ref=args.ref,
+            dry_run=args.dry_run,
+            prune=args.prune,
+            install_deps=args.install_deps,
+            no_overwrite=args.no_overwrite,
+        )
+        print(message)
 
 def cmd_run(args, extra_args=[]):
     original_cwd = args.original_cwd
@@ -276,15 +309,30 @@ def main():
     update_parser = subparsers.add_parser(
         'update', help='Update a component library with in-place .bak backups.'
     )
-    update_parser.add_argument('library_name', type=str, help='Library to update (e.g., flask)')
+    update_parser.add_argument('library_name', nargs='?', type=str, 
+                            help='Library to update (e.g., flask). Omit with --all.')
     update_parser.add_argument('--repo', type=str, default=None, help='Override source repository URL')
     update_parser.add_argument('--ref', type=str, default=None, help='Tag/branch/commit to update to')
     update_parser.add_argument('--dry-run', action='store_true', help='Preview only; no changes')
     update_parser.add_argument('--prune', action='store_true',
                             help='Prune local-only files/dirs (rename to .bak)')
     update_parser.add_argument('--install-deps', nargs='?', const=True, default=True, 
-                               type=lambda s: str(s).lower() not in ('0','false','no','off'), 
-                               help='Install/update Python deps (default true). Pass false to disable.')
+                            type=lambda s: str(s).lower() not in ('0','false','no','off'), 
+                            help='Install/update Python deps (default true). Pass false to disable.')
+
+    update_parser.add_argument('--all', action='store_true',
+                            help='Update all installed component libraries')
+    update_parser.add_argument('--core-only', action='store_true',
+                            help='Update only core libraries (xai_events, xai_template, etc.)')
+    update_parser.add_argument('--remote-only', action='store_true',
+                            help='Update only remote (non-core) libraries')
+    update_parser.add_argument('--exclude', type=str, default='',
+                            help='Comma-separated list of libraries to exclude (e.g., gradio,opencv)')
+    update_parser.add_argument('--respect-refs', action='store_true',
+                            help='Honor pinned refs in metadata (default: pull latest for --all)')
+    update_parser.add_argument('--no-overwrite', action='store_true',
+                            help='Skip updating files with local modifications (preserve local changes)')
+
     update_parser.set_defaults(func=cmd_update_library)
 
     # 'run' command.
