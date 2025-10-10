@@ -7,7 +7,7 @@ function checkInput(input: any, dataType: string): boolean {
     let inputAsNumber;
 
     // Allow empty input for specific data types
-    const allowedEmptyTypes = ["string", "secret", "chat", "list", "tuple", "dict", "argument"];
+    const allowedEmptyTypes = ["string", "secret", "chat", "list", "tuple", "dict"];
     if(input === "" && !allowedEmptyTypes.includes(normalizedDataType)){
         alert("Input cannot be empty.");
         return false;
@@ -83,8 +83,7 @@ function checkInput(input: any, dataType: string): boolean {
                 return false;
             }
 
-            processedInput = input;
-            break;
+            return true;
 
         case "undefined_any":
             // Handler if called from any inputDialogue
