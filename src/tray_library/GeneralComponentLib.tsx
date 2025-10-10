@@ -84,10 +84,14 @@ export async function handleLiteralInput(nodeName: string, nodeData: any, inputV
 }
 
 export async function handleArgumentInput(nodeData: any, argumentTitle = "", oldValue = "", type = "argument") {
-    const dialogOptions = inputDialog({ title: argumentTitle, oldValue: oldValue, type: type, inputType: nodeData.type });
-    const dialogResult = await showFormDialog(dialogOptions);
-    if (cancelDialog(dialogResult)) return;
-    const inputValue = dialogResult["value"][argumentTitle];
+    let inputValue = "";
+    
+    do {
+        const dialogOptions = inputDialog({ title: argumentTitle, oldValue: oldValue, type: type, inputType: nodeData.type });
+        const dialogResult = await showFormDialog(dialogOptions);
+        if (cancelDialog(dialogResult)) return;
+        inputValue = dialogResult["value"][argumentTitle];
+    } while (!checkInput(inputValue, "argument"));
 
     return createArgumentNode({ nodeData, inputValue });
 }

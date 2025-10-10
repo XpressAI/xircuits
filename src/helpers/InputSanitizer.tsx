@@ -7,7 +7,7 @@ function checkInput(input: any, dataType: string): boolean {
     let inputAsNumber;
 
     // Allow empty input for specific data types
-    const allowedEmptyTypes = ["string", "secret", "chat", "list", "tuple", "dict"];
+    const allowedEmptyTypes = ["string", "secret", "chat", "list", "tuple", "dict", "argument"];
     if(input === "" && !allowedEmptyTypes.includes(normalizedDataType)){
         alert("Input cannot be empty.");
         return false;
@@ -71,6 +71,19 @@ function checkInput(input: any, dataType: string): boolean {
             }
         
             processedInput = JSON.stringify(input);
+            break;
+
+        case "argument":
+            const validArgNameRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+
+            if (!validArgNameRegex.test(input)) {
+                errorDetails = `${input} is not a valid argument name. It must start with a letter or underscore and can only contain letters, numbers, and underscores.`;
+                exampleInput = "e.g., 'my_argument', 'arg1', '_private'";
+                alert(formatError(errorDetails, exampleInput));
+                return false;
+            }
+
+            processedInput = input;
             break;
 
         case "undefined_any":
