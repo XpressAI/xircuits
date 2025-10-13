@@ -440,12 +440,37 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 			setSaved(false);
 		}
 	}, []);
+	
+	// Schedule a single canvas update per frame and ignore incomplete link drags
+	const scheduleCanvasEmit = React.useMemo(() => {
+		let scheduled = false;
+		return () => {
+			if (scheduled) return;
+			scheduled = true;
+			requestAnimationFrame(() => {
+			scheduled = false;
+
+			const model = xircuitsApp.getDiagramEngine().getModel();
+			
+			// skip if a link is still being dragged (no target port yet)
+			const draggingUnfinished =
+				!!model &&
+				Object.values(model.getLinks?.() ?? {}).some(
+				(l: any) => !(l?.getTargetPort?.())
+				);
+			if (!draggingUnfinished) {
+				canvasUpdatedSignal.emit({ reason: 'content' });
+			}
+			});
+		};
+		}, [xircuitsApp]);
 
 	const onChange = useCallback((): void => {
 		if (skipSerializationRef.current) {
 			return;
 		}
 		serializeModel();
+  		scheduleCanvasEmit();
 	}, [serializeModel]);
 
 
@@ -475,7 +500,7 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					return () => clearTimeout(timeout);
 				},
 				linksUpdated: (event) => {
-					canvasUpdatedSignal.emit({ reason: 'content' });
+					scheduleCanvasEmit();
 					const timeout = setTimeout(() => {
 					event.link.registerListener({
 						sourcePortChanged: () => {
@@ -499,7 +524,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 				xircuitsApp.getDiagramEngine().setModel(deserializedModel);
 				clearSearchFlags();
 				
-				canvasUpdatedSignal.emit({ reason: 'content' });
 
 				// On the first load, clear undo history and register global engine listeners
 				if (initialRender.current) {

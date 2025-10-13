@@ -373,12 +373,6 @@ export class ComponentPreviewWidget extends SidePanel {
       const currentNode = this._model?.node;
       if (!engine || !currentNode) return;
 
-      // Skip updating sidebar if a link is still being dragged (incomplete connection)
-      const hasUnfinishedLink = Object.values(engine.getModel()?.getLinks?.() ?? {}).some(
-        (link: any) => !link.getTargetPort?.()
-      );
-      if (hasUnfinishedLink) return;
-
       // Refresh node reference in case the model recreated it after a change
       const id = currentNode.getID?.();
       const latestNode = engine.getModel?.().getNodes?.().find(n => n.getID?.() === id);
