@@ -1,6 +1,5 @@
 import { Notification, showDialog, Dialog } from '@jupyterlab/apputils';
 import { Widget } from '@lumino/widgets';
-import { copyIcon } from '@jupyterlab/ui-components';
 
 const MAX_VISIBLE_CHARS = 140;
 const VIEW_DETAILS_LABEL = 'View details';
@@ -18,55 +17,25 @@ function createViewDetailsAction(fullMessage: string, dialogTitle = 'Details'): 
     label: VIEW_DETAILS_LABEL,
     caption: 'Show full message',
     callback: async () => {
-      const DURATION = 1200;
-
       const dialogBody = new Widget();
       dialogBody.addClass('xircuits-notification-details');
 
-      const wrap = document.createElement('div');
-      wrap.className = 'x-details-copyWrap';
-
-      const copyBtn = document.createElement('button');
-      copyBtn.className = 'x-copy-icon-btn jp-Button jp-mod-minimal';
-      copyBtn.type = 'button';
-      copyBtn.title = 'Copy';
-      copyBtn.setAttribute('aria-label', 'Copy');
-      copyIcon.element({ container: copyBtn, height: '16px', width: '16px' });
-
-      wrap.appendChild(copyBtn);
-
       const pre = document.createElement('pre');
-      pre.className = 'x-details-pre';
       pre.textContent = fullMessage;
+      dialogBody.node.appendChild(pre);
 
-      dialogBody.node.append(wrap, pre);
+      const copyButton = Dialog.createButton({ label: 'Copy' });
+      const closeButton = Dialog.okButton({ label: 'Close' });
 
-      let timer: number | null = null;
-      copyBtn.addEventListener('click', async () => {
-        try {
-          await navigator.clipboard.writeText(fullMessage);
-
-          copyBtn.classList.add('is-copied');
-          copyBtn.title = 'Copied';
-          copyBtn.setAttribute('aria-label', 'Copied');
-
-          if (timer) clearTimeout(timer);
-          timer = window.setTimeout(() => {
-            copyBtn.classList.remove('is-copied');
-            copyBtn.title = 'Copy';
-            copyBtn.setAttribute('aria-label', 'Copy');
-            timer = null;
-          }, DURATION);
-        } catch (err) {
-          console.error('Copy failed', err);
-        }
-      });
-
-      await showDialog({
+      const result = await showDialog({
         title: dialogTitle,
         body: dialogBody,
-        buttons: [Dialog.okButton({ label: 'Close' })]
+        buttons: [copyButton, closeButton]
       });
+
+      if (result.button.label === 'Copy') {
+        await navigator.clipboard.writeText(fullMessage);
+      }
     }
   };
 }

@@ -171,37 +171,3 @@ body.light-mode jp-button[title="Toggle Light/Dark Mode"]  .sun  { visibility: v
   font-family: var(--jp-code-font-family);
   font-size: var(--jp-code-font-size);
 }
-
-.xircuits-notification-details { position: relative; }
-
-.x-details-copyWrap {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-}
-
-.x-copy-icon-btn { position: relative; }
-
-.x-copy-icon-btn.is-copied::after {
-  content: "Copied";
-  position: absolute;
-  top: 50%;
-  right: calc(100% + 8px);
-  transform: translateY(-50%);
-  white-space: nowrap;
-  pointer-events: none;
-  padding: 2px 6px;
-  background: var(--jp-layout-color2);
-  border: 1px solid var(--jp-border-color2);
-  border-radius: 4px;
-  font-size: var(--jp-ui-font-size1);
-  line-height: 1.4;
-  z-index: 1;
-}
-
-.xircuits-notification-details .x-details-pre {
-  margin-top: 36px;
-}
-
-
-
