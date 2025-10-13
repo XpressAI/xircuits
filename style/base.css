@@ -199,7 +199,9 @@ body.light-mode jp-button[title="Toggle Light/Dark Mode"]  .sun  { visibility: v
   z-index: 1;
 }
 
-.x-details-pre { margin-top: 28px; }
+.xircuits-notification-details .x-details-pre {
+  margin-top: 36px;
+}
 
 
 
