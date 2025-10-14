@@ -1001,3 +1001,92 @@ def test_39_update_repo_override_with_ref(tmp_path):
     assert baks, "Expected .bak after repo override"
 
     assert marker not in tgt.read_text(encoding="utf-8", errors="ignore")
+
+def test_40_core_update_no_overwrite(tmp_path):
+    """
+    Core libs: 'xircuits update <core>' fails (non-cloneable /tree URL),
+    no backups created, and local edits remain intact.
+    """
+    os.chdir(tmp_path)
+
+    # init
+    stdout, stderr, rc = run_command("xircuits init", timeout=30)
+
+    # use xai_utils as a core example
+    lib_dir = Path("xai_components") / "xai_utils"
+    target = lib_dir / "utils.py"
+    assert target.exists(), f"Missing core file: {target}"
+
+    # add a local marker
+    marker = "# CORE_UPDATE_MARKER\n"
+    with target.open("a", encoding="utf-8", errors="ignore") as w:
+        w.write(marker)
+
+    # snapshot existing .bak (should stay unchanged)
+    bak_re = re.compile(r"^utils\.py\.\d{8}-\d{6}\.bak$")
+    pre_baks = {p.name for p in lib_dir.iterdir() if p.is_file() and bak_re.match(p.name)}
+
+    # run update (expected to FAIL for core libs)
+    stdout, stderr, rc = run_command("xircuits update utils", timeout=120)
+    out = (stdout or "") + (stderr or "")
+
+    # expect non-zero exit and the tree-url failure hint
+    assert rc != 0, "Core update should fail with current /tree URL behavior."
+    assert ("tree/master" in out) or ("not found" in out.lower()) or ("returned non-zero exit status" in out.lower()), \
+        f"Unexpected failure output:\n{out}"
+
+    # no new backups created
+    post_baks = {p.name for p in lib_dir.iterdir() if p.is_file() and bak_re.match(p.name)}
+    assert post_baks == pre_baks, "Failure must not create .bak files for core libs."
+
+    # local marker still there (no overwrite happened)
+    now = target.read_text(encoding="utf-8", errors="ignore")
+    assert marker in now, "Core file was modified unexpectedly on failed update."
+
+def test_41_update_preserves_local_artifacts_without_prune(tmp_path):
+    """
+    Update (no --prune):
+    - local-only file/dir should remain (no .bak, no removal)
+    - tracked file with marker gets backed up & restored
+    """
+    os.chdir(tmp_path)
+
+    # init + install remote lib
+    stdout, stderr, rc = run_command("xircuits init", timeout=30)
+    stdout, stderr, rc = run_command("xircuits install flask", timeout=180)
+
+    lib_dir = Path("xai_components") / "xai_flask"
+    target = lib_dir / "flask_components.py"
+    assert target.exists()
+
+    # local-only artifacts
+    local_file = lib_dir / "LOCAL_ONLY.md"
+    local_dir = lib_dir / "local_extra"
+    local_file.write_text("local note", encoding="utf-8")
+    (local_dir / "keep.txt").parent.mkdir(parents=True, exist_ok=True)
+    (local_dir / "keep.txt").write_text("keep me", encoding="utf-8")
+
+    # marker on a tracked file to force update path
+    marker = "# LOCAL_MARKER_NO_PRUNE\n"
+    with target.open("a", encoding="utf-8", errors="ignore") as w:
+        w.write(marker)
+
+    # run normal update (NO --prune)
+    stdout, stderr, rc = run_command("xircuits update flask", timeout=300)
+    out = (stdout or "") + (stderr or "")
+    assert "xai_flask update (" in out
+
+    # tracked file: expect timestamped .bak and marker removed
+    bak_re = re.compile(r"^flask_components\.py\.\d{8}-\d{6}\.bak$")
+    baks = {p.name for p in lib_dir.iterdir() if p.is_file() and bak_re.match(p.name)}
+    assert baks, "Expected .bak for tracked file"
+    assert marker not in target.read_text(encoding="utf-8", errors="ignore")
+
+    # local-only artifacts: must still exist; no .bak created for them
+    assert local_file.exists(), "LOCAL_ONLY.md should remain without --prune"
+    assert local_dir.exists(), "local_extra/ should remain without --prune"
+    ts_suffix = r"\.\d{8}-\d{6}\.bak$"
+    assert not any(re.match(r"LOCAL_ONLY\.md" + ts_suffix, p.name) for p in lib_dir.iterdir()), \
+        "Unexpected .bak for LOCAL_ONLY.md without --prune"
+    assert not any(p.is_dir() and re.match(r"local_extra" + ts_suffix, p.name) for p in lib_dir.iterdir()), \
+        "Unexpected .bak dir for local_extra/ without --prune"
