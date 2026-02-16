@@ -523,7 +523,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							if (sourceNode) {
 								const sourceId = sourceNode.getID?.();
 								if (sourceId) {
-									console.log('[DEBUG] targetPortChanged emitting for source node:', sourceId);
 									canvasChangedSignal.emit({ nodeId: sourceId });
 								}
 							}
@@ -532,7 +531,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							if (targetNode) {
 								const targetId = targetNode.getID?.();
 								if (targetId && targetId !== sourceNode?.getID?.()) {
-									console.log('[DEBUG] targetPortChanged emitting for target node:', targetId);
 									canvasChangedSignal.emit({ nodeId: targetId });
 								}
 							}
@@ -549,7 +547,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							if (sourceNode) {
 								const sourceId = sourceNode.getID?.();
 								if (sourceId) {
-									console.log('[DEBUG] entityRemoved emitting for source node:', sourceId);
 									canvasChangedSignal.emit({ nodeId: sourceId });
 								}
 							}
@@ -558,7 +555,6 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 							if (targetNode) {
 								const targetId = targetNode.getID?.();
 								if (targetId && targetId !== sourceNode?.getID?.()) {
-									console.log('[DEBUG] entityRemoved emitting for target node:', targetId);
 									canvasChangedSignal.emit({ nodeId: targetId });
 								}
 							}
