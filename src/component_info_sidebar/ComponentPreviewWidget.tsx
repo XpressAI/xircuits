@@ -219,6 +219,8 @@ export class ComponentPreviewWidget extends SidePanel {
   private _topbar: TopBarWidget;
   private _canvasChangedHandler: ((_: any, args: { nodeId?: string }) => void) | null = null;
   private _canvasChangedSignal: Signal<any, { nodeId?: string }> | null = null;
+  private _triggerCanvasUpdateHandler: ((_: any, args: any) => void) | null = null;
+  private _triggerCanvasUpdateSignal: Signal<any, any> | null = null;
   private _portListeners: (() => void)[] = [];
 
   constructor(app: JupyterFrontEnd, model: IComponentInfo | null) {
@@ -323,6 +325,23 @@ export class ComponentPreviewWidget extends SidePanel {
       console.log('[DEBUG] Signal handler connected');
     } else {
       console.log('[DEBUG] Not connecting - signal or model missing');
+    }
+  }
+
+  setTriggerCanvasUpdateSignal(signal: Signal<any, any> | null) {
+    // Disconnect from previous signal
+    if (this._triggerCanvasUpdateHandler && this._triggerCanvasUpdateSignal) {
+      this._triggerCanvasUpdateSignal.disconnect(this._triggerCanvasUpdateHandler);
+      this._triggerCanvasUpdateHandler = null;
+    }
+    this._triggerCanvasUpdateSignal = signal ?? null;
+    // Connect new signal handler
+    if (this._triggerCanvasUpdateSignal) {
+      this._triggerCanvasUpdateHandler = () => {
+        // Refresh the IO display when canvas updates
+        this._refreshIO();
+      };
+      this._triggerCanvasUpdateSignal.connect(this._triggerCanvasUpdateHandler);
     }
   }
 
@@ -580,8 +599,14 @@ export class ComponentPreviewWidget extends SidePanel {
       this._canvasChangedSignal.disconnect(this._canvasChangedHandler);
       this._canvasChangedHandler = null;
     }
+    // Disconnect from triggerCanvasUpdateSignal
+    if (this._triggerCanvasUpdateHandler && this._triggerCanvasUpdateSignal) {
+      this._triggerCanvasUpdateSignal.disconnect(this._triggerCanvasUpdateHandler);
+      this._triggerCanvasUpdateHandler = null;
+    }
     this._cleanupPortListeners();
     this._canvasChangedSignal = null;
+    this._triggerCanvasUpdateSignal = null;
     super.dispose();
   }
 }

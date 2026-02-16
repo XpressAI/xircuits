@@ -161,7 +161,7 @@ const xircuits: JupyterFrontEndPlugin<void> = {
     restorer.add(sidebarWidget, sidebarWidget.id);
     app.shell.add(sidebarWidget, "left");
     // === Right Sidebar
-    installComponentPreview(app, restorer, tracker, { rank: 0, collapseOnStart: true, canvasChangedSignal: widgetFactory.canvasChangedSignal });
+    installComponentPreview(app, restorer, tracker, { rank: 0, collapseOnStart: true, canvasChangedSignal: widgetFactory.canvasChangedSignal, triggerCanvasUpdateSignal: widgetFactory.triggerCanvasUpdateSignal });
 
     // Additional commands for node action
     addNodeActionCommands(app, tracker, translator);

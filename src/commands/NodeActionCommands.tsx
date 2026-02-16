@@ -1020,18 +1020,10 @@ export function addNodeActionCommands(
         // Processing Links
         links.forEach((link) => {
             const port = link.getTargetPort();
-            // Get the affected nodes before removing the link
-            const sourceNode = link.getSourcePort()?.getNode?.();
-            const targetNode = link.getTargetPort()?.getNode?.();
             if (port instanceof CustomDynaPortModel) {
                 port.shiftPorts({ shouldShiftBack: true }) // delete
             }
             link.remove();
-            // Emit signal after link removal to update component preview
-            const nodeId = sourceNode?.getID?.() || targetNode?.getID?.();
-            if (nodeId) {
-                widget.canvasChangedSignal.emit({ nodeId });
-            }
         });
 
         // Processing Points
@@ -1077,6 +1069,7 @@ export function addNodeActionCommands(
             }
         });
         widget.xircuitsApp.getDiagramEngine().repaintCanvas();
+        widget.triggerCanvasUpdateSignal.emit(null);
     }
 
     // Add command to attach selected node

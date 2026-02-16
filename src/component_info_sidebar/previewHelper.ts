@@ -92,7 +92,7 @@ export function installComponentPreview(
   app: JupyterFrontEnd,
   restorer: ILayoutRestorer,
   tracker: IWidgetTracker<DocumentWidget>,
-  opts?: { rank?: number; collapseOnStart?: boolean; canvasChangedSignal?: Signal<any, { nodeId?: string }> }
+  opts?: { rank?: number; collapseOnStart?: boolean; canvasChangedSignal?: Signal<any, { nodeId?: string }>; triggerCanvasUpdateSignal?: Signal<any, any> }
 ): ComponentPreviewWidget {
   const shell = app.shell as ILabShell;
 
@@ -107,6 +107,10 @@ export function installComponentPreview(
 
   if (opts?.canvasChangedSignal) {
     widget.setCanvasChangedSignal(opts.canvasChangedSignal);
+  }
+
+  if (opts?.triggerCanvasUpdateSignal) {
+    widget.setTriggerCanvasUpdateSignal(opts.triggerCanvasUpdateSignal);
   }
 
   if (opts?.collapseOnStart !== false) {
