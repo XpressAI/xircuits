@@ -212,10 +212,6 @@ export class ComponentPreviewWidget extends SidePanel {
   private _collapseBus = new CollapseBus({});
   private _model: IComponentInfo | null = null;
   private _topbar: TopBarWidget;
-  private _canvasChangedHandler: ((_: any, args: { nodeId?: string }) => void) | null = null;
-  private _canvasChangedSignal: Signal<any, { nodeId?: string }> | null = null;
-  private _triggerCanvasUpdateHandler: ((_: any, args: any) => void) | null = null;
-  private _triggerCanvasUpdateSignal: Signal<any, any> | null = null;
   private _portListeners: (() => void)[] = [];
 
   constructor(app: JupyterFrontEnd, model: IComponentInfo | null) {
@@ -294,48 +290,23 @@ export class ComponentPreviewWidget extends SidePanel {
     this._topbar?.update();
   }
 
-  setCanvasChangedSignal(signal: Signal<any, { nodeId?: string }> | null) {
-    // Disconnect from previous signal
-    if (this._canvasChangedHandler && this._canvasChangedSignal) {
-      this._canvasChangedSignal.disconnect(this._canvasChangedHandler);
-      this._canvasChangedHandler = null;
-    }
-    this._canvasChangedSignal = signal ?? null;
-    // Re-connect if we have a current model
-    if (this._canvasChangedSignal && this._model) {
-      this._canvasChangedHandler = (_, args) => {
-        if (!args.nodeId || args.nodeId === this._model?.node?.getID()) {
-          this._refreshIO();
-        }
-      };
-      this._canvasChangedSignal.connect(this._canvasChangedHandler);
-    }
+  setCanvasChangedSignal(signal: Signal<any, { nodeId?: string }>) {
+    signal.connect((_, args) => {
+      if (this.isDisposed) return;
+      if (!args.nodeId || args.nodeId === this._model?.node?.getID()) {
+        this._refreshIO();
+      }
+    });
   }
 
-  setTriggerCanvasUpdateSignal(signal: Signal<any, any> | null) {
-    // Disconnect from previous signal
-    if (this._triggerCanvasUpdateHandler && this._triggerCanvasUpdateSignal) {
-      this._triggerCanvasUpdateSignal.disconnect(this._triggerCanvasUpdateHandler);
-      this._triggerCanvasUpdateHandler = null;
-    }
-    this._triggerCanvasUpdateSignal = signal ?? null;
-    // Connect new signal handler
-    if (this._triggerCanvasUpdateSignal) {
-      this._triggerCanvasUpdateHandler = () => {
-        // Refresh the IO display when canvas updates
-        this._refreshIO();
-      };
-      this._triggerCanvasUpdateSignal.connect(this._triggerCanvasUpdateHandler);
-    }
+  setTriggerCanvasUpdateSignal(signal: Signal<any, any>) {
+    signal.connect(() => {
+      if (this.isDisposed) return;
+      this._refreshIO();
+    });
   }
 
   setModel(model: IComponentInfo | null) {
-    // Disconnect from previous signal
-    if (this._canvasChangedHandler && this._canvasChangedSignal) {
-      this._canvasChangedSignal.disconnect(this._canvasChangedHandler);
-      this._canvasChangedHandler = null;
-    }
-    
     // Clean up old port listeners
     this._cleanupPortListeners();
 
@@ -358,17 +329,6 @@ export class ComponentPreviewWidget extends SidePanel {
 
       // Register port listeners on the focused node
       this._registerPortListeners();
-
-      // Connect to signal
-      if (this._canvasChangedSignal) {
-        this._canvasChangedHandler = (_, args) => {
-          const modelNodeId = this._model?.node?.getID?.();
-          if (!args.nodeId || args.nodeId == modelNodeId) {
-            this._refreshIO();
-          }
-        };
-        this._canvasChangedSignal.connect(this._canvasChangedHandler);
-      }
     }
 
     this._topbar?.update();
@@ -550,19 +510,7 @@ export class ComponentPreviewWidget extends SidePanel {
   }
 
   dispose(): void {
-    // Disconnect from signal before disposing
-    if (this._canvasChangedHandler && this._canvasChangedSignal) {
-      this._canvasChangedSignal.disconnect(this._canvasChangedHandler);
-      this._canvasChangedHandler = null;
-    }
-    // Disconnect from triggerCanvasUpdateSignal
-    if (this._triggerCanvasUpdateHandler && this._triggerCanvasUpdateSignal) {
-      this._triggerCanvasUpdateSignal.disconnect(this._triggerCanvasUpdateHandler);
-      this._triggerCanvasUpdateHandler = null;
-    }
     this._cleanupPortListeners();
-    this._canvasChangedSignal = null;
-    this._triggerCanvasUpdateSignal = null;
     super.dispose();
   }
 }
