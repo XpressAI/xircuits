@@ -191,14 +191,19 @@ class IOTreeWidget extends ReactWidget {
     this.addClass('component-preview-scroll');
   }
   setData(data: IONode[]) {
+    console.log('[DEBUG] IOTreeWidget.setData called with', data?.length ?? 0, 'items');
     this._data = data ?? [];
+    console.log('[DEBUG] IOTreeWidget.setData calling update()');
     this.update();
+    console.log('[DEBUG] IOTreeWidget.setData update() called');
   }
   clear() {
+    console.log('[DEBUG] IOTreeWidget.clear called');
     this._data = [];
     this.update();
   }
   render(): JSX.Element {
+    console.log('[DEBUG] IOTreeWidget.render called with', this._data.length, 'items');
     return <IONodeTree data={this._data} collapseToggled={this._collapseBus} />;
   }
 }
@@ -212,6 +217,9 @@ export class ComponentPreviewWidget extends SidePanel {
   private _collapseBus = new CollapseBus({});
   private _model: IComponentInfo | null = null;
   private _topbar: TopBarWidget;
+  private _canvasChangedHandler: ((_: any, args: { nodeId?: string }) => void) | null = null;
+  private _canvasChangedSignal: Signal<any, { nodeId?: string }> | null = null;
+  private _portListeners: (() => void)[] = [];
 
   constructor(app: JupyterFrontEnd, model: IComponentInfo | null) {
     super();
@@ -289,7 +297,45 @@ export class ComponentPreviewWidget extends SidePanel {
     this._topbar?.update();
   }
 
+  setCanvasChangedSignal(signal: Signal<any, { nodeId?: string }> | null) {
+    console.log('[DEBUG] setCanvasChangedSignal called, signal:', signal ? 'present' : 'null');
+    console.log('[DEBUG] Current _canvasChangedHandler:', this._canvasChangedHandler ? 'exists' : 'null');
+    // Disconnect from previous signal
+    if (this._canvasChangedHandler && this._canvasChangedSignal) {
+      console.log('[DEBUG] Disconnecting previous signal handler');
+      this._canvasChangedSignal.disconnect(this._canvasChangedHandler);
+      this._canvasChangedHandler = null;
+    }
+    this._canvasChangedSignal = signal ?? null;
+    // Re-connect if we have a current model
+    if (this._canvasChangedSignal && this._model) {
+      console.log('[DEBUG] Connecting new signal handler for node:', this._model.node?.getID?.());
+      this._canvasChangedHandler = (_, args) => {
+        console.log('[DEBUG] Canvas changed signal received, args:', args);
+        if (!args.nodeId || args.nodeId === this._model?.node?.getID()) {
+          console.log('[DEBUG] Signal matches current node, calling _refreshIO');
+          this._refreshIO();
+        } else {
+          console.log('[DEBUG] Signal does not match current node, ignoring');
+        }
+      };
+      this._canvasChangedSignal.connect(this._canvasChangedHandler);
+      console.log('[DEBUG] Signal handler connected');
+    } else {
+      console.log('[DEBUG] Not connecting - signal or model missing');
+    }
+  }
+
   setModel(model: IComponentInfo | null) {
+    // Disconnect from previous signal
+    if (this._canvasChangedHandler && this._canvasChangedSignal) {
+      this._canvasChangedSignal.disconnect(this._canvasChangedHandler);
+      this._canvasChangedHandler = null;
+    }
+    
+    // Clean up old port listeners
+    this._cleanupPortListeners();
+
     this._model = model ?? null;
 
     if (!model) {
@@ -301,19 +347,35 @@ export class ComponentPreviewWidget extends SidePanel {
       this.node.dataset.componentId = '';
     } else {
       this._overview.setModel(model);
-      try {
-        const { inputs, outputs } = collectParamIO(model.node as any);
-        this._inputs.setData(inputs ?? []);
-        this._outputs.setData(outputs ?? []);
-      } catch (e) {
-        console.warn('[ComponentPreviewWidget] collectParamIO failed:', e);
-        this._inputs.clear();
-        this._outputs.clear();
-      }
+      this._refreshIO();
 
       const id = (model.node as any)?.getID?.();
       this.node.dataset.componentName = String(model.name ?? '');
       this.node.dataset.componentId = id != null ? String(id) : '';
+
+      // Register port listeners on the focused node
+      this._registerPortListeners();
+
+      // Connect to signal
+      if (this._canvasChangedSignal) {
+        const currentNodeId = (model.node as any)?.getID?.();
+        console.log('[DEBUG] setModel connecting signal handler for node:', currentNodeId, 'type:', typeof currentNodeId);
+        this._canvasChangedHandler = (_, args) => {
+          console.log('[DEBUG] setModel signal handler triggered, args:', args);
+          const modelNodeId = this._model?.node?.getID?.();
+          console.log('[DEBUG] Comparing args.nodeId:', args.nodeId, '(type:', typeof args.nodeId, ') with model nodeId:', modelNodeId, '(type:', typeof modelNodeId, ')');
+          console.log('[DEBUG] args.nodeId == modelNodeId:', args.nodeId == modelNodeId);
+          console.log('[DEBUG] args.nodeId === modelNodeId:', args.nodeId === modelNodeId);
+          if (!args.nodeId || args.nodeId == modelNodeId) {
+            console.log('[DEBUG] Signal matches (using ==), calling _refreshIO');
+            this._refreshIO();
+          } else {
+            console.log('[DEBUG] Signal does NOT match current node, ignoring');
+          }
+        };
+        this._canvasChangedSignal.connect(this._canvasChangedHandler);
+        console.log('[DEBUG] setModel signal handler connected');
+      }
     }
 
     this._topbar?.update();
@@ -421,5 +483,105 @@ export class ComponentPreviewWidget extends SidePanel {
     this._selectModelNode();
     void this._app.commands.execute(commandIDs.openXircuitsWorkflow)
       .catch(err => console.error('Failed to open workflow:', err));
+  }
+
+  private _refreshIO() {
+    console.log('[DEBUG] _refreshIO called');
+    if (!this._model?.node) {
+      console.log('[DEBUG] _refreshIO: no model or node, clearing');
+      this._inputs.clear();
+      this._outputs.clear();
+      return;
+    }
+    
+    // Defer the actual refresh to allow the model to fully update
+    // This is needed because link removal events fire before the link is detached from ports
+    setTimeout(() => this._doRefreshIO(), 0);
+  }
+  
+  private _doRefreshIO() {
+    console.log('[DEBUG] _doRefreshIO executing');
+    if (!this._model?.node) {
+      console.log('[DEBUG] _doRefreshIO: no model or node, clearing');
+      this._inputs.clear();
+      this._outputs.clear();
+      return;
+    }
+    try {
+      // Get the FRESH node from the engine's model to ensure we have updated link references
+      const nodeId = (this._model.node as any)?.getID?.();
+      const engine = this._model?.engine;
+      let freshNode = this._model.node;
+      
+      if (engine?.getModel && nodeId) {
+        const modelNode = engine.getModel().getNode(nodeId);
+        if (modelNode) {
+          console.log('[DEBUG] _doRefreshIO: using FRESH node from engine model');
+          freshNode = modelNode;
+          // Update the stored reference so future calls use the fresh node
+          this._model.node = modelNode;
+        } else {
+          console.log('[DEBUG] _doRefreshIO: could not find fresh node, using stale reference');
+        }
+      }
+      
+      console.log('[DEBUG] _doRefreshIO: calling collectParamIO for node:', nodeId);
+      const { inputs, outputs } = collectParamIO(freshNode as any);
+      console.log('[DEBUG] _doRefreshIO: collected inputs:', inputs?.length ?? 0, 'outputs:', outputs?.length ?? 0);
+      console.log('[DEBUG] _doRefreshIO: inputs content:', JSON.stringify(inputs));
+      console.log('[DEBUG] _doRefreshIO: outputs content:', JSON.stringify(outputs));
+      console.log('[DEBUG] _doRefreshIO: calling setData on inputs');
+      this._inputs.setData(inputs ?? []);
+      console.log('[DEBUG] _doRefreshIO: calling setData on outputs');
+      this._outputs.setData(outputs ?? []);
+      console.log('[DEBUG] _doRefreshIO: completed successfully');
+    } catch (e) {
+      console.warn('[ComponentPreviewWidget] collectParamIO failed:', e);
+      this._inputs.clear();
+      this._outputs.clear();
+    }
+  }
+
+  private _registerPortListeners(): void {
+    if (!this._model?.node) return;
+    
+    const node = this._model.node as any;
+    const ports = [...(node.portsIn || []), ...(node.portsOut || [])];
+    
+    console.log('[DEBUG] _registerPortListeners for node:', node.getID?.(), 'ports:', ports.length);
+    
+    ports.forEach((port: any) => {
+      const listener = () => {
+        console.log('[DEBUG] Port links changed for port:', port.getOptions?.()?.name || port.getName?.());
+        this._refreshIO();
+      };
+      
+      // Listen for changes in port's links
+      port.registerListener?.({
+        linksUpdated: listener
+      });
+      
+      // Store cleanup function
+      this._portListeners.push(() => {
+        port.removeListener?.(listener);
+      });
+    });
+  }
+  
+  private _cleanupPortListeners(): void {
+    console.log('[DEBUG] _cleanupPortListeners, count:', this._portListeners.length);
+    this._portListeners.forEach(cleanup => cleanup());
+    this._portListeners = [];
+  }
+
+  dispose(): void {
+    // Disconnect from signal before disposing
+    if (this._canvasChangedHandler && this._canvasChangedSignal) {
+      this._canvasChangedSignal.disconnect(this._canvasChangedHandler);
+      this._canvasChangedHandler = null;
+    }
+    this._cleanupPortListeners();
+    this._canvasChangedSignal = null;
+    super.dispose();
   }
 }

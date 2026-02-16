@@ -56,6 +56,7 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
   toggleLightModeSignal: Signal<this, any>;
   refreshComponentsSignal: Signal<this, any>;
   toggleDisplayNodesInLibrary: Signal<this, any>;
+  canvasChangedSignal: Signal<this, { nodeId?: string }>;
 
   constructor(options: any) {
     super(options);
@@ -77,6 +78,7 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
     this.toggleLightModeSignal = new Signal<this, any>(this);
     this.refreshComponentsSignal = new Signal<this, any>(this);
     this.toggleDisplayNodesInLibrary = new Signal<this, any>(this);
+    this.canvasChangedSignal = new Signal<this, { nodeId?: string }>(this);
   }
 
   protected createNewWidget(context: DocumentRegistry.Context): DocumentWidget {
@@ -100,7 +102,8 @@ export class XircuitsFactory extends ABCWidgetFactory<DocumentWidget> {
       toggleAllLinkAnimationSignal: this.toggleAllLinkAnimationSignal,
       toggleLightModeSignal: this.toggleLightModeSignal,
       refreshComponentsSignal: this.refreshComponentsSignal,
-      toggleDisplayNodesInLibrary: this.toggleDisplayNodesInLibrary
+      toggleDisplayNodesInLibrary: this.toggleDisplayNodesInLibrary,
+      canvasChangedSignal: this.canvasChangedSignal
     };
 
     const content = new XircuitsPanel(props);

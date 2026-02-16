@@ -3,6 +3,7 @@ import { IXircuitsDocTracker } from '../index';
 import type { ILayoutRestorer, JupyterFrontEnd, ILabShell } from '@jupyterlab/application';
 import type { IWidgetTracker } from '@jupyterlab/apputils';
 import type { DocumentWidget } from '@jupyterlab/docregistry';
+import type { Signal } from '@lumino/signaling';
 const PREVIEW_ID = 'xircuits-doc-preview';
 
 export function togglePreviewWidget(
@@ -91,7 +92,7 @@ export function installComponentPreview(
   app: JupyterFrontEnd,
   restorer: ILayoutRestorer,
   tracker: IWidgetTracker<DocumentWidget>,
-  opts?: { rank?: number; collapseOnStart?: boolean }
+  opts?: { rank?: number; collapseOnStart?: boolean; canvasChangedSignal?: Signal<any, { nodeId?: string }> }
 ): ComponentPreviewWidget {
   const shell = app.shell as ILabShell;
 
@@ -102,6 +103,10 @@ export function installComponentPreview(
     widget = new ComponentPreviewWidget(app, null);
     shell.add(widget, 'right', { rank: opts?.rank ?? 0 });
     restorer.add(widget, widget.id);
+  }
+
+  if (opts?.canvasChangedSignal) {
+    widget.setCanvasChangedSignal(opts.canvasChangedSignal);
   }
 
   if (opts?.collapseOnStart !== false) {

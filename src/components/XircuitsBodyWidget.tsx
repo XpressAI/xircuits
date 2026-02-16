@@ -64,6 +64,7 @@ export interface BodyWidgetProps {
 	reloadAllNodesSignal: Signal<XircuitsPanel, any>;
 	toggleAllLinkAnimationSignal: Signal<XircuitsPanel, any>;
 	toggleLightModeSignal: Signal<XircuitsPanel, any>;
+	canvasChangedSignal: Signal<XircuitsPanel, { nodeId?: string }>;
 }
 
 export const Body = styled.div`
@@ -207,24 +208,25 @@ const ZoomControls = styled.div<{visible: boolean}>`
 `;
 
 export const BodyWidget: FC<BodyWidgetProps> = ({
-	context,
-	xircuitsApp,
-	app,
-	shell,
-	commands,
-	widgetId,
-	fetchComponentsSignal,
-	fetchRemoteRunConfigSignal,
-	saveXircuitSignal,
-	compileXircuitSignal,
-	runXircuitSignal,
-	runTypeXircuitSignal,
-	lockNodeSignal,
-	triggerCanvasUpdateSignal,
-	triggerLoadingAnimationSignal,
-	reloadAllNodesSignal,
-	toggleAllLinkAnimationSignal,
-	toggleLightModeSignal
+  context,
+  xircuitsApp,
+  app,
+  shell,
+  commands,
+  widgetId,
+  fetchComponentsSignal,
+  fetchRemoteRunConfigSignal,
+  saveXircuitSignal,
+  compileXircuitSignal,
+  runXircuitSignal,
+  runTypeXircuitSignal,
+  lockNodeSignal,
+  triggerCanvasUpdateSignal,
+  triggerLoadingAnimationSignal,
+  reloadAllNodesSignal,
+  toggleAllLinkAnimationSignal,
+  toggleLightModeSignal,
+  canvasChangedSignal
 }) => {
 	const xircuitLogger = new Log(app);
 
@@ -459,6 +461,18 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 	}, [serializeModel]);
 
 
+	// Helper function to get the current component node ID from the preview widget
+	const getCurrentPreviewNodeId = useCallback((): string | undefined => {
+		const widgets = shell.widgets('right');
+		for (const widget of widgets) {
+			const componentId = widget.node?.dataset?.componentId;
+			if (componentId) {
+				return componentId;
+			}
+		}
+		return undefined;
+	}, [shell]);
+
 	useEffect(() => {
 		const currentContext = contextRef.current;
 
@@ -476,7 +490,11 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 		
 				// Re-attach your node/link change listeners *before* setting the model
 				deserializedModel.registerListener({
-				nodesUpdated: () => {
+				nodesUpdated: (event) => {
+					// Emit signal for canvas change with affected node ID if available
+					const nodeId = event?.node?.getID?.() || getCurrentPreviewNodeId();
+					canvasChangedSignal.emit({ nodeId });
+
 					// Delay so links can settle before serializing
 					const timeout = setTimeout(() => {
 						onChange();
@@ -488,15 +506,63 @@ export const BodyWidget: FC<BodyWidgetProps> = ({
 					const timeout = setTimeout(() => {
 					event.link.registerListener({
 						sourcePortChanged: () => {
-						onChange();
-						},
+							// Emit signal when link's source port changes
+							const sourceNode = event.link.getSourcePort()?.getNode?.();
+							const nodeId = sourceNode?.getID?.() || getCurrentPreviewNodeId();
+							canvasChangedSignal.emit({ nodeId });
+							onChange();
+							},
 						targetPortChanged: (e) => {
 							const sourceLink = e.entity as any;
+							// Emit signal when link's target port changes
+							// BOTH source and target nodes are affected
+							const sourceNode = sourceLink?.getSourcePort?.()?.getNode?.();
+							const targetNode = sourceLink?.getTargetPort?.()?.getNode?.();
+							
+							// Emit for source node if exists
+							if (sourceNode) {
+								const sourceId = sourceNode.getID?.();
+								if (sourceId) {
+									console.log('[DEBUG] targetPortChanged emitting for source node:', sourceId);
+									canvasChangedSignal.emit({ nodeId: sourceId });
+								}
+							}
+							
+							// Emit for target node if exists (and different from source)
+							if (targetNode) {
+								const targetId = targetNode.getID?.();
+								if (targetId && targetId !== sourceNode?.getID?.()) {
+									console.log('[DEBUG] targetPortChanged emitting for target node:', targetId);
+									canvasChangedSignal.emit({ nodeId: targetId });
+								}
+							}
 							app.commands.execute(commandIDs.connectLinkToObviousPorts, { draggedLink: sourceLink });
 							onChange();
 						},
 						entityRemoved: () => {
-						onChange();
+							// Emit signal when link is removed
+							// BOTH source and target nodes are affected, so emit for both
+							const sourceNode = event.link?.getSourcePort?.()?.getNode?.();
+							const targetNode = event.link?.getTargetPort?.()?.getNode?.();
+							
+							// Emit for source node if exists
+							if (sourceNode) {
+								const sourceId = sourceNode.getID?.();
+								if (sourceId) {
+									console.log('[DEBUG] entityRemoved emitting for source node:', sourceId);
+									canvasChangedSignal.emit({ nodeId: sourceId });
+								}
+							}
+							
+							// Emit for target node if exists (and different from source)
+							if (targetNode) {
+								const targetId = targetNode.getID?.();
+								if (targetId && targetId !== sourceNode?.getID?.()) {
+									console.log('[DEBUG] entityRemoved emitting for target node:', targetId);
+									canvasChangedSignal.emit({ nodeId: targetId });
+								}
+							}
+							onChange();
 						}
 
 					});

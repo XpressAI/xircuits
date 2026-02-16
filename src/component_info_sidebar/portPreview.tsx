@@ -46,6 +46,7 @@ const portLabel = (p?: PortModel) =>
 function buildInputTree(p: PortModel): IONode {
   const name = portDisplayName(p);
   const dtype = portDisplayType(p);
+  console.log('[DEBUG] buildInputTree for port:', name, 'links count:', Object.values(p.getLinks()).length);
 
   const root: IONode = {
     label: `${name} (${dtype})`,
@@ -53,6 +54,7 @@ function buildInputTree(p: PortModel): IONode {
   };
 
   const links = Object.values(p.getLinks()) as LinkModel[];
+  console.log('[DEBUG] buildInputTree links:', links.length);
   if (links.length === 0) {
     root.children!.push({ label: '(unlinked)' });
     return root;
@@ -82,6 +84,7 @@ function buildInputTree(p: PortModel): IONode {
 function buildOutputTree(p: PortModel): IONode {
   const name = portDisplayName(p);
   const dtype = portDisplayType(p);
+  console.log('[DEBUG] buildOutputTree for port:', name, 'links count:', Object.values(p.getLinks()).length);
 
   const root: IONode = {
     label: `${name} (${dtype})`,
@@ -89,6 +92,7 @@ function buildOutputTree(p: PortModel): IONode {
   };
 
   const links = Object.values(p.getLinks()) as LinkModel[];
+  console.log('[DEBUG] buildOutputTree links:', links.length);
   if (links.length === 0) {
     root.children!.push({ label: '(unlinked)' });
     return root;
@@ -119,16 +123,25 @@ function buildOutputTree(p: PortModel): IONode {
 export function collectParamIO(
   node: NodeModel
 ): { inputs: IONode[]; outputs: IONode[] } {
+  console.log('[DEBUG] collectParamIO called for node:', (node as any)?.getOptions?.()?.name);
   const inputs: IONode[] = [];
   const outputs: IONode[] = [];
 
-  (node as any).portsIn.forEach((p: PortModel) => {
+  const portsIn = (node as any).portsIn as PortModel[] || [];
+  const portsOut = (node as any).portsOut as PortModel[] || [];
+  
+  console.log('[DEBUG] collectParamIO portsIn:', portsIn.length, 'portsOut:', portsOut.length);
+
+  portsIn.forEach((p: PortModel) => {
+    console.log('[DEBUG] collectParamIO checking portIn:', (p.getOptions() as any).name, 'isParamPort:', isParamPort(p));
     if (isParamPort(p)) inputs.push(buildInputTree(p));
   });
 
-  (node as any).portsOut.forEach((p: PortModel) => {
+  portsOut.forEach((p: PortModel) => {
+    console.log('[DEBUG] collectParamIO checking portOut:', (p.getOptions() as any).name, 'isParamPort:', isParamPort(p));
     if (isParamPort(p)) outputs.push(buildOutputTree(p));
   });
 
+  console.log('[DEBUG] collectParamIO result - inputs:', inputs.length, 'outputs:', outputs.length);
   return { inputs, outputs };
 }
