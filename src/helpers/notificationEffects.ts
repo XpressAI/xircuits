@@ -92,9 +92,11 @@ export async function resolveLibraryForNode(
   const candidateId = pathToLibraryId(extras.path);
   if (!candidateId) return { libId: null, status: 'unknown' };
 
+  const cleanLibId = candidateId.replace(/^xai_components[\/\\]/i, '');
+
   const idx = await loadLibraryIndex();
   const entry = idx.get(candidateId);
-  return computeStatusFromEntry(entry, candidateId);
+  return computeStatusFromEntry(entry, cleanLibId);
 }
 
 export async function showInstallForRemoteLibrary(args: {
