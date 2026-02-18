@@ -1004,8 +1004,8 @@ def test_39_update_repo_override_with_ref(tmp_path):
 
 def test_40_core_update_no_overwrite(tmp_path):
     """
-    Core libs: 'xircuits update <core>' fails (non-cloneable /tree URL),
-    no backups created, and local edits remain intact.
+    Core libs: 'xircuits update <core>' now SUCCEEDS by updating from wheel.
+    Should create backup and restore files (local marker removed).
     """
     os.chdir(tmp_path)
 
@@ -1022,26 +1022,26 @@ def test_40_core_update_no_overwrite(tmp_path):
     with target.open("a", encoding="utf-8", errors="ignore") as w:
         w.write(marker)
 
-    # snapshot existing .bak (should stay unchanged)
+    # snapshot existing .bak
     bak_re = re.compile(r"^utils\.py\.\d{8}-\d{6}\.bak$")
     pre_baks = {p.name for p in lib_dir.iterdir() if p.is_file() and bak_re.match(p.name)}
 
-    # run update (expected to FAIL for core libs)
+    # run update (now expected to SUCCEED for core libs - updates from wheel)
     stdout, stderr, rc = run_command("xircuits update utils", timeout=120)
     out = (stdout or "") + (stderr or "")
 
-    # expect non-zero exit and the tree-url failure hint
-    assert rc != 0, "Core update should fail with current /tree URL behavior."
-    assert ("tree/master" in out) or ("not found" in out.lower()) or ("returned non-zero exit status" in out.lower()), \
-        f"Unexpected failure output:\n{out}"
+    # expect success - core libraries now update from wheel
+    assert rc == 0, f"Core update should succeed.\nOutput:\n{out}"
+    assert "xai_utils update (" in out, "Missing update summary in output."
 
-    # no new backups created
+    # backup should be created
     post_baks = {p.name for p in lib_dir.iterdir() if p.is_file() and bak_re.match(p.name)}
-    assert post_baks == pre_baks, "Failure must not create .bak files for core libs."
+    new_baks = post_baks - pre_baks
+    assert new_baks, "Expected backup to be created for core library update."
 
-    # local marker still there (no overwrite happened)
+    # local marker should be removed (file was restored from wheel)
     now = target.read_text(encoding="utf-8", errors="ignore")
-    assert marker in now, "Core file was modified unexpectedly on failed update."
+    assert marker not in now, "Local marker should be removed after core library update."
 
 def test_41_update_preserves_local_artifacts_without_prune(tmp_path):
     """
@@ -1090,3 +1090,165 @@ def test_41_update_preserves_local_artifacts_without_prune(tmp_path):
         "Unexpected .bak for LOCAL_ONLY.md without --prune"
     assert not any(p.is_dir() and re.match(r"local_extra" + ts_suffix, p.name) for p in lib_dir.iterdir()), \
         "Unexpected .bak dir for local_extra/ without --prune"
+
+
+def test_42_update_no_overwrite_flag(tmp_path):
+    """
+    Test --no-overwrite flag:
+    - Modify a core library file with a local marker
+    - Run 'xircuits update utils --no-overwrite'
+    - Verify the ⊙ symbol appears in output (indicating local changes preserved)
+    - Verify NO backup is created for that file
+    - Verify marker still exists in file (local changes preserved)
+    """
+    os.chdir(tmp_path)
+
+    # init
+    stdout, stderr, rc = run_command("xircuits init", timeout=30)
+
+    # use xai_utils as a core example
+    lib_dir = Path("xai_components") / "xai_utils"
+    target = lib_dir / "utils.py"
+    assert target.exists(), f"Missing core file: {target}"
+
+    # add a local marker
+    marker = "# NO_OVERWRITE_MARKER\n"
+    with target.open("a", encoding="utf-8", errors="ignore") as w:
+        w.write(marker)
+
+    # snapshot existing .bak
+    bak_re = re.compile(r"^utils\.py\.\d{8}-\d{6}\.bak$")
+    pre_baks = {p.name for p in lib_dir.iterdir() if p.is_file() and bak_re.match(p.name)}
+
+    # run update with --no-overwrite
+    stdout, stderr, rc = run_command("xircuits update utils --no-overwrite", timeout=120)
+    out = (stdout or "") + (stderr or "")
+
+    assert rc == 0, f"Update with --no-overwrite should succeed.\nOutput:\n{out}"
+
+    # check for ⊙ symbol indicating local changes preserved
+    assert "⊙" in out, "Expected ⊙ symbol in output indicating local changes preserved."
+
+    # no new backup should be created
+    post_baks = {p.name for p in lib_dir.iterdir() if p.is_file() and bak_re.match(p.name)}
+    new_baks = post_baks - pre_baks
+    assert not new_baks, "No backup should be created with --no-overwrite."
+
+    # local marker should still exist (file not updated)
+    now = target.read_text(encoding="utf-8", errors="ignore")
+    assert marker in now, "Local marker should remain with --no-overwrite."
+
+
+def test_43_update_core_only_flag(tmp_path):
+    """
+    Test --core-only with --all:
+    - Install a remote library (e.g., flask)
+    - Run 'xircuits update --all --core-only --dry-run'
+    - Verify only core libraries are shown in preview
+    - Verify remote library (flask) is NOT shown
+    """
+    os.chdir(tmp_path)
+
+    # init + install remote library
+    stdout, stderr, rc = run_command("xircuits init", timeout=30)
+    stdout, stderr, rc = run_command("xircuits install flask", timeout=180)
+    assert rc == 0, "Failed to install flask library."
+
+    # run update with --all --core-only --dry-run
+    stdout, stderr, rc = run_command("xircuits update --all --core-only --dry-run", timeout=120)
+    out = (stdout or "") + (stderr or "")
+
+    assert rc == 0, f"Update --all --core-only --dry-run failed.\nOutput:\n{out}"
+
+    # check for core libraries (xai_utils, xai_events, etc.)
+    assert "xai_utils" in out.lower() or "xai_events" in out.lower() or "xai_controlflow" in out.lower() or "xai_template" in out.lower(), \
+        "Expected core libraries in output."
+
+    # remote library should NOT be shown
+    assert "xai_flask" not in out.lower(), "Remote library (flask) should NOT appear with --core-only."
+
+
+def test_44_update_remote_only_flag(tmp_path):
+    """
+    Test --remote-only with --all:
+    - Install a remote library (e.g., flask)
+    - Run 'xircuits update --all --remote-only --dry-run'
+    - Verify only remote library is shown
+    - Verify core libraries are NOT shown
+    """
+    os.chdir(tmp_path)
+
+    # init + install remote library
+    stdout, stderr, rc = run_command("xircuits init", timeout=30)
+    stdout, stderr, rc = run_command("xircuits install flask", timeout=180)
+    assert rc == 0, "Failed to install flask library."
+
+    # run update with --all --remote-only --dry-run
+    stdout, stderr, rc = run_command("xircuits update --all --remote-only --dry-run", timeout=120)
+    out = (stdout or "") + (stderr or "")
+
+    assert rc == 0, f"Update --all --remote-only --dry-run failed.\nOutput:\n{out}"
+
+    # remote library should be shown
+    assert "xai_flask" in out.lower(), "Expected remote library (flask) in output."
+
+    # core libraries should NOT be shown
+    core_libs = ["xai_utils", "xai_events", "xai_controlflow", "xai_template"]
+    for core_lib in core_libs:
+        assert core_lib not in out.lower(), f"Core library {core_lib} should NOT appear with --remote-only."
+
+
+def test_45_update_exclude_flag(tmp_path):
+    """
+    Test --exclude flag:
+    - Install multiple remote libraries (e.g., flask, gradio)
+    - Run 'xircuits update --all --exclude=flask --dry-run'
+    - Verify excluded library is not in update list
+    """
+    os.chdir(tmp_path)
+
+    # init + install remote libraries
+    stdout, stderr, rc = run_command("xircuits init", timeout=30)
+    stdout, stderr, rc = run_command("xircuits install flask", timeout=180)
+    assert rc == 0, "Failed to install flask library."
+
+    stdout, stderr, rc = run_command("xircuits install gradio", timeout=180)
+    assert rc == 0, "Failed to install gradio library."
+
+    # run update with --exclude=flask
+    stdout, stderr, rc = run_command("xircuits update --all --exclude=flask --dry-run", timeout=120)
+    out = (stdout or "") + (stderr or "")
+
+    assert rc == 0, f"Update with --exclude failed.\nOutput:\n{out}"
+
+    # excluded library should not appear
+    assert "xai_flask" not in out.lower(), "Excluded library (flask) should NOT appear in output."
+
+    # non-excluded library should appear
+    assert "xai_gradio" in out.lower(), "Non-excluded library (gradio) should appear in output."
+
+
+def test_46_update_respect_refs_flag(tmp_path):
+    """
+    Test --respect-refs flag:
+    - Install a library
+    - Run 'xircuits update --all --respect-refs --dry-run'
+    - Verify it works (flag doesn't break)
+    """
+    os.chdir(tmp_path)
+
+    # init + install remote library
+    stdout, stderr, rc = run_command("xircuits init", timeout=30)
+    stdout, stderr, rc = run_command("xircuits install flask", timeout=180)
+    assert rc == 0, "Failed to install flask library."
+
+    # run update with --respect-refs --dry-run
+    stdout, stderr, rc = run_command("xircuits update --all --respect-refs --dry-run", timeout=120)
+    out = (stdout or "") + (stderr or "")
+
+    assert rc == 0, f"Update with --respect-refs failed.\nOutput:\n{out}"
+
+    # check that the command executed successfully (basic smoke test)
+    # The --respect-refs flag is harder to fully test without pinned versions,
+    # but we verify the flag doesn't break the command
+    assert "dry-run" in out.lower(), "Expected dry-run mode indication in output."
