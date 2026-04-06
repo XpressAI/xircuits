@@ -10,6 +10,7 @@ Pure SVG renderer for `.xircuits` workflow files. Parses the JSON format and pro
 |---------|-----|---------|
 | `xircuits-graph-core` | [![npm](https://img.shields.io/npm/v/xircuits-graph-core)](https://www.npmjs.com/package/xircuits-graph-core) | Parser + SVG renderer. Zero runtime deps. |
 | `xircuits-graph-react` | [![npm](https://img.shields.io/npm/v/xircuits-graph-react)](https://www.npmjs.com/package/xircuits-graph-react) | React components (interactive + SSR-safe). |
+| `docusaurus-plugin-xircuits` | *coming soon* | Docusaurus plugin — drop-in `<XircuitsViewer>` for docs. |
 
 ## Quick Start
 
@@ -95,26 +96,9 @@ const { destroy } = attachPanZoom(svg);
 
 ### Docusaurus
 
-```mdx
-import { XircuitsGraphStatic } from 'xircuits-graph-react';
+A dedicated plugin is in progress (`docusaurus-plugin-xircuits`) that will provide a drop-in `<XircuitsViewer>` component with loading states, floating zoom controls, and automatic theme sync.
 
-# My Workflow
-
-<XircuitsGraphStatic src="/assets/MyWorkflow.xircuits" height={400} />
-```
-
-For interactive mode, wrap with `BrowserOnly`:
-
-```mdx
-import BrowserOnly from '@docusaurus/BrowserOnly';
-
-<BrowserOnly>
-  {() => {
-    const { XircuitsGraph } = require('xircuits-graph-react');
-    return <XircuitsGraph src="/assets/MyWorkflow.xircuits" interactive />;
-  }}
-</BrowserOnly>
-```
+In the meantime, see `docs/` for a working Docusaurus integration using the core + react packages directly.
 
 ## API
 
@@ -163,11 +147,26 @@ cd packages/core && pnpm build
 # Run tests (24 tests)
 cd ../..
 node_modules/.bin/vitest run
+```
 
-# Generate a PNG preview (requires Google Chrome)
-google-chrome --headless=new --no-sandbox \
-  --screenshot=output.png --window-size=2700,1400 \
-  /tmp/rendered.html
+### Running the demos
+
+**Upload demo** (drag-and-drop .xircuits viewer):
+
+```bash
+cd upload-demo
+npm install
+npm run dev
+# Opens at http://localhost:5173
+```
+
+**Docusaurus docs** (workflow documentation site):
+
+```bash
+cd docs
+npm install
+npm start
+# Opens at http://localhost:3000
 ```
 
 ### Project Structure
@@ -185,7 +184,8 @@ xircuits-graph-viewer/
 │   └── react/src/              # xircuits-graph-react
 │       ├── XircuitsGraph.tsx       # Interactive (client-side)
 │       └── XircuitsGraphStatic.tsx # SSR-safe (string output)
-├── demo/                       # Vite + React demo app
+├── upload-demo/                # Standalone drag-and-drop viewer
+├── docs/                       # Docusaurus documentation site
 ├── __tests__/                  # Parser + render tests
 └── vitest.config.ts
 ```

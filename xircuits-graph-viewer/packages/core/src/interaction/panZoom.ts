@@ -4,31 +4,32 @@ export interface PanZoomOptions {
   onViewportChange?: (viewport: { x: number; y: number; zoom: number }) => void;
 }
 
+export interface PanZoomInstance {
+  destroy: () => void;
+  zoomBy: (factor: number) => void;
+  fitView: () => void;
+}
+
 export function attachPanZoom(
   svg: SVGSVGElement,
   options: PanZoomOptions = {},
-): { destroy: () => void } {
+): PanZoomInstance {
   const { minZoom = 0.1, maxZoom = 4, onViewportChange } = options;
 
-  let viewBox = parseViewBox(svg);
+  const initialViewBox = readViewBox();
   let isPanning = false;
   let startX = 0;
   let startY = 0;
-  let startVBX = 0;
-  let startVBY = 0;
+  let panStartVB = { x: 0, y: 0, w: 0, h: 0 };
 
-  function parseViewBox(el: SVGSVGElement) {
-    const vb = el.getAttribute('viewBox')?.split(/\s+/).map(Number) || [0, 0, 800, 600];
+  function readViewBox() {
+    const vb = svg.getAttribute('viewBox')?.split(/\s+/).map(Number) || [0, 0, 800, 600];
     return { x: vb[0], y: vb[1], w: vb[2], h: vb[3] };
   }
 
-  function updateViewBox() {
-    svg.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`);
-    onViewportChange?.({
-      x: viewBox.x,
-      y: viewBox.y,
-      zoom: svg.clientWidth / viewBox.w,
-    });
+  function writeViewBox(vb: { x: number; y: number; w: number; h: number }) {
+    svg.setAttribute('viewBox', `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+    onViewportChange?.({ x: vb.x, y: vb.y, zoom: svg.clientWidth / vb.w });
   }
 
   function onWheel(e: WheelEvent) {
@@ -36,22 +37,24 @@ export function attachPanZoom(
     const rect = svg.getBoundingClientRect();
     const mx = (e.clientX - rect.left) / rect.width;
     const my = (e.clientY - rect.top) / rect.height;
-
     const factor = e.deltaY > 0 ? 1.1 : 0.9;
-    const newW = viewBox.w * factor;
-    const newH = viewBox.h * factor;
+    applyZoom(factor, mx, my);
+  }
 
-    // Enforce zoom limits
-    const currentZoom = svg.clientWidth / viewBox.w;
+  function applyZoom(factor: number, anchorX = 0.5, anchorY = 0.5) {
+    const vb = readViewBox();
+    const newW = vb.w * factor;
+    const newH = vb.h * factor;
+
+    const currentZoom = svg.clientWidth / vb.w;
     const newZoom = svg.clientWidth / newW;
     if (newZoom < minZoom || newZoom > maxZoom) return;
 
-    viewBox.x += (viewBox.w - newW) * mx;
-    viewBox.y += (viewBox.h - newH) * my;
-    viewBox.w = newW;
-    viewBox.h = newH;
-
-    updateViewBox();
+    vb.x += (vb.w - newW) * anchorX;
+    vb.y += (vb.h - newH) * anchorY;
+    vb.w = newW;
+    vb.h = newH;
+    writeViewBox(vb);
   }
 
   function onPointerDown(e: PointerEvent) {
@@ -59,8 +62,7 @@ export function attachPanZoom(
     isPanning = true;
     startX = e.clientX;
     startY = e.clientY;
-    startVBX = viewBox.x;
-    startVBY = viewBox.y;
+    panStartVB = readViewBox();
     svg.setPointerCapture(e.pointerId);
     svg.style.cursor = 'grabbing';
   }
@@ -68,11 +70,10 @@ export function attachPanZoom(
   function onPointerMove(e: PointerEvent) {
     if (!isPanning) return;
     const rect = svg.getBoundingClientRect();
-    const dx = (e.clientX - startX) / rect.width * viewBox.w;
-    const dy = (e.clientY - startY) / rect.height * viewBox.h;
-    viewBox.x = startVBX - dx;
-    viewBox.y = startVBY - dy;
-    updateViewBox();
+    const vb = panStartVB;
+    const dx = (e.clientX - startX) / rect.width * vb.w;
+    const dy = (e.clientY - startY) / rect.height * vb.h;
+    writeViewBox({ x: vb.x - dx, y: vb.y - dy, w: vb.w, h: vb.h });
   }
 
   function onPointerUp(e: PointerEvent) {
@@ -94,6 +95,12 @@ export function attachPanZoom(
       svg.removeEventListener('pointerdown', onPointerDown);
       svg.removeEventListener('pointermove', onPointerMove);
       svg.removeEventListener('pointerup', onPointerUp);
+    },
+    zoomBy(factor: number) {
+      applyZoom(factor);
+    },
+    fitView() {
+      writeViewBox(initialViewBox);
     },
   };
 }

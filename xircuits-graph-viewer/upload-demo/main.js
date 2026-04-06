@@ -16,8 +16,7 @@ const fitBtn = document.getElementById('fit');
 const controls = document.getElementById('controls');
 
 // Store the current SVG element and viewBox for zoom/fit
-let currentSvg = null;
-let originalViewBox = null;
+let panZoom = null;
 
 function renderGraph(json, name) {
   currentJson = json;
@@ -30,9 +29,9 @@ function renderGraph(json, name) {
     return;
   }
 
-  if (cleanupPanZoom) {
-    cleanupPanZoom();
-    cleanupPanZoom = null;
+  if (panZoom) {
+    panZoom.destroy();
+    panZoom = null;
   }
 
   const svg = renderToElement(graph, {
@@ -41,38 +40,25 @@ function renderGraph(json, name) {
     padding: 50,
   });
 
-  // Apply container background (dot grid)
   viewer.style.cssText = getCanvasStyle(currentTheme);
   viewer.innerHTML = '';
   viewer.appendChild(svg);
 
-  // Make SVG fill the container
   svg.style.width = '100%';
   svg.style.height = '100%';
 
-  currentSvg = svg;
-  originalViewBox = svg.getAttribute('viewBox');
-
-  cleanupPanZoom = attachPanZoom(svg).destroy;
+  panZoom = attachPanZoom(svg);
   controls.style.display = 'flex';
 
   if (name) filenameEl.textContent = name;
 }
 
 function zoomBy(factor) {
-  if (!currentSvg) return;
-  const vb = currentSvg.getAttribute('viewBox').split(/\s+/).map(Number);
-  const cx = vb[0] + vb[2] / 2;
-  const cy = vb[1] + vb[3] / 2;
-  const newW = vb[2] * factor;
-  const newH = vb[3] * factor;
-  currentSvg.setAttribute('viewBox',
-    `${cx - newW / 2} ${cy - newH / 2} ${newW} ${newH}`);
+  panZoom?.zoomBy(factor);
 }
 
 function fitView() {
-  if (!currentSvg || !originalViewBox) return;
-  currentSvg.setAttribute('viewBox', originalViewBox);
+  panZoom?.fitView();
 }
 
 function handleFile(file) {
