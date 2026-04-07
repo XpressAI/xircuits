@@ -1,5 +1,5 @@
-import { parse, renderToElement, getCanvasStyle } from 'xircuits-graph-core';
-import { attachPanZoom } from 'xircuits-graph-core/interaction';
+import { parse, renderToElement, getCanvasStyle } from '@xpressai/xircuits-viewer';
+import { attachPanZoom } from '@xpressai/xircuits-viewer/interaction';
 
 let currentTheme = 'dark';
 let currentJson = null;

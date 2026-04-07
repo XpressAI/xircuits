@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { parse, renderToString } from 'xircuits-graph-core';
+import { parse, renderToString } from '@xpressai/xircuits-viewer';
 import helloXircuits from './fixtures/HelloXircuits.xircuits';
 
 export function App() {

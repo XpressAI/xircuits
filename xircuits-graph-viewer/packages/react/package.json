@@ -1,5 +1,5 @@
 {
-  "name": "xircuits-graph-react",
+  "name": "@xpressai/xircuits-viewer-react",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -19,7 +19,7 @@
     "react": ">=18"
   },
   "dependencies": {
-    "xircuits-graph-core": "workspace:*"
+    "@xpressai/xircuits-viewer": "workspace:*"
   },
   "devDependencies": {
     "react": "^18.3.1",

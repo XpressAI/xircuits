@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { parse, renderToElement } from 'xircuits-graph-core';
-import { attachPanZoom } from 'xircuits-graph-core/interaction';
-import type { XNode, XEdge } from 'xircuits-graph-core';
+import { parse, renderToElement } from '@xpressai/xircuits-viewer';
+import { attachPanZoom } from '@xpressai/xircuits-viewer/interaction';
+import type { XNode, XEdge } from '@xpressai/xircuits-viewer';
 
 export interface XircuitsGraphProps {
   /** URL or path to a .xircuits file. Fetched at mount time. */

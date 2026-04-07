@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { parse, renderToString } from 'xircuits-graph-core';
+import { parse, renderToString } from '@xpressai/xircuits-viewer';
 
 export interface XircuitsGraphStaticProps {
   /** URL or path to a .xircuits file. Fetched at mount time. */

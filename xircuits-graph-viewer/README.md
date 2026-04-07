@@ -8,8 +8,8 @@ Pure SVG renderer for `.xircuits` workflow files. Parses the JSON format and pro
 
 | Package | npm | Purpose |
 |---------|-----|---------|
-| `xircuits-graph-core` | [![npm](https://img.shields.io/npm/v/xircuits-graph-core)](https://www.npmjs.com/package/xircuits-graph-core) | Parser + SVG renderer. Zero runtime deps. |
-| `xircuits-graph-react` | [![npm](https://img.shields.io/npm/v/xircuits-graph-react)](https://www.npmjs.com/package/xircuits-graph-react) | React components (interactive + SSR-safe). |
+| `@xpressai/xircuits-viewer` | [![npm](https://img.shields.io/npm/v/@xpressai/xircuits-viewer)](https://www.npmjs.com/package/@xpressai/xircuits-viewer) | Parser + SVG renderer. Zero runtime deps. |
+| `@xpressai/xircuits-viewer-react` | [![npm](https://img.shields.io/npm/v/@xpressai/xircuits-viewer-react)](https://www.npmjs.com/package/@xpressai/xircuits-viewer-react) | React components (interactive + SSR-safe). |
 | `docusaurus-plugin-xircuits` | *coming soon* | Docusaurus plugin — drop-in `<XircuitsViewer>` for docs. |
 
 ## Quick Start
@@ -17,13 +17,13 @@ Pure SVG renderer for `.xircuits` workflow files. Parses the JSON format and pro
 ### React
 
 ```bash
-npm install xircuits-graph-core xircuits-graph-react
+npm install @xpressai/xircuits-viewer @xpressai/xircuits-viewer-react
 ```
 
 **Point it at a `.xircuits` file** — that's it:
 
 ```tsx
-import { XircuitsGraph } from 'xircuits-graph-react';
+import { XircuitsGraph } from '@xpressai/xircuits-viewer-react';
 
 // src accepts any URL: uploaded file path, API endpoint, static asset, etc.
 <XircuitsGraph src="/workflows/MyWorkflow.xircuits" />
@@ -44,7 +44,7 @@ With options:
 **Static rendering** (SSR-safe, no client JS needed):
 
 ```tsx
-import { XircuitsGraphStatic } from 'xircuits-graph-react';
+import { XircuitsGraphStatic } from '@xpressai/xircuits-viewer-react';
 
 <XircuitsGraphStatic src="/workflows/MyWorkflow.xircuits" theme="dark" />
 ```
@@ -62,13 +62,13 @@ import workflow from './MyWorkflow.xircuits';
 Works with Svelte, Vue, plain HTML, Node.js — anything.
 
 ```bash
-npm install xircuits-graph-core
+npm install @xpressai/xircuits-viewer
 ```
 
 **From a URL** (browser):
 
 ```js
-import { renderFromUrl } from 'xircuits-graph-core';
+import { renderFromUrl } from '@xpressai/xircuits-viewer';
 
 const svg = await renderFromUrl('/workflows/MyWorkflow.xircuits', { theme: 'dark' });
 document.getElementById('viewer').innerHTML = svg;
@@ -77,7 +77,7 @@ document.getElementById('viewer').innerHTML = svg;
 **From JSON data**:
 
 ```js
-import { renderXircuits } from 'xircuits-graph-core';
+import { renderXircuits } from '@xpressai/xircuits-viewer';
 
 const svg = renderXircuits(workflowJson, { theme: 'dark' });
 ```
@@ -85,8 +85,8 @@ const svg = renderXircuits(workflowJson, { theme: 'dark' });
 **With pan/zoom**:
 
 ```js
-import { parse, renderToElement } from 'xircuits-graph-core';
-import { attachPanZoom } from 'xircuits-graph-core/interaction';
+import { parse, renderToElement } from '@xpressai/xircuits-viewer';
+import { attachPanZoom } from '@xpressai/xircuits-viewer/interaction';
 
 const res = await fetch('/workflows/MyWorkflow.xircuits');
 const svg = renderToElement(parse(await res.json()), { theme: 'dark' });
@@ -174,14 +174,14 @@ npm start
 ```
 xircuits-graph-viewer/
 ├── packages/
-│   ├── core/src/               # xircuits-graph-core (zero runtime deps)
+│   ├── core/src/               # @xpressai/xircuits-viewer (zero runtime deps)
 │   │   ├── types.ts            # XGraph, XNode, XEdge, XPort
 │   │   ├── parser/             # .xircuits JSON → XGraph
 │   │   ├── layout/             # Node metrics, viewBox computation
 │   │   ├── render/             # SVG generation (nodes, ports, edges, defs)
 │   │   ├── svg/                # Builder utilities, bezier curves
 │   │   └── interaction/        # Pan/zoom (browser-only)
-│   └── react/src/              # xircuits-graph-react
+│   └── react/src/              # @xpressai/xircuits-viewer-react
 │       ├── XircuitsGraph.tsx       # Interactive (client-side)
 │       └── XircuitsGraphStatic.tsx # SSR-safe (string output)
 ├── upload-demo/                # Standalone drag-and-drop viewer
@@ -198,7 +198,7 @@ cd packages/core && pnpm build
 cd ../react && pnpm build
 
 # Update workspace:* → actual version in react/package.json
-# "xircuits-graph-core": "workspace:*"  →  "xircuits-graph-core": "^0.1.0"
+# "@xpressai/xircuits-viewer": "workspace:*"  →  "@xpressai/xircuits-viewer": "^0.1.0"
 
 # Publish (core first, react depends on it)
 cd ../core && npm publish --access public

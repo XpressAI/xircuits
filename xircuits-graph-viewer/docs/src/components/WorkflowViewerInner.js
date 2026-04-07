@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { parse, renderToElement, getCanvasStyle } from 'xircuits-graph-core';
-import { attachPanZoom } from 'xircuits-graph-core/interaction';
+import { parse, renderToElement, getCanvasStyle } from '@xpressai/xircuits-viewer';
+import { attachPanZoom } from '@xpressai/xircuits-viewer/interaction';
 import { useColorMode } from '@docusaurus/theme-common';
 
 const ZoomInIcon = () => (
