@@ -1,6 +1,6 @@
 {
   "name": "@xpressai/xircuits-viewer",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,12 +14,18 @@
       "import": "./dist/interaction/panZoom.js"
     }
   },
-  "files": ["dist"],
+  "bin": {
+    "xircuits-minify": "./dist/minifier/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && chmod +x ./dist/minifier/cli.js",
     "dev": "tsc --watch"
   },
   "devDependencies": {
+    "@types/node": "^25.6.0",
     "typescript": "^5.8.3"
   }
 }

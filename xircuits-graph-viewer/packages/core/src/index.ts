@@ -23,6 +23,10 @@ export { computeViewBox } from './layout/viewBox.js';
 // Renderer
 export { renderToString, renderToElement } from './render/renderGraph.js';
 
+// Minifier
+export { minify, minifyWithStats } from './minifier/index.js';
+export type { MinifyOptions, MinifyStats } from './minifier/index.js';
+
 // Convenience: one-shot parse + render
 export { renderXircuits } from './render/renderGraph.js';
 

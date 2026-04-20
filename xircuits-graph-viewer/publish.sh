@@ -5,11 +5,11 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 
 echo "==> Building core..."
 cd "$DIR/packages/core"
-npx tsc
+npm run build
 
 echo "==> Building react..."
 cd "$DIR/packages/react"
-npx tsc
+npm run build
 
 echo "==> Publishing @xpressai/xircuits-viewer..."
 cd "$DIR/packages/core"
@@ -26,6 +26,6 @@ sed -i "s/\"@xpressai\/xircuits-viewer\": \"workspace:\*\"/\"@xpressai\/xircuits
 npm publish --access public
 
 # Revert for local dev
-sed -i "s/\"@xpressai\/xircuits-viewer\": \"^\$VERSION\"/\"@xpressai\/xircuits-viewer\": \"workspace:*\"/" package.json
+sed -i "s/\"@xpressai\/xircuits-viewer\": \"^$VERSION\"/\"@xpressai\/xircuits-viewer\": \"workspace:*\"/" package.json
 
 echo "==> Done! Published v$VERSION"

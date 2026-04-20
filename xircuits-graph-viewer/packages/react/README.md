@@ -58,7 +58,10 @@ import workflow from './MyWorkflow.xircuits';
 | `src` | `string` | — | URL to a `.xircuits` file |
 | `data` | `object` | — | Pre-loaded JSON (takes precedence over `src`) |
 | `theme` | `'dark' \| 'light'` | `'dark'` | Color theme |
+| `showCanvasBackground` | `boolean` | `true` | Render the Xircuits dot-grid background on the container |
 | `interactive` | `boolean` | `true` | Enable pan/zoom |
+| `showControls` | `boolean` | same as `interactive` | Show zoom +/−/fit buttons in the corner |
+| `fitView` | `boolean` | `true` | Auto-fit the graph on first render |
 | `height` | `number \| string` | `400` | Container height |
 | `width` | `number \| string` | `'100%'` | Container width |
 | `padding` | `number` | `40` | Viewport padding |

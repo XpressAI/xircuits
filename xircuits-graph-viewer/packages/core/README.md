@@ -51,6 +51,33 @@ import { getCanvasStyle } from '@xpressai/xircuits-viewer';
 container.style.cssText = getCanvasStyle('dark');
 ```
 
+## Minifier
+
+`.xircuits` files from the Xircuits editor carry full UUIDs and high-precision coordinates that the viewer doesn't need. A bundled minifier cuts file size 57–85% so workflows load faster over the network.
+
+### CLI
+
+```bash
+# Safe mode (best-effort compatible with the JupyterLab editor)
+npx xircuits-minify MyWorkflow.xircuits
+
+# Viewer-only; shortens UUIDs and strips cosmetic fields
+npx xircuits-minify MyWorkflow.xircuits --aggressive
+
+# Tune coordinate precision (default 0 = integer pixels)
+npx xircuits-minify MyWorkflow.xircuits --precision 1
+```
+
+### Library
+
+```js
+import { minify, minifyWithStats } from '@xpressai/xircuits-viewer';
+
+const compact = minify(workflowJson, { aggressive: true });
+const { output, stats } = minifyWithStats(workflowJson);
+// stats: { inputBytes, outputBytes, ratio, nodes, edges, ports, mode, precision }
+```
+
 ## API
 
 | Function | Description |
@@ -63,6 +90,8 @@ container.style.cssText = getCanvasStyle('dark');
 | `validate(json)` | Validate without parsing |
 | `getCanvasStyle(theme?)` | CSS string for the dot-grid container background |
 | `attachPanZoom(svg, options?)` | Add pan/zoom, returns `{ destroy, zoomBy, fitView }` |
+| `minify(json, options?)` | Minify a `.xircuits` JSON, returns compact string |
+| `minifyWithStats(json, options?)` | Same, plus size/counts stats |
 
 ### RenderOptions
 
