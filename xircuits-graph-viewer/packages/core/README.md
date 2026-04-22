@@ -41,6 +41,29 @@ document.body.appendChild(svg);
 const { destroy, zoomBy, fitView } = attachPanZoom(svg);
 ```
 
+### Python component → node
+
+Turn a single `@xai_component`-decorated Python class into an `XGraph` with one node — useful for live previews, docs playgrounds, or tooling that consumes component source.
+
+```js
+import { parsePythonComponent, renderToString } from '@xpressai/xircuits-viewer';
+
+const { graph, error, warnings } = parsePythonComponent(`
+@xai_component(color="blue")
+class GreetUser(Component):
+    name: InArg[str]
+    message: OutArg[str]
+`);
+
+if (graph) {
+  const svg = renderToString(graph, { theme: 'dark' });
+}
+```
+
+Recognises the decorator (`color`), `InArg`/`InCompArg`/`OutArg`/`BaseComponent` fields, and docstrings (ignored). Python types are normalised (`str` → `string`, `bool` → `boolean`, `List[...]` → `list`) so port icons match those in real `.xircuits` workflows.
+
+Regex-based and lightweight — it's designed for live-preview ergonomics, not arbitrary Python. Parses the first `@xai_component` class it finds.
+
 ### Container background
 
 The SVG renders just the graph content. Apply the Xircuits dot-grid background on your container:
@@ -85,6 +108,7 @@ const { output, stats } = minifyWithStats(workflowJson);
 | `renderFromUrl(url, options?)` | Fetch a `.xircuits` URL and return SVG string |
 | `renderXircuits(json, options?)` | Parse JSON + render to SVG string |
 | `parse(json)` | Parse `.xircuits` JSON into `XGraph` |
+| `parsePythonComponent(source, options?)` | Parse Python component source into `{ graph, error, warnings }` |
 | `renderToString(graph, options?)` | Render `XGraph` to SVG string |
 | `renderToElement(graph, options?)` | Render `XGraph` to DOM `SVGSVGElement` |
 | `validate(json)` | Validate without parsing |

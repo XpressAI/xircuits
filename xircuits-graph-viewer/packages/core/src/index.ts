@@ -15,6 +15,8 @@ export type {
 // Parser
 export { parse } from './parser/parse.js';
 export { validate } from './parser/validate.js';
+export { parsePythonComponent } from './parsePythonComponent.js';
+export type { ParseResult, ParsePythonOptions } from './parsePythonComponent.js';
 
 // Layout
 export { computeNodeMetrics } from './layout/metrics.js';

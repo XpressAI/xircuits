@@ -57,6 +57,14 @@ import workflow from './MyWorkflow.xircuits';
 <XircuitsGraph data={workflow} />
 ```
 
+**Live component preview** — render a single xircuits component from its Python source. The drop-in version needs two lines; bring your own editor (CodeMirror, Monaco, etc.) via the `editor` prop. See [the react package README](./packages/react/README.md#live-component-preview-python--node) for examples.
+
+```tsx
+import { ComponentPreview } from '@xpressai/xircuits-viewer-react';
+
+<ComponentPreview value={code} onChange={setCode} />
+```
+
 ### Core (framework-agnostic)
 
 Works with Svelte, Vue, plain HTML, Node.js — anything.
@@ -109,6 +117,7 @@ In the meantime, see `docs/` for a working Docusaurus integration using the core
 | `renderFromUrl(url, options?)` | Fetch a `.xircuits` URL and return SVG string. Browser only. |
 | `renderXircuits(json, options?)` | One-shot: parse JSON + render to SVG string. |
 | `parse(json)` | Parse `.xircuits` JSON into `XGraph`. |
+| `parsePythonComponent(src, options?)` | Parse Python component source into `{ graph, error, warnings }`. |
 | `renderToString(graph, options?)` | Render `XGraph` to SVG string. Works in Node.js and browsers. |
 | `renderToElement(graph, options?)` | Render `XGraph` to DOM `SVGSVGElement`. Browser only. |
 | `validate(json)` | Validate a `.xircuits` file without parsing. |
@@ -118,8 +127,9 @@ In the meantime, see `docs/` for a working Docusaurus integration using the core
 
 | Component | Props | Description |
 |-----------|-------|-------------|
-| `<XircuitsGraph>` | `src` or `data`, `theme`, `interactive`, `height`, ... | Interactive viewer with pan/zoom. |
+| `<XircuitsGraph>` | `src` \| `data` \| `graph`, `theme`, `interactive`, `height`, ... | Interactive viewer with pan/zoom. |
 | `<XircuitsGraphStatic>` | `src` or `data`, `theme`, `height`, ... | Static SVG output, SSR-safe. |
+| `<ComponentPreview>` | `value`, `onChange`, `editor?`, `theme`, ... | Live preview of a single xircuits component from Python source. |
 
 ### `RenderOptions`
 

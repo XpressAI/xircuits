@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { parse, renderToElement, getCanvasStyle } from '@xpressai/xircuits-viewer';
 import { attachPanZoom } from '@xpressai/xircuits-viewer/interaction';
 import type { PanZoomInstance } from '@xpressai/xircuits-viewer/interaction';
-import type { XNode, XEdge } from '@xpressai/xircuits-viewer';
+import type { XNode, XEdge, XGraph } from '@xpressai/xircuits-viewer';
 
 function parseCanvasStyle(theme: 'dark' | 'light'): React.CSSProperties {
   return Object.fromEntries(
@@ -29,11 +29,40 @@ const controlBtnStyle: React.CSSProperties = {
   padding: 0,
 };
 
+const iconProps = {
+  width: 16,
+  height: 16,
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 2,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+};
+
+const ZoomInIcon = () => (
+  <svg {...iconProps}><path d="M5 12h14" /><path d="M12 5v14" /></svg>
+);
+const ZoomOutIcon = () => (
+  <svg {...iconProps}><path d="M5 12h14" /></svg>
+);
+const FitIcon = () => (
+  <svg {...iconProps}>
+    <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+    <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+    <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+    <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+    <rect width="10" height="8" x="7" y="8" rx="1" />
+  </svg>
+);
+
 export interface XircuitsGraphProps {
   /** URL or path to a .xircuits file. Fetched at mount time. */
   src?: string;
   /** Pre-loaded .xircuits JSON data. Takes precedence over src. */
   data?: object;
+  /** Pre-parsed XGraph. Takes precedence over both data and src. */
+  graph?: XGraph;
   theme?: 'dark' | 'light';
   /** Show the dotted-grid canvas background. Defaults to true. */
   showCanvasBackground?: boolean;
@@ -54,6 +83,7 @@ export interface XircuitsGraphProps {
 export function XircuitsGraph({
   src,
   data,
+  graph: graphProp,
   theme = 'dark',
   showCanvasBackground = true,
   interactive = true,
@@ -75,9 +105,9 @@ export function XircuitsGraph({
 
   const displayControls = showControls ?? interactive;
 
-  // Fetch from src when no data is provided
+  // Fetch from src when no graph or data is provided
   useEffect(() => {
-    if (data || !src) return;
+    if (graphProp || data || !src) return;
     let cancelled = false;
 
     fetch(src)
@@ -94,15 +124,16 @@ export function XircuitsGraph({
       });
 
     return () => { cancelled = true; };
-  }, [src, data]);
+  }, [src, data, graphProp]);
 
   const resolvedData = data || fetchedData;
 
-  // Render SVG when data is available
+  // Render SVG when graph or data is available
   useEffect(() => {
-    if (!containerRef.current || !resolvedData) return;
+    if (!containerRef.current) return;
+    if (!graphProp && !resolvedData) return;
 
-    const graph = parse(resolvedData);
+    const graph = graphProp ?? parse(resolvedData as object);
     const svg = renderToElement(graph, { theme, fitView, padding });
 
     containerRef.current.querySelectorAll('svg').forEach(el => el.remove());
@@ -145,7 +176,7 @@ export function XircuitsGraph({
       panZoomRef.current = null;
       svg.removeEventListener('click', handleClick);
     };
-  }, [resolvedData, theme, interactive, fitView, padding]);
+  }, [graphProp, resolvedData, theme, interactive, fitView, padding]);
 
   const canvasCss = showCanvasBackground ? parseCanvasStyle(theme) : {};
 
@@ -162,7 +193,7 @@ export function XircuitsGraph({
     >
       <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
         {error && <div style={{ color: 'red', padding: 8 }}>{error}</div>}
-        {!resolvedData && !error && src && <div style={{ color: '#888', padding: 8 }}>Loading...</div>}
+        {!graphProp && !resolvedData && !error && src && <div style={{ color: '#888', padding: 8 }}>Loading...</div>}
       </div>
       {displayControls && (
         <div style={{
@@ -177,17 +208,20 @@ export function XircuitsGraph({
             style={controlBtnStyle}
             onClick={() => panZoomRef.current?.zoomBy(0.8)}
             title="Zoom in"
-          >+</button>
+            aria-label="Zoom in"
+          ><ZoomInIcon /></button>
           <button
             style={controlBtnStyle}
             onClick={() => panZoomRef.current?.zoomBy(1.25)}
             title="Zoom out"
-          >−</button>
+            aria-label="Zoom out"
+          ><ZoomOutIcon /></button>
           <button
             style={controlBtnStyle}
             onClick={() => panZoomRef.current?.fitView()}
-            title="Fit to view"
-          >⊡</button>
+            title="Fit all nodes"
+            aria-label="Fit all nodes"
+          ><FitIcon /></button>
         </div>
       )}
     </div>

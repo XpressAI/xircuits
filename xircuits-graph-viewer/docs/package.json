@@ -21,8 +21,10 @@
     "prism-react-renderer": "^2.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "xircuits-graph-core": "file:../packages/core",
-    "xircuits-graph-react": "file:../packages/react"
+    "@xpressai/xircuits-viewer": "file:../packages/core",
+    "@xpressai/xircuits-viewer-react": "file:../packages/react",
+    "@uiw/react-codemirror": "^4.23.7",
+    "@codemirror/lang-python": "^6.1.6"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.9.2",
