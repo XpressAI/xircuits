@@ -1,17 +1,19 @@
 {
   "name": "@xpressai/xircuits-viewer",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./interaction": {
       "types": "./dist/interaction/panZoom.d.ts",
-      "import": "./dist/interaction/panZoom.js"
+      "import": "./dist/interaction/panZoom.js",
+      "default": "./dist/interaction/panZoom.js"
     }
   },
   "bin": {
