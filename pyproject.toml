@@ -60,7 +60,7 @@ include-only = [
     "xircuits/",
 ]
 artifacts = ["xircuits/labextension"]
-exclude = [".github", "binder", "node_modules", "lib", ".yarn"]
+exclude = [".github", "node_modules", "lib", ".yarn"]
 
 [tool.hatch.build.targets.wheel.shared-data]
 "xircuits/labextension" = "share/jupyter/labextensions/xircuits"
