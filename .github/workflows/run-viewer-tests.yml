@@ -1,0 +1,43 @@
+name: Run Viewer Tests
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'xircuits-graph-viewer/**'
+  pull_request:
+    branches: [ "*" ]
+    paths:
+      - 'xircuits-graph-viewer/**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        working-directory: xircuits-graph-viewer
+        run: pnpm install
+
+      - name: Build core
+        working-directory: xircuits-graph-viewer/packages/core
+        run: pnpm build
+
+      - name: Run tests
+        working-directory: xircuits-graph-viewer
+        run: node_modules/.bin/vitest run

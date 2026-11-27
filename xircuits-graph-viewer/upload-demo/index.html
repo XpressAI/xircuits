@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xircuits Graph Viewer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #333;
+      flex-shrink: 0;
+    }
+    header h1 { font-size: 1.1rem; font-weight: 500; }
+    .btn {
+      padding: 6px 14px;
+      background: #333;
+      color: #ccc;
+      border: 1px solid #555;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .btn:hover { background: #444; }
+    .btn-primary { background: #7c3aed; color: white; border-color: #7c3aed; }
+    .btn-primary:hover { background: #6d28d9; }
+    .filename { color: #888; font-size: 13px; }
+    .spacer { flex: 1; }
+    #controls { display: none; gap: 4px; }
+    #viewer {
+      flex: 1;
+      overflow: hidden;
+    }
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #666;
+    }
+    .drop-zone {
+      border: 2px dashed #444;
+      border-radius: 12px;
+      padding: 60px 80px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .drop-zone:hover { border-color: #666; }
+    .drop-zone.dragover { border-color: #7c3aed; background: rgba(124,58,237,0.05); }
+    .drop-zone p:first-child { font-size: 16px; color: #999; margin-bottom: 6px; }
+    .drop-zone p:last-child { font-size: 13px; color: #555; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Xircuits Graph Viewer</h1>
+    <label class="btn btn-primary">
+      Open .xircuits
+      <input type="file" id="file-input" accept=".xircuits" hidden />
+    </label>
+    <span class="filename" id="filename"></span>
+    <span class="spacer"></span>
+    <div id="controls">
+      <button class="btn" id="zoom-in" title="Zoom In">+</button>
+      <button class="btn" id="zoom-out" title="Zoom Out">-</button>
+      <button class="btn" id="fit" title="Fit to View">Fit</button>
+    </div>
+    <button class="btn" id="theme-toggle">Light</button>
+  </header>
+  <div id="viewer">
+    <div class="empty-state">
+      <div class="drop-zone" id="drop-zone">
+        <p>Drop a .xircuits file here</p>
+        <p>or click "Open .xircuits" above</p>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
